@@ -16,6 +16,7 @@
 #include <glutil.h>
 #include <float4x4.h>
 #include <float3x3.h>
+#include <Quaternion.h>
 
 #include <vector>
 
@@ -111,7 +112,7 @@ struct Car{
 
 	float rotationSpeed = M_PI / 180 * 3;
 	float moveSpeed = 1.3;
-	float angley = 0, anglez;
+	float angley = 0, anglez, anglex;
 	float lengthx = 2, lengthz = 3;
 };
 
@@ -480,8 +481,19 @@ void drawShadowCasters(GLuint shaderProgram)
 {
 	drawModel(world, make_identity<float4x4>(), shaderProgram);
 	setUniformSlow(shaderProgram, "object_reflectiveness", 1.5f); 
+
+	Quaternion qatX = make_quaternion_axis_angle(cross(carLoc.upDir, carLoc.frontDir), carLoc.anglex);
+	Quaternion qatY = make_quaternion_axis_angle(make_vector(0.0f, 1.0f, 0.0f), carLoc.angley);
+	Quaternion qatZ = make_quaternion_axis_angle(carLoc.frontDir, -carLoc.anglez);
+
 	drawModel(car
-		, make_translation(carLoc.location) * make_rotation_z<float4x4>(carLoc.anglez) * make_rotation_y<float4x4>(carLoc.angley),
+		, make_translation(carLoc.location)
+		//* make_rotation<float4x4, float3>(make_rotation<float3x3, float3>(carLoc.upDir, 90) * carLoc.frontDir , carLoc.anglex) 
+		//* make_rotation<float4x4, float3>(carLoc.frontDir, carLoc.anglez) 
+		//* make_rotation_y<float4x4>(carLoc.angley),
+		//* makematrix(qatX) 
+		* makematrix(qatY) ,
+		//* makematrix(qatZ),
 		shaderProgram);
 	setUniformSlow(shaderProgram, "object_reflectiveness", 0.0f); 
 
@@ -756,21 +768,49 @@ void blurImage() {
 void checkIntersection() {
 
 	//debugDrawQuad(viewMatrix, projectionMatrix, carLoc.location + make_vector(0.2f, 1.2f, 0.0f), make_vector(1.0f, 1.0f, 1.5f));
-
+	float3 upVec = make_vector(0.0f, 1.0f, 0.0f);
 	float3x3 rot = make_rotation_y<float3x3>(carLoc.angley);
-	float a = rayOctreeIntersection(carLoc.location + rot * carLoc.wheel1, -carLoc.upDir, t);
-	float b = rayOctreeIntersection(carLoc.location + rot * carLoc.wheel2, -carLoc.upDir, t);
-	float c = rayOctreeIntersection(carLoc.location + rot * carLoc.wheel3, -carLoc.upDir, t);
-	float d = rayOctreeIntersection(carLoc.location + rot * carLoc.wheel4, -carLoc.upDir, t);
+	float a = rayOctreeIntersection(carLoc.location + rot * carLoc.wheel1, -upVec, t);
+	float b = rayOctreeIntersection(carLoc.location + rot * carLoc.wheel2, -upVec, t);
+	float c = rayOctreeIntersection(carLoc.location + rot * carLoc.wheel3, -upVec, t);
+	float d = rayOctreeIntersection(carLoc.location + rot * carLoc.wheel4, -upVec, t);
 	
-	carLoc.anglez = -(asinf((carLoc.wheel1.y - a) - (carLoc.wheel3.y - c) / carLoc.lengthx));
-	
-	printf("angle: %f\n", carLoc.anglez);
+	float3 af = carLoc.wheel1 - (upVec * a);
+	float3 bf = carLoc.wheel2 - (upVec * b);
+	float3 cf = carLoc.wheel3 - (upVec * c);
+	float3 df = carLoc.wheel4 - (upVec * d);
 
-	carLoc.wheel1 += make_vector(0.0f, a, 0.0f);
-	carLoc.wheel2 += make_vector(0.0f, b, 0.0f);
-	carLoc.wheel3 += make_vector(0.0f, c, 0.0f);
-	carLoc.wheel4 += make_vector(0.0f, d, 0.0f);
+	
+	
+	float3 newUp =
+		normalize(
+		cross(df - carLoc.upDir, bf - carLoc.upDir) +
+		cross(bf - carLoc.upDir, af - carLoc.upDir) +
+		cross(af - carLoc.upDir, cf - carLoc.upDir) +
+		cross(cf - carLoc.upDir, df - carLoc.upDir));
+
+	carLoc.wheel1 += upVec * a;
+	carLoc.wheel2 += upVec * b;
+	carLoc.wheel3 += upVec * c;
+	carLoc.wheel4 += upVec * d;
+
+	carLoc.upDir = -newUp;
+	
+	
+	
+	/*carLoc.anglez =
+		((asinf((carLoc.wheel1.y - a) - (carLoc.wheel3.y - c) / carLoc.lengthx))
+		+ (asinf((carLoc.wheel2.y - a) - (carLoc.wheel4.y - c) / carLoc.lengthx)))
+		/ 2;
+
+
+	carLoc.anglex = (-(asinf((carLoc.wheel1.y - a) - (carLoc.wheel2.y - c) / carLoc.lengthz))
+		- (asinf((carLoc.wheel3.y - a) - (carLoc.wheel4.y - c) / carLoc.lengthz)))
+		/ 2;*/
+	
+	printf("wheel: %f\n", carLoc.wheel1.y);
+
+
 
 	carLoc.location += make_vector(0.0f, carLoc.wheel1.y, 0.0f);
 }
@@ -947,12 +987,10 @@ Camera createCamera(float3 position, float3 lookAt, float3 up) {
 void tick() {
 	if (keysDown[(int)'w']) {
 		float3 term = carLoc.frontDir * carLoc.moveSpeed;
-
 		carLoc.location += term;
 
 	}if (keysDown[(int)'s']) {
 		float3 term = carLoc.frontDir * carLoc.moveSpeed;
-
 		carLoc.location -= term;
 
 	}if (keysDown[(int)'a'] && (keysDown[(int)'w'] || keysDown[(int)'s'])) {

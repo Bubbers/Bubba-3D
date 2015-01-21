@@ -13,7 +13,7 @@ using namespace std;
 using namespace chag;
 using namespace chrono;
 
-const int MAX_DEPTH = 8;
+const int MAX_DEPTH = 3;
 const int MAX_CHILDREN = 64;
 
 class Octree {
