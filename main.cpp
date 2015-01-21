@@ -689,7 +689,7 @@ void drawScene(void)
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, verticalBlurFbo.id);
 	glBlitFramebuffer(0, 0, w, h, 0, 0, w, h, GL_COLOR_BUFFER_BIT,
 		GL_NEAREST);*/
-
+	//
 	
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
