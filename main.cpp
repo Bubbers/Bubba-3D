@@ -124,8 +124,8 @@ struct Car{
 		wheel3 = make_vector(-0.8f, 0.0f,  1.5f),
 		wheel4 = make_vector(-0.8f, 0.0f, -1.5f);
 
-	float rotationSpeed = M_PI / 180 * 3;
-	float moveSpeed = 1.3;
+	float rotationSpeed = 2 * M_PI / 180;
+	float moveSpeed = 0.5;
 	float angley = 0, anglez, anglex;
 	float lengthx = 2, lengthz = 3;
 };
@@ -156,6 +156,7 @@ void drawFullScreenQuad();
 Fbo createPostProcessFbo(int width, int height);
 void blurImage();
 
+void drawDebug(const float4x4 &viewMatrix, const float4x4 &projectionMatrix);
 void debugDrawOctree(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, Octree tree);
 void debugDrawQuad(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, float3 origin, float3 halfVector);
 void debugDrawLine(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, float3 origin, float3 rayVector);
@@ -450,7 +451,6 @@ bool rayTriangle(float3 r_o, float3 r_d, float3 v1, float3 v2, float3 v3, float 
 	return true;
 }
 
-
 Fbo createPostProcessFbo(int width, int height) {
 
 	Fbo fbo;
@@ -482,7 +482,6 @@ Fbo createPostProcessFbo(int width, int height) {
 	return fbo;
 }
 
-
 void drawModel(OBJModel *model, const float4x4 &modelMatrix, GLuint shaderProgram)
 {
 	setUniformSlow(shaderProgram, "modelMatrix", modelMatrix); 
@@ -502,10 +501,8 @@ void drawShadowCasters(GLuint shaderProgram)
 	float3 rightDir = normalize(cross(frontDir, vUp));
 
 	float anglex = -(90.0f - acosf( dot(normalize(carLoc.upDir), frontDir) ) * 180 / M_PI) * M_PI / 180;
-	//float anglex = 1;
 	float anglez = (90.0f - acosf( dot(normalize(carLoc.upDir), rightDir) ) * 180 / M_PI) * M_PI / 180;
-	//float anglez = 1;
-
+	
 	Quaternion qatX = make_quaternion_axis_angle(rightDir, anglex);
 	Quaternion qatY = make_quaternion_axis_angle(vUp, carLoc.angley);
 	Quaternion qatZ = make_quaternion_axis_angle(make_rotation_y<float3x3>(-carLoc.angley) * frontDir, anglez);
@@ -524,10 +521,6 @@ void drawShadowCasters(GLuint shaderProgram)
 	drawModel(test, make_translation(make_vector(-15.0f, 0.0f, 0.0f)) * make_rotation_y<float4x4>(M_PI / 180 * 90) * make_scale<float4x4>(make_vector(2.0f, 2.0f, 2.0f)), shaderProgram);
 
 }
-
-
-
-
 
 void drawShadowMap(Fbo sbo, float4x4 viewProjectionMatrix) {
 	glBindFramebuffer(GL_FRAMEBUFFER, sbo.id);
@@ -641,15 +634,6 @@ void drawScene(void)
 	float3 camera_lookAt = carLoc.location + make_vector(0.0f, camera_target_altitude, 0.0f);
 	float3 camera_up = make_vector(0.0f, 1.0f, 0.0f);
 
-	//CUBA MAP VIEW
-	/*int i = 3;
-	float4x4 viewMatrix = lookAt(cameras[i].position, cameras[i].lookAt, cameras[i].up);
-	float4x4 projectionMatrix = perspectiveMatrix(90.0f, float(cMapAll.width) / float(cMapAll.height), 0.1f, 500.0f);*/
-
-	// SUNS VIEW
-	//float4x4 viewMatrix = lookAt(lightPosition, light_lookAt, light_up);
-	//float4x4 projectionMatrix = perspectiveMatrix(25.0f, 1.0f, 370.0f, 530.0f);
-
 	float4x4 viewMatrix;
 	float4x4 projectionMatrix;
 	if (camera == 6) {
@@ -696,27 +680,7 @@ void drawScene(void)
 
 
 	drawModel(water, make_translation(make_vector(0.0f, -6.0f, 0.0f)), shaderProgram);
-
 	drawShadowCasters(shaderProgram);
-
-
-	//DEBUGS ONLY
-	//debugDrawOctree(viewMatrix, projectionMatrix, t);
-	debugDrawLight(viewMatrix, projectionMatrix, lightPosition);
-	//debugDrawQuad(viewMatrix, projectionMatrix, carLoc.location + make_vector(0.2f, 1.2f, 0.0f), make_vector(1.0f, 1.0f, 1.5f));
-	float3x3 rot = make_rotation_y<float3x3>(carLoc.angley);
-	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location + rot * carLoc.wheel1, -carLoc.upDir);
-	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location + rot * carLoc.wheel2, -carLoc.upDir);
-	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location + rot * carLoc.wheel3, -carLoc.upDir);
-	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location + rot * carLoc.wheel4, -carLoc.upDir);
-	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location, carLoc.upDir);
-	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location, carLoc.frontDir);
-	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location, normalize(cross(carLoc.frontDir, make_vector(0.0f, 1.0f, 0.0f))));
-	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location, vUp);
-
-
-	//debugDrawLine(viewMatrix, projectionMatrix, carLoc.location, make_vector(1.0f, 0.0f, 0.0f));
-	//debugDrawLine(viewMatrix, projectionMatrix, carLoc.location, make_vector(0.0f, 0.0f, 1.0f));
 
 	//Draw skybox
 	glDepthMask(GL_FALSE); //Used to write over the skyboxnight with the skybox alpha value
@@ -732,14 +696,9 @@ void drawScene(void)
 
 	drawCubeMap(cMapAll);
 
-//	blurImage();
+	drawDebug(viewMatrix, projectionMatrix);
 
-	/*glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, verticalBlurFbo.id);
-	glBlitFramebuffer(0, 0, w, h, 0, 0, w, h, GL_COLOR_BUFFER_BIT,
-		GL_NEAREST);*/
-	//
-	
+	blurImage();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, w, h);
@@ -803,51 +762,39 @@ void blurImage() {
 }
 
 void checkIntersection() {
-
-	//debugDrawQuad(viewMatrix, projectionMatrix, carLoc.location + make_vector(0.2f, 1.2f, 0.0f), make_vector(1.0f, 1.0f, 1.5f));
 	float3 upVec = make_vector(0.0f, 1.0f, 0.0f);
-	float3 leftVec = cross(carLoc.upDir, carLoc.frontDir);
 
+	//Calculate intersections
 	float3x3 rot = make_rotation_y<float3x3>(carLoc.angley);
 	float a = rayOctreeIntersection(carLoc.location + rot * carLoc.wheel1, -upVec, t);
 	float b = rayOctreeIntersection(carLoc.location + rot * carLoc.wheel2, -upVec, t);
 	float c = rayOctreeIntersection(carLoc.location + rot * carLoc.wheel3, -upVec, t);
 	float d = rayOctreeIntersection(carLoc.location + rot * carLoc.wheel4, -upVec, t);
 	
+	//Calculate 3d points of intersection
 	float3 af = carLoc.wheel1 - (upVec * a);
 	float3 bf = carLoc.wheel2 - (upVec * b);
 	float3 cf = carLoc.wheel3 - (upVec * c);
 	float3 df = carLoc.wheel4 - (upVec * d);
 	
-	/*float3 newUp =
-		normalize(
-		cross(df - carLoc.upDir, bf - carLoc.upDir) +
-		cross(bf - carLoc.upDir, af - carLoc.upDir) +
-		cross(af - carLoc.upDir, cf - carLoc.upDir) +
-		cross(cf - carLoc.upDir, df - carLoc.upDir));*/
-
-	float3 vAB = af - bf;
-	float3 vCB = cf - bf;
-	float3 newUp = cross(vAB, vCB);
-
-
+	//Change wheel locations 
 	carLoc.wheel1 += upVec * a;
 	carLoc.wheel2 += upVec * b;
 	carLoc.wheel3 += upVec * c;
 	carLoc.wheel4 += upVec * d;
 
-	carLoc.upDir = -(rot * newUp) ;
-	
-	/*carLoc.anglez =
-		((asinf((carLoc.wheel1.y - a) - (carLoc.wheel3.y - c) / carLoc.lengthx))
-		+ (asinf((carLoc.wheel2.y - a) - (carLoc.wheel4.y - c) / carLoc.lengthx)))
-		/ 2;
+	//Calculate new up vector
+	float3 vABa = af - bf;
+	float3 vCBa = cf - bf;
+	float3 newUpa = cross(vABa, vCBa);
 
+	float3 vABb = bf - cf;
+	float3 vCBb = df - cf;
+	float3 newUpb = cross(vABb, vCBb);
 
-	carLoc.anglex = (-(asinf((carLoc.wheel1.y - a) - (carLoc.wheel2.y - c) / carLoc.lengthz))
-		- (asinf((carLoc.wheel3.y - a) - (carLoc.wheel4.y - c) / carLoc.lengthz)))
-		/ 2;*/
+	float3 halfVector = normalize(newUpa - newUpb);
 
+	carLoc.upDir = -(rot * halfVector);
 
 	carLoc.location += make_vector(0.0f, carLoc.wheel1.y, 0.0f);
 }
@@ -1169,6 +1116,21 @@ void drawFullScreenQuad()
 
 	glBindVertexArray(vertexArrayObject);
 	glDrawArrays(GL_QUADS, 0, nofVertices);
+}
+
+void drawDebug(const float4x4 &viewMatrix, const float4x4 &projectionMatrix) {
+	//debugDrawOctree(viewMatrix, projectionMatrix, t);
+	debugDrawLight(viewMatrix, projectionMatrix, lightPosition);
+	//debugDrawQuad(viewMatrix, projectionMatrix, carLoc.location + make_vector(0.2f, 1.2f, 0.0f), make_vector(1.0f, 1.0f, 1.5f));
+	float3x3 rot = make_rotation_y<float3x3>(carLoc.angley);
+	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location + rot * carLoc.wheel1, -carLoc.upDir);
+	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location + rot * carLoc.wheel2, -carLoc.upDir);
+	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location + rot * carLoc.wheel3, -carLoc.upDir);
+	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location + rot * carLoc.wheel4, -carLoc.upDir);
+	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location, carLoc.upDir);
+	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location, carLoc.frontDir);
+	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location, normalize(cross(carLoc.frontDir, make_vector(0.0f, 1.0f, 0.0f))));
+	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location, vUp);
 }
 
 void debugDrawLine(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, float3 origin, float3 rayVector) {
