@@ -130,7 +130,7 @@ struct Car{
 	float lengthx = 2, lengthz = 3;
 };
 
-
+float3 vUp = make_vector(0.0f, 1.0f, 0.0f);
 std::vector<Triangle> ts;
 
 Car carLoc;
@@ -498,13 +498,17 @@ void drawShadowCasters(GLuint shaderProgram)
 	drawModel(world, make_identity<float4x4>(), shaderProgram);
 	setUniformSlow(shaderProgram, "object_reflectiveness", 1.5f); 
 
-	float anglex = -(90.0f - acosf( dot(normalize(carLoc.upDir), normalize(make_vector(1.0f, 0.0f, 0.0f))) ) * 180 / M_PI) * M_PI / 180;
+	float3 frontDir = normalize(carLoc.frontDir);
+	float3 rightDir = normalize(cross(frontDir, vUp));
 
-	float anglez = (90.0f - acosf( dot(normalize(carLoc.upDir), normalize(make_vector(0.0f, 0.0f, 1.0f))) ) * 180 / M_PI) * M_PI / 180;
+	float anglex = -(90.0f - acosf( dot(normalize(carLoc.upDir), frontDir) ) * 180 / M_PI) * M_PI / 180;
+	//float anglex = 1;
+	float anglez = (90.0f - acosf( dot(normalize(carLoc.upDir), rightDir) ) * 180 / M_PI) * M_PI / 180;
+	//float anglez = 1;
 
-	Quaternion qatX = make_quaternion_axis_angle(make_vector(0.0f, 0.0f, 1.0f), anglex);
-	Quaternion qatY = make_quaternion_axis_angle(make_vector(0.0f, 1.0f, 0.0f), carLoc.angley);
-	Quaternion qatZ = make_quaternion_axis_angle(make_vector(1.0f, 0.0f, 0.0f), anglez);
+	Quaternion qatX = make_quaternion_axis_angle(rightDir, anglex);
+	Quaternion qatY = make_quaternion_axis_angle(vUp, carLoc.angley);
+	Quaternion qatZ = make_quaternion_axis_angle(make_rotation_y<float3x3>(-carLoc.angley) * frontDir, anglez);
 
 	drawModel(car
 		, make_translation(carLoc.location)
@@ -706,7 +710,12 @@ void drawScene(void)
 	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location + rot * carLoc.wheel3, -carLoc.upDir);
 	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location + rot * carLoc.wheel4, -carLoc.upDir);
 	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location, carLoc.upDir);
-	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location, make_vector(1.0f, 0.0f, 0.0f));
+	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location, carLoc.frontDir);
+	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location, normalize(cross(carLoc.frontDir, make_vector(0.0f, 1.0f, 0.0f))));
+	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location, vUp);
+
+
+	//debugDrawLine(viewMatrix, projectionMatrix, carLoc.location, make_vector(1.0f, 0.0f, 0.0f));
 	//debugDrawLine(viewMatrix, projectionMatrix, carLoc.location, make_vector(0.0f, 0.0f, 1.0f));
 
 	//Draw skybox
@@ -810,19 +819,24 @@ void checkIntersection() {
 	float3 cf = carLoc.wheel3 - (upVec * c);
 	float3 df = carLoc.wheel4 - (upVec * d);
 	
-	float3 newUp =
+	/*float3 newUp =
 		normalize(
 		cross(df - carLoc.upDir, bf - carLoc.upDir) +
 		cross(bf - carLoc.upDir, af - carLoc.upDir) +
 		cross(af - carLoc.upDir, cf - carLoc.upDir) +
-		cross(cf - carLoc.upDir, df - carLoc.upDir));
+		cross(cf - carLoc.upDir, df - carLoc.upDir));*/
+
+	float3 vAB = af - bf;
+	float3 vCB = cf - bf;
+	float3 newUp = cross(vAB, vCB);
+
 
 	carLoc.wheel1 += upVec * a;
 	carLoc.wheel2 += upVec * b;
 	carLoc.wheel3 += upVec * c;
 	carLoc.wheel4 += upVec * d;
 
-	carLoc.upDir = -newUp;
+	carLoc.upDir = -(rot * newUp) ;
 	
 	/*carLoc.anglez =
 		((asinf((carLoc.wheel1.y - a) - (carLoc.wheel3.y - c) / carLoc.lengthx))
@@ -833,19 +847,7 @@ void checkIntersection() {
 	carLoc.anglex = (-(asinf((carLoc.wheel1.y - a) - (carLoc.wheel2.y - c) / carLoc.lengthz))
 		- (asinf((carLoc.wheel3.y - a) - (carLoc.wheel4.y - c) / carLoc.lengthz)))
 		/ 2;*/
-	float minWheelY;
-	if (a < b && a < c && a < d) {
-		minWheelY = carLoc.wheel1.y;
-	}
-	else if (b < c && b < c && b < d) {
-		minWheelY = carLoc.wheel2.y;	
-	}
-	else if (c < a && c < b && c < d) {
-		minWheelY = carLoc.wheel3.y;
-	}
-	else {
-		minWheelY = carLoc.wheel4.y;
-	}
+
 
 	carLoc.location += make_vector(0.0f, carLoc.wheel1.y, 0.0f);
 }
