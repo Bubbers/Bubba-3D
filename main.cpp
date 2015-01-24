@@ -30,6 +30,20 @@ using namespace std;
 using namespace chag;
 using namespace chrono;
 
+
+#define FOG_EQUATION_LINEAR 0
+#define FOG_EQUATION_EXP    1
+#define FOG_EQUATION_EXP2   2
+#define FOG_EQUATION_NONE   3
+
+namespace FogParams {
+	float fDensity = 0.001f;
+	float fStart = 50.0f;
+	float fEnd = 5000.0f;
+	float3 vColor = make_vector(1.0f, 1.0f, 1.0f);
+	int fEquation = FOG_EQUATION_LINEAR;
+};
+
 //*****************************************************************************
 //	Global variables
 //*****************************************************************************
@@ -147,6 +161,8 @@ void debugDrawQuad(const float4x4 &viewMatrix, const float4x4 &projectionMatrix,
 void debugDrawLine(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, float3 origin, float3 rayVector);
 
 float rayOctreeIntersection(float3 rayOrigin, float3 rayVec, Octree oct);
+
+void setFog(GLuint shaderProgram);
 
 GLuint postFxShader;
 GLuint horizontalBlurShader;
@@ -482,24 +498,32 @@ void drawShadowCasters(GLuint shaderProgram)
 	drawModel(world, make_identity<float4x4>(), shaderProgram);
 	setUniformSlow(shaderProgram, "object_reflectiveness", 1.5f); 
 
-	Quaternion qatX = make_quaternion_axis_angle(cross(carLoc.upDir, carLoc.frontDir), carLoc.anglex);
+	float anglex = -(90.0f - acosf( dot(normalize(carLoc.upDir), normalize(make_vector(1.0f, 0.0f, 0.0f))) ) * 180 / M_PI) * M_PI / 180;
+
+	float anglez = (90.0f - acosf( dot(normalize(carLoc.upDir), normalize(make_vector(0.0f, 0.0f, 1.0f))) ) * 180 / M_PI) * M_PI / 180;
+
+	Quaternion qatX = make_quaternion_axis_angle(make_vector(0.0f, 0.0f, 1.0f), anglex);
 	Quaternion qatY = make_quaternion_axis_angle(make_vector(0.0f, 1.0f, 0.0f), carLoc.angley);
-	Quaternion qatZ = make_quaternion_axis_angle(carLoc.frontDir, -carLoc.anglez);
+	Quaternion qatZ = make_quaternion_axis_angle(make_vector(1.0f, 0.0f, 0.0f), anglez);
 
 	drawModel(car
 		, make_translation(carLoc.location)
 		//* make_rotation<float4x4, float3>(make_rotation<float3x3, float3>(carLoc.upDir, 90) * carLoc.frontDir , carLoc.anglex) 
 		//* make_rotation<float4x4, float3>(carLoc.frontDir, carLoc.anglez) 
 		//* make_rotation_y<float4x4>(carLoc.angley),
-		//* makematrix(qatX) 
-		* makematrix(qatY) ,
-		//* makematrix(qatZ),
+		* makematrix(qatX)  
+		* makematrix(qatY) 
+		* makematrix(qatZ),
 		shaderProgram);
 	setUniformSlow(shaderProgram, "object_reflectiveness", 0.0f); 
 
 	drawModel(test, make_translation(make_vector(-15.0f, 0.0f, 0.0f)) * make_rotation_y<float4x4>(M_PI / 180 * 90) * make_scale<float4x4>(make_vector(2.0f, 2.0f, 2.0f)), shaderProgram);
 
 }
+
+
+
+
 
 void drawShadowMap(Fbo sbo, float4x4 viewProjectionMatrix) {
 	glBindFramebuffer(GL_FRAMEBUFFER, sbo.id);
@@ -541,7 +565,7 @@ void drawCubeMap(Fbo fbo) {
 	//glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
 	//glUseProgram(fbo.shaderProgram);
 
-	float4x4 projectionMatrix = perspectiveMatrix(90.0f, 1, 2.0f, 500.0f);
+	float4x4 projectionMatrix = perspectiveMatrix(90.0f, 1, 2.0f, 1000.0f);
 
 	for (int i = 0; i < 6; i++) {
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, fbo.texture, 0);
@@ -580,8 +604,7 @@ void drawScene(void)
 {
 	
 	// enable back face culling.
-	glEnable(GL_CULL_FACE);	
-
+	glEnable(GL_CULL_FACE);
 
 	//*************************************************************************
 	// Render shadow map
@@ -653,6 +676,8 @@ void drawScene(void)
 	setUniformSlow(shaderProgram, "lightMatrix", lightMatrix);
 	setUniformSlow(shaderProgram, "inverseViewNormalMatrix", transpose(viewMatrix));
 
+	//Sets fog
+	setFog(shaderProgram);
 
 	//Set shadowmap
 	setUniformSlow(shaderProgram, "shadowMap", 1);
@@ -680,13 +705,16 @@ void drawScene(void)
 	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location + rot * carLoc.wheel2, -carLoc.upDir);
 	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location + rot * carLoc.wheel3, -carLoc.upDir);
 	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location + rot * carLoc.wheel4, -carLoc.upDir);
+	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location, carLoc.upDir);
+	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location, make_vector(1.0f, 0.0f, 0.0f));
+	//debugDrawLine(viewMatrix, projectionMatrix, carLoc.location, make_vector(0.0f, 0.0f, 1.0f));
 
 	//Draw skybox
 	glDepthMask(GL_FALSE); //Used to write over the skyboxnight with the skybox alpha value
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	drawModel(skyboxnight, make_identity<float4x4>(), shaderProgram);
-
+	
 	setUniformSlow(shaderProgram, "object_alpha", max<float>(0.0f, cosf((currentTime / 20.0f) * 2.0f * M_PI))); 
 	drawModel(skybox, make_identity<float4x4>(), shaderProgram);
 	setUniformSlow(shaderProgram, "object_alpha", 1.0f); 
@@ -695,7 +723,7 @@ void drawScene(void)
 
 	drawCubeMap(cMapAll);
 
-	blurImage();
+//	blurImage();
 
 	/*glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, verticalBlurFbo.id);
@@ -769,6 +797,8 @@ void checkIntersection() {
 
 	//debugDrawQuad(viewMatrix, projectionMatrix, carLoc.location + make_vector(0.2f, 1.2f, 0.0f), make_vector(1.0f, 1.0f, 1.5f));
 	float3 upVec = make_vector(0.0f, 1.0f, 0.0f);
+	float3 leftVec = cross(carLoc.upDir, carLoc.frontDir);
+
 	float3x3 rot = make_rotation_y<float3x3>(carLoc.angley);
 	float a = rayOctreeIntersection(carLoc.location + rot * carLoc.wheel1, -upVec, t);
 	float b = rayOctreeIntersection(carLoc.location + rot * carLoc.wheel2, -upVec, t);
@@ -779,8 +809,6 @@ void checkIntersection() {
 	float3 bf = carLoc.wheel2 - (upVec * b);
 	float3 cf = carLoc.wheel3 - (upVec * c);
 	float3 df = carLoc.wheel4 - (upVec * d);
-
-	
 	
 	float3 newUp =
 		normalize(
@@ -796,8 +824,6 @@ void checkIntersection() {
 
 	carLoc.upDir = -newUp;
 	
-	
-	
 	/*carLoc.anglez =
 		((asinf((carLoc.wheel1.y - a) - (carLoc.wheel3.y - c) / carLoc.lengthx))
 		+ (asinf((carLoc.wheel2.y - a) - (carLoc.wheel4.y - c) / carLoc.lengthx)))
@@ -807,10 +833,19 @@ void checkIntersection() {
 	carLoc.anglex = (-(asinf((carLoc.wheel1.y - a) - (carLoc.wheel2.y - c) / carLoc.lengthz))
 		- (asinf((carLoc.wheel3.y - a) - (carLoc.wheel4.y - c) / carLoc.lengthz)))
 		/ 2;*/
-	
-	printf("wheel: %f\n", carLoc.wheel1.y);
-
-
+	float minWheelY;
+	if (a < b && a < c && a < d) {
+		minWheelY = carLoc.wheel1.y;
+	}
+	else if (b < c && b < c && b < d) {
+		minWheelY = carLoc.wheel2.y;	
+	}
+	else if (c < a && c < b && c < d) {
+		minWheelY = carLoc.wheel3.y;
+	}
+	else {
+		minWheelY = carLoc.wheel4.y;
+	}
 
 	carLoc.location += make_vector(0.0f, carLoc.wheel1.y, 0.0f);
 }
@@ -1005,6 +1040,14 @@ void tick() {
 	}
 }
 
+void setFog(GLuint shaderProgram) {
+	setUniformSlow(shaderProgram, "fog.iEquation",	FogParams::fEquation);
+	setUniformSlow(shaderProgram, "fog.fDensity",	FogParams::fDensity);
+	setUniformSlow(shaderProgram, "fog.fEnd",		FogParams::fEnd);
+	setUniformSlow(shaderProgram, "fog.fStart",		FogParams::fStart);
+	setUniformSlow(shaderProgram, "fog.vColor",		FogParams::vColor);
+}
+
 void idle( void )
 {
 	static float startTime = float(glutGet(GLUT_ELAPSED_TIME)) / 1000.0f;
@@ -1141,7 +1184,7 @@ void debugDrawLine(const float4x4 &viewMatrix, const float4x4 &projectionMatrix,
 
 	float3 p[8];
 	p[0] = origin;
-	p[1] = origin + (normalize(rayVector) * make_vector(1.0f, 5.0f, 1.0f));
+	p[1] = origin + (normalize(rayVector) * 5);
 
 	glBegin(GL_LINES);
 

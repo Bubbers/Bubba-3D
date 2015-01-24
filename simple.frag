@@ -2,10 +2,14 @@
 // required by GLSL spec Sect 4.5.3 (though nvidia does not, amd does)
 precision highp float;
 
+#define FOG_EQUATION_LINEAR 0
+#define FOG_EQUATION_EXP    1
+#define FOG_EQUATION_EXP2   2
+
 // inputs from vertex shader.
 in vec4 color;
 in vec2 texCoord;
-in vec3 viewSpacePosition; 
+in vec4 viewSpacePosition; 
 in vec3 viewSpaceNormal; 
 in vec3 viewSpaceLightPosition; 
 in vec4 shadowTexCoord;
@@ -38,6 +42,17 @@ uniform vec3 material_emissive_color;
 uniform int has_diffuse_texture; 
 uniform sampler2D diffuse_texture;
 
+
+uniform struct Fog {
+	vec3 vColor;
+	float fStart;
+	float fEnd;
+	float fDensity;
+
+	int iEquation;
+} fog;
+
+
 vec3 calculateAmbient(vec3 lightAmbient, vec3 materialAmbient);
 
 vec3 calculateDiffuse(vec3 normal, vec3 directionToLight, vec3 materialLight, vec3 sceneLight);
@@ -46,10 +61,12 @@ vec3 calculateSpecular(vec3 normal, vec3 directionToLight, vec3 directionToEye, 
 
 vec3 calculateFresnel(vec3 directionToLight, vec3 directionToEye, vec3 materialSpecular);
 
+vec3 calculateFog(vec3 color, float distance);
+
 void main() 
 {
-	vec3 directionToLight = normalize(viewSpaceLightPosition - viewSpacePosition);
-	vec3 directionToEye = normalize(vec3(0.0) -viewSpacePosition);
+	vec3 directionToLight = normalize(viewSpaceLightPosition - viewSpacePosition.xyz);
+	vec3 directionToEye = normalize(vec3(0.0) -viewSpacePosition.xyz);
 
 	vec3 normal = normalize(viewSpaceNormal);
 
@@ -80,12 +97,31 @@ void main()
 	specular *= visibility;
 	diffuse *= visibility;
 	reflection *= max(visibility, 0.2);
+
+	vec3 color = ambient + diffuse + emissive + specular + reflection;
+	vec3 foggedColor = calculateFog(color, abs(viewSpacePosition.z / viewSpacePosition.w));
 	
-	fragmentColor = vec4(ambient + diffuse + emissive + specular + reflection, object_alpha);
+	fragmentColor = vec4(foggedColor, object_alpha);
 
 	/*if (object_reflectiveness > 0.0) {
 		fragmentColor = vec4(texture(cubeMap, reflectionVector).rgb, object_alpha);
 	}*/
+}
+
+vec3 calculateFog(vec3 color, float dist) {
+	float f = 1.0;
+	if (fog.iEquation == FOG_EQUATION_LINEAR) {
+		f = (fog.fEnd - dist) / (fog.fEnd - fog.fStart);
+	}
+	else if (fog.iEquation == FOG_EQUATION_EXP) {
+		f = 1.0 / exp(dist * fog.fDensity);
+	}
+	else if (fog.iEquation == FOG_EQUATION_EXP2) {
+		f = 1.0 / exp(pow(dist * fog.fDensity, 2.0));
+	}
+
+	f = clamp(f, 0.0, 1.0);
+	return f*color + (1.0 - f)*fog.vColor;
 }
 
 vec3 calculateDiffuse(vec3 normal, vec3 directionToLight, vec3 materialLight, vec3 sceneLight) {

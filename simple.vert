@@ -5,7 +5,7 @@ in vec3		colorIn;
 in	vec2	texCoordIn;	// incoming texcoord from the texcoord array
 in  vec3	normalIn;
 
-out vec3	viewSpacePosition; 
+out vec4	viewSpacePosition; 
 out vec3	viewSpaceNormal; 
 out vec3	viewSpaceLightPosition; 
 out vec4	color;
@@ -34,12 +34,12 @@ void main()
 	color = vec4(colorIn,1); 
 	texCoord = texCoordIn; 
 
-	viewSpacePosition = vec3(modelViewMatrix * vec4(position, 1.0)); 
+	viewSpacePosition = modelViewMatrix * vec4(position, 1.0); 
 	viewSpaceNormal = normalize( (normalMatrix * vec4(normalIn,0.0)).xyz );
 	viewSpaceLightPosition = (modelViewMatrix * vec4(lightpos, 1)).xyz; 
 	vec4 worldSpacePosition = modelMatrix * vec4(position, 1); 
 
-	shadowTexCoord = lightMatrix *vec4(viewSpacePosition, 1.0);
+	shadowTexCoord = lightMatrix *vec4(viewSpacePosition.xyz, 1.0);
 	//shadowTexCoord.xyz *= vec3(0.5, 0.5, 0.5);
 	//shadowTexCoord.xyz += shadowTexCoord.w * vec3(0.5, 0.5, 0.5);
 
