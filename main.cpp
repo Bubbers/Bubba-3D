@@ -682,6 +682,9 @@ void drawScene(void)
 	drawModel(water, make_translation(make_vector(0.0f, -6.0f, 0.0f)), shaderProgram);
 	drawShadowCasters(shaderProgram);
 
+
+	drawDebug(viewMatrix, projectionMatrix);
+
 	//Draw skybox
 	glDepthMask(GL_FALSE); //Used to write over the skyboxnight with the skybox alpha value
 	glEnable(GL_BLEND);
@@ -696,7 +699,6 @@ void drawScene(void)
 
 	drawCubeMap(cMapAll);
 
-	drawDebug(viewMatrix, projectionMatrix);
 
 	blurImage();
 
@@ -763,6 +765,7 @@ void blurImage() {
 
 void checkIntersection() {
 	float3 upVec = make_vector(0.0f, 1.0f, 0.0f);
+	//float3 upVec = carLoc.upDir;
 
 	//Calculate intersections
 	float3x3 rot = make_rotation_y<float3x3>(carLoc.angley);
@@ -776,12 +779,6 @@ void checkIntersection() {
 	float3 bf = carLoc.wheel2 - (upVec * b);
 	float3 cf = carLoc.wheel3 - (upVec * c);
 	float3 df = carLoc.wheel4 - (upVec * d);
-	
-	//Change wheel locations 
-	carLoc.wheel1 += upVec * a;
-	carLoc.wheel2 += upVec * b;
-	carLoc.wheel3 += upVec * c;
-	carLoc.wheel4 += upVec * d;
 
 	//Calculate new up vector
 	float3 vABa = af - bf;
@@ -793,10 +790,29 @@ void checkIntersection() {
 	float3 newUpb = cross(vABb, vCBb);
 
 	float3 halfVector = normalize(newUpa - newUpb);
-
 	carLoc.upDir = -(rot * halfVector);
 
-	carLoc.location += make_vector(0.0f, carLoc.wheel1.y, 0.0f);
+	//Change wheel locations 
+	carLoc.wheel1 += upVec * a;
+	carLoc.wheel2 += upVec * b;
+	carLoc.wheel3 += upVec * c;
+	carLoc.wheel4 += upVec * d;
+
+	float3 frontDir = normalize(carLoc.frontDir);
+	float3 rightDir = normalize(cross(frontDir, vUp));
+
+	float anglex = -(90.0f - acosf(dot(normalize(carLoc.upDir), frontDir)) * 180 / M_PI) * M_PI / 180;
+	float anglez = (90.0f - acosf(dot(normalize(carLoc.upDir), rightDir)) * 180 / M_PI) * M_PI / 180;
+
+	Quaternion qatX = make_quaternion_axis_angle(rightDir, anglex);
+	Quaternion qatY = make_quaternion_axis_angle(vUp, carLoc.angley);
+	Quaternion qatZ = make_quaternion_axis_angle(make_rotation_y<float3x3>(-carLoc.angley) * frontDir, anglez);
+
+	float4 newLoc = makematrix(qatX) * makematrix(qatZ) * make_vector4(carLoc.wheel1, 1.0f);
+	float3 newLocV3 = make_vector(newLoc.x, newLoc.y, newLoc.z);
+
+	carLoc.location += make_vector(0.0f, carLoc.wheel1.y + (carLoc.wheel1.y - newLoc.y), 0.0f);
+	//carLoc.location += make_vector(0.0f, carLoc.wheel1.y, 0.0f);
 }
 
 float rayOctreeIntersection(float3 rayOrigin, float3 rayVec, Octree oct ) {
