@@ -24,6 +24,8 @@
 
 #include "Octree.h"
 #include "Triangle.h"
+#include "SceneRenderer.h"
+#include "Camera.h"
 #include <chrono>
 
 using namespace std;
@@ -35,6 +37,12 @@ using namespace chrono;
 #define FOG_EQUATION_EXP    1
 #define FOG_EQUATION_EXP2   2
 #define FOG_EQUATION_NONE   3
+
+#define SCREEN_WIDTH			1028
+#define SCREEN_HEIGHT			800
+
+#define SHADOW_MAP_RESOLUTION	2048
+#define CUBE_MAP_RESOLUTION		512
 
 namespace FogParams {
 	float fDensity = 0.001f;
@@ -48,9 +56,18 @@ namespace FogParams {
 //	Global variables
 //*****************************************************************************
 bool paused = false;				// Tells us wether sun animation is paused
-float currentTime = 0.0f;		// Tells us the current time
+float currentTime = 0.0f;			// Tells us the current time
+high_resolution_clock::time_point start;
 GLuint shaderProgram;
-const float3 up = {0.0f, 1.0f, 0.0f};
+const float3 vUp = make_vector(0.0f, 1.0f, 0.0f);
+
+Octree t(make_vector(0.0f, 0.0f, 0.0f), make_vector(100.0f, 50.0f, 100.0f), 0);
+
+GLuint cubeMapTexture;
+GLuint postFxShader;
+GLuint horizontalBlurShader;
+GLuint verticalBlurShader;
+GLuint cutoffShader;
 
 //*****************************************************************************
 //	OBJ Model declarations
@@ -62,8 +79,6 @@ OBJModel *skybox;
 OBJModel *skyboxnight; 
 OBJModel *car;
 OBJModel *test;
-
-Octree t(make_vector(0.0f, 0.0f, 0.0f), make_vector(100.0f, 50.0f, 100.0f), 0);
 
 //*****************************************************************************
 //	Camera state variables (updated in motion())
@@ -79,14 +94,18 @@ float camera_target_altitude = 5.2;
 float3 lightPosition = {30.1f, 450.0f, 0.1f};
 
 //****************************************************************************
-//	Mouse input state variables
+//	Input state variables
 //*****************************************************************************
 bool leftDown = false;
 bool middleDown = false;
 bool rightDown = false;
 int prev_x = 0;
 int prev_y = 0;
+bool keysDown[256];
 
+//*****************************************************************************
+//	Frame buffer objects
+//*****************************************************************************
 struct Fbo{
 	GLuint id;
 	GLuint texture;
@@ -96,23 +115,22 @@ struct Fbo{
 	int width, height;
 };
 
-int screenWidth = 1024, screenheight = 800;
-
-
-bool keysDown[256];
-
 Fbo sbo;
 Fbo cMapAll;
 Fbo postProcessFbo, horizontalBlurFbo, verticalBlurFbo, cutOffFbo;
 
+//*****************************************************************************
+//	Camera
+//*****************************************************************************
 
-struct Camera {
-	float3 position;
-	float3 lookAt;
-	float3 up;
-};
+Camera *cubeMapCameras[6];
+Camera *sunCamera;
+Camera *playerCamera;
+int camera = 6;
 
-int shadowMapResolution = 2048;
+//*****************************************************************************
+//	Car object variables
+//*****************************************************************************
 
 struct Car{
 	float3 frontDir = make_vector(0.0f, 0.0f, 1.0f);
@@ -128,32 +146,25 @@ struct Car{
 	float moveSpeed = 0.5;
 	float angley = 0, anglez, anglex;
 	float lengthx = 2, lengthz = 3;
-};
+} carLoc;
 
-float3 vUp = make_vector(0.0f, 1.0f, 0.0f);
+//*****************************************************************************
+//	Collision objects
+//*****************************************************************************
 std::vector<Triangle> ts;
 
-Car carLoc;
-Camera cameras[6];
-int camera = 6;
 
-// Helper function to turn spherical coordinates into cartesian (x,y,z)
-float3 sphericalToCartesian(float theta, float phi, float r)
-{
-	return make_vector( r * sinf(theta)*sinf(phi),
-					 	r * cosf(phi), 
-						r * cosf(theta)*sinf(phi) );
-}
+//*****************************************************************************
+//	Function declarations
+//*****************************************************************************
 
-GLuint cubeMapTexture;
-
-Camera createCamera(float3 position, float3 lookAt, float3 up);
 void drawCubeMap(Fbo fbo);
+void drawFullScreenQuad();
 
 void addMeshToCollision(OBJModel *model, float4x4 modelMatrix);
 
-void drawFullScreenQuad();
 Fbo createPostProcessFbo(int width, int height);
+void renderPostProcess();
 void blurImage();
 
 void drawDebug(const float4x4 &viewMatrix, const float4x4 &projectionMatrix);
@@ -163,16 +174,17 @@ void debugDrawLine(const float4x4 &viewMatrix, const float4x4 &projectionMatrix,
 
 float rayOctreeIntersection(float3 rayOrigin, float3 rayVec, Octree oct);
 
+float degreeToRad(float degree);
+float radToDegree(float rad);
+float3 sphericalToCartesian(float theta, float phi, float r);
+
 void setFog(GLuint shaderProgram);
-
-GLuint postFxShader;
-GLuint horizontalBlurShader;
-GLuint verticalBlurShader;
-GLuint cutoffShader;
-
 
 void initGL()
 {
+	int w = SCREEN_WIDTH;
+	int h = SCREEN_HEIGHT;
+
 	/* Initialize GLEW; this gives us access to OpenGL Extensions.
 	 */
 	glewInit();  
@@ -201,6 +213,14 @@ void initGL()
 	/* As a general rule, you shouldn't need to change anything before this 
 	 * comment in initGL().
 	 */
+	sunCamera = new Camera(lightPosition, make_vector(0.0f, 0.0f, 0.0f), make_vector(0.0f, 1.0f, 0.0f), 25.0f, 1.0f, 370.0f, 530.0f);
+	playerCamera = new Camera(
+		carLoc.location + sphericalToCartesian(camera_theta, camera_phi, camera_r),
+		carLoc.location + make_vector(0.0f, camera_target_altitude, 0.0f),
+		make_vector(0.0f, 1.0f, 0.0f),
+		45.0f, float(w) / float(h), 0.1f, 1000.0f
+		);
+
 
 	//*************************************************************************
 	//	Load shaders
@@ -248,16 +268,9 @@ void initGL()
 	addMeshToCollision(water, make_translation(make_vector(0.0f, -6.0f, 0.0f)));
 	addMeshToCollision(test, make_translation(make_vector(-15.0f, 0.0f, 0.0f)) * make_rotation_y<float4x4>(M_PI / 180 * 90) * make_scale<float4x4>(make_vector(2.0f, 2.0f, 2.0f)));
 
-	high_resolution_clock::time_point start = high_resolution_clock::now();
 	for (int i = 0; i < ts.size(); i++) {
 		t.insert(&ts.at(i));
 	}
-	high_resolution_clock::time_point end = high_resolution_clock::now();
-	duration<double> time_span = duration_cast<duration<double>>(end - start);
-	printf("Time to generate octree: %f\n", time_span.count());
-
-	int cou = t.getCount();
-	printf("%d", cou);
 
 	//*************************************************************************
 	// Generate shadow map frame buffer object
@@ -269,11 +282,8 @@ void initGL()
 	linkShaderProgram(sbo.shaderProgram);
 
 
-	int w = screenWidth;
-	int h = screenheight;
-
-	sbo.width = shadowMapResolution;
-	sbo.height = shadowMapResolution;
+	sbo.width = SHADOW_MAP_RESOLUTION;
+	sbo.height = SHADOW_MAP_RESOLUTION;
 	
 	glGenFramebuffers(1, &sbo.id);
 	glBindFramebuffer(GL_FRAMEBUFFER, sbo.id);
@@ -281,7 +291,7 @@ void initGL()
 	glGenTextures(1, &sbo.texture);
 	glBindTexture(GL_TEXTURE_2D, sbo.texture);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, shadowMapResolution, shadowMapResolution, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, SHADOW_MAP_RESOLUTION, SHADOW_MAP_RESOLUTION, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -309,7 +319,6 @@ void initGL()
 	//*************************************************************************
 	// Create post process Fbo
 	//*************************************************************************
-	
 	postFxShader = loadShaderProgram("postFx.vert", "postFx.frag");
 	verticalBlurShader = loadShaderProgram("postFx.vert", "vertical_blur.frag");
 	horizontalBlurShader = loadShaderProgram("postFx.vert", "horizontal_blur.frag");
@@ -334,16 +343,16 @@ void initGL()
 	cubeMapTexture = loadCubeMap("cube0.png", "cube1.png", "cube2.png", "cube3.png", "cube4.png", "cube5.png");
 
 	//X
-	cameras[0] = createCamera(make_vector(0.0f, 3.0f, 0.0f), make_vector(100.0f, 3.0f, 0.0f),    make_vector(0.0f, -1.0f, 0.0f));
-	cameras[1] = createCamera(make_vector(0.0f, 3.0f, 0.0f), make_vector(-100.0f,3.0f, 0.0f),    make_vector(0.0f, 1.0f, 0.0f));
+	cubeMapCameras[0] = new Camera(make_vector(0.0f, 3.0f, 0.0f), make_vector(100.0f, 3.0f, 0.0f), make_vector(0.0f, -1.0f, 0.0f), 45.0f, float(w) / float(h), 0.1f, 1000.0f);
+	cubeMapCameras[1] = new Camera(make_vector(0.0f, 3.0f, 0.0f), make_vector(-100.0f, 3.0f, 0.0f), make_vector(0.0f, 1.0f, 0.0f), 45.0f, float(w) / float(h), 0.1f, 1000.0f);
 
 	//Y
-	cameras[2] = createCamera(make_vector(0.0f, 3.0f, 0.0f), make_vector(0.1f, 100.0f, 0.1f), make_vector(0.0f, 1.0f, 0.0f));
-	cameras[3] = createCamera(make_vector(0.0f, 3.0f, 0.0f), make_vector(0.1f, -100.0f, 0.1f), make_vector(0.0f, 1.0f, 0.0f));
+	cubeMapCameras[2] = new Camera(make_vector(0.0f, 3.0f, 0.0f), make_vector(0.1f, 100.0f, 0.1f), make_vector(0.0f, 1.0f, 0.0f), 45.0f, float(w) / float(h), 0.1f, 1000.0f);
+	cubeMapCameras[3] = new Camera(make_vector(0.0f, 3.0f, 0.0f), make_vector(0.1f, -100.0f, 0.1f), make_vector(0.0f, 1.0f, 0.0f), 45.0f, float(w) / float(h), 0.1f, 1000.0f);
 
 	//Z
-	cameras[4] = createCamera(make_vector(0.0f, 3.0f, 0.0f), make_vector(0.1f, 0.1f, 100.0f), make_vector(0.0f, 1.0f, 0.0f));
-	cameras[5] = createCamera(make_vector(0.0f, 3.0f, 0.0f), make_vector(0.1f, -0.1f, -100.0f), make_vector(0.0f, 1.0f, 0.0f));
+	cubeMapCameras[4] = new Camera(make_vector(0.0f, 3.0f, 0.0f), make_vector(0.1f, 0.1f, 100.0f), make_vector(0.0f, 1.0f, 0.0f), 45.0f, float(w) / float(h), 0.1f, 1000.0f);
+	cubeMapCameras[5] = new Camera(make_vector(0.0f, 3.0f, 0.0f), make_vector(0.1f, -0.1f, -100.0f), make_vector(0.0f, 1.0f, 0.0f), 45.0f, float(w) / float(h), 0.1f, 1000.0f);
 
 	cMapAll.width = w;
 	cMapAll.height = h;
@@ -354,12 +363,12 @@ void initGL()
 	glGenTextures(1, &cMapAll.texture);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, cMapAll.texture);
 
-	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_RGBA, 512, 512, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-	glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, GL_RGBA, 512, 512, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, GL_RGBA, 512, 512, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-	glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, GL_RGBA, 512, 512, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, GL_RGBA, 512, 512, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-	glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, GL_RGBA, 512, 512, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_RGBA, CUBE_MAP_RESOLUTION, CUBE_MAP_RESOLUTION, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, GL_RGBA, CUBE_MAP_RESOLUTION, CUBE_MAP_RESOLUTION, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, GL_RGBA, CUBE_MAP_RESOLUTION, CUBE_MAP_RESOLUTION, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, GL_RGBA, CUBE_MAP_RESOLUTION, CUBE_MAP_RESOLUTION, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, GL_RGBA, CUBE_MAP_RESOLUTION, CUBE_MAP_RESOLUTION, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, GL_RGBA, CUBE_MAP_RESOLUTION, CUBE_MAP_RESOLUTION, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 
 	GLuint depthBuffer;
 	glGenRenderbuffers(1, &depthBuffer);
@@ -500,8 +509,8 @@ void drawShadowCasters(GLuint shaderProgram)
 	float3 frontDir = normalize(carLoc.frontDir);
 	float3 rightDir = normalize(cross(frontDir, vUp));
 
-	float anglex = -(90.0f - acosf( dot(normalize(carLoc.upDir), frontDir) ) * 180 / M_PI) * M_PI / 180;
-	float anglez = (90.0f - acosf( dot(normalize(carLoc.upDir), rightDir) ) * 180 / M_PI) * M_PI / 180;
+	float anglex = -(degreeToRad(90.0f) - acosf(dot(normalize(carLoc.upDir), frontDir)));
+	float anglez = (degreeToRad(90.0f) - acosf(dot(normalize(carLoc.upDir), rightDir)));
 	
 	Quaternion qatX = make_quaternion_axis_angle(rightDir, anglex);
 	Quaternion qatY = make_quaternion_axis_angle(vUp, carLoc.angley);
@@ -509,9 +518,6 @@ void drawShadowCasters(GLuint shaderProgram)
 
 	drawModel(car
 		, make_translation(carLoc.location)
-		//* make_rotation<float4x4, float3>(make_rotation<float3x3, float3>(carLoc.upDir, 90) * carLoc.frontDir , carLoc.anglex) 
-		//* make_rotation<float4x4, float3>(carLoc.frontDir, carLoc.anglez) 
-		//* make_rotation_y<float4x4>(carLoc.angley),
 		* makematrix(qatX)  
 		* makematrix(qatY) 
 		* makematrix(qatZ),
@@ -519,12 +525,11 @@ void drawShadowCasters(GLuint shaderProgram)
 	setUniformSlow(shaderProgram, "object_reflectiveness", 0.0f); 
 
 	drawModel(test, make_translation(make_vector(-15.0f, 0.0f, 0.0f)) * make_rotation_y<float4x4>(M_PI / 180 * 90) * make_scale<float4x4>(make_vector(2.0f, 2.0f, 2.0f)), shaderProgram);
-
 }
 
 void drawShadowMap(Fbo sbo, float4x4 viewProjectionMatrix) {
 	glBindFramebuffer(GL_FRAMEBUFFER, sbo.id);
-	glViewport(0, 0, shadowMapResolution, shadowMapResolution);
+	glViewport(0, 0, SHADOW_MAP_RESOLUTION, SHADOW_MAP_RESOLUTION);
 
 	glClearColor(1.0, 1.0, 1.0, 1.0);
 	glClearDepth(1.0); 
@@ -567,7 +572,7 @@ void drawCubeMap(Fbo fbo) {
 	for (int i = 0; i < 6; i++) {
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, fbo.texture, 0);
 
-		float4x4 viewMatrix = lookAt(cameras[i].position, cameras[i].lookAt, cameras[i].up);
+		float4x4 viewMatrix = cubeMapCameras[i]->getViewMatrix();
 
 		setUniformSlow(shaderProgram, "projectionMatrix", projectionMatrix);
 		setUniformSlow(shaderProgram, "viewMatrix", viewMatrix);
@@ -606,14 +611,12 @@ void drawScene(void)
 	//*************************************************************************
 	// Render shadow map
 	//*************************************************************************
-	float3 light_lookAt = make_vector(0.0f, 0.0f, 0.0f);
-	float3 light_up = make_vector(0.0f, 1.0f, 0.0f);
-	float4x4 lightViewMatrix = lookAt(lightPosition, light_lookAt, light_up);
 
 	int w = glutGet((GLenum)GLUT_WINDOW_WIDTH);
 	int h = glutGet((GLenum)GLUT_WINDOW_HEIGHT);
 
-	float4x4 lightProjectionMatrix = perspectiveMatrix(25.0f, 1.0f, 370.0f, 530.0f);
+	float4x4 lightViewMatrix = sunCamera->getViewMatrix();
+	float4x4 lightProjectionMatrix = sunCamera->getProjectionMatrix();
 	float4x4 lightViewProjectionMatrix = lightProjectionMatrix * lightViewMatrix;
 
 	drawShadowMap(sbo, lightViewProjectionMatrix);
@@ -630,32 +633,30 @@ void drawScene(void)
 	glUseProgram( shaderProgram );			
 
 	//Calculate camera matrix
-	float3 camera_position = carLoc.location + sphericalToCartesian(camera_theta, camera_phi, camera_r);
-	float3 camera_lookAt = carLoc.location + make_vector(0.0f, camera_target_altitude, 0.0f);
-	float3 camera_up = make_vector(0.0f, 1.0f, 0.0f);
+	playerCamera->setLookAt(carLoc.location + make_vector(0.0f, camera_target_altitude, 0.0f));
+	playerCamera->setPosition(carLoc.location + sphericalToCartesian(camera_theta, camera_phi, camera_r));
+
 
 	float4x4 viewMatrix;
 	float4x4 projectionMatrix;
 	if (camera == 6) {
-		viewMatrix = lookAt(camera_position, camera_lookAt, camera_up);
-		projectionMatrix = perspectiveMatrix(45.0f, float(w) / float(h), 0.1f, 1000.0f);
+		viewMatrix			= playerCamera->getViewMatrix();
+		projectionMatrix	= playerCamera->getProjectionMatrix();
 	}
 	else if (camera == 7) {
-		viewMatrix = lookAt(lightPosition, light_lookAt, light_up);
-		projectionMatrix = perspectiveMatrix(25.0f, 1.0f, 370.0f, 530.0f);
+		viewMatrix			= lightViewMatrix;
+		projectionMatrix	= lightProjectionMatrix;
 	}
 	else
 	{
-		viewMatrix = lookAt(cameras[camera].position, cameras[camera].lookAt, cameras[camera].up);
-		projectionMatrix = perspectiveMatrix(90.0f, float(w) / float(h), 0.1f, 500.0f);
+		viewMatrix			= cubeMapCameras[camera]->getViewMatrix();
+		projectionMatrix	= cubeMapCameras[camera]->getProjectionMatrix();
 	}
 
-	
-
-	float4x4 lightMatrix = make_translation({ 0.5, 0.5, 0.5 }) * make_scale<float4x4>(make_vector(0.5f, 0.5f, 0.5f)) *
+	float4x4 lightMatrix = 
+		make_translation({ 0.5, 0.5, 0.5 }) * 
+		make_scale<float4x4>(make_vector(0.5f, 0.5f, 0.5f)) *
 		lightViewProjectionMatrix * inverse(viewMatrix);
-
-	
 
 	//Sets matrices
 	setUniformSlow(shaderProgram, "viewMatrix", viewMatrix);
@@ -675,17 +676,17 @@ void drawScene(void)
 	//Set cube map
 	setUniformSlow(shaderProgram, "cubeMap", 2);
 	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, cMapAll.texture);
-	//glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTexture);
+	//glBindTexture(GL_TEXTURE_CUBE_MAP, cMapAll.texture);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTexture);
 
-
+	//Render models
 	drawModel(water, make_translation(make_vector(0.0f, -6.0f, 0.0f)), shaderProgram);
 	drawShadowCasters(shaderProgram);
 
-
+	//Render debuggers
 	drawDebug(viewMatrix, projectionMatrix);
 
-	//Draw skybox
+	//Render skybox
 	glDepthMask(GL_FALSE); //Used to write over the skyboxnight with the skybox alpha value
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -697,8 +698,19 @@ void drawScene(void)
 	glDisable(GL_BLEND);
 	glDepthMask(GL_TRUE);
 
-	drawCubeMap(cMapAll);
+	//Render cube map
+	//drawCubeMap(cMapAll);
 
+	//Perform post processing
+	renderPostProcess();
+	
+	//Cleanup
+	glUseProgram( 0 );	
+}
+
+void renderPostProcess() {
+	int w = glutGet((GLenum)GLUT_WINDOW_WIDTH);
+	int h = glutGet((GLenum)GLUT_WINDOW_HEIGHT);
 
 	blurImage();
 
@@ -706,7 +718,7 @@ void drawScene(void)
 	glViewport(0, 0, w, h);
 	glClearColor(0.6, 0.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
+
 	glUseProgram(postFxShader);
 	setUniformSlow(postFxShader, "frameBufferTexture", 0);
 	setUniformSlow(postFxShader, "blurredFrameBufferTexture", 1);
@@ -720,15 +732,13 @@ void drawScene(void)
 	setUniformSlow(postFxShader, "time", currentTime);
 
 	drawFullScreenQuad();
-
-	glUseProgram( 0 );	
 }
 
 void blurImage() {
 	//CUTOFF
 	glUseProgram(cutoffShader);
 	glBindFramebuffer(GL_FRAMEBUFFER, cutOffFbo.id);
-	glViewport(0, 0, screenWidth, screenheight);
+	glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 	glClearColor(1.0, 1.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -765,7 +775,6 @@ void blurImage() {
 
 void checkIntersection() {
 	float3 upVec = make_vector(0.0f, 1.0f, 0.0f);
-	//float3 upVec = carLoc.upDir;
 
 	//Calculate intersections
 	float3x3 rot = make_rotation_y<float3x3>(carLoc.angley);
@@ -801,18 +810,15 @@ void checkIntersection() {
 	float3 frontDir = normalize(carLoc.frontDir);
 	float3 rightDir = normalize(cross(frontDir, vUp));
 
-	float anglex = -(90.0f - acosf(dot(normalize(carLoc.upDir), frontDir)) * 180 / M_PI) * M_PI / 180;
-	float anglez = (90.0f - acosf(dot(normalize(carLoc.upDir), rightDir)) * 180 / M_PI) * M_PI / 180;
-
+	float anglex = -(degreeToRad(90.0f) - acosf(dot(normalize(carLoc.upDir), frontDir)));
+	float anglez = (degreeToRad(90.0f) - acosf(dot(normalize(carLoc.upDir), rightDir)));
+	
 	Quaternion qatX = make_quaternion_axis_angle(rightDir, anglex);
-	Quaternion qatY = make_quaternion_axis_angle(vUp, carLoc.angley);
 	Quaternion qatZ = make_quaternion_axis_angle(make_rotation_y<float3x3>(-carLoc.angley) * frontDir, anglez);
 
 	float4 newLoc = makematrix(qatX) * makematrix(qatZ) * make_vector4(carLoc.wheel1, 1.0f);
-	float3 newLocV3 = make_vector(newLoc.x, newLoc.y, newLoc.z);
 
 	carLoc.location += make_vector(0.0f, carLoc.wheel1.y + (carLoc.wheel1.y - newLoc.y), 0.0f);
-	//carLoc.location += make_vector(0.0f, carLoc.wheel1.y, 0.0f);
 }
 
 float rayOctreeIntersection(float3 rayOrigin, float3 rayVec, Octree oct ) {
@@ -846,6 +852,12 @@ void display(void)
 	
 	glutSwapBuffers();  // swap front and back buffer. This frame will now be displayed.
 	CHECK_GL_ERROR();
+
+	high_resolution_clock::time_point end = high_resolution_clock::now();
+	duration<double> time_span = duration_cast<duration<double>>(end - start);
+	printf("Fps: %f\n", 1 / time_span.count());
+
+	start = end;
 }
 
 void handleKeys(unsigned char key, int /*x*/, int /*y*/)
@@ -975,15 +987,6 @@ void motion(int x, int y)
 	prev_y = y;
 }
 
-Camera createCamera(float3 position, float3 lookAt, float3 up) {
-	Camera cam;
-	cam.position = position;
-	cam.lookAt = lookAt;
-	cam.up = up;
-
-	return cam;
-}
-
 void tick() {
 	if (keysDown[(int)'w']) {
 		float3 term = carLoc.frontDir * carLoc.moveSpeed;
@@ -1028,7 +1031,7 @@ void idle( void )
 	// do one full revolution every 20 seconds.
 	float4x4 rotateLight = make_rotation_x<float4x4>(2.0f * M_PI * currentTime / 20.0f);
 	// rotate and update global light position.
-	lightPosition = make_vector3(rotateLight * make_vector(30.1f, 450.0f, 0.1f, 1.0f));
+	sunCamera->setPosition(make_vector3(rotateLight * make_vector(30.1f, 450.0f, 0.1f, 1.0f)));
 
 	glutPostRedisplay();  
 	// Uncommenting the line above tells glut that the window 
@@ -1042,7 +1045,6 @@ int main(int argc, char *argv[])
 	linux_initialize_cwd();
 #	endif // ! __linux__
 
-	ts.reserve(32);
 
 	glutInit(&argc, argv);
 
@@ -1059,7 +1061,7 @@ int main(int argc, char *argv[])
 	printf( "--\n" );
 	printf( "-- WARNING: your GLUT doesn't support sRGB / GLUT_SRGB\n" );
 #	endif // ~ GLUT_SRGB
-	glutInitWindowSize(screenWidth,screenheight);
+	glutInitWindowSize(SCREEN_WIDTH,SCREEN_HEIGHT);
 
 	/* Require at least OpenGL 3.0. Also request a Debug Context, which allows
 	 * us to use the Debug Message API for a somewhat more humane debugging
@@ -1335,6 +1337,21 @@ void debugDrawOctree(const float4x4 &viewMatrix, const float4x4 &projectionMatri
 	}
 }
 
+float degreeToRad(float degree) {
+	return degree * M_PI / 180;
+}
+
+float radToDegree(float rad) {
+	return rad * 180 / M_PI;
+}
+
+// Helper function to turn spherical coordinates into cartesian (x,y,z)
+float3 sphericalToCartesian(float theta, float phi, float r)
+{
+	return make_vector(r * sinf(theta)*sinf(phi),
+		r * cosf(phi),
+		r * cosf(theta)*sinf(phi));
+}
 
 /* TIME COUNT
 high_resolution_clock::time_point start = high_resolution_clock::now();
