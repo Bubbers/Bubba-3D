@@ -136,6 +136,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Octree.cpp" />
+    <ClCompile Include="PerspectiveCamera.cpp" />
     <ClCompile Include="SceneRenderer.cpp" />
     <ClCompile Include="Triangle.cpp" />
   </ItemGroup>
@@ -153,6 +154,7 @@
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Octree.h" />
+    <ClInclude Include="PerspectiveCamera.h" />
     <ClInclude Include="SceneRenderer.h" />
     <ClInclude Include="Triangle.h" />
   </ItemGroup>

@@ -7,11 +7,19 @@
     <ClCompile Include="Camera.cpp">
       <Filter>Camera</Filter>
     </ClCompile>
+    <ClCompile Include="SceneRenderer.cpp" />
+    <ClCompile Include="PerspectiveCamera.cpp">
+      <Filter>Camera</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Octree.h" />
     <ClInclude Include="Triangle.h" />
     <ClInclude Include="Camera.h">
+      <Filter>Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneRenderer.h" />
+    <ClInclude Include="PerspectiveCamera.h">
       <Filter>Camera</Filter>
     </ClInclude>
   </ItemGroup>

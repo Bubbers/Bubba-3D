@@ -1,8 +1,8 @@
 #include "Camera.h"
 
 
-Camera::Camera(float3 position, float3 lookAt, float3 up, int fov, float ratio, float nearPlane, float farPlane)
-	: m_vPosition(position), m_vLookAt(lookAt), m_vUp(up), m_iFov(fov), m_fRatio(ratio), m_fNearPlane(nearPlane), m_fFarPlane(farPlane){
+Camera::Camera(float3 position, float3 lookAt, float3 up, float fov, float ratio, float nearPlane, float farPlane)
+	: m_vPosition(position), m_vLookAt(lookAt), m_vUp(up), m_fFov(fov), m_fRatio(ratio), m_fNearPlane(nearPlane), m_fFarPlane(farPlane){
 
 }
 Camera::~Camera() {
@@ -14,7 +14,7 @@ float4x4 Camera::getViewMatrix() {
 }
 
 float4x4 Camera::getProjectionMatrix() {
-	return perspectiveMatrix(m_iFov, m_fRatio, m_fNearPlane, m_fFarPlane);
+	return perspectiveMatrix(m_fFov, m_fRatio, m_fNearPlane, m_fFarPlane);
 }
 
 void Camera::setPosition(float3 position) {

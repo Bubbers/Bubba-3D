@@ -25,7 +25,7 @@
 #include "Octree.h"
 #include "Triangle.h"
 #include "SceneRenderer.h"
-#include "Camera.h"
+#include "PerspectiveCamera.h"
 #include <chrono>
 
 using namespace std;
@@ -213,8 +213,10 @@ void initGL()
 	/* As a general rule, you shouldn't need to change anything before this 
 	 * comment in initGL().
 	 */
-	sunCamera = new Camera(lightPosition, make_vector(0.0f, 0.0f, 0.0f), make_vector(0.0f, 1.0f, 0.0f), 25.0f, 1.0f, 370.0f, 530.0f);
-	playerCamera = new Camera(
+
+
+	sunCamera = new PerspectiveCamera(lightPosition, make_vector(0.0f, 0.0f, 0.0f), make_vector(0.0f, 1.0f, 0.0f), 25.0f, 1.0f, 370.0f, 530.0f);
+	playerCamera = new PerspectiveCamera(
 		carLoc.location + sphericalToCartesian(camera_theta, camera_phi, camera_r),
 		carLoc.location + make_vector(0.0f, camera_target_altitude, 0.0f),
 		make_vector(0.0f, 1.0f, 0.0f),
@@ -343,16 +345,16 @@ void initGL()
 	cubeMapTexture = loadCubeMap("cube0.png", "cube1.png", "cube2.png", "cube3.png", "cube4.png", "cube5.png");
 
 	//X
-	cubeMapCameras[0] = new Camera(make_vector(0.0f, 3.0f, 0.0f), make_vector(100.0f, 3.0f, 0.0f), make_vector(0.0f, -1.0f, 0.0f), 45.0f, float(w) / float(h), 0.1f, 1000.0f);
-	cubeMapCameras[1] = new Camera(make_vector(0.0f, 3.0f, 0.0f), make_vector(-100.0f, 3.0f, 0.0f), make_vector(0.0f, 1.0f, 0.0f), 45.0f, float(w) / float(h), 0.1f, 1000.0f);
+	cubeMapCameras[0] = new PerspectiveCamera(make_vector(0.0f, 3.0f, 0.0f), make_vector(100.0f, 3.0f, 0.0f), make_vector(0.0f, -1.0f, 0.0f), 45.0f, float(w) / float(h), 0.1f, 1000.0f);
+	cubeMapCameras[1] = new PerspectiveCamera(make_vector(0.0f, 3.0f, 0.0f), make_vector(-100.0f, 3.0f, 0.0f), make_vector(0.0f, 1.0f, 0.0f), 45.0f, float(w) / float(h), 0.1f, 1000.0f);
 
 	//Y
-	cubeMapCameras[2] = new Camera(make_vector(0.0f, 3.0f, 0.0f), make_vector(0.1f, 100.0f, 0.1f), make_vector(0.0f, 1.0f, 0.0f), 45.0f, float(w) / float(h), 0.1f, 1000.0f);
-	cubeMapCameras[3] = new Camera(make_vector(0.0f, 3.0f, 0.0f), make_vector(0.1f, -100.0f, 0.1f), make_vector(0.0f, 1.0f, 0.0f), 45.0f, float(w) / float(h), 0.1f, 1000.0f);
+	cubeMapCameras[2] = new PerspectiveCamera(make_vector(0.0f, 3.0f, 0.0f), make_vector(0.1f, 100.0f, 0.1f), make_vector(0.0f, 1.0f, 0.0f), 45.0f, float(w) / float(h), 0.1f, 1000.0f);
+	cubeMapCameras[3] = new PerspectiveCamera(make_vector(0.0f, 3.0f, 0.0f), make_vector(0.1f, -100.0f, 0.1f), make_vector(0.0f, 1.0f, 0.0f), 45.0f, float(w) / float(h), 0.1f, 1000.0f);
 
 	//Z
-	cubeMapCameras[4] = new Camera(make_vector(0.0f, 3.0f, 0.0f), make_vector(0.1f, 0.1f, 100.0f), make_vector(0.0f, 1.0f, 0.0f), 45.0f, float(w) / float(h), 0.1f, 1000.0f);
-	cubeMapCameras[5] = new Camera(make_vector(0.0f, 3.0f, 0.0f), make_vector(0.1f, -0.1f, -100.0f), make_vector(0.0f, 1.0f, 0.0f), 45.0f, float(w) / float(h), 0.1f, 1000.0f);
+	cubeMapCameras[4] = new PerspectiveCamera(make_vector(0.0f, 3.0f, 0.0f), make_vector(0.1f, 0.1f, 100.0f), make_vector(0.0f, 1.0f, 0.0f), 45.0f, float(w) / float(h), 0.1f, 1000.0f);
+	cubeMapCameras[5] = new PerspectiveCamera(make_vector(0.0f, 3.0f, 0.0f), make_vector(0.1f, -0.1f, -100.0f), make_vector(0.0f, 1.0f, 0.0f), 45.0f, float(w) / float(h), 0.1f, 1000.0f);
 
 	cMapAll.width = w;
 	cMapAll.height = h;
@@ -1031,7 +1033,8 @@ void idle( void )
 	// do one full revolution every 20 seconds.
 	float4x4 rotateLight = make_rotation_x<float4x4>(2.0f * M_PI * currentTime / 20.0f);
 	// rotate and update global light position.
-	sunCamera->setPosition(make_vector3(rotateLight * make_vector(30.1f, 450.0f, 0.1f, 1.0f)));
+	lightPosition = make_vector3(rotateLight * make_vector(30.1f, 450.0f, 0.1f, 1.0f));
+	sunCamera->setPosition(lightPosition);
 
 	glutPostRedisplay();  
 	// Uncommenting the line above tells glut that the window 
