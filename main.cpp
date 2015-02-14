@@ -151,7 +151,7 @@ struct Car{
 //*****************************************************************************
 //	Collision objects
 //*****************************************************************************
-std::vector<Triangle> ts;
+std::vector<Triangle*> ts;
 
 
 //*****************************************************************************
@@ -266,13 +266,23 @@ void initGL()
 	test->load("../scenes/test.obj");
 
 
-	addMeshToCollision(worldCollision, make_identity<float4x4>());
+	addMeshToCollision(world, make_identity<float4x4>());
 	addMeshToCollision(water, make_translation(make_vector(0.0f, -6.0f, 0.0f)));
 	addMeshToCollision(test, make_translation(make_vector(-15.0f, 0.0f, 0.0f)) * make_rotation_y<float4x4>(M_PI / 180 * 90) * make_scale<float4x4>(make_vector(2.0f, 2.0f, 2.0f)));
 
+
+	high_resolution_clock::time_point start = high_resolution_clock::now();
+
 	for (int i = 0; i < ts.size(); i++) {
-		t.insert(&ts.at(i));
+		t.insert(ts.at(i));
 	}
+
+	//t.insertAll(ts);
+
+
+	high_resolution_clock::time_point end = high_resolution_clock::now();
+	duration<double> time_span = duration_cast<duration<double>>(end - start);
+	printf("Time to create octree: %f\n", time_span.count());
 
 	//*************************************************************************
 	// Generate shadow map frame buffer object
@@ -415,7 +425,7 @@ void addMeshToCollision(OBJModel *model, float4x4 modelMatrix) {
 				model->m_chunks[i].m_positions[j + 2].y,
 				model->m_chunks[i].m_positions[j + 2].z, 1.0f) ;
 
-			Triangle t(make_vector(p1.x, p1.y, p1.z), make_vector(p2.x, p2.y, p2.z), make_vector(p3.x, p3.y, p3.z));
+			Triangle* t = new Triangle(make_vector(p1.x, p1.y, p1.z), make_vector(p2.x, p2.y, p2.z), make_vector(p3.x, p3.y, p3.z));
 		
 			ts.push_back(t);
 		}
@@ -857,7 +867,7 @@ void display(void)
 
 	high_resolution_clock::time_point end = high_resolution_clock::now();
 	duration<double> time_span = duration_cast<duration<double>>(end - start);
-	printf("Fps: %f\n", 1 / time_span.count());
+	//printf("Fps: %f\n", 1 / time_span.count());
 
 	start = end;
 }

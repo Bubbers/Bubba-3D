@@ -13,15 +13,60 @@ Octree::~Octree() {
 	
 }
 
+int octC = 0;
+
+
+
+void Octree::insertAll(std::vector<Triangle*> triangles){
+	if (hasChildren() || (triangles.size() + ts.size() > MAX_CHILDREN && depth < MAX_DEPTH)) {
+		if (!hasChildren()){
+			for (int i = 0; i<8; ++i) {
+				// Compute new bounding box for this child
+				float3 newOrigin = origin;
+				newOrigin.x += halfVector.x * (i & 4 ? .5f : -.5f);
+				newOrigin.y += halfVector.y * (i & 2 ? .5f : -.5f);
+				newOrigin.z += halfVector.z * (i & 1 ? .5f : -.5f);
+				children[i] = new Octree(newOrigin, halfVector*.5f, depth + 1);
+			}
+		}
+
+		std::vector<Triangle*> newTris[8];
+	
+
+		for (int i = 0; i < triangles.size(); i++) {
+			octC++;
+			BoundingBox *b = triangles[i]->getBoundingBox();
+			std::set<int> octs;
+			for (int i = 0; i < 8; i++) {
+				octs.insert(getOctantContainingPoint(b->points[i]));
+			}
+
+			for (std::set<int>::iterator it = octs.begin(); it != octs.end(); ++it)
+			{
+				newTris[*it].push_back(triangles[i]);
+			}
+		}
+
+		for (int i = 0; i < 8; i++) {
+			children[i]->insertAll(newTris[i]);
+		}
+
+		ts.clear();
+
+	}
+	else {
+		for (int i = 0; i < triangles.size(); i++)
+		{
+			octC++;
+			ts.push_back(triangles[i]);
+		}
+	}
+}
+
 
 
 void Octree::insert(Triangle* t) {
 	if (isFull() && depth < MAX_DEPTH) {
-		high_resolution_clock::time_point start = high_resolution_clock::now();
-		
-			/*p1 = { x = -19.7170811 y = 2.73247623 z = 17.1024914 }
-				p2 = { x = -19.7017784 y = 2.73137593 z = 17.0951881 }
-				p3 = { x = -19.7687798 y = 2.68247604 z = 16.9506893 }*/
 
 		for (int i = 0; i<8; ++i) {
 			// Compute new bounding box for this child
@@ -33,8 +78,10 @@ void Octree::insert(Triangle* t) {
 		}
 
 		addTriangle(t);
+		octC++;
 		for (int i = 0; i < ts.size(); i++) {
 			addTriangle(ts[i]);
+			octC++;
 		}
 
 		ts.clear();
@@ -42,6 +89,7 @@ void Octree::insert(Triangle* t) {
 	}
 	else if (hasChildren()) {
 		addTriangle(t);
+		octC++;
 	}
 	else {
 		ts.push_back(t);
