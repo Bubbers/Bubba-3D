@@ -1,14 +1,49 @@
-﻿Build started 01/03/2015 14:47:15.
+﻿Build started 01/03/2015 18:37:14.
      1>Project "C:\Users\Johan\workspace\Graphics Tda361\Examples\OpenGLTutorials_2014 (1)\OpenGLTutorials\project\OpenGL_project-vs2013.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I../inc /I../glutil /I../linmath /Zi /nologo /W3 /WX- /O2 /Ob2 /Oy- /D WIN32 /D NDEBUG /D _CONSOLE /D _CRT_SECURE_NO_WARNINGS /Gm- /EHsc /MT /GS /fp:fast /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc120.pdb" /Gd /TP /wd4505 /analyze- /errorReport:prompt main.cpp Mesh.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I../inc /I../glutil /I../linmath /Zi /nologo /W3 /WX- /O2 /Ob2 /Oi /Oy- /GL /D WIN32 /D NDEBUG /D _CONSOLE /D _CRT_SECURE_NO_WARNINGS /Gm- /EHsc /MT /GS /fp:fast /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc120.pdb" /Gd /TP /wd4505 /analyze- /errorReport:prompt Camera.cpp Logger.cpp main.cpp Mesh.cpp Octree.cpp PerspectiveCamera.cpp SceneRenderer.cpp Triangle.cpp
+         Camera.cpp
+         Logger.cpp
          main.cpp
-     1>c:\users\johan\workspace\graphics tda361\examples\opengltutorials_2014 (1)\opengltutorials\project\Mesh.h(13): fatal error C1083: Cannot open include file: 'assimp/Importer.hpp': No such file or directory
+     1>main.cpp(236): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>main.cpp(242): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>main.cpp(369): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>main.cpp(370): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>main.cpp(373): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>main.cpp(374): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>main.cpp(377): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>main.cpp(378): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>main.cpp(424): warning C4018: '<' : signed/unsigned mismatch
+     1>main.cpp(426): warning C4018: '<' : signed/unsigned mismatch
+     1>main.cpp(857): warning C4018: '<' : signed/unsigned mismatch
          Mesh.cpp
-     1>c:\users\johan\workspace\graphics tda361\examples\opengltutorials_2014 (1)\opengltutorials\project\Mesh.h(13): fatal error C1083: Cannot open include file: 'assimp/Importer.hpp': No such file or directory
-         Generating Code...
-     1>Done Building Project "C:\Users\Johan\workspace\Graphics Tda361\Examples\OpenGLTutorials_2014 (1)\OpenGLTutorials\project\OpenGL_project-vs2013.vcxproj" (Build target(s)) -- FAILED.
+         Octree.cpp
+     1>Octree.cpp(33): warning C4018: '<' : signed/unsigned mismatch
+     1>Octree.cpp(42): warning C4258: 'i' : definition from the for loop is ignored; the definition from the enclosing scope is used
+                 Octree.cpp(36) : definition of 'i' ignored
+                 Octree.cpp(33) : definition of 'i' used
+     1>Octree.cpp(54): warning C4018: '<' : signed/unsigned mismatch
+     1>Octree.cpp(76): warning C4018: '<' : signed/unsigned mismatch
+     1>Octree.cpp(215): warning C4018: '<' : signed/unsigned mismatch
+         PerspectiveCamera.cpp
+     1>PerspectiveCamera.cpp(5): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+         SceneRenderer.cpp
+         Triangle.cpp
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Johan\workspace\Graphics Tda361\Examples\OpenGLTutorials_2014 (1)\OpenGLTutorials\bin\OpenGL_project_Release.exe" /INCREMENTAL:NO /NOLOGO /LIBPATH:../lib glew32.lib ILU.lib ILUT.lib DevIL.lib user32.lib "glutil-vs2013_Release.lib" "linmath-vs2013_Release.lib" assimp.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:".\Release/OpenGL_Lab.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE:NO /IMPLIB:"C:\Users\Johan\workspace\Graphics Tda361\Examples\OpenGLTutorials_2014 (1)\OpenGLTutorials\bin\OpenGL_project_Release.lib" /MACHINE:X86 /SAFESEH Release\Camera.obj
+         Release\Logger.obj
+         Release\main.obj
+         Release\Mesh.obj
+         Release\Octree.obj
+         Release\PerspectiveCamera.obj
+         Release\SceneRenderer.obj
+         Release\Triangle.obj
+         Camera.obj : MSIL .netmodule or module compiled with /GL found; restarting link with /LTCG; add /LTCG to the link command line to improve linker performance
+         Generating code
+         Finished generating code
+         OpenGL_project-vs2013.vcxproj -> C:\Users\Johan\workspace\Graphics Tda361\Examples\OpenGLTutorials_2014 (1)\OpenGLTutorials\bin\OpenGL_project_Release.exe
+     1>Done Building Project "C:\Users\Johan\workspace\Graphics Tda361\Examples\OpenGLTutorials_2014 (1)\OpenGLTutorials\project\OpenGL_project-vs2013.vcxproj" (Build target(s)).
 
-Build FAILED.
+Build succeeded.
 
-Time Elapsed 00:00:00.95
+Time Elapsed 00:00:03.65

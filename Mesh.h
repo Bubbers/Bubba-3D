@@ -22,6 +22,9 @@ public:
 
 	bool loadMesh(const std::string& fileName);
 	void render();
+	GLuint getDiffuseTexture(int chunk){
+		return m_textures[m_chunks[chunk].m_textureIndex].diffuse_map_id;
+	}
 
 private:
 
@@ -66,8 +69,11 @@ private:
 		unsigned int m_numIndices;
 	};
 
-	std::vector<Chunk> m_chunks;
+	
 	std::vector<Material> m_textures;
+
+public: 
+	std::vector<Chunk> m_chunks;
 };
 
 #endif // !__MESH_H__

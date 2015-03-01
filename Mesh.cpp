@@ -47,7 +47,7 @@ bool Mesh::loadMesh(const std::string& fileName) {
 	Assimp::Importer importer;
 
 	const aiScene* pScene = importer.ReadFile(
-		fileName.c_str(), aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs);
+		fileName.c_str(), aiProcess_GenNormals);
 
 	if (!pScene) {
 		Logger l;

@@ -12,7 +12,6 @@
 #include <stdlib.h>
 #include <algorithm>
 
-#include <OBJModel.h>
 #include <glutil.h>
 #include <float4x4.h>
 #include <float3x3.h>
@@ -75,17 +74,14 @@ GLuint cutoffShader;
 //*****************************************************************************
 //	OBJ Model declarations
 //*****************************************************************************
-OBJModel *world; 
-OBJModel *worldCollision;
-OBJModel *water; 
-OBJModel *skybox; 
-OBJModel *skyboxnight; 
-OBJModel *car;
-OBJModel *test;
-
+Mesh world;
+Mesh worldCollision;
+Mesh skybox;
+Mesh skyboxnight;
+Mesh car;
 Mesh factory;
-//Mesh water;
-Mesh lampMan;
+Mesh water;
+Mesh spider;
 
 //*****************************************************************************
 //	Camera state variables (updated in motion())
@@ -174,7 +170,7 @@ Logger logger;
 void drawCubeMap(Fbo fbo);
 void drawFullScreenQuad();
 
-void addMeshToCollision(OBJModel *model, float4x4 modelMatrix);
+void addMeshToCollision(Mesh* model, float4x4 modelMatrix);
 
 Fbo createPostProcessFbo(int width, int height);
 void renderPostProcess();
@@ -253,47 +249,31 @@ void initGL()
 	//*************************************************************************
 	logger.logInfo("Started loading models.");
 
-	world = new OBJModel(); 
-	world->load("scenes/island2.obj");
-
-	
+	world.loadMesh("scenes/island2.obj");
 	factory.loadMesh("scenes/test.obj");
+	worldCollision.loadMesh("scenes/island2Collision.obj");
+	skybox.loadMesh("scenes/skybox.obj");
+	skyboxnight.loadMesh("scenes/skyboxnight.obj");
 
-	worldCollision = new OBJModel();
-	worldCollision->load("scenes/island2Collision.obj");
-
-	lampMan.loadMesh("scenes/spider.obj");
-
-	skybox = new OBJModel();
-	skybox->load("scenes/skybox.obj");
-	skyboxnight = new OBJModel();
-	skyboxnight->load("scenes/skyboxnight.obj");
 	// Make the textures of the skyboxes use clamp to edge to avoid seams
 	for(int i=0; i<6; i++){
-		glBindTexture(GL_TEXTURE_2D, skybox->getDiffuseTexture(i)); 
+		glBindTexture(GL_TEXTURE_2D, skybox.getDiffuseTexture(i)); 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glBindTexture(GL_TEXTURE_2D, skyboxnight->getDiffuseTexture(i)); 
+		glBindTexture(GL_TEXTURE_2D, skyboxnight.getDiffuseTexture(i)); 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	}
-	water = new OBJModel(); 
-	water->load("scenes/water.obj");
-	//water.loadMesh("../scenes/water.obj");
 
-	car = new OBJModel(); 
-	car->load("scenes/car.obj");
-
-	//test = new OBJModel();
-	//test->load("../scenes/test.obj");
+	water.loadMesh("../scenes/water.obj");
+	car.loadMesh("scenes/car.obj");
 
 	logger.logInfo("Finished loading models.");
 
 	logger.logInfo("Started creating octree");
-
-	addMeshToCollision(worldCollision, make_identity<float4x4>());
-	addMeshToCollision(water, make_translation(make_vector(0.0f, -6.0f, 0.0f)));
-	//addMeshToCollision(test, make_translation(make_vector(-15.0f, 0.0f, 0.0f)) * make_rotation_y<float4x4>(M_PI / 180 * 90) * make_scale<float4x4>(make_vector(2.0f, 2.0f, 2.0f)));
+	addMeshToCollision(&worldCollision, make_identity<float4x4>());
+	addMeshToCollision(&water, make_translation(make_vector(0.0f, -6.0f, 0.0f)));
+	addMeshToCollision(&factory, make_translation(make_vector(-15.0f, 0.0f, 0.0f)) * make_rotation_y<float4x4>(M_PI / 180 * 90) * make_scale<float4x4>(make_vector(2.0f, 2.0f, 2.0f)));
 
 
 	high_resolution_clock::time_point start = high_resolution_clock::now();
@@ -431,7 +411,7 @@ void initGL()
 	logger.logInfo("Generating OpenGL data completed.");
 }
 
-void addMeshToCollision(OBJModel *model, float4x4 modelMatrix) {
+void addMeshToCollision(Mesh* model, float4x4 modelMatrix) {
 	for (int i = 0; i < model->m_chunks.size(); i++) {
 
 		for (int j = 0; j < model->m_chunks[i].m_positions.size(); j += 3) {
@@ -527,16 +507,10 @@ Fbo createPostProcessFbo(int width, int height) {
 	return fbo;
 }
 
-void drawModel(OBJModel *model, const float4x4 &modelMatrix, GLuint shaderProgram)
+void drawModel(Mesh &model, const float4x4 &modelMatrix, GLuint shaderProgram)
 {
 	setUniformSlow(shaderProgram, "modelMatrix", modelMatrix); 
-	model->render();
-}
-
-void drawModel2(Mesh *model, const float4x4 &modelMatrix, GLuint shaderProgram)
-{
-	setUniformSlow(shaderProgram, "modelMatrix", modelMatrix);
-	model->render();
+	model.render();
 }
 
 /**
@@ -565,9 +539,9 @@ void drawShadowCasters(GLuint shaderProgram)
 		* makematrix(qatZ),
 		shaderProgram);
 	setUniformSlow(shaderProgram, "object_reflectiveness", 0.0f); 
-	drawModel2(&factory, make_translation(make_vector(-15.0f, 0.0f, 0.0f)) * make_rotation_y<float4x4>(M_PI / 180 * 90) * make_scale<float4x4>(make_vector(2.0f, 2.0f, 2.0f)), shaderProgram);
+	drawModel(factory, make_translation(make_vector(-15.0f, 0.0f, 0.0f)) * make_rotation_y<float4x4>(M_PI / 180 * 90) * make_scale<float4x4>(make_vector(2.0f, 2.0f, 2.0f)), shaderProgram);
 
-	drawModel2(&lampMan, make_translation(make_vector(40.0f, 1.0f, 0.0f)) * make_scale<float4x4>(0.1f), shaderProgram);
+	drawModel(spider, make_translation(make_vector(40.0f, 1.0f, 0.0f)) * make_scale<float4x4>(0.1f), shaderProgram);
 }
 
 void drawShadowMap(Fbo sbo, float4x4 viewProjectionMatrix) {
