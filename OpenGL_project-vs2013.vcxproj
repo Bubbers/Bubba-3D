@@ -53,6 +53,10 @@
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectName)_$(Configuration)</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectName)_$(Configuration)</TargetName>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>C:\Program Files\Assimp\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files\Assimp\lib\x86;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Midl>
       <TypeLibraryName>.\Debug/OpenGL_Lab.tlb</TypeLibraryName>
@@ -77,7 +81,7 @@
       <Culture>0x041d</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>glew32.lib;ILU.lib;ILUT.lib;DevIL.lib;user32.lib;glutil-vs2013_$(Configuration).lib;linmath-vs2013_$(Configuration).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glew32.lib;ILU.lib;ILUT.lib;DevIL.lib;user32.lib;glutil-vs2013_$(Configuration).lib;linmath-vs2013_$(Configuration).lib;assimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>../lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -134,7 +138,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Logger.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Octree.cpp" />
     <ClCompile Include="PerspectiveCamera.cpp" />
     <ClCompile Include="SceneRenderer.cpp" />
@@ -153,6 +159,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Logger.h" />
+    <ClInclude Include="Mesh.h" />
     <ClInclude Include="Octree.h" />
     <ClInclude Include="PerspectiveCamera.h" />
     <ClInclude Include="SceneRenderer.h" />

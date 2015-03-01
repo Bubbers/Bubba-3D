@@ -1,13 +1,14 @@
-﻿Build started 02/12/2014 16:44:27.
+﻿Build started 01/03/2015 14:47:15.
      1>Project "C:\Users\Johan\workspace\Graphics Tda361\Examples\OpenGLTutorials_2014 (1)\OpenGLTutorials\project\OpenGL_project-vs2013.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I../inc /I../glutil /I../linmath /Zi /nologo /W3 /WX- /O2 /Ob2 /Oy- /D WIN32 /D NDEBUG /D _CONSOLE /D _CRT_SECURE_NO_WARNINGS /Gm- /EHsc /MT /GS /fp:fast /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc120.pdb" /Gd /TP /wd4505 /analyze- /errorReport:prompt main.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I../inc /I../glutil /I../linmath /Zi /nologo /W3 /WX- /O2 /Ob2 /Oy- /D WIN32 /D NDEBUG /D _CONSOLE /D _CRT_SECURE_NO_WARNINGS /Gm- /EHsc /MT /GS /fp:fast /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc120.pdb" /Gd /TP /wd4505 /analyze- /errorReport:prompt main.cpp Mesh.cpp
          main.cpp
-       Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Johan\workspace\Graphics Tda361\Examples\OpenGLTutorials_2014 (1)\OpenGLTutorials\bin\OpenGL_project_Release.exe" /INCREMENTAL:NO /NOLOGO /LIBPATH:../lib glew32.lib ILU.lib ILUT.lib DevIL.lib user32.lib "glutil-vs2013_Release.lib" "linmath-vs2013_Release.lib" kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:".\Release/OpenGL_Lab.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE:NO /IMPLIB:"C:\Users\Johan\workspace\Graphics Tda361\Examples\OpenGLTutorials_2014 (1)\OpenGLTutorials\bin\OpenGL_project_Release.lib" /MACHINE:X86 /SAFESEH Release\main.obj
-         OpenGL_project-vs2013.vcxproj -> C:\Users\Johan\workspace\Graphics Tda361\Examples\OpenGLTutorials_2014 (1)\OpenGLTutorials\bin\OpenGL_project_Release.exe
-     1>Done Building Project "C:\Users\Johan\workspace\Graphics Tda361\Examples\OpenGLTutorials_2014 (1)\OpenGLTutorials\project\OpenGL_project-vs2013.vcxproj" (Build target(s)).
+     1>c:\users\johan\workspace\graphics tda361\examples\opengltutorials_2014 (1)\opengltutorials\project\Mesh.h(13): fatal error C1083: Cannot open include file: 'assimp/Importer.hpp': No such file or directory
+         Mesh.cpp
+     1>c:\users\johan\workspace\graphics tda361\examples\opengltutorials_2014 (1)\opengltutorials\project\Mesh.h(13): fatal error C1083: Cannot open include file: 'assimp/Importer.hpp': No such file or directory
+         Generating Code...
+     1>Done Building Project "C:\Users\Johan\workspace\Graphics Tda361\Examples\OpenGLTutorials_2014 (1)\OpenGLTutorials\project\OpenGL_project-vs2013.vcxproj" (Build target(s)) -- FAILED.
 
-Build succeeded.
+Build FAILED.
 
-Time Elapsed 00:00:01.07
+Time Elapsed 00:00:00.95

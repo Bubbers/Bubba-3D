@@ -13,11 +13,9 @@ Octree::~Octree() {
 	
 }
 
-int octC = 0;
 
 
-
-void Octree::insertAll(std::vector<Triangle*> triangles){
+void Octree::insertAll(std::vector<Triangle*> &triangles){
 	if (hasChildren() || (triangles.size() + ts.size() > MAX_CHILDREN && depth < MAX_DEPTH)) {
 		if (!hasChildren()){
 			for (int i = 0; i<8; ++i) {
@@ -31,10 +29,8 @@ void Octree::insertAll(std::vector<Triangle*> triangles){
 		}
 
 		std::vector<Triangle*> newTris[8];
-	
 
 		for (int i = 0; i < triangles.size(); i++) {
-			octC++;
 			BoundingBox *b = triangles[i]->getBoundingBox();
 			std::set<int> octs;
 			for (int i = 0; i < 8; i++) {
@@ -57,7 +53,6 @@ void Octree::insertAll(std::vector<Triangle*> triangles){
 	else {
 		for (int i = 0; i < triangles.size(); i++)
 		{
-			octC++;
 			ts.push_back(triangles[i]);
 		}
 	}
@@ -78,10 +73,8 @@ void Octree::insert(Triangle* t) {
 		}
 
 		addTriangle(t);
-		octC++;
 		for (int i = 0; i < ts.size(); i++) {
 			addTriangle(ts[i]);
-			octC++;
 		}
 
 		ts.clear();
@@ -89,7 +82,6 @@ void Octree::insert(Triangle* t) {
 	}
 	else if (hasChildren()) {
 		addTriangle(t);
-		octC++;
 	}
 	else {
 		ts.push_back(t);

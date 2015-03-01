@@ -26,7 +26,9 @@
 #include "Triangle.h"
 #include "SceneRenderer.h"
 #include "PerspectiveCamera.h"
+#include "Logger.h"
 #include <chrono>
+#include "Mesh.h"
 
 using namespace std;
 using namespace chag;
@@ -43,6 +45,7 @@ using namespace chrono;
 
 #define SHADOW_MAP_RESOLUTION	2048
 #define CUBE_MAP_RESOLUTION		512
+
 
 namespace FogParams {
 	float fDensity = 0.001f;
@@ -79,6 +82,10 @@ OBJModel *skybox;
 OBJModel *skyboxnight; 
 OBJModel *car;
 OBJModel *test;
+
+Mesh factory;
+//Mesh water;
+Mesh lampMan;
 
 //*****************************************************************************
 //	Camera state variables (updated in motion())
@@ -152,6 +159,12 @@ struct Car{
 //	Collision objects
 //*****************************************************************************
 std::vector<Triangle*> ts;
+
+
+//*****************************************************************************
+//	Logger
+//*****************************************************************************
+Logger logger;
 
 
 //*****************************************************************************
@@ -238,16 +251,23 @@ void initGL()
 	//*************************************************************************
 	// Load the models from disk
 	//*************************************************************************
+	logger.logInfo("Started loading models.");
+
 	world = new OBJModel(); 
-	world->load("../scenes/island2.obj");
+	world->load("scenes/island2.obj");
+
+	
+	factory.loadMesh("scenes/test.obj");
 
 	worldCollision = new OBJModel();
-	worldCollision->load("../scenes/island2Collision.obj");
+	worldCollision->load("scenes/island2Collision.obj");
+
+	lampMan.loadMesh("scenes/spider.obj");
 
 	skybox = new OBJModel();
-	skybox->load("../scenes/skybox.obj");
+	skybox->load("scenes/skybox.obj");
 	skyboxnight = new OBJModel();
-	skyboxnight->load("../scenes/skyboxnight.obj");
+	skyboxnight->load("scenes/skyboxnight.obj");
 	// Make the textures of the skyboxes use clamp to edge to avoid seams
 	for(int i=0; i<6; i++){
 		glBindTexture(GL_TEXTURE_2D, skybox->getDiffuseTexture(i)); 
@@ -258,36 +278,38 @@ void initGL()
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	}
 	water = new OBJModel(); 
-	water->load("../scenes/water.obj");
+	water->load("scenes/water.obj");
+	//water.loadMesh("../scenes/water.obj");
+
 	car = new OBJModel(); 
-	car->load("../scenes/car.obj");
+	car->load("scenes/car.obj");
 
-	test = new OBJModel();
-	test->load("../scenes/test.obj");
+	//test = new OBJModel();
+	//test->load("../scenes/test.obj");
 
+	logger.logInfo("Finished loading models.");
 
-	addMeshToCollision(world, make_identity<float4x4>());
+	logger.logInfo("Started creating octree");
+
+	addMeshToCollision(worldCollision, make_identity<float4x4>());
 	addMeshToCollision(water, make_translation(make_vector(0.0f, -6.0f, 0.0f)));
-	addMeshToCollision(test, make_translation(make_vector(-15.0f, 0.0f, 0.0f)) * make_rotation_y<float4x4>(M_PI / 180 * 90) * make_scale<float4x4>(make_vector(2.0f, 2.0f, 2.0f)));
+	//addMeshToCollision(test, make_translation(make_vector(-15.0f, 0.0f, 0.0f)) * make_rotation_y<float4x4>(M_PI / 180 * 90) * make_scale<float4x4>(make_vector(2.0f, 2.0f, 2.0f)));
 
 
 	high_resolution_clock::time_point start = high_resolution_clock::now();
 
-	for (int i = 0; i < ts.size(); i++) {
-		t.insert(ts.at(i));
-	}
-
-	//t.insertAll(ts);
-
+	t.insertAll(ts);
 
 	high_resolution_clock::time_point end = high_resolution_clock::now();
 	duration<double> time_span = duration_cast<duration<double>>(end - start);
-	printf("Time to create octree: %f\n", time_span.count());
+	
+	logger.logInfo("Created octree in : " + std::to_string(time_span.count()) + " seconds.");
 
 	//*************************************************************************
 	// Generate shadow map frame buffer object
 	//*************************************************************************
-	
+	logger.logInfo("Generating OpenGL data.");
+
 	sbo.shaderProgram = loadShaderProgram("shadowMap.vert", "shadowMap.frag");
 		glBindAttribLocation(sbo.shaderProgram, 0, "position");
 		glBindFragDataLocation(sbo.shaderProgram, 0, "fragmentColor");
@@ -405,6 +427,8 @@ void initGL()
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	glEnable(GL_DEPTH_TEST);
+
+	logger.logInfo("Generating OpenGL data completed.");
 }
 
 void addMeshToCollision(OBJModel *model, float4x4 modelMatrix) {
@@ -509,6 +533,12 @@ void drawModel(OBJModel *model, const float4x4 &modelMatrix, GLuint shaderProgra
 	model->render();
 }
 
+void drawModel2(Mesh *model, const float4x4 &modelMatrix, GLuint shaderProgram)
+{
+	setUniformSlow(shaderProgram, "modelMatrix", modelMatrix);
+	model->render();
+}
+
 /**
 * In this function, add all scene elements that should cast shadow, that way
 * there is only one draw call to each of these, as this function is called twice.
@@ -535,8 +565,9 @@ void drawShadowCasters(GLuint shaderProgram)
 		* makematrix(qatZ),
 		shaderProgram);
 	setUniformSlow(shaderProgram, "object_reflectiveness", 0.0f); 
+	drawModel2(&factory, make_translation(make_vector(-15.0f, 0.0f, 0.0f)) * make_rotation_y<float4x4>(M_PI / 180 * 90) * make_scale<float4x4>(make_vector(2.0f, 2.0f, 2.0f)), shaderProgram);
 
-	drawModel(test, make_translation(make_vector(-15.0f, 0.0f, 0.0f)) * make_rotation_y<float4x4>(M_PI / 180 * 90) * make_scale<float4x4>(make_vector(2.0f, 2.0f, 2.0f)), shaderProgram);
+	drawModel2(&lampMan, make_translation(make_vector(40.0f, 1.0f, 0.0f)) * make_scale<float4x4>(0.1f), shaderProgram);
 }
 
 void drawShadowMap(Fbo sbo, float4x4 viewProjectionMatrix) {
@@ -691,6 +722,7 @@ void drawScene(void)
 	//glBindTexture(GL_TEXTURE_CUBE_MAP, cMapAll.texture);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapTexture);
 
+	
 	//Render models
 	drawModel(water, make_translation(make_vector(0.0f, -6.0f, 0.0f)), shaderProgram);
 	drawShadowCasters(shaderProgram);

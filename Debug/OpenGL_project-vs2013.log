@@ -1,21 +1,24 @@
-﻿Build started 12/02/2015 22:31:41.
+﻿Build started 01/03/2015 18:02:32.
      1>Project "C:\Users\Johan\workspace\Graphics Tda361\Examples\OpenGLTutorials_2014 (1)\OpenGLTutorials\project\OpenGL_project-vs2013.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I../inc /I../glutil /I../linmath /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _CRT_SECURE_NO_WARNINGS /Gm /EHsc /RTC1 /MTd /GS /fp:fast /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /wd4505 /analyze- /errorReport:prompt Octree.cpp main.cpp
-         Octree.cpp
-     1>c:\users\johan\workspace\graphics tda361\examples\opengltutorials_2014 (1)\opengltutorials\project\octree.cpp(36): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\johan\workspace\graphics tda361\examples\opengltutorials_2014 (1)\opengltutorials\project\octree.cpp(46): warning C4258: 'i' : definition from the for loop is ignored; the definition from the enclosing scope is used
-                 c:\users\johan\workspace\graphics tda361\examples\opengltutorials_2014 (1)\opengltutorials\project\octree.cpp(40) : definition of 'i' ignored
-                 c:\users\johan\workspace\graphics tda361\examples\opengltutorials_2014 (1)\opengltutorials\project\octree.cpp(36) : definition of 'i' used
-     1>c:\users\johan\workspace\graphics tda361\examples\opengltutorials_2014 (1)\opengltutorials\project\octree.cpp(58): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\johan\workspace\graphics tda361\examples\opengltutorials_2014 (1)\opengltutorials\project\octree.cpp(82): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\johan\workspace\graphics tda361\examples\opengltutorials_2014 (1)\opengltutorials\project\octree.cpp(223): warning C4018: '<' : signed/unsigned mismatch
-         Generating Code...
-         Skipping... (no relevant changes detected)
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I../inc /I../glutil /I../linmath /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _CRT_SECURE_NO_WARNINGS /Gm /EHsc /RTC1 /MTd /GS /fp:fast /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /wd4505 /analyze- /errorReport:prompt main.cpp
          main.cpp
+     1>c:\users\johan\workspace\graphics tda361\examples\opengltutorials_2014 (1)\opengltutorials\project\main.cpp(231): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\johan\workspace\graphics tda361\examples\opengltutorials_2014 (1)\opengltutorials\project\main.cpp(237): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\johan\workspace\graphics tda361\examples\opengltutorials_2014 (1)\opengltutorials\project\main.cpp(380): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\johan\workspace\graphics tda361\examples\opengltutorials_2014 (1)\opengltutorials\project\main.cpp(381): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\johan\workspace\graphics tda361\examples\opengltutorials_2014 (1)\opengltutorials\project\main.cpp(384): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\johan\workspace\graphics tda361\examples\opengltutorials_2014 (1)\opengltutorials\project\main.cpp(385): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\johan\workspace\graphics tda361\examples\opengltutorials_2014 (1)\opengltutorials\project\main.cpp(388): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\johan\workspace\graphics tda361\examples\opengltutorials_2014 (1)\opengltutorials\project\main.cpp(389): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>c:\users\johan\workspace\graphics tda361\examples\opengltutorials_2014 (1)\opengltutorials\project\main.cpp(435): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\johan\workspace\graphics tda361\examples\opengltutorials_2014 (1)\opengltutorials\project\main.cpp(437): warning C4018: '<' : signed/unsigned mismatch
+     1>c:\users\johan\workspace\graphics tda361\examples\opengltutorials_2014 (1)\opengltutorials\project\main.cpp(874): warning C4018: '<' : signed/unsigned mismatch
        Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Johan\workspace\Graphics Tda361\Examples\OpenGLTutorials_2014 (1)\OpenGLTutorials\bin\OpenGL_project_Debug.exe" /INCREMENTAL /NOLOGO /LIBPATH:../lib glew32.lib ILU.lib ILUT.lib DevIL.lib user32.lib "glutil-vs2013_Debug.lib" "linmath-vs2013_Debug.lib" kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:".\Debug/OpenGL_Lab.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE:NO /IMPLIB:"C:\Users\Johan\workspace\Graphics Tda361\Examples\OpenGLTutorials_2014 (1)\OpenGLTutorials\bin\OpenGL_project_Debug.lib" /MACHINE:X86 /SAFESEH:NO Debug\Camera.obj
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Johan\workspace\Graphics Tda361\Examples\OpenGLTutorials_2014 (1)\OpenGLTutorials\bin\OpenGL_project_Debug.exe" /INCREMENTAL /NOLOGO /LIBPATH:../lib glew32.lib ILU.lib ILUT.lib DevIL.lib user32.lib "glutil-vs2013_Debug.lib" "linmath-vs2013_Debug.lib" assimp.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:".\Debug/OpenGL_Lab.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE:NO /IMPLIB:"C:\Users\Johan\workspace\Graphics Tda361\Examples\OpenGLTutorials_2014 (1)\OpenGLTutorials\bin\OpenGL_project_Debug.lib" /MACHINE:X86 /SAFESEH:NO Debug\Camera.obj
+         Debug\Logger.obj
          Debug\main.obj
+         Debug\Mesh.obj
          Debug\Octree.obj
          Debug\PerspectiveCamera.obj
          Debug\SceneRenderer.obj
@@ -25,4 +28,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.59
+Time Elapsed 00:00:01.23

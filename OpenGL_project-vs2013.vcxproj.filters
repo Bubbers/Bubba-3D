@@ -11,6 +11,12 @@
     <ClCompile Include="PerspectiveCamera.cpp">
       <Filter>Camera</Filter>
     </ClCompile>
+    <ClCompile Include="Logger.cpp">
+      <Filter>Log</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Octree.h" />
@@ -21,6 +27,12 @@
     <ClInclude Include="SceneRenderer.h" />
     <ClInclude Include="PerspectiveCamera.h">
       <Filter>Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Logger.h">
+      <Filter>Log</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>objects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -37,6 +49,12 @@
   <ItemGroup>
     <Filter Include="Camera">
       <UniqueIdentifier>{fd6bd92f-f0fd-4c92-9b7a-adb9aa764281}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Log">
+      <UniqueIdentifier>{ff705bec-bc0f-404b-bc7e-7ef5d35ba843}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="objects">
+      <UniqueIdentifier>{21bc5326-1e9d-446b-9a95-93d308cb89d2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

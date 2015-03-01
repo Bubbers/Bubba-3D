@@ -13,7 +13,7 @@ using namespace std;
 using namespace chag;
 using namespace chrono;
 
-const int MAX_DEPTH = 4;
+const int MAX_DEPTH = 8;
 const int MAX_CHILDREN = 64;
 
 class Octree {
@@ -23,7 +23,7 @@ public:
 
 	bool hasChildren(void);
 	void insert(Triangle* t);
-	void insertAll(std::vector<Triangle*> triangles);
+	void insertAll(std::vector<Triangle*> &triangles);
 
 	float3 origin;
 	float3 halfVector;
