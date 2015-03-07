@@ -54,8 +54,8 @@
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectName)_$(Configuration)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\Program Files\Assimp\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files\Assimp\lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\Johan\workspace\Graphics Tda361\Examples\OpenGLTutorials_2014 %281%29\OpenGLTutorials\project\includes;C:\Program Files\Assimp\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\Johan\workspace\Graphics Tda361\Examples\OpenGLTutorials_2014 %281%29\OpenGLTutorials\project\src;C:\Program Files\Assimp\lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>C:\Program Files\Assimp\include;$(IncludePath)</IncludePath>
@@ -121,6 +121,9 @@
       <DisableSpecificWarnings>4505</DisableSpecificWarnings>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <WholeProgramOptimization>true</WholeProgramOptimization>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -136,6 +139,8 @@
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
+      <OptimizeReferences>true</OptimizeReferences>
+      <LinkTimeCodeGeneration>PGOptimization</LinkTimeCodeGeneration>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -143,34 +148,25 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="Logger.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="Mesh.cpp" />
-    <ClCompile Include="Octree.cpp" />
-    <ClCompile Include="PerspectiveCamera.cpp" />
-    <ClCompile Include="SceneRenderer.cpp" />
-    <ClCompile Include="Triangle.cpp" />
+    <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\CubeMapTexture.cpp" />
+    <ClCompile Include="src\Logger.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Mesh.cpp" />
+    <ClCompile Include="src\Octree.cpp" />
+    <ClCompile Include="src\PerspectiveCamera.cpp" />
+    <ClCompile Include="src\Skybox.cpp" />
+    <ClCompile Include="src\Triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="cutoff.frag" />
-    <None Include="horizontal_blur.frag" />
-    <None Include="postFx.frag" />
-    <None Include="postFx.vert" />
-    <None Include="shadowMap.frag" />
-    <None Include="shadowMap.vert" />
-    <None Include="simple.frag" />
-    <None Include="simple.vert" />
-    <None Include="vertical_blur.frag" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Camera.h" />
-    <ClInclude Include="Logger.h" />
-    <ClInclude Include="Mesh.h" />
-    <ClInclude Include="Octree.h" />
-    <ClInclude Include="PerspectiveCamera.h" />
-    <ClInclude Include="SceneRenderer.h" />
-    <ClInclude Include="Triangle.h" />
+    <ClInclude Include="includes\Camera.h" />
+    <ClInclude Include="includes\CubeMapTexture.h" />
+    <ClInclude Include="includes\Logger.h" />
+    <ClInclude Include="includes\Mesh.h" />
+    <ClInclude Include="includes\Octree.h" />
+    <ClInclude Include="includes\PerspectiveCamera.h" />
+    <ClInclude Include="includes\Skybox.h" />
+    <ClInclude Include="includes\Triangle.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
