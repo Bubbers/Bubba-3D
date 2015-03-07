@@ -12,8 +12,8 @@ newmtl 07___Default
 	Kd 0.0000 0.0000 0.0000
 	Ks 0.0000 0.0000 0.0000
 	Ke 1.0000 1.0000 1.0000
-	map_Ka skybox0001.tga
-	map_Kd skybox0001.tga
+	map_Ka skybox0001.jpg
+	map_Kd skybox0001.jpg
 
 newmtl skybox3
 	Ns 10.0000
