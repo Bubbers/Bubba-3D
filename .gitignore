@@ -4,3 +4,6 @@ assimp.exe
 assimp_view.exe
 Assimp32.dll
 D3DCompiler_42.dll
+Thumb.db
+*.vcproj
+*.vcxproj
