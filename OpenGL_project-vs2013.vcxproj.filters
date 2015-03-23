@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="src\Camera.cpp">
+      <Filter>Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Logger.cpp">
+      <Filter>Log</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Mesh.cpp">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PerspectiveCamera.cpp">
+      <Filter>Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Triangle.cpp">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Skybox.cpp">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CubeMapTexture.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Octree.cpp">
+      <Filter>Datastructures</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="includes\Camera.h">
+      <Filter>Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\Logger.h">
+      <Filter>Log</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\Mesh.h">
+      <Filter>objects</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\PerspectiveCamera.h">
+      <Filter>Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\Triangle.h">
+      <Filter>objects</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\Skybox.h">
+      <Filter>objects</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\CubeMapTexture.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\Octree.h">
+      <Filter>Datastructures</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Camera">
+      <UniqueIdentifier>{fd6bd92f-f0fd-4c92-9b7a-adb9aa764281}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Log">
+      <UniqueIdentifier>{ff705bec-bc0f-404b-bc7e-7ef5d35ba843}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="objects">
+      <UniqueIdentifier>{21bc5326-1e9d-446b-9a95-93d308cb89d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Misc">
+      <UniqueIdentifier>{e85cdfa9-6b11-49aa-894c-dcd8f4707759}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shaders">
+      <UniqueIdentifier>{de3367d8-bb4e-4390-b674-63361a560b90}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Datastructures">
+      <UniqueIdentifier>{f33b1c84-0e06-4c57-9328-2a8b840c387b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

@@ -53,6 +53,14 @@
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectName)_$(Configuration)</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectName)_$(Configuration)</TargetName>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>C:\Users\Johan\workspace\Graphics Tda361\Examples\OpenGLTutorials_2014 %281%29\OpenGLTutorials\project\includes;C:\Program Files\Assimp\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\Johan\workspace\Graphics Tda361\Examples\OpenGLTutorials_2014 %281%29\OpenGLTutorials\project\src;C:\Program Files\Assimp\lib\x86;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>C:\Program Files\Assimp\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files\Assimp\lib\x86;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Midl>
       <TypeLibraryName>.\Debug/OpenGL_Lab.tlb</TypeLibraryName>
@@ -77,7 +85,7 @@
       <Culture>0x041d</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>glew32.lib;ILU.lib;ILUT.lib;DevIL.lib;user32.lib;glutil-vs2013_$(Configuration).lib;linmath-vs2013_$(Configuration).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glew32.lib;ILU.lib;ILUT.lib;DevIL.lib;user32.lib;glutil-vs2013_$(Configuration).lib;linmath-vs2013_$(Configuration).lib;assimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>../lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -111,13 +119,18 @@
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DisableSpecificWarnings>4505</DisableSpecificWarnings>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x041d</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>glew32.lib;ILU.lib;ILUT.lib;DevIL.lib;user32.lib;glutil-vs2013_$(Configuration).lib;linmath-vs2013_$(Configuration).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glew32.lib;ILU.lib;ILUT.lib;DevIL.lib;user32.lib;glutil-vs2013_$(Configuration).lib;linmath-vs2013_$(Configuration).lib;assimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>../lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>.\Release/OpenGL_Lab.pdb</ProgramDatabaseFile>
@@ -126,6 +139,8 @@
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
+      <OptimizeReferences>true</OptimizeReferences>
+      <LinkTimeCodeGeneration>PGOptimization</LinkTimeCodeGeneration>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -133,24 +148,25 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="Octree.cpp" />
-    <ClCompile Include="Triangle.cpp" />
+    <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\CubeMapTexture.cpp" />
+    <ClCompile Include="src\Logger.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Mesh.cpp" />
+    <ClCompile Include="src\Octree.cpp" />
+    <ClCompile Include="src\PerspectiveCamera.cpp" />
+    <ClCompile Include="src\Skybox.cpp" />
+    <ClCompile Include="src\Triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="cutoff.frag" />
-    <None Include="horizontal_blur.frag" />
-    <None Include="postFx.frag" />
-    <None Include="postFx.vert" />
-    <None Include="shadowMap.frag" />
-    <None Include="shadowMap.vert" />
-    <None Include="simple.frag" />
-    <None Include="simple.vert" />
-    <None Include="vertical_blur.frag" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Octree.h" />
-    <ClInclude Include="Triangle.h" />
+    <ClInclude Include="includes\Camera.h" />
+    <ClInclude Include="includes\CubeMapTexture.h" />
+    <ClInclude Include="includes\Logger.h" />
+    <ClInclude Include="includes\Mesh.h" />
+    <ClInclude Include="includes\Octree.h" />
+    <ClInclude Include="includes\PerspectiveCamera.h" />
+    <ClInclude Include="includes\Skybox.h" />
+    <ClInclude Include="includes\Triangle.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

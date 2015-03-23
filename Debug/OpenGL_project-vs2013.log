@@ -1,19 +1,21 @@
-﻿Build started 24/01/2015 20:28:47.
+﻿Build started 08/03/2015 12:20:48.
      1>Project "C:\Users\Johan\workspace\Graphics Tda361\Examples\OpenGLTutorials_2014 (1)\OpenGLTutorials\project\OpenGL_project-vs2013.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I../inc /I../glutil /I../linmath /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _CRT_SECURE_NO_WARNINGS /Gm /EHsc /RTC1 /MTd /GS /fp:fast /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /wd4505 /analyze- /errorReport:prompt main.cpp
-         main.cpp
-     1>c:\users\johan\workspace\graphics tda361\examples\opengltutorials_2014 (1)\opengltutorials\project\main.cpp(251): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\johan\workspace\graphics tda361\examples\opengltutorials_2014 (1)\opengltutorials\project\main.cpp(389): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\johan\workspace\graphics tda361\examples\opengltutorials_2014 (1)\opengltutorials\project\main.cpp(391): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\johan\workspace\graphics tda361\examples\opengltutorials_2014 (1)\opengltutorials\project\main.cpp(861): warning C4018: '<' : signed/unsigned mismatch
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I../inc /I../glutil /I../linmath /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _CRT_SECURE_NO_WARNINGS /Gm /EHsc /RTC1 /MTd /GS /fp:fast /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /wd4505 /analyze- /errorReport:prompt src\Mesh.cpp
+         Mesh.cpp
        Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Johan\workspace\Graphics Tda361\Examples\OpenGLTutorials_2014 (1)\OpenGLTutorials\bin\OpenGL_project_Debug.exe" /INCREMENTAL /NOLOGO /LIBPATH:../lib glew32.lib ILU.lib ILUT.lib DevIL.lib user32.lib "glutil-vs2013_Debug.lib" "linmath-vs2013_Debug.lib" kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:".\Debug/OpenGL_Lab.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE:NO /IMPLIB:"C:\Users\Johan\workspace\Graphics Tda361\Examples\OpenGLTutorials_2014 (1)\OpenGLTutorials\bin\OpenGL_project_Debug.lib" /MACHINE:X86 /SAFESEH:NO Debug\main.obj
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Johan\workspace\Graphics Tda361\Examples\OpenGLTutorials_2014 (1)\OpenGLTutorials\bin\OpenGL_project_Debug.exe" /INCREMENTAL /NOLOGO /LIBPATH:../lib glew32.lib ILU.lib ILUT.lib DevIL.lib user32.lib "glutil-vs2013_Debug.lib" "linmath-vs2013_Debug.lib" assimp.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:".\Debug/OpenGL_Lab.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE:NO /IMPLIB:"C:\Users\Johan\workspace\Graphics Tda361\Examples\OpenGLTutorials_2014 (1)\OpenGLTutorials\bin\OpenGL_project_Debug.lib" /MACHINE:X86 /SAFESEH:NO Debug\Camera.obj
+         Debug\CubeMapTexture.obj
+         Debug\Logger.obj
+         Debug\main.obj
+         Debug\Mesh.obj
          Debug\Octree.obj
+         Debug\PerspectiveCamera.obj
+         Debug\Skybox.obj
          Debug\Triangle.obj
          OpenGL_project-vs2013.vcxproj -> C:\Users\Johan\workspace\Graphics Tda361\Examples\OpenGLTutorials_2014 (1)\OpenGLTutorials\bin\OpenGL_project_Debug.exe
      1>Done Building Project "C:\Users\Johan\workspace\Graphics Tda361\Examples\OpenGLTutorials_2014 (1)\OpenGLTutorials\project\OpenGL_project-vs2013.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:01.72
+Time Elapsed 00:00:01.99
