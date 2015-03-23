@@ -269,7 +269,7 @@ void initGL()
 	worldCollision.loadMesh("scenes/island2Collision.obj");
 	//skybox.loadMesh("scenes/skybox.obj");
 	//skyboxnight.loadMesh("scenes/skyboxnight.obj");
-	//spider.loadMesh("scenes/spider.obj");
+	spider.loadMesh("scenes/boblampclean.obj");
 
 	// Make the textures of the skyboxes use clamp to edge to avoid seams
 	/*for(int i=0; i<6; i++){
@@ -558,7 +558,7 @@ void drawShadowCasters(GLuint shaderProgram)
 	setUniformSlow(shaderProgram, "object_reflectiveness", 0.0f); 
 	drawModel(factory, make_translation(make_vector(-15.0f, 0.0f, 0.0f)) * make_rotation_y<float4x4>(M_PI / 180 * 90) * make_scale<float4x4>(make_vector(2.0f, 2.0f, 2.0f)), shaderProgram);
 
-	//drawModel(spider, make_translation(make_vector(40.0f, 1.0f, 0.0f)) * make_scale<float4x4>(0.1f), shaderProgram); 
+	drawModel(spider, make_translation(make_vector(40.0f, 1.0f, 0.0f)) * make_rotation_x<float4x4>(M_PI / 180 * 0) *  make_scale<float4x4>(0.1f), shaderProgram);
 }
 
 void drawShadowMap(Fbo sbo, float4x4 viewProjectionMatrix) {

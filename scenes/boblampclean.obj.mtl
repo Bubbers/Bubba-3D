@@ -1,0 +1,23 @@
+# File produced by Open Asset Import Library (http://www.assimp.sf.net)
+# (assimp v3.1.187496374)
+
+newmtl JoinedMaterial_#5
+illum 1
+map_Kd guard1_body.tga
+
+newmtl $Material_1
+illum 1
+map_Kd guard1_face.tga
+
+newmtl $Material_2
+illum 1
+map_Kd guard1_helmet.tga
+
+newmtl $Material_3
+illum 1
+map_Kd iron_grill.tga
+
+newmtl $Material_4
+illum 1
+map_Kd round_grill.tga
+

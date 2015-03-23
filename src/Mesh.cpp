@@ -51,7 +51,7 @@ bool Mesh::loadMesh(const std::string& fileName) {
 	Assimp::Importer importer;
 
 	const aiScene* pScene = importer.ReadFile(
-		fileName.c_str(), aiProcess_GenSmoothNormals | aiProcess_Triangulate | aiProcess_FlipUVs);
+		fileName.c_str(), aiProcess_GenSmoothNormals | aiProcess_Triangulate );
 	
 
 	if (!pScene) {
@@ -136,7 +136,7 @@ void Mesh::initMats(const aiScene* pScene, const std::string& fileName) {
 		m.diffuseColor = make_vector(diffuse.r, diffuse.g, diffuse.b, 1.0f);
 		m.specularColor = make_vector(specular.r, specular.g, specular.b, 1.0f);
 		m.emissiveColor = make_vector(emissive.r, emissive.g, emissive.b, 1.0f);
-		m.specularExponent = specExp;
+		m.specularExponent = specExp > 0.0f ? specExp : 0.0f;
 
 		m_textures.push_back(m);
 	}
@@ -250,7 +250,9 @@ GLuint Mesh::loadTexture(std::string fileName)
 	int width = ilGetInteger(IL_IMAGE_WIDTH);
 	int height = ilGetInteger(IL_IMAGE_HEIGHT);
 	// Note: now with SRGB 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB_ALPHA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, ilGetData());
+	ILubyte* b = ilGetData();
+	ILubyte c = *b;
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB_ALPHA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, b);
 	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, ilGetData());
 	CHECK_GL_ERROR();
 	ilDeleteImage(image);
