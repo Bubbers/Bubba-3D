@@ -69,7 +69,7 @@ high_resolution_clock::time_point start;
 GLuint shaderProgram;
 const float3 vUp = make_vector(0.0f, 1.0f, 0.0f);
 
-Octree t(make_vector(0.0f, 0.0f, 0.0f), make_vector(100.0f, 50.0f, 100.0f), 0);
+Octree t(make_vector(0.0f, 0.0f, 0.0f), make_vector(200.0f, 50.0f, 200.0f), 0);
 
 
 GLuint postFxShader;
@@ -265,7 +265,6 @@ void initGL()
 
 	world.loadMesh("scenes/world.obj");
 	factory.loadMesh("scenes/test.obj");
-	worldCollision.loadMesh("scenes/world.obj");
 	spider.loadMesh("scenes/spider.obj");
 
 	water.loadMesh("../scenes/water.obj");
@@ -274,7 +273,7 @@ void initGL()
 	logger.logInfo("Finished loading models.");
 
 	logger.logInfo("Started creating octree");
-	addMeshToCollision(&worldCollision, make_identity<float4x4>());
+	addMeshToCollision(&world, make_identity<float4x4>());
 	addMeshToCollision(&water, make_translation(make_vector(0.0f, -6.0f, 0.0f)));
 	addMeshToCollision(&factory, make_translation(make_vector(-15.0f, 6.0f, 0.0f)) * make_rotation_y<float4x4>(M_PI / 180 * 90) * make_scale<float4x4>(make_vector(2.0f, 2.0f, 2.0f)));
 	addMeshToCollision(&spider, make_translation(make_vector(40.0f, 2.0f, 0.0f)) * make_rotation_x<float4x4>(M_PI / 180 * 0) *  make_scale<float4x4>(0.1f));
@@ -505,9 +504,6 @@ Fbo createPostProcessFbo(int width, int height) {
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, fbo.depthbuffer);
 
-
-	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	//glBindTexture(GL_TEXTURE_RECTANGLE_ARB, 0);
 	return fbo;
 }
 
@@ -784,6 +780,10 @@ void checkIntersection() {
 	float c = rayOctreeIntersection(carLoc.location + rot * carLoc.wheel3, -upVec, t);
 	float d = rayOctreeIntersection(carLoc.location + rot * carLoc.wheel4, -upVec, t);
 	
+	if (a == 0 && b == 0 && c == 0 && d == 0) {
+		return;
+		
+	}
 	//Calculate 3d points of intersection
 	float3 af = carLoc.wheel1 - (upVec * a);
 	float3 bf = carLoc.wheel2 - (upVec * b);
@@ -801,6 +801,8 @@ void checkIntersection() {
 
 	float3 halfVector = normalize(newUpa - newUpb);
 	carLoc.upDir = -(rot * halfVector);
+
+	
 
 	//Change wheel locations 
 	carLoc.wheel1 += upVec * a;
@@ -820,6 +822,7 @@ void checkIntersection() {
 	float4 newLoc = makematrix(qatX) * makematrix(qatZ) * make_vector4(carLoc.wheel1, 1.0f);
 
 	carLoc.location += make_vector(0.0f, carLoc.wheel1.y + (carLoc.wheel1.y - newLoc.y), 0.0f);
+	printf("%f\n", carLoc.wheel1.y + (carLoc.wheel1.y - newLoc.y));
 }
 
 float rayOctreeIntersection(float3 rayOrigin, float3 rayVec, Octree oct ) {
@@ -839,7 +842,7 @@ float rayOctreeIntersection(float3 rayOrigin, float3 rayVec, Octree oct ) {
 		}
 	}
 	
-	if (minIns == 0 || minIns == NULL) {
+	if (minIns == 0 || minIns == NULL || geometry.size() == 0) {
 		return 0;
 	}
 
