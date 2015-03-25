@@ -200,7 +200,6 @@ float3 sphericalToCartesian(float theta, float phi, float r);
 
 void setFog(GLuint shaderProgram);
 
-
 void initGL()
 {
 	int w = SCREEN_WIDTH;
@@ -236,7 +235,7 @@ void initGL()
 	 */
 
 
-	sunCamera = new PerspectiveCamera(lightPosition, make_vector(0.0f, 0.0f, 0.0f), make_vector(0.0f, 1.0f, 0.0f), 25.0f, 1.0f, 370.0f, 530.0f);
+	sunCamera = new PerspectiveCamera(lightPosition, make_vector(0.0f, 0.0f, 0.0f), make_vector(0.0f, 1.0f, 0.0f), 45.0f, 1.0f, 280.0f, 600.0f);
 	playerCamera = new PerspectiveCamera(
 		carLoc.location + sphericalToCartesian(camera_theta, camera_phi, camera_r),
 		carLoc.location + make_vector(0.0f, camera_target_altitude, 0.0f),
@@ -264,22 +263,10 @@ void initGL()
 	//*************************************************************************
 	logger.logInfo("Started loading models.");
 
-	world.loadMesh("scenes/island2.obj");
+	world.loadMesh("scenes/world.obj");
 	factory.loadMesh("scenes/test.obj");
-	worldCollision.loadMesh("scenes/island2Collision.obj");
-	//skybox.loadMesh("scenes/skybox.obj");
-	//skyboxnight.loadMesh("scenes/skyboxnight.obj");
-	spider.loadMesh("scenes/boblampclean.obj");
-
-	// Make the textures of the skyboxes use clamp to edge to avoid seams
-	/*for(int i=0; i<6; i++){
-		glBindTexture(GL_TEXTURE_2D, skybox.getDiffuseTexture(i)); 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glBindTexture(GL_TEXTURE_2D, skyboxnight.getDiffuseTexture(i)); 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	}*/
+	worldCollision.loadMesh("scenes/world.obj");
+	spider.loadMesh("scenes/spider.obj");
 
 	water.loadMesh("../scenes/water.obj");
 	car.loadMesh("scenes/car.obj");
@@ -289,7 +276,8 @@ void initGL()
 	logger.logInfo("Started creating octree");
 	addMeshToCollision(&worldCollision, make_identity<float4x4>());
 	addMeshToCollision(&water, make_translation(make_vector(0.0f, -6.0f, 0.0f)));
-	addMeshToCollision(&factory, make_translation(make_vector(-15.0f, 0.0f, 0.0f)) * make_rotation_y<float4x4>(M_PI / 180 * 90) * make_scale<float4x4>(make_vector(2.0f, 2.0f, 2.0f)));
+	addMeshToCollision(&factory, make_translation(make_vector(-15.0f, 6.0f, 0.0f)) * make_rotation_y<float4x4>(M_PI / 180 * 90) * make_scale<float4x4>(make_vector(2.0f, 2.0f, 2.0f)));
+	addMeshToCollision(&spider, make_translation(make_vector(40.0f, 2.0f, 0.0f)) * make_rotation_x<float4x4>(M_PI / 180 * 0) *  make_scale<float4x4>(0.1f));
 
 
 	high_resolution_clock::time_point start = high_resolution_clock::now();
@@ -425,7 +413,6 @@ void initGL()
 	glEnable(GL_DEPTH_TEST);
 
 	logger.logInfo("Generating OpenGL data completed.");
-
 }
 
 void addMeshToCollision(Mesh* model, float4x4 modelMatrix) {
@@ -536,7 +523,7 @@ void drawModel(Mesh &model, const float4x4 &modelMatrix, GLuint shaderProgram)
 */
 void drawShadowCasters(GLuint shaderProgram)
 {
-	drawModel(world, make_identity<float4x4>(), shaderProgram);
+	drawModel(world, make_translation(make_vector(0.0f, 0.0f, 0.0f)), shaderProgram);
 	setUniformSlow(shaderProgram, "object_reflectiveness", 1.5f); 
 
 	float3 frontDir = normalize(carLoc.frontDir);
@@ -556,9 +543,9 @@ void drawShadowCasters(GLuint shaderProgram)
 		* makematrix(qatZ),
 		shaderProgram);
 	setUniformSlow(shaderProgram, "object_reflectiveness", 0.0f); 
-	drawModel(factory, make_translation(make_vector(-15.0f, 0.0f, 0.0f)) * make_rotation_y<float4x4>(M_PI / 180 * 90) * make_scale<float4x4>(make_vector(2.0f, 2.0f, 2.0f)), shaderProgram);
+	drawModel(factory, make_translation(make_vector(-15.0f, 6.0f, 0.0f)) * make_rotation_y<float4x4>(M_PI / 180 * 90) * make_scale<float4x4>(make_vector(2.0f, 2.0f, 2.0f)), shaderProgram);
 
-	drawModel(spider, make_translation(make_vector(40.0f, 1.0f, 0.0f)) * make_rotation_x<float4x4>(M_PI / 180 * 0) *  make_scale<float4x4>(0.1f), shaderProgram);
+	drawModel(spider, make_translation(make_vector(40.0f, 2.0f, 0.0f)) * make_rotation_x<float4x4>(M_PI / 180 * 0) *  make_scale<float4x4>(0.1f), shaderProgram);
 }
 
 void drawShadowMap(Fbo sbo, float4x4 viewProjectionMatrix) {

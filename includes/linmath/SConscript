@@ -1,0 +1,27 @@
+# SConscript - build linmath under Linux
+
+TARGET = "libLinmath"
+SOURCE = """
+		Aabb.cpp    float3.cpp    float4.cpp    int2.cpp  int4.cpp
+		float2.cpp  float3x3.cpp  float4x4.cpp  int3.cpp  Quaternion.cpp
+	""";
+
+Import( "env" );
+
+from SCript.Stages import build;
+
+libLinmath = None;
+
+@build
+def build_lab():
+	obj = [env.Object(src) for src in SOURCE.split()];
+	lib = env.StaticLibrary( target = TARGET, source = obj );
+
+	global libLinmath;
+	libLinmath = lib;
+
+	return lib; 
+
+Return( "libLinmath" );
+
+# EOF vim:syntax=python:foldmethod=marker:ts=4:noexpandtab

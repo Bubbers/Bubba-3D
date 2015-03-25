@@ -1,0 +1,32 @@
+﻿Build started 21/01/2015 17:46:30.
+     1>Project "C:\Users\Johan\workspace\Graphics Tda361\Examples\OpenGLTutorials_2014 (1)\OpenGLTutorials\linmath\linmath-vs2013.vcxproj" on node 3 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _LIB /Gm /EHsc /RTC1 /MTd /GS /fp:fast /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /wd4505 /analyze- /errorReport:prompt Aabb.cpp Quaternion.cpp float3.cpp float3x3.cpp float4.cpp float4x4.cpp int3.cpp int4.cpp
+         Aabb.cpp
+         Generating Code...
+         Compiling...
+         int4.cpp
+         int3.cpp
+         float4x4.cpp
+         float4.cpp
+         float3x3.cpp
+         float3.cpp
+         Quaternion.cpp
+         Generating Code...
+       Lib:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\Lib.exe /OUT:"C:\Users\Johan\workspace\Graphics Tda361\Examples\OpenGLTutorials_2014 (1)\OpenGLTutorials\\lib\linmath-vs2013_Debug.lib" /NOLOGO Debug\Aabb.obj
+         Debug\float2.obj
+         Debug\float3.obj
+         Debug\float3x3.obj
+         Debug\float4.obj
+         Debug\float4x4.obj
+         Debug\int2.obj
+         Debug\int3.obj
+         Debug\int4.obj
+         Debug\Quaternion.obj
+         linmath-vs2013.vcxproj -> C:\Users\Johan\workspace\Graphics Tda361\Examples\OpenGLTutorials_2014 (1)\OpenGLTutorials\\lib\linmath-vs2013_Debug.lib
+     1>Done Building Project "C:\Users\Johan\workspace\Graphics Tda361\Examples\OpenGLTutorials_2014 (1)\OpenGLTutorials\linmath\linmath-vs2013.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:01.60
