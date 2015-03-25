@@ -18,6 +18,7 @@
 #include <Quaternion.h>
 
 #include <vector>
+#include <thread>
 
 #include <ctime>
 
@@ -51,6 +52,8 @@ using namespace chrono;
 #define SHADOW_MAP_RESOLUTION	2048
 #define CUBE_MAP_RESOLUTION		512
 
+#define TICK_PER_SECOND  50
+
 
 namespace FogParams {
 	float fDensity = 0.001f;
@@ -65,7 +68,7 @@ namespace FogParams {
 //*****************************************************************************
 bool paused = false;				// Tells us wether sun animation is paused
 float currentTime = 0.0f;			// Tells us the current time
-high_resolution_clock::time_point start;
+float timeSinceDraw = 0.0f;
 GLuint shaderProgram;
 const float3 vUp = make_vector(0.0f, 1.0f, 0.0f);
 
@@ -166,6 +169,7 @@ struct Car{
 //	Collision objects
 //*****************************************************************************
 std::vector<Triangle*> ts;
+bool hasChanged = true;
 
 
 //*****************************************************************************
@@ -851,17 +855,14 @@ float rayOctreeIntersection(float3 rayOrigin, float3 rayVec, Octree oct ) {
 
 void display(void)
 {
-	checkIntersection();
+	if (hasChanged){
+		checkIntersection();
+		hasChanged = false;
+	}
 	drawScene();
 	
 	glutSwapBuffers();  // swap front and back buffer. This frame will now be displayed.
 	CHECK_GL_ERROR();
-
-	high_resolution_clock::time_point end = high_resolution_clock::now();
-	duration<double> time_span = duration_cast<duration<double>>(end - start);
-	//printf("Fps: %f\n", 1 / time_span.count());
-
-	start = end;
 }
 
 void handleKeys(unsigned char key, int /*x*/, int /*y*/)
@@ -995,20 +996,24 @@ void tick() {
 	if (keysDown[(int)'w']) {
 		float3 term = carLoc.frontDir * carLoc.moveSpeed;
 		carLoc.location += term;
+		hasChanged = true;
 
 	}if (keysDown[(int)'s']) {
 		float3 term = carLoc.frontDir * carLoc.moveSpeed;
 		carLoc.location -= term;
+		hasChanged = true;
 
 	}if (keysDown[(int)'a'] && (keysDown[(int)'w'] || keysDown[(int)'s'])) {
 		carLoc.angley += carLoc.rotationSpeed;
 		carLoc.frontDir = make_rotation_y<float3x3>(carLoc.rotationSpeed) * carLoc.frontDir;
 		camera_theta += carLoc.rotationSpeed;
+		hasChanged = true;
 
 	}if (keysDown[(int)'d'] && (keysDown[(int)'w'] || keysDown[(int)'s'])) {
 		carLoc.angley -= carLoc.rotationSpeed;
 		carLoc.frontDir = make_rotation_y<float3x3>(-carLoc.rotationSpeed) * carLoc.frontDir;
 		camera_theta -= carLoc.rotationSpeed;
+		hasChanged = true;
 	}
 }
 
@@ -1020,29 +1025,33 @@ void setFog(GLuint shaderProgram) {
 	setUniformSlow(shaderProgram, "fog.vColor",		FogParams::vColor);
 }
 
-void idle( void )
+void idle( int v )
 {
-	static float startTime = float(glutGet(GLUT_ELAPSED_TIME)) / 1000.0f;
-	// Here is a good place to put application logic.
-	if (!paused)
-	{
+	float time = (1000 / TICK_PER_SECOND) - (float(glutGet(GLUT_ELAPSED_TIME) - timeSinceDraw));
+	if ( time < 0) {
+		glutTimerFunc(1000 / TICK_PER_SECOND, idle, 0);
+		timeSinceDraw = float(glutGet(GLUT_ELAPSED_TIME));
+		static float startTime = float(glutGet(GLUT_ELAPSED_TIME)) / 1000.0f;
+		// Here is a good place to put application logic.
 		currentTime = float(glutGet(GLUT_ELAPSED_TIME)) / 1000.0f - startTime;
+
+
+		// rotate light around X axis, sunlike fashion.
+		// do one full revolution every 20 seconds.
+		float4x4 rotateLight = make_rotation_x<float4x4>(2.0f * M_PI * currentTime / 20.0f);
+		// rotate and update global light position.
+		lightPosition = make_vector3(rotateLight * make_vector(30.1f, 450.0f, 0.1f, 1.0f));
+		sunCamera->setPosition(lightPosition);
+
+		tick();
+
+		glutPostRedisplay();
 	}
-
-	tick();
-
-	// rotate light around X axis, sunlike fashion.
-	// do one full revolution every 20 seconds.
-	float4x4 rotateLight = make_rotation_x<float4x4>(2.0f * M_PI * currentTime / 20.0f);
-	// rotate and update global light position.
-	lightPosition = make_vector3(rotateLight * make_vector(30.1f, 450.0f, 0.1f, 1.0f));
-	sunCamera->setPosition(lightPosition);
-
-	glutPostRedisplay();  
-	// Uncommenting the line above tells glut that the window 
-	// needs to be redisplayed again. This forces the display to be redrawn
-	// over and over again. 
+	else {
+		glutTimerFunc(time, idle, 0);
+	}
 }
+
 
 int main(int argc, char *argv[])
 {
@@ -1091,7 +1100,7 @@ int main(int argc, char *argv[])
 	 * To repeatedly redraw the window, we need to manually request that via
 	 * glutPostRedisplay(). We call this from the glutIdleFunc.
 	 */
-	glutIdleFunc(idle);
+	glutTimerFunc(50,idle, 0);
 	glutDisplayFunc(display);
 
 	glutKeyboardFunc(handleKeys); // standard key is pressed/released
