@@ -26,6 +26,7 @@
     <ClCompile Include="src\Octree.cpp">
       <Filter>Datastructures</Filter>
     </ClCompile>
+    <ClCompile Include="includes\glutil\glutil.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="includes\Camera.h">
@@ -52,6 +53,10 @@
     <ClInclude Include="includes\Octree.h">
       <Filter>Datastructures</Filter>
     </ClInclude>
+    <ClInclude Include="includes\AABB.h">
+      <Filter>Datastructures</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\glutil\glutil.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Camera">

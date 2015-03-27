@@ -148,6 +148,7 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="includes\glutil\glutil.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\CubeMapTexture.cpp" />
     <ClCompile Include="src\Logger.cpp" />
@@ -159,8 +160,10 @@
     <ClCompile Include="src\Triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="includes\AABB.h" />
     <ClInclude Include="includes\Camera.h" />
     <ClInclude Include="includes\CubeMapTexture.h" />
+    <ClInclude Include="includes\glutil\glutil.h" />
     <ClInclude Include="includes\Logger.h" />
     <ClInclude Include="includes\Mesh.h" />
     <ClInclude Include="includes\Octree.h" />

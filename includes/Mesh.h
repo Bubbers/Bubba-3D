@@ -14,6 +14,7 @@
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
+#include "AABB.h"
 
 class Mesh
 {
@@ -71,10 +72,6 @@ private:
 		unsigned int m_numIndices;
 	};
 
-	struct AABB {
-		chag::float3 maxV = chag::make_vector(-FLT_MAX, -FLT_MAX, -FLT_MAX);
-		chag::float3 minV = chag::make_vector(FLT_MAX, FLT_MAX, FLT_MAX);
-	};
 
 	
 	std::vector<Material> m_textures;

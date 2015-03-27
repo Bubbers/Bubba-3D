@@ -1,5 +1,5 @@
-#ifndef LAB_GL_UTILS_H
-#define LAB_GL_UTILS_H
+#ifndef __LAB_GL_UTILS_H__
+#define __LAB_GL_UTILS_H__
 
 /** This file contains utility functions to be used for the labs in computer
  * graphics at chalmers, they are not covered by any particular license...
@@ -12,6 +12,8 @@
 #include <cassert>
 
 #include <GL/glew.h>
+
+
 
 // Sometimes it exists, sometimes not...
 #ifndef M_PI
@@ -71,6 +73,8 @@ bool checkGLError(const char *file, int line);
  * (GLEW_VERSION_3_0). Bail if we don't.
  */
 void startupGLDiagnostics();
+
+void checkMinMax(float x, float y, float z, chag::float3* minV, chag::float3* maxV);
 
 /** 
  * Initialize OpenGL debug messages.
@@ -141,6 +145,8 @@ void setUniformSlow(GLuint shaderProgram, const char *name, const chag::float3 &
 void debugDrawLight(const chag::float4x4 &viewMatrix, 
 					const chag::float4x4 &projectionMatrix, 
 					const chag::float3 &worldSpaceLightPos);
+
+
 
 
 #if defined(__linux__)

@@ -39,6 +39,15 @@ float4x4 perspectiveMatrix(float fov, float aspectRatio, float n, float f) /* fi
 	return make_perspective(fov, aspectRatio, n, f);
 }
 
+void checkMinMax(float x, float y, float z, chag::float3* minV, chag::float3* maxV) {
+	if (x < minV->x) { minV->x = x; };
+	if (y < minV->y) { minV->y = y; };
+	if (z < minV->z) { minV->z = z; };
+	if (x > maxV->x) { maxV->x = x; };
+	if (y > maxV->y) { maxV->y = y; };
+	if (z > maxV->z) { maxV->z = z; };
+}
+
 
 
 float4x4 lookAt(const float3 &eye, const float3 &center, const float3 &up)

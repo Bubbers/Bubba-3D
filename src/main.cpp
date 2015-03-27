@@ -12,9 +12,10 @@
 #include <stdlib.h>
 #include <algorithm>
 
-#include <glutil.h>
+#include <glutil\glutil.h>
 #include <float4x4.h>
 #include <float3x3.h>
+#include "AABB.h"
 #include <Quaternion.h>
 
 #include <vector>
@@ -169,6 +170,7 @@ struct Car{
 //	Collision objects
 //*****************************************************************************
 std::vector<Triangle*> ts;
+AABB aabb_coll;
 bool hasChanged = true;
 
 
@@ -276,13 +278,7 @@ void initGL()
 	logger.logInfo("Finished loading models.");
 
 	logger.logInfo("Started creating octree");
-	//(make_vector(0.0f, 0.0f, 0.0f), make_vector(200.0f, 50.0f, 200.0f), 0);
-	float3 halfVector = (world.m_aabb.maxV - world.m_aabb.minV) / 2;
-	halfVector.x = fabs(halfVector.x);
-	halfVector.y = fabs(halfVector.y);
-	halfVector.z = fabs(halfVector.z);
-	float3 origin = world.m_aabb.maxV - halfVector;
-	octTree = new Octree(origin, halfVector, 0);
+
 	addMeshToCollision(&world, make_identity<float4x4>());
 	addMeshToCollision(&water, make_translation(make_vector(0.0f, -6.0f, 0.0f)));
 	addMeshToCollision(&factory, make_translation(make_vector(-15.0f, 6.0f, 0.0f)) * make_rotation_y<float4x4>(M_PI / 180 * 90) * make_scale<float4x4>(make_vector(2.0f, 2.0f, 2.0f)));
@@ -290,6 +286,13 @@ void initGL()
 
 
 	high_resolution_clock::time_point start = high_resolution_clock::now();
+
+	float3 halfVector = (aabb_coll.maxV - aabb_coll.minV) / 2;
+	halfVector.x = fabs(halfVector.x);
+	halfVector.y = fabs(halfVector.y);
+	halfVector.z = fabs(halfVector.z);
+	float3 origin = aabb_coll.maxV - halfVector;
+	octTree = new Octree(origin, halfVector, 0);
 
 	octTree->insertAll(ts);
 
@@ -447,6 +450,8 @@ void addMeshToCollision(Mesh* model, float4x4 modelMatrix) {
 			ts.push_back(t);
 		}
 	}
+	checkMinMax(model->m_aabb.maxV.x, model->m_aabb.maxV.y, model->m_aabb.maxV.z, &aabb_coll.minV, &aabb_coll.maxV);
+	checkMinMax(model->m_aabb.minV.x, model->m_aabb.minV.y, model->m_aabb.minV.z, &aabb_coll.minV, &aabb_coll.maxV);
 }
 
 bool rayTriangle(float3 r_o, float3 r_d, float3 v1, float3 v2, float3 v3, float *ins)
@@ -789,10 +794,9 @@ void checkIntersection() {
 	float b = rayOctreeIntersection(carLoc.location + rot * carLoc.wheel2, -upVec, *octTree);
 	float c = rayOctreeIntersection(carLoc.location + rot * carLoc.wheel3, -upVec, *octTree);
 	float d = rayOctreeIntersection(carLoc.location + rot * carLoc.wheel4, -upVec, *octTree);
-	
+
 	if (a == 0 && b == 0 && c == 0 && d == 0) {
 		return;
-		
 	}
 	//Calculate 3d points of intersection
 	float3 af = carLoc.wheel1 - (upVec * a);
@@ -852,7 +856,7 @@ float rayOctreeIntersection(float3 rayOrigin, float3 rayVec, Octree oct ) {
 		}
 	}
 	
-	if (minIns == 0 || minIns == NULL || geometry.size() == 0) {
+	if (minIns == NULL || geometry.size() == 0) {
 		return 0;
 	}
 
@@ -861,7 +865,7 @@ float rayOctreeIntersection(float3 rayOrigin, float3 rayVec, Octree oct ) {
 
 void display(void)
 {
-	if (hasChanged){
+	if (true){
 		checkIntersection();
 		hasChanged = false;
 	}

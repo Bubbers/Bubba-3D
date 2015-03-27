@@ -4,7 +4,7 @@
 #include "Logger.h"
 #include <IL/il.h>
 #include <IL/ilut.h>
-#include "glutil.h"
+#include <glutil\glutil.h>
 
 using namespace chag;
 
@@ -140,15 +140,6 @@ void Mesh::initMats(const aiScene* pScene, const std::string& fileName) {
 
 		m_textures.push_back(m);
 	}
-}
-
-void checkMinMax(float x, float y, float z, float3* minV, float3* maxV) {
-	if (x < minV->x) { minV->x = x; };
-	if (y < minV->y) { minV->y = y; };
-	if (z < minV->z) { minV->z = z; };
-	if (x > maxV->x) { maxV->x = x; };
-	if (y > maxV->y) { maxV->y = y; };
-	if (z > maxV->z) { maxV->z = z; };
 }
 
 void Mesh::initMesh(unsigned int index, const aiMesh* paiMesh) {
@@ -288,3 +279,4 @@ GLuint Mesh::loadTexture(std::string fileName)
 	CHECK_GL_ERROR();
 	return texid;
 }
+
