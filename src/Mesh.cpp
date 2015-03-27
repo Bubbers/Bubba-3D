@@ -142,6 +142,15 @@ void Mesh::initMats(const aiScene* pScene, const std::string& fileName) {
 	}
 }
 
+void checkMinMax(float x, float y, float z, float3* minV, float3* maxV) {
+	if (x < minV->x) { minV->x = x; };
+	if (y < minV->y) { minV->y = y; };
+	if (z < minV->z) { minV->z = z; };
+	if (x > maxV->x) { maxV->x = x; };
+	if (y > maxV->y) { maxV->y = y; };
+	if (z > maxV->z) { maxV->z = z; };
+}
+
 void Mesh::initMesh(unsigned int index, const aiMesh* paiMesh) {
 	std::vector<float3> positions;
 	std::vector<float3> normals;
@@ -149,6 +158,9 @@ void Mesh::initMesh(unsigned int index, const aiMesh* paiMesh) {
 	std::vector<unsigned int> indices;
 
 	const aiVector3D Zero3D(0.0f, 0.0f, 0.0f);
+	
+	float3 minV = make_vector(FLT_MAX, FLT_MAX, FLT_MAX);
+	float3 maxV = make_vector(-FLT_MAX, -FLT_MAX, -FLT_MAX);
 
 	for (unsigned int i = 0; i < paiMesh->mNumVertices; i++) {
 		const aiVector3D pPos = paiMesh->mVertices[i];
@@ -158,7 +170,12 @@ void Mesh::initMesh(unsigned int index, const aiMesh* paiMesh) {
 		positions.push_back(make_vector(pPos.x, pPos.y, pPos.z));
 		normals.push_back(make_vector(pNormal.x, pNormal.y, pNormal.z));
 		uvs.push_back(make_vector(pTexCoord.x, pTexCoord.y));
+
+		checkMinMax(pPos.x, pPos.y, pPos.z, &minV, &maxV);
 	}
+	
+	checkMinMax(minV.x, minV.y, minV.z, &m_aabb.minV, &m_aabb.maxV);
+	checkMinMax(maxV.x, maxV.y, maxV.z, &m_aabb.minV, &m_aabb.maxV);
 
 	for (unsigned int i = 0; i < paiMesh->mNumFaces; i++) {
 		const aiFace face = paiMesh->mFaces[i];

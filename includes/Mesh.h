@@ -8,6 +8,7 @@
 #include <float2.h>
 #include <float3.h>
 #include <float4.h>
+#include <glutil\glutil.h>
 #include "GL/glew.h"
 #include "GL/glut.h"
 #include <assimp/Importer.hpp>
@@ -70,11 +71,17 @@ private:
 		unsigned int m_numIndices;
 	};
 
+	struct AABB {
+		chag::float3 maxV = chag::make_vector(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+		chag::float3 minV = chag::make_vector(FLT_MAX, FLT_MAX, FLT_MAX);
+	};
+
 	
 	std::vector<Material> m_textures;
 
 public: 
 	std::vector<Chunk> m_chunks;
+	AABB m_aabb;
 };
 
 #endif // !__MESH_H__

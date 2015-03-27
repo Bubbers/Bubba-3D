@@ -72,7 +72,7 @@ float timeSinceDraw = 0.0f;
 GLuint shaderProgram;
 const float3 vUp = make_vector(0.0f, 1.0f, 0.0f);
 
-Octree t(make_vector(0.0f, 0.0f, 0.0f), make_vector(200.0f, 50.0f, 200.0f), 0);
+Octree *octTree; //(make_vector(0.0f, 0.0f, 0.0f), make_vector(200.0f, 50.0f, 200.0f), 0);
 
 
 GLuint postFxShader;
@@ -270,13 +270,19 @@ void initGL()
 	world.loadMesh("scenes/world.obj");
 	factory.loadMesh("scenes/test.obj");
 	spider.loadMesh("scenes/spider.obj");
-
 	water.loadMesh("../scenes/water.obj");
 	car.loadMesh("scenes/car.obj");
 
 	logger.logInfo("Finished loading models.");
 
 	logger.logInfo("Started creating octree");
+	//(make_vector(0.0f, 0.0f, 0.0f), make_vector(200.0f, 50.0f, 200.0f), 0);
+	float3 halfVector = (world.m_aabb.maxV - world.m_aabb.minV) / 2;
+	halfVector.x = fabs(halfVector.x);
+	halfVector.y = fabs(halfVector.y);
+	halfVector.z = fabs(halfVector.z);
+	float3 origin = world.m_aabb.maxV - halfVector;
+	octTree = new Octree(origin, halfVector, 0);
 	addMeshToCollision(&world, make_identity<float4x4>());
 	addMeshToCollision(&water, make_translation(make_vector(0.0f, -6.0f, 0.0f)));
 	addMeshToCollision(&factory, make_translation(make_vector(-15.0f, 6.0f, 0.0f)) * make_rotation_y<float4x4>(M_PI / 180 * 90) * make_scale<float4x4>(make_vector(2.0f, 2.0f, 2.0f)));
@@ -285,7 +291,7 @@ void initGL()
 
 	high_resolution_clock::time_point start = high_resolution_clock::now();
 
-	t.insertAll(ts);
+	octTree->insertAll(ts);
 
 	high_resolution_clock::time_point end = high_resolution_clock::now();
 	duration<double> time_span = duration_cast<duration<double>>(end - start);
@@ -779,10 +785,10 @@ void checkIntersection() {
 
 	//Calculate intersections
 	float3x3 rot = make_rotation_y<float3x3>(carLoc.angley);
-	float a = rayOctreeIntersection(carLoc.location + rot * carLoc.wheel1, -upVec, t);
-	float b = rayOctreeIntersection(carLoc.location + rot * carLoc.wheel2, -upVec, t);
-	float c = rayOctreeIntersection(carLoc.location + rot * carLoc.wheel3, -upVec, t);
-	float d = rayOctreeIntersection(carLoc.location + rot * carLoc.wheel4, -upVec, t);
+	float a = rayOctreeIntersection(carLoc.location + rot * carLoc.wheel1, -upVec, *octTree);
+	float b = rayOctreeIntersection(carLoc.location + rot * carLoc.wheel2, -upVec, *octTree);
+	float c = rayOctreeIntersection(carLoc.location + rot * carLoc.wheel3, -upVec, *octTree);
+	float d = rayOctreeIntersection(carLoc.location + rot * carLoc.wheel4, -upVec, *octTree);
 	
 	if (a == 0 && b == 0 && c == 0 && d == 0) {
 		return;
