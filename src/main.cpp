@@ -865,10 +865,6 @@ float rayOctreeIntersection(float3 rayOrigin, float3 rayVec, Octree oct ) {
 
 void display(void)
 {
-	if (true){
-		checkIntersection();
-		hasChanged = false;
-	}
 	drawScene();
 	
 	glutSwapBuffers();  // swap front and back buffer. This frame will now be displayed.
@@ -1054,6 +1050,11 @@ void idle( int v )
 		sunCamera->setPosition(lightPosition);
 
 		tick();
+
+		if (hasChanged){
+			checkIntersection();
+			hasChanged = false;
+		}
 
 		glutPostRedisplay();
 	}
