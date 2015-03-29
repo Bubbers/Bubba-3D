@@ -41,7 +41,8 @@ void Collider::insertAll() {
 }
 
 
-void Collider::addMesh(Mesh* model, float4x4 modelMatrix) {
+void Collider::addMesh(Mesh* model) {
+	float4x4 modelMatrix = model->m_modelMatrix;
 	for (int i = 0; i < model->m_chunks.size(); i++) {
 
 		for (int j = 0; j < model->m_chunks[i].m_positions.size(); j += 3) {

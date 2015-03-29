@@ -27,7 +27,9 @@
       <Filter>Datastructures</Filter>
     </ClCompile>
     <ClCompile Include="includes\glutil\glutil.cpp" />
-    <ClCompile Include="src\collision\Collider.cpp" />
+    <ClCompile Include="src\collision\Collider.cpp">
+      <Filter>Collider</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="includes\Camera.h">
@@ -58,7 +60,9 @@
       <Filter>Datastructures</Filter>
     </ClInclude>
     <ClInclude Include="includes\glutil\glutil.h" />
-    <ClInclude Include="src\collision\Collider.h" />
+    <ClInclude Include="src\collision\Collider.h">
+      <Filter>Collider</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Camera">
@@ -78,6 +82,9 @@
     </Filter>
     <Filter Include="Datastructures">
       <UniqueIdentifier>{f33b1c84-0e06-4c57-9328-2a8b840c387b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Collider">
+      <UniqueIdentifier>{464f9930-cb97-4e31-abde-7cfdf4fb091d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

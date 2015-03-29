@@ -27,7 +27,6 @@ public:
 	GLuint getDiffuseTexture(int chunk){
 		return m_textures[m_chunks[chunk].m_textureIndex].diffuse_map_id;
 	}
-
 private:
 
 	bool initFromScene(const aiScene* pScene, const std::string& fileName);
@@ -77,6 +76,8 @@ private:
 	std::vector<Material> m_textures;
 
 public: 
+
+	chag::float4x4 m_modelMatrix;
 	std::vector<Chunk> m_chunks;
 	AABB m_aabb;
 };

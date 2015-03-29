@@ -186,8 +186,6 @@ Logger logger;
 void drawCubeMap(Fbo fbo);
 void drawFullScreenQuad();
 
-void addMeshToCollision(Mesh* model, float4x4 modelMatrix);
-
 Fbo createPostProcessFbo(int width, int height);
 void renderPostProcess();
 void blurImage();
@@ -269,10 +267,19 @@ void initGL()
 	logger.logInfo("Started loading models.");
 
 	world.loadMesh("scenes/world.obj");
+	world.m_modelMatrix = make_identity<float4x4>();
+
 	factory.loadMesh("scenes/test.obj");
+	factory.m_modelMatrix = make_translation(make_vector(-15.0f, 6.0f, 0.0f)) * make_rotation_y<float4x4>(M_PI / 180 * 90) * make_scale<float4x4>(make_vector(2.0f, 2.0f, 2.0f));
+	
 	spider.loadMesh("scenes/spider.obj");
+	spider.m_modelMatrix = make_translation(make_vector(40.0f, 2.0f, 0.0f)) * make_rotation_x<float4x4>(M_PI / 180 * 0) *  make_scale<float4x4>(0.1f);
+	
 	water.loadMesh("../scenes/water.obj");
+	water.m_modelMatrix = make_translation(make_vector(0.0f, -6.0f, 0.0f));
+
 	car.loadMesh("scenes/car.obj");
+	
 
 	logger.logInfo("Finished loading models.");
 
@@ -290,10 +297,10 @@ void initGL()
 	octTree = new Octree(origin, halfVector, 0);
 
 	collider = new Collider(octTree);
-	collider->addMesh(&world, make_identity<float4x4>());
-	collider->addMesh(&water, make_translation(make_vector(0.0f, -6.0f, 0.0f)));
-	collider->addMesh(&factory, make_translation(make_vector(-15.0f, 6.0f, 0.0f)) * make_rotation_y<float4x4>(M_PI / 180 * 90) * make_scale<float4x4>(make_vector(2.0f, 2.0f, 2.0f)));
-	collider->addMesh(&spider, make_translation(make_vector(40.0f, 2.0f, 0.0f)) * make_rotation_x<float4x4>(M_PI / 180 * 0) *  make_scale<float4x4>(0.1f));
+	collider->addMesh(&world);
+	collider->addMesh(&water);
+	collider->addMesh(&factory);
+	collider->addMesh(&spider);
 	collider->insertAll(); //TODO enlargen octrees afterhand instead
 
 	high_resolution_clock::time_point end = high_resolution_clock::now();
@@ -470,7 +477,7 @@ void drawModel(Mesh &model, const float4x4 &modelMatrix, GLuint shaderProgram)
 */
 void drawShadowCasters(GLuint shaderProgram)
 {
-	drawModel(world, make_translation(make_vector(0.0f, 0.0f, 0.0f)), shaderProgram);
+	drawModel(world, world.m_modelMatrix, shaderProgram);
 	setUniformSlow(shaderProgram, "object_reflectiveness", 1.5f); 
 
 	float3 frontDir = normalize(carLoc.frontDir);
@@ -490,9 +497,9 @@ void drawShadowCasters(GLuint shaderProgram)
 		* makematrix(qatZ),
 		shaderProgram);
 	setUniformSlow(shaderProgram, "object_reflectiveness", 0.0f); 
-	drawModel(factory, make_translation(make_vector(-15.0f, 6.0f, 0.0f)) * make_rotation_y<float4x4>(M_PI / 180 * 90) * make_scale<float4x4>(make_vector(2.0f, 2.0f, 2.0f)), shaderProgram);
+	drawModel(factory, factory.m_modelMatrix, shaderProgram);
 
-	drawModel(spider, make_translation(make_vector(40.0f, 2.0f, 0.0f)) * make_rotation_x<float4x4>(M_PI / 180 * 0) *  make_scale<float4x4>(0.1f), shaderProgram);
+	drawModel(spider, spider.m_modelMatrix , shaderProgram);
 }
 
 void drawShadowMap(Fbo sbo, float4x4 viewProjectionMatrix) {
@@ -546,10 +553,10 @@ void drawCubeMap(Fbo fbo) {
 		setUniformSlow(shaderProgram, "viewMatrix", viewMatrix);
 		setUniformSlow(shaderProgram, "inverseViewNormalMatrix", transpose(viewMatrix));
 
-		drawModel(water, make_translation(make_vector(0.0f, -6.0f, 0.0f)), shaderProgram); 
-		drawModel(factory, make_translation(make_vector(-15.0f, 0.0f, 0.0f)) * make_rotation_y<float4x4>(M_PI / 180 * 90) * make_scale<float4x4>(make_vector(2.0f, 2.0f, 2.0f)), shaderProgram);
+		drawModel(water, water.m_modelMatrix, shaderProgram); 
+		drawModel(factory, factory.m_modelMatrix, shaderProgram);
 
-		drawModel(world, make_identity<float4x4>(), shaderProgram);
+		drawModel(world, world.m_modelMatrix, shaderProgram);
 	}
 
 	// CLEAN UP
@@ -637,7 +644,7 @@ void drawScene(void)
 	glBindTexture(GL_TEXTURE_CUBE_MAP, cMapAll.texture);
 	
 	//Render models
-	drawModel(water, make_translation(make_vector(0.0f, -6.0f, 0.0f)), shaderProgram);
+	drawModel(water, water.m_modelMatrix, shaderProgram);
 	drawShadowCasters(shaderProgram);
 
 	//Render debuggers
