@@ -27,6 +27,7 @@
       <Filter>Datastructures</Filter>
     </ClCompile>
     <ClCompile Include="includes\glutil\glutil.cpp" />
+    <ClCompile Include="src\collision\Collider.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="includes\Camera.h">
@@ -57,6 +58,7 @@
       <Filter>Datastructures</Filter>
     </ClInclude>
     <ClInclude Include="includes\glutil\glutil.h" />
+    <ClInclude Include="src\collision\Collider.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Camera">

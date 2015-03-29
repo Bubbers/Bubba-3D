@@ -17,6 +17,7 @@
 #include <float3x3.h>
 #include "AABB.h"
 #include <Quaternion.h>
+#include "collision\Collider.h"
 
 #include <vector>
 #include <thread>
@@ -169,12 +170,10 @@ struct Car{
 //*****************************************************************************
 //	Collision objects
 //*****************************************************************************
-std::vector<Triangle*> ts;
-AABB aabb_coll;
+Collider *collider;
 bool hasChanged = true;
 
-
-//*****************************************************************************
+//***********s******************************************************************
 //	Logger
 //*****************************************************************************
 Logger logger;
@@ -278,23 +277,24 @@ void initGL()
 	logger.logInfo("Finished loading models.");
 
 	logger.logInfo("Started creating octree");
-
-	addMeshToCollision(&world, make_identity<float4x4>());
-	addMeshToCollision(&water, make_translation(make_vector(0.0f, -6.0f, 0.0f)));
-	addMeshToCollision(&factory, make_translation(make_vector(-15.0f, 6.0f, 0.0f)) * make_rotation_y<float4x4>(M_PI / 180 * 90) * make_scale<float4x4>(make_vector(2.0f, 2.0f, 2.0f)));
-	addMeshToCollision(&spider, make_translation(make_vector(40.0f, 2.0f, 0.0f)) * make_rotation_x<float4x4>(M_PI / 180 * 0) *  make_scale<float4x4>(0.1f));
-
-
 	high_resolution_clock::time_point start = high_resolution_clock::now();
 
-	float3 halfVector = (aabb_coll.maxV - aabb_coll.minV) / 2;
-	halfVector.x = fabs(halfVector.x);
-	halfVector.y = fabs(halfVector.y);
-	halfVector.z = fabs(halfVector.z);
-	float3 origin = aabb_coll.maxV - halfVector;
+	//float3 halfVector = (aabb_coll.maxV - aabb_coll.minV) / 2;
+	//halfVector.x = fabs(halfVector.x);
+	//halfVector.y = fabs(halfVector.y);
+	//halfVector.z = fabs(halfVector.z);
+	//float3 origin = aabb_coll.maxV - halfVector;
+	float3 origin = make_vector(0.0f, 0.0f, 0.0f);
+	float3 halfVector = make_vector(200.0f, 200.0f, 200.0f); //TODO
+
 	octTree = new Octree(origin, halfVector, 0);
 
-	octTree->insertAll(ts);
+	collider = new Collider(octTree);
+	collider->addMesh(&world, make_identity<float4x4>());
+	collider->addMesh(&water, make_translation(make_vector(0.0f, -6.0f, 0.0f)));
+	collider->addMesh(&factory, make_translation(make_vector(-15.0f, 6.0f, 0.0f)) * make_rotation_y<float4x4>(M_PI / 180 * 90) * make_scale<float4x4>(make_vector(2.0f, 2.0f, 2.0f)));
+	collider->addMesh(&spider, make_translation(make_vector(40.0f, 2.0f, 0.0f)) * make_rotation_x<float4x4>(M_PI / 180 * 0) *  make_scale<float4x4>(0.1f));
+	collider->insertAll(); //TODO enlargen octrees afterhand instead
 
 	high_resolution_clock::time_point end = high_resolution_clock::now();
 	duration<double> time_span = duration_cast<duration<double>>(end - start);
@@ -427,72 +427,8 @@ void initGL()
 	logger.logInfo("Generating OpenGL data completed.");
 }
 
-void addMeshToCollision(Mesh* model, float4x4 modelMatrix) {
-	for (int i = 0; i < model->m_chunks.size(); i++) {
-
-		for (int j = 0; j < model->m_chunks[i].m_positions.size(); j += 3) {
-			
-
-			float4 p1 = modelMatrix * make_vector(model->m_chunks[i].m_positions[j + 0].x,
-									model->m_chunks[i].m_positions[j + 0].y, 
-									model->m_chunks[i].m_positions[j + 0].z, 1.0f) ;
-			
-			float4 p2 = modelMatrix * make_vector(model->m_chunks[i].m_positions[j + 1].x,
-				model->m_chunks[i].m_positions[j + 1].y,
-				model->m_chunks[i].m_positions[j + 1].z, 1.0f) ;
-
-			float4 p3 = modelMatrix * make_vector(model->m_chunks[i].m_positions[j + 2].x,
-				model->m_chunks[i].m_positions[j + 2].y,
-				model->m_chunks[i].m_positions[j + 2].z, 1.0f) ;
-
-			Triangle* t = new Triangle(make_vector(p1.x, p1.y, p1.z), make_vector(p2.x, p2.y, p2.z), make_vector(p3.x, p3.y, p3.z));
-		
-			ts.push_back(t);
-		}
-	}
-	checkMinMax(model->m_aabb.maxV.x, model->m_aabb.maxV.y, model->m_aabb.maxV.z, &aabb_coll.minV, &aabb_coll.maxV);
-	checkMinMax(model->m_aabb.minV.x, model->m_aabb.minV.y, model->m_aabb.minV.z, &aabb_coll.minV, &aabb_coll.maxV);
-}
-
-bool rayTriangle(float3 r_o, float3 r_d, float3 v1, float3 v2, float3 v3, float *ins)
-{
-	float3 e2 = v3 - v1;       // second edge
-	float3 e1 = v2 - v1;       // first edge
 
 
-	float3 r = cross(r_d, e2);  // (d X e2) is used two times in the formula
-	// so we store it in an appropriate vector
-	float3 s = r_o - v1;       // translated ray origin
-	float a = dot(e1, r);    // a=(d X e2)*e1
-	float f = 1.0f / a;           // slow division*
-	float3 q = cross(s, e1);
-	float u = dot(s, r);
-	bool frontfacing = true;
-	float eps = 0.0001f;
-	if (a > eps)            // eps is the machine fpu epsilon (precision), 
-		// or a very small number :)
-	{ // Front facing triangle...
-		if ((u<0) || (u>a)) return false;
-		float v = dot(r_d, q);
-		if ((v<0) || (u + v>a)) return false;
-	}
-	else if (a<-eps)
-	{ // Back facing triangle...
-		frontfacing = false;
-		if ((u > 0) || (u < a)) return false;
-		float v = dot(r_d, q);
-		if ((v>0) || (u + v<a)) return false;
-	}
-	else return false; // Ray parallel to triangle plane
-	float t = f*dot(e2, q);
-	float v = dot(r_d, q);
-	u = u*f; 
-	v = v*f;
-
-	*ins = t;
-
-	return true;
-}
 
 Fbo createPostProcessFbo(int width, int height) {
 
@@ -790,10 +726,10 @@ void checkIntersection() {
 
 	//Calculate intersections
 	float3x3 rot = make_rotation_y<float3x3>(carLoc.angley);
-	float a = rayOctreeIntersection(carLoc.location + rot * carLoc.wheel1, -upVec, *octTree);
-	float b = rayOctreeIntersection(carLoc.location + rot * carLoc.wheel2, -upVec, *octTree);
-	float c = rayOctreeIntersection(carLoc.location + rot * carLoc.wheel3, -upVec, *octTree);
-	float d = rayOctreeIntersection(carLoc.location + rot * carLoc.wheel4, -upVec, *octTree);
+	float a = collider->rayIntersection(carLoc.location + rot * carLoc.wheel1, -upVec);
+	float b = collider->rayIntersection(carLoc.location + rot * carLoc.wheel2, -upVec);
+	float c = collider->rayIntersection(carLoc.location + rot * carLoc.wheel3, -upVec);
+	float d = collider->rayIntersection(carLoc.location + rot * carLoc.wheel4, -upVec);
 
 	if (a == 0 && b == 0 && c == 0 && d == 0) {
 		return;
@@ -839,29 +775,6 @@ void checkIntersection() {
 	printf("%f\n", carLoc.wheel1.y + (carLoc.wheel1.y - newLoc.y));
 }
 
-float rayOctreeIntersection(float3 rayOrigin, float3 rayVec, Octree oct ) {
-	std::vector<Triangle*> geometry;
-
-	oct.getGeometry(rayOrigin, rayVec, &geometry);
-
-	float minIns = NULL;
-	for (int i = 0; i < geometry.size(); i++) {
-		Triangle t = *geometry[i];
-		float ins;
-
-		if (rayTriangle(rayOrigin, rayVec, t.p1, t.p2, t.p3, &ins)) {
-			if ((minIns) > (ins)|| minIns == NULL) {
-				minIns = ins;
-			}
-		}
-	}
-	
-	if (minIns == NULL || geometry.size() == 0) {
-		return 0;
-	}
-
-	return -minIns;
-}
 
 void display(void)
 {
@@ -1162,9 +1075,9 @@ void drawFullScreenQuad()
 }
 
 void drawDebug(const float4x4 &viewMatrix, const float4x4 &projectionMatrix) {
-	//debugDrawOctree(viewMatrix, projectionMatrix, t);
+	/*debugDrawOctree(viewMatrix, projectionMatrix, t);
 	debugDrawLight(viewMatrix, projectionMatrix, lightPosition);
-	//debugDrawQuad(viewMatrix, projectionMatrix, carLoc.location + make_vector(0.2f, 1.2f, 0.0f), make_vector(1.0f, 1.0f, 1.5f));
+	debugDrawQuad(viewMatrix, projectionMatrix, carLoc.location + make_vector(0.2f, 1.2f, 0.0f), make_vector(1.0f, 1.0f, 1.5f));
 	float3x3 rot = make_rotation_y<float3x3>(carLoc.angley);
 	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location + rot * carLoc.wheel1, -carLoc.upDir);
 	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location + rot * carLoc.wheel2, -carLoc.upDir);
@@ -1173,7 +1086,7 @@ void drawDebug(const float4x4 &viewMatrix, const float4x4 &projectionMatrix) {
 	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location, carLoc.upDir);
 	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location, carLoc.frontDir);
 	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location, normalize(cross(carLoc.frontDir, make_vector(0.0f, 1.0f, 0.0f))));
-	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location, vUp);
+	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location, vUp);*/
 }
 
 void debugDrawLine(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, float3 origin, float3 rayVector) {
