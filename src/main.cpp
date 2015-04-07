@@ -165,7 +165,9 @@ Logger logger = Logger::instance();
 //*****************************************************************************
 
 void drawCubeMap(Fbo fbo, Scene scene);
-void drawFullScreenQuad();
+void createCubeMaps();
+void createMeshes();
+void createCameras();
 
 
 float degreeToRad(float degree);
@@ -438,31 +440,10 @@ void idle( int v )
 
 int main(int argc, char *argv[])
 {
-#	if defined(__linux__)
-	linux_initialize_cwd();
-#	endif // ! __linux__
-
-
-	glutInit(&argc, argv);
-
-
-#	if defined(GLUT_SRGB)
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_SRGB | GLUT_DEPTH);
-#	else // !GLUT_SRGB
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-	printf("--\n");
-	printf("-- WARNING: your GLUT doesn't support sRGB / GLUT_SRGB\n");
-#	endif // ~ GLUT_SRGB
-	glutInitWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-
-
-	glutInitContextVersion(3, 0);
-	glutInitContextFlags(GLUT_DEBUG);
-
-	glutCreateWindow("Project");
-
 	int w = SCREEN_WIDTH;
 	int h = SCREEN_HEIGHT;
+
+	renderer = new Renderer(argc, argv, w, h);
 
 	glutTimerFunc(50, idle, 0);
 	glutDisplayFunc(display);
@@ -473,7 +454,20 @@ int main(int argc, char *argv[])
 	glutMouseFunc(mouse); // mouse button pressed/released
 	glutMotionFunc(motion); // mouse moved *while* any button is pressed
 
-	renderer = new Renderer(SCREEN_WIDTH, SCREEN_HEIGHT, carLoc.location);
+	renderer->initGL(carLoc.location);
+
+	createCubeMaps();
+	createMeshes();
+	createCameras();
+	
+	glutMainLoop();
+
+	return 0;
+}
+
+void createCubeMaps() {
+	int w = SCREEN_WIDTH;
+	int h = SCREEN_HEIGHT;
 	//*************************************************************************
 	// Load cube map texture
 	//*************************************************************************
@@ -524,8 +518,9 @@ int main(int argc, char *argv[])
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, cMapAll.texture, 0);
 
 	cMapAll.shaderProgram = shaderProgram;
+}
 
-
+void createMeshes() {
 	//*************************************************************************
 	// Load the models from disk
 	//*************************************************************************
@@ -573,6 +568,12 @@ int main(int argc, char *argv[])
 
 	logger.logInfo("Created octree in : " + std::to_string(time_span.count()) + " seconds.");
 
+}
+
+void createCameras() {
+	int w = SCREEN_WIDTH;
+	int h = SCREEN_HEIGHT;
+
 	sunCamera = new PerspectiveCamera(lightPosition, make_vector(0.0f, 0.0f, 0.0f), make_vector(0.0f, 1.0f, 0.0f), 45.0f, 1.0f, 280.0f, 600.0f);
 	scene.sun = sunCamera;
 
@@ -590,35 +591,7 @@ int main(int argc, char *argv[])
 	skybox = new Skybox(playerCamera);
 	skybox->init("scenes/posx.jpg", "scenes/negx.jpg", "scenes/posy.jpg", "scenes/posy.jpg", "scenes/negz.jpg", "scenes/posz.jpg");
 	scene.skybox = skybox;
-
-	glutMainLoop();
-
-	return 0;
 }
-
-void drawFullScreenQuad()
-{
-	static GLuint vertexArrayObject = 0;
-	static int nofVertices = 4;
-
-	// do this initialization first time the function is called... somewhat dodgy, but works for demonstration purposes
-	if (vertexArrayObject == 0)
-	{
-		glGenVertexArrays(1, &vertexArrayObject);
-		static const float2 positions[] = {
-				{ -1.0f, -1.0f },
-				{ 1.0f, -1.0f },
-				{ 1.0f, 1.0f },
-				{ -1.0f, 1.0f },
-		};
-		createAddAttribBuffer(vertexArrayObject, positions, sizeof(positions), 0, 2, GL_FLOAT);
-	}
-
-	glBindVertexArray(vertexArrayObject);
-	glDrawArrays(GL_QUADS, 0, nofVertices);
-}
-
-
 
 float degreeToRad(float degree) {
 	return degree * M_PI / 180;

@@ -41,8 +41,10 @@ struct Fbo{
 class Renderer
 {
 public:
-	Renderer(int width, int height, float3 carLoc);
+	Renderer(int argc, char *argv[], int width, int height);
 	~Renderer();
+
+	void initGL(float3 carLoc);
 
 	void drawScene(Camera camera, Scene scene, float currentTime);
 	void start();
@@ -60,7 +62,6 @@ private:
 	int width, height;
 	float currentTime;
 
-	void initGL(int width, int height, float3 carLoc);
 	
 
 	Fbo createPostProcessFbo(int width, int height);

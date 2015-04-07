@@ -19,10 +19,30 @@ namespace FogParams {
 #endif //__FOGPARAMS__
 
 
-Renderer::Renderer(int width, int height, float3 carLoc) : width(width), height(height)
+Renderer::Renderer(int argc, char *argv[], int width, int height) : width(width), height(height)
 {
-	Renderer::initGL(width, height, carLoc);
+#	if defined(__linux__)
+	linux_initialize_cwd();
+#	endif // ! __linux__
 
+
+	glutInit(&argc, argv);
+
+
+#	if defined(GLUT_SRGB)
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_SRGB | GLUT_DEPTH);
+#	else // !GLUT_SRGB
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+	printf("--\n");
+	printf("-- WARNING: your GLUT doesn't support sRGB / GLUT_SRGB\n");
+#	endif // ~ GLUT_SRGB
+	glutInitWindowSize(width, height);
+
+
+	glutInitContextVersion(3, 0);
+	glutInitContextFlags(GLUT_DEBUG);
+
+	glutCreateWindow("Project");
 	/* If sRGB is available, enable rendering in sRGB. Note: we should do
 	* this *after* initGL(), since initGL() initializes GLEW.
 	*/
@@ -183,124 +203,121 @@ void Renderer::setFog(GLuint shaderProgram) {
 	setUniformSlow(shaderProgram, "fog.vColor", FogParams::vColor);
 }
 
-void Renderer::initGL(int width, int height, float3 carLoc)
+void Renderer::initGL(float3 carLoc) 
 {
-
-		int w = width;
-		int h = height;
-
+	int w = width;
+	int h = height;
 
 
-		/* Initialize GLEW; this gives us access to OpenGL Extensions.
-		*/
-		glewInit();
+	/* Initialize GLEW; this gives us access to OpenGL Extensions.
+	*/
+	glewInit();
 
-		/* Print information about OpenGL and ensure that we've got at a context
-		* that supports least OpenGL 3.0. Then setup the OpenGL Debug message
-		* mechanism.
-		*/
-		startupGLDiagnostics();
-		setupGLDebugMessages();
+	/* Print information about OpenGL and ensure that we've got at a context
+	* that supports least OpenGL 3.0. Then setup the OpenGL Debug message
+	* mechanism.
+	*/
+	startupGLDiagnostics();
+	setupGLDebugMessages();
 
-		/* Initialize DevIL, the image library that we use to load textures. Also
-		* tell IL that we intent to use it with OpenGL.
-		*/
-		ilInit();
-		ilutRenderer(ILUT_OPENGL);
+	/* Initialize DevIL, the image library that we use to load textures. Also
+	* tell IL that we intent to use it with OpenGL.
+	*/
+	ilInit();
+	ilutRenderer(ILUT_OPENGL);
 
-		/* Workaround for AMD. It might no longer be necessary, but I dunno if we
-		* are ever going to remove it. (Consider it a piece of living history.)
-		*/
-		if (!glBindFragDataLocation)
-		{
-			glBindFragDataLocation = glBindFragDataLocationEXT;
-		}
+	/* Workaround for AMD. It might no longer be necessary, but I dunno if we
+	* are ever going to remove it. (Consider it a piece of living history.)
+	*/
+	if (!glBindFragDataLocation)
+	{
+		glBindFragDataLocation = glBindFragDataLocationEXT;
+	}
 
-		//*************************************************************************
-		//	Load shaders
-		//*************************************************************************
-		shaderProgram = loadShaderProgram("shaders/simple.vert", "shaders/simple.frag");
-		glBindAttribLocation(shaderProgram, 0, "position");
-		glBindAttribLocation(shaderProgram, 2, "texCoordIn");
-		glBindAttribLocation(shaderProgram, 1, "normalIn");
-		glBindFragDataLocation(shaderProgram, 0, "fragmentColor");
-		linkShaderProgram(shaderProgram);
-
-
-		//*************************************************************************
-		// Generate shadow map frame buffer object
-		//*************************************************************************
-		logger.logInfo("Generating OpenGL data.");
-
-		sbo.shaderProgram = loadShaderProgram("shaders/shadowMap.vert", "shaders/shadowMap.frag");
-		glBindAttribLocation(sbo.shaderProgram, 0, "position");
-		glBindFragDataLocation(sbo.shaderProgram, 0, "fragmentColor");
-		linkShaderProgram(sbo.shaderProgram);
-
-		sbo.width = SHADOW_MAP_RESOLUTION;
-		sbo.height = SHADOW_MAP_RESOLUTION;
-
-		glGenFramebuffers(1, &sbo.id);
-		glBindFramebuffer(GL_FRAMEBUFFER, sbo.id);
-
-		glGenTextures(1, &sbo.texture);
-		glBindTexture(GL_TEXTURE_2D, sbo.texture);
-
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, SHADOW_MAP_RESOLUTION, SHADOW_MAP_RESOLUTION, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-
-		float4 zeros = { 1.0f, 1.0f, 1.0f, 1.0f };
-		glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, &zeros.x);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
-
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, sbo.texture, 0);
-
-		//Disable reading color buffer
-		glDrawBuffer(GL_NONE);
-		glReadBuffer(GL_NONE);
-
-		//Cleanup
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glBindTexture(GL_TEXTURE_2D, 0);
+	//*************************************************************************
+	//	Load shaders
+	//*************************************************************************
+	shaderProgram = loadShaderProgram("shaders/simple.vert", "shaders/simple.frag");
+	glBindAttribLocation(shaderProgram, 0, "position");
+	glBindAttribLocation(shaderProgram, 2, "texCoordIn");
+	glBindAttribLocation(shaderProgram, 1, "normalIn");
+	glBindFragDataLocation(shaderProgram, 0, "fragmentColor");
+	linkShaderProgram(shaderProgram);
 
 
-		//*************************************************************************
-		// Create post process Fbo
-		//*************************************************************************
-		postFxShader = loadShaderProgram("shaders/postFx.vert", "shaders/postFx.frag");
-		verticalBlurShader = loadShaderProgram("shaders/postFx.vert", "shaders/vertical_blur.frag");
-		horizontalBlurShader = loadShaderProgram("shaders/postFx.vert", "shaders/horizontal_blur.frag");
-		cutoffShader = loadShaderProgram("shaders/postFx.vert", "shaders/cutoff.frag");
+	//*************************************************************************
+	// Generate shadow map frame buffer object
+	//*************************************************************************
+	logger.logInfo("Generating OpenGL data.");
 
-		glBindAttribLocation(postFxShader, 0, "position");
-		glBindFragDataLocation(postFxShader, 0, "fragmentColor");
+	sbo.shaderProgram = loadShaderProgram("shaders/shadowMap.vert", "shaders/shadowMap.frag");
+	glBindAttribLocation(sbo.shaderProgram, 0, "position");
+	glBindFragDataLocation(sbo.shaderProgram, 0, "fragmentColor");
+	linkShaderProgram(sbo.shaderProgram);
 
-		linkShaderProgram(postFxShader);
-		linkShaderProgram(verticalBlurShader);
-		linkShaderProgram(horizontalBlurShader);
-		linkShaderProgram(cutoffShader);
+	sbo.width = SHADOW_MAP_RESOLUTION;
+	sbo.height = SHADOW_MAP_RESOLUTION;
 
-		postProcessFbo = createPostProcessFbo(width, height);
-		verticalBlurFbo = createPostProcessFbo(width, height);
-		horizontalBlurFbo = createPostProcessFbo(width, height);
-		cutOffFbo = createPostProcessFbo(width, height);
+	glGenFramebuffers(1, &sbo.id);
+	glBindFramebuffer(GL_FRAMEBUFFER, sbo.id);
+
+	glGenTextures(1, &sbo.texture);
+	glBindTexture(GL_TEXTURE_2D, sbo.texture);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, SHADOW_MAP_RESOLUTION, SHADOW_MAP_RESOLUTION, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+
+	float4 zeros = { 1.0f, 1.0f, 1.0f, 1.0f };
+	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, &zeros.x);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, sbo.texture, 0);
+
+	//Disable reading color buffer
+	glDrawBuffer(GL_NONE);
+	glReadBuffer(GL_NONE);
+
+	//Cleanup
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+
+	//*************************************************************************
+	// Create post process Fbo
+	//*************************************************************************
+	postFxShader = loadShaderProgram("shaders/postFx.vert", "shaders/postFx.frag");
+	verticalBlurShader = loadShaderProgram("shaders/postFx.vert", "shaders/vertical_blur.frag");
+	horizontalBlurShader = loadShaderProgram("shaders/postFx.vert", "shaders/horizontal_blur.frag");
+	cutoffShader = loadShaderProgram("shaders/postFx.vert", "shaders/cutoff.frag");
+
+	glBindAttribLocation(postFxShader, 0, "position");
+	glBindFragDataLocation(postFxShader, 0, "fragmentColor");
+
+	linkShaderProgram(postFxShader);
+	linkShaderProgram(verticalBlurShader);
+	linkShaderProgram(horizontalBlurShader);
+	linkShaderProgram(cutoffShader);
+
+	postProcessFbo = createPostProcessFbo(width, height);
+	verticalBlurFbo = createPostProcessFbo(width, height);
+	horizontalBlurFbo = createPostProcessFbo(width, height);
+	cutOffFbo = createPostProcessFbo(width, height);
 
 		
-		//Cleanup
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glBindTexture(GL_TEXTURE_2D, 0);
+	//Cleanup
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
 
-		glEnable(GL_DEPTH_TEST);
+	glEnable(GL_DEPTH_TEST);
 
-		logger.logInfo("Generating OpenGL data completed.");
-	
+	logger.logInfo("Generating OpenGL data completed.");
 }
 
 Fbo Renderer::createPostProcessFbo(int width, int height) {
