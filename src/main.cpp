@@ -37,6 +37,7 @@
 #include "OBJModel.h"
 #include "CubeMapTexture.h"
 #include "Skybox.h"
+#include "objects\Scene.h"
 
 using namespace std;
 using namespace chag;
@@ -89,8 +90,7 @@ Mesh factory;
 Mesh water;
 Mesh spider;
 
-std::vector<Mesh*> shadowCasters;
-std::vector<Mesh*> transparentObjects;
+Scene scene;
 
 //*****************************************************************************
 //	Cube Maps
@@ -184,7 +184,7 @@ Logger logger;
 //	Function declarations
 //*****************************************************************************
 
-void drawCubeMap(Fbo fbo);
+void drawCubeMap(Fbo fbo, Scene scene);
 void drawFullScreenQuad();
 
 Fbo createPostProcessFbo(int width, int height);
@@ -270,22 +270,22 @@ void initGL()
 	//Load shadow casters
 	world.loadMesh("scenes/world.obj");
 	world.m_modelMatrix = make_identity<float4x4>();
-	shadowCasters.push_back(&world);
+	scene.shadowCasters.push_back(&world);
 
 	factory.loadMesh("scenes/test.obj");
 	factory.m_modelMatrix = make_translation(make_vector(-15.0f, 6.0f, 0.0f)) * make_rotation_y<float4x4>(M_PI / 180 * 90) * make_scale<float4x4>(make_vector(2.0f, 2.0f, 2.0f));
-	shadowCasters.push_back(&factory);
+	scene.shadowCasters.push_back(&factory);
 
 	car.loadMesh("scenes/car.obj");
 	car.m_modelMatrix = make_identity<float4x4>();
 
 	spider.loadMesh("scenes/spider.obj");
 	spider.m_modelMatrix = make_translation(make_vector(40.0f, 2.0f, 0.0f)) * make_rotation_x<float4x4>(M_PI / 180 * 0) *  make_scale<float4x4>(0.1f);
-	shadowCasters.push_back(&spider);
+	scene.shadowCasters.push_back(&spider);
 
 	water.loadMesh("../scenes/water.obj");
 	water.m_modelMatrix = make_translation(make_vector(0.0f, -6.0f, 0.0f));
-	shadowCasters.push_back(&water);
+	scene.shadowCasters.push_back(&water);
 
 	logger.logInfo("Finished loading models.");
 
@@ -479,18 +479,18 @@ void drawModel(Mesh &model, GLuint shaderProgram)
 * In this function, add all scene elements that should cast shadow, that way
 * there is only one draw call to each of these, as this function is called twice.
 */
-void drawShadowCasters(GLuint shaderProgram)
+void drawShadowCasters(GLuint shaderProgram, Scene scene)
 {
 	setUniformSlow(shaderProgram, "object_reflectiveness", 1.5f); 
 	drawModel(car,shaderProgram);
 	
 	setUniformSlow(shaderProgram, "object_reflectiveness", 0.0f); 
-	for (int i = 0; i < shadowCasters.size(); i++) {
-		drawModel(*shadowCasters[i], shaderProgram);
+	for (int i = 0; i < scene.shadowCasters.size(); i++) {
+		drawModel(*scene.shadowCasters[i], shaderProgram);
 	}
 }
 
-void drawShadowMap(Fbo sbo, float4x4 viewProjectionMatrix) {
+void drawShadowMap(Fbo sbo, float4x4 viewProjectionMatrix, Scene scene) {
 	glBindFramebuffer(GL_FRAMEBUFFER, sbo.id);
 	glViewport(0, 0, SHADOW_MAP_RESOLUTION, SHADOW_MAP_RESOLUTION);
 
@@ -507,7 +507,7 @@ void drawShadowMap(Fbo sbo, float4x4 viewProjectionMatrix) {
 
 	setUniformSlow(sbo.shaderProgram, "viewProjectionMatrix", viewProjectionMatrix);
 
-	drawShadowCasters(sbo.shaderProgram);
+	drawShadowCasters(sbo.shaderProgram, scene);
 
 	//CLEANUP
 	glDisable(GL_POLYGON_OFFSET_FILL);
@@ -515,7 +515,7 @@ void drawShadowMap(Fbo sbo, float4x4 viewProjectionMatrix) {
 	glUseProgram(currentProgram);
 }
 
-void drawCubeMap(Fbo fbo) {
+void drawCubeMap(Fbo fbo, Scene scene) {
 	int w = glutGet((GLenum)GLUT_WINDOW_WIDTH);
 	int h = glutGet((GLenum)GLUT_WINDOW_HEIGHT);
 
@@ -540,7 +540,7 @@ void drawCubeMap(Fbo fbo) {
 		setUniformSlow(shaderProgram, "viewMatrix", viewMatrix);
 		setUniformSlow(shaderProgram, "inverseViewNormalMatrix", transpose(viewMatrix));
 
-		drawShadowCasters(shaderProgram);
+		drawShadowCasters(shaderProgram, scene);
 	}
 
 	// CLEAN UP
@@ -549,8 +549,10 @@ void drawCubeMap(Fbo fbo) {
 
 }
 
-void drawScene(float4x4 viewMatrix, float4x4 projectionMatrix)
+void drawScene(Camera camera, Scene scene)
 {
+	float4x4 viewMatrix = camera.getViewMatrix();
+	float4x4 projectionMatrix = camera.getProjectionMatrix();
 	
 	// enable back face culling.
 	glEnable(GL_CULL_FACE);
@@ -566,7 +568,12 @@ void drawScene(float4x4 viewMatrix, float4x4 projectionMatrix)
 	float4x4 lightProjectionMatrix = sunCamera->getProjectionMatrix();
 	float4x4 lightViewProjectionMatrix = lightProjectionMatrix * lightViewMatrix;
 
-	drawShadowMap(sbo, lightViewProjectionMatrix);
+	float4x4 lightMatrix =
+		make_translation({ 0.5, 0.5, 0.5 }) *
+		make_scale<float4x4>(make_vector(0.5f, 0.5f, 0.5f)) *
+		lightViewProjectionMatrix * inverse(viewMatrix);
+
+	drawShadowMap(sbo, lightViewProjectionMatrix, scene);
 	glBindFramebuffer(GL_FRAMEBUFFER, postProcessFbo.id);
 
 	//*************************************************************************
@@ -578,18 +585,6 @@ void drawScene(float4x4 viewMatrix, float4x4 projectionMatrix)
 	glViewport(0, 0, w, h);								
 	// Use shader and set up uniforms
 	glUseProgram( shaderProgram );			
-
-	//Calculate camera matrix
-	playerCamera->setLookAt(carLoc.location + make_vector(0.0f, camera_target_altitude, 0.0f));
-	playerCamera->setPosition(carLoc.location + sphericalToCartesian(camera_theta, camera_phi, camera_r));
-
-
-
-
-	float4x4 lightMatrix = 
-		make_translation({ 0.5, 0.5, 0.5 }) * 
-		make_scale<float4x4>(make_vector(0.5f, 0.5f, 0.5f)) *
-		lightViewProjectionMatrix * inverse(viewMatrix);
 
 	//Sets matrices
 	setUniformSlow(shaderProgram, "viewMatrix", viewMatrix);
@@ -609,12 +604,11 @@ void drawScene(float4x4 viewMatrix, float4x4 projectionMatrix)
 	//Set cube map
 	setUniformSlow(shaderProgram, "cubeMap", 2);
 	
-	//reflectionCubeMap->bind(GL_TEXTURE2);
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, cMapAll.texture);
 	
 	//Render models
-	drawShadowCasters(shaderProgram);
+	drawShadowCasters(shaderProgram, scene);
 
 	//Render debuggers
 	drawDebug(viewMatrix, projectionMatrix);
@@ -751,23 +745,19 @@ void checkIntersection() {
 
 void display(void)
 {
-	float4x4 viewMatrix;
-	float4x4 projectionMatrix;
+	Camera *cam;
 	if (camera == 6) {
-		viewMatrix = playerCamera->getViewMatrix();
-		projectionMatrix = playerCamera->getProjectionMatrix();
+		cam = playerCamera;
 	}
 	else if (camera == 7) {
-		viewMatrix = sunCamera->getViewMatrix();;
-		projectionMatrix = sunCamera->getProjectionMatrix();
+		cam = sunCamera;
 	}
 	else
 	{
-		viewMatrix = cubeMapCameras[camera]->getViewMatrix();
-		projectionMatrix = cubeMapCameras[camera]->getProjectionMatrix();
+		cam = cubeMapCameras[camera];
 	}
-	drawScene(viewMatrix, projectionMatrix);
-	drawCubeMap(cMapAll);
+	drawScene(*cam, scene);
+	drawCubeMap(cMapAll, scene);
 
 	glutSwapBuffers();  // swap front and back buffer. This frame will now be displayed.
 	CHECK_GL_ERROR();
@@ -950,6 +940,10 @@ void idle( int v )
 		// rotate and update global light position.
 		lightPosition = make_vector3(rotateLight * make_vector(30.1f, 450.0f, 0.1f, 1.0f));
 		sunCamera->setPosition(lightPosition);
+
+		//Calculate camera matrix
+		playerCamera->setLookAt(carLoc.location + make_vector(0.0f, camera_target_altitude, 0.0f));
+		playerCamera->setPosition(carLoc.location + sphericalToCartesian(camera_theta, camera_phi, camera_r));
 
 		tick();
 

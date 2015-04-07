@@ -30,6 +30,7 @@
     <ClCompile Include="src\collision\Collider.cpp">
       <Filter>Collider</Filter>
     </ClCompile>
+    <ClCompile Include="src\objects\Scene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="includes\Camera.h">
@@ -63,6 +64,7 @@
     <ClInclude Include="src\collision\Collider.h">
       <Filter>Collider</Filter>
     </ClInclude>
+    <ClInclude Include="src\objects\Scene.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Camera">
