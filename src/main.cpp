@@ -74,9 +74,6 @@ float timeSinceDraw = 0.0f;
 GLuint shaderProgram;
 const float3 vUp = make_vector(0.0f, 1.0f, 0.0f);
 
-Octree *octTree; //(make_vector(0.0f, 0.0f, 0.0f), make_vector(200.0f, 50.0f, 200.0f), 0);
-
-
 GLuint postFxShader;
 GLuint horizontalBlurShader;
 GLuint verticalBlurShader;
@@ -91,6 +88,9 @@ Mesh car;
 Mesh factory;
 Mesh water;
 Mesh spider;
+
+std::vector<Mesh*> shadowCasters;
+std::vector<Mesh*> transparentObjects;
 
 //*****************************************************************************
 //	Cube Maps
@@ -171,6 +171,7 @@ struct Car{
 //	Collision objects
 //*****************************************************************************
 Collider *collider;
+Octree *octTree;
 bool hasChanged = true;
 
 //***********s******************************************************************
@@ -195,13 +196,13 @@ void debugDrawOctree(const float4x4 &viewMatrix, const float4x4 &projectionMatri
 void debugDrawQuad(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, float3 origin, float3 halfVector);
 void debugDrawLine(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, float3 origin, float3 rayVector);
 
-float rayOctreeIntersection(float3 rayOrigin, float3 rayVec, Octree oct);
-
 float degreeToRad(float degree);
 float radToDegree(float rad);
 float3 sphericalToCartesian(float theta, float phi, float r);
 
 void setFog(GLuint shaderProgram);
+
+void updatePlayer();
 
 void initGL()
 {
@@ -266,31 +267,35 @@ void initGL()
 	//*************************************************************************
 	logger.logInfo("Started loading models.");
 
+	//Load shadow casters
 	world.loadMesh("scenes/world.obj");
 	world.m_modelMatrix = make_identity<float4x4>();
+	shadowCasters.push_back(&world);
 
 	factory.loadMesh("scenes/test.obj");
 	factory.m_modelMatrix = make_translation(make_vector(-15.0f, 6.0f, 0.0f)) * make_rotation_y<float4x4>(M_PI / 180 * 90) * make_scale<float4x4>(make_vector(2.0f, 2.0f, 2.0f));
-	
-	spider.loadMesh("scenes/spider.obj");
-	spider.m_modelMatrix = make_translation(make_vector(40.0f, 2.0f, 0.0f)) * make_rotation_x<float4x4>(M_PI / 180 * 0) *  make_scale<float4x4>(0.1f);
-	
-	water.loadMesh("../scenes/water.obj");
-	water.m_modelMatrix = make_translation(make_vector(0.0f, -6.0f, 0.0f));
+	shadowCasters.push_back(&factory);
 
 	car.loadMesh("scenes/car.obj");
-	
+	car.m_modelMatrix = make_identity<float4x4>();
+
+	spider.loadMesh("scenes/spider.obj");
+	spider.m_modelMatrix = make_translation(make_vector(40.0f, 2.0f, 0.0f)) * make_rotation_x<float4x4>(M_PI / 180 * 0) *  make_scale<float4x4>(0.1f);
+	shadowCasters.push_back(&spider);
+
+	water.loadMesh("../scenes/water.obj");
+	water.m_modelMatrix = make_translation(make_vector(0.0f, -6.0f, 0.0f));
+	shadowCasters.push_back(&water);
 
 	logger.logInfo("Finished loading models.");
 
+
+	//*************************************************************************
+	// Generate Octtree from meshes
+	//*************************************************************************
 	logger.logInfo("Started creating octree");
 	high_resolution_clock::time_point start = high_resolution_clock::now();
 
-	//float3 halfVector = (aabb_coll.maxV - aabb_coll.minV) / 2;
-	//halfVector.x = fabs(halfVector.x);
-	//halfVector.y = fabs(halfVector.y);
-	//halfVector.z = fabs(halfVector.z);
-	//float3 origin = aabb_coll.maxV - halfVector;
 	float3 origin = make_vector(0.0f, 0.0f, 0.0f);
 	float3 halfVector = make_vector(200.0f, 200.0f, 200.0f); //TODO
 
@@ -317,7 +322,6 @@ void initGL()
 		glBindAttribLocation(sbo.shaderProgram, 0, "position");
 		glBindFragDataLocation(sbo.shaderProgram, 0, "fragmentColor");
 	linkShaderProgram(sbo.shaderProgram);
-
 
 	sbo.width = SHADOW_MAP_RESOLUTION;
 	sbo.height = SHADOW_MAP_RESOLUTION;
@@ -465,9 +469,9 @@ Fbo createPostProcessFbo(int width, int height) {
 	return fbo;
 }
 
-void drawModel(Mesh &model, const float4x4 &modelMatrix, GLuint shaderProgram)
+void drawModel(Mesh &model, GLuint shaderProgram)
 {
-	setUniformSlow(shaderProgram, "modelMatrix", modelMatrix); 
+	setUniformSlow(shaderProgram, "modelMatrix", model.m_modelMatrix); 
 	model.render();
 }
 
@@ -477,29 +481,13 @@ void drawModel(Mesh &model, const float4x4 &modelMatrix, GLuint shaderProgram)
 */
 void drawShadowCasters(GLuint shaderProgram)
 {
-	drawModel(world, world.m_modelMatrix, shaderProgram);
 	setUniformSlow(shaderProgram, "object_reflectiveness", 1.5f); 
-
-	float3 frontDir = normalize(carLoc.frontDir);
-	float3 rightDir = normalize(cross(frontDir, vUp));
-
-	float anglex = -(degreeToRad(90.0f) - acosf(dot(normalize(carLoc.upDir), frontDir)));
-	float anglez = (degreeToRad(90.0f) - acosf(dot(normalize(carLoc.upDir), rightDir)));
+	drawModel(car,shaderProgram);
 	
-	Quaternion qatX = make_quaternion_axis_angle(rightDir, anglex);
-	Quaternion qatY = make_quaternion_axis_angle(vUp, carLoc.angley);
-	Quaternion qatZ = make_quaternion_axis_angle(make_rotation_y<float3x3>(-carLoc.angley) * frontDir, anglez);
-
-	drawModel(car,
-		make_translation(carLoc.location)
-		* makematrix(qatX)  
-		* makematrix(qatY) 
-		* makematrix(qatZ),
-		shaderProgram);
 	setUniformSlow(shaderProgram, "object_reflectiveness", 0.0f); 
-	drawModel(factory, factory.m_modelMatrix, shaderProgram);
-
-	drawModel(spider, spider.m_modelMatrix , shaderProgram);
+	for (int i = 0; i < shadowCasters.size(); i++) {
+		drawModel(*shadowCasters[i], shaderProgram);
+	}
 }
 
 void drawShadowMap(Fbo sbo, float4x4 viewProjectionMatrix) {
@@ -541,22 +529,18 @@ void drawCubeMap(Fbo fbo) {
 	GLint currentProgram;
 	glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
 	glUseProgram(fbo.shaderProgram);
-
-	float4x4 projectionMatrix = perspectiveMatrix(90.0f, 1, 2.0f, 1000.0f);
-
+	
 	for (int i = 0; i < 6; i++) {
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, fbo.texture, 0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		float4x4 viewMatrix = cubeMapCameras[i]->getViewMatrix();
+		float4x4 projectionMatrix = cubeMapCameras[i]->getProjectionMatrix();
 
 		setUniformSlow(shaderProgram, "projectionMatrix", projectionMatrix);
 		setUniformSlow(shaderProgram, "viewMatrix", viewMatrix);
 		setUniformSlow(shaderProgram, "inverseViewNormalMatrix", transpose(viewMatrix));
 
-		drawModel(water, water.m_modelMatrix, shaderProgram); 
-		drawModel(factory, factory.m_modelMatrix, shaderProgram);
-
-		drawModel(world, world.m_modelMatrix, shaderProgram);
+		drawShadowCasters(shaderProgram);
 	}
 
 	// CLEAN UP
@@ -565,7 +549,7 @@ void drawCubeMap(Fbo fbo) {
 
 }
 
-void drawScene(void)
+void drawScene(float4x4 viewMatrix, float4x4 projectionMatrix)
 {
 	
 	// enable back face culling.
@@ -600,21 +584,7 @@ void drawScene(void)
 	playerCamera->setPosition(carLoc.location + sphericalToCartesian(camera_theta, camera_phi, camera_r));
 
 
-	float4x4 viewMatrix;
-	float4x4 projectionMatrix;
-	if (camera == 6) {
-		viewMatrix			= playerCamera->getViewMatrix();
-		projectionMatrix	= playerCamera->getProjectionMatrix();
-	}
-	else if (camera == 7) {
-		viewMatrix			= lightViewMatrix;
-		projectionMatrix	= lightProjectionMatrix;
-	}
-	else
-	{
-		viewMatrix			= cubeMapCameras[camera]->getViewMatrix();
-		projectionMatrix	= cubeMapCameras[camera]->getProjectionMatrix();
-	}
+
 
 	float4x4 lightMatrix = 
 		make_translation({ 0.5, 0.5, 0.5 }) * 
@@ -644,7 +614,6 @@ void drawScene(void)
 	glBindTexture(GL_TEXTURE_CUBE_MAP, cMapAll.texture);
 	
 	//Render models
-	drawModel(water, water.m_modelMatrix, shaderProgram);
 	drawShadowCasters(shaderProgram);
 
 	//Render debuggers
@@ -652,9 +621,6 @@ void drawScene(void)
 
 	//Render skybox
 	skybox->render();
-
-	//Render cube map
-	drawCubeMap(cMapAll);
 
 	//Perform post processing
 	renderPostProcess();
@@ -785,8 +751,24 @@ void checkIntersection() {
 
 void display(void)
 {
-	drawScene();
-	
+	float4x4 viewMatrix;
+	float4x4 projectionMatrix;
+	if (camera == 6) {
+		viewMatrix = playerCamera->getViewMatrix();
+		projectionMatrix = playerCamera->getProjectionMatrix();
+	}
+	else if (camera == 7) {
+		viewMatrix = sunCamera->getViewMatrix();;
+		projectionMatrix = sunCamera->getProjectionMatrix();
+	}
+	else
+	{
+		viewMatrix = cubeMapCameras[camera]->getViewMatrix();
+		projectionMatrix = cubeMapCameras[camera]->getProjectionMatrix();
+	}
+	drawScene(viewMatrix, projectionMatrix);
+	drawCubeMap(cMapAll);
+
 	glutSwapBuffers();  // swap front and back buffer. This frame will now be displayed.
 	CHECK_GL_ERROR();
 }
@@ -973,6 +955,7 @@ void idle( int v )
 
 		if (hasChanged){
 			checkIntersection();
+			updatePlayer();
 			hasChanged = false;
 		}
 
@@ -1304,3 +1287,20 @@ high_resolution_clock::time_point end = high_resolution_clock::now();
 duration<double> time_span = duration_cast<duration<double>>(end - start);
 printf("TIME FOR COLL:%f\n", time_span.count());
 */
+
+void updatePlayer() {
+	float3 frontDir = normalize(carLoc.frontDir);
+	float3 rightDir = normalize(cross(frontDir, vUp));
+
+	float anglex = -(degreeToRad(90.0f) - acosf(dot(normalize(carLoc.upDir), frontDir)));
+	float anglez = (degreeToRad(90.0f) - acosf(dot(normalize(carLoc.upDir), rightDir)));
+
+	Quaternion qatX = make_quaternion_axis_angle(rightDir, anglex);
+	Quaternion qatY = make_quaternion_axis_angle(vUp, carLoc.angley);
+	Quaternion qatZ = make_quaternion_axis_angle(make_rotation_y<float3x3>(-carLoc.angley) * frontDir, anglez);
+
+	car.m_modelMatrix = make_translation(carLoc.location)
+		* makematrix(qatX)
+		* makematrix(qatY)
+		* makematrix(qatZ);
+}
