@@ -1,31 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="src\Camera.cpp">
-      <Filter>Camera</Filter>
-    </ClCompile>
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\Logger.cpp">
-      <Filter>Log</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Mesh.cpp">
-      <Filter>objects</Filter>
-    </ClCompile>
-    <ClCompile Include="src\PerspectiveCamera.cpp">
-      <Filter>Camera</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Triangle.cpp">
-      <Filter>objects</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Skybox.cpp">
-      <Filter>objects</Filter>
-    </ClCompile>
-    <ClCompile Include="src\CubeMapTexture.cpp">
-      <Filter>Misc</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Octree.cpp">
-      <Filter>Datastructures</Filter>
-    </ClCompile>
     <ClCompile Include="includes\glutil\glutil.cpp" />
     <ClCompile Include="src\collision\Collider.cpp">
       <Filter>Collider</Filter>
@@ -35,6 +11,30 @@
     </ClCompile>
     <ClCompile Include="src\core\Renderer.cpp">
       <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\objects\Mesh.cpp">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\collision\Octree.cpp">
+      <Filter>Datastructures</Filter>
+    </ClCompile>
+    <ClCompile Include="src\cameras\Camera.cpp">
+      <Filter>Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="src\cameras\PerspectiveCamera.cpp">
+      <Filter>Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="src\objects\Triangle.cpp">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\objects\Skybox.cpp">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Misc\CubeMapTexture.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="src\logging\Logger.cpp">
+      <Filter>Log</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -74,6 +74,9 @@
     </ClInclude>
     <ClInclude Include="src\core\Renderer.h">
       <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Misc\Utils.h">
+      <Filter>Misc</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

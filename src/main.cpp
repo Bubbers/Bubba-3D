@@ -47,9 +47,6 @@ using namespace chrono;
 #define SCREEN_WIDTH			1028
 #define SCREEN_HEIGHT			800
 
-#define SHADOW_MAP_RESOLUTION	2048
-#define CUBE_MAP_RESOLUTION		512
-
 #define TICK_PER_SECOND  50
 
 
@@ -59,13 +56,9 @@ using namespace chrono;
 bool paused = false;				// Tells us wether sun animation is paused
 float currentTime = 0.0f;			// Tells us the current time
 float timeSinceDraw = 0.0f;
-GLuint shaderProgram;
+
 const float3 vUp = make_vector(0.0f, 1.0f, 0.0f);
 
-GLuint postFxShader;
-GLuint horizontalBlurShader;
-GLuint verticalBlurShader;
-GLuint cutoffShader;
 
 //*****************************************************************************
 //	OBJ Model declarations
@@ -110,11 +103,7 @@ int prev_x = 0;
 int prev_y = 0;
 bool keysDown[256];
 
-
-
-Fbo sbo;
 Fbo cMapAll;
-Fbo postProcessFbo, horizontalBlurFbo, verticalBlurFbo, cutOffFbo;
 
 //*****************************************************************************
 //	Camera
@@ -448,11 +437,11 @@ int main(int argc, char *argv[])
 	glutTimerFunc(50, idle, 0);
 	glutDisplayFunc(display);
 
-	glutKeyboardFunc(handleKeys); // standard key is pressed/released
+	glutKeyboardFunc(handleKeys); 
 	glutKeyboardUpFunc(handleKeysRelease);
-	glutSpecialFunc(handleSpecialKeys); // "special" key is pressed/released
-	glutMouseFunc(mouse); // mouse button pressed/released
-	glutMotionFunc(motion); // mouse moved *while* any button is pressed
+	glutSpecialFunc(handleSpecialKeys); 
+	glutMouseFunc(mouse); 
+	glutMotionFunc(motion); 
 
 	renderer->initGL(carLoc.location);
 
@@ -517,7 +506,12 @@ void createCubeMaps() {
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_Z, cMapAll.texture, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, cMapAll.texture, 0);
 
-	cMapAll.shaderProgram = shaderProgram;
+	cMapAll.shaderProgram = loadShaderProgram("shaders/simple.vert", "shaders/simple.frag");
+	glBindAttribLocation(cMapAll.shaderProgram, 0, "position");
+	glBindAttribLocation(cMapAll.shaderProgram, 2, "texCoordIn");
+	glBindAttribLocation(cMapAll.shaderProgram, 1, "normalIn");
+	glBindFragDataLocation(cMapAll.shaderProgram, 0, "fragmentColor");
+	linkShaderProgram(cMapAll.shaderProgram);
 }
 
 void createMeshes() {

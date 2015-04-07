@@ -152,15 +152,15 @@
     <ClCompile Include="src\objects\Scene.cpp" />
     <ClCompile Include="src\collision\Collider.cpp" />
     <ClCompile Include="includes\glutil\glutil.cpp" />
-    <ClCompile Include="src\Camera.cpp" />
-    <ClCompile Include="src\CubeMapTexture.cpp" />
-    <ClCompile Include="src\Logger.cpp" />
+    <ClCompile Include="src\cameras\Camera.cpp" />
+    <ClCompile Include="src\Misc\CubeMapTexture.cpp" />
+    <ClCompile Include="src\logging\Logger.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\Mesh.cpp" />
-    <ClCompile Include="src\Octree.cpp" />
-    <ClCompile Include="src\PerspectiveCamera.cpp" />
-    <ClCompile Include="src\Skybox.cpp" />
-    <ClCompile Include="src\Triangle.cpp" />
+    <ClCompile Include="src\objects\Mesh.cpp" />
+    <ClCompile Include="src\collision\Octree.cpp" />
+    <ClCompile Include="src\cameras\PerspectiveCamera.cpp" />
+    <ClCompile Include="src\objects\Skybox.cpp" />
+    <ClCompile Include="src\objects\Triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\core\Renderer.h" />
@@ -176,6 +176,7 @@
     <ClInclude Include="includes\PerspectiveCamera.h" />
     <ClInclude Include="includes\Skybox.h" />
     <ClInclude Include="includes\Triangle.h" />
+    <ClInclude Include="src\Misc\Utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

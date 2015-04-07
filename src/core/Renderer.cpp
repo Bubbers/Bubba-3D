@@ -134,8 +134,10 @@ void Renderer::drawScene(Camera camera, Scene scene, float currentTime)
 	//Set cube map
 	setUniformSlow(shaderProgram, "cubeMap", 2);
 
-	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, cMapAll.texture);
+	if (scene.cubeMap != NULL) {
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, scene.cubeMap->texture);
+	}
 
 	//Render models
 	drawShadowCasters(shaderProgram, scene);

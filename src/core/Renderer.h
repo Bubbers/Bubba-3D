@@ -20,23 +20,12 @@
 #include "PerspectiveCamera.h"
 #include "..\objects\Scene.h"
 #include <Octree.h>
+#include "..\Misc\Utils.h"
 
 #define CUBE_MAP_RESOLUTION		512
 #define SHADOW_MAP_RESOLUTION	2048
 
 using namespace chag;
-
-//*****************************************************************************
-//	Frame buffer objects
-//*****************************************************************************
-struct Fbo{
-	GLuint id;
-	GLuint texture;
-	GLuint shaderProgram;
-	GLuint depthbuffer;
-
-	int width, height;
-};
 
 class Renderer
 {
@@ -73,9 +62,7 @@ private:
 	Logger logger = Logger::instance();
 
 	Fbo sbo;
-	Fbo cMapAll;
 	Camera *cubeMapCameras[6];
-	CubeMapTexture* reflectionCubeMap;
 	
 	//Drawing
 	void drawModel(Mesh &model, GLuint shaderProgram);
@@ -90,9 +77,6 @@ private:
 	GLuint verticalBlurShader;
 	GLuint cutoffShader;
 	Fbo postProcessFbo, horizontalBlurFbo, verticalBlurFbo, cutOffFbo;
-
-	//void renderPostProcess();
-	//void blurImage();
 
 	//DEBUGS
 	void drawDebug(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, Scene scene);
