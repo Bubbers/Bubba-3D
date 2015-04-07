@@ -33,7 +33,7 @@ public:
 	Renderer(int argc, char *argv[], int width, int height);
 	~Renderer();
 
-	void initGL(float3 carLoc);
+	void initGL();
 
 	void drawScene(Camera camera, Scene scene, float currentTime);
 	void start();

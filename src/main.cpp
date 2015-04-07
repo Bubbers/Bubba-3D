@@ -443,13 +443,13 @@ int main(int argc, char *argv[])
 	glutMouseFunc(mouse); 
 	glutMotionFunc(motion); 
 
-	renderer->initGL(carLoc.location);
+	renderer->initGL();
 
 	createCubeMaps();
 	createMeshes();
 	createCameras();
 	
-	glutMainLoop();
+	renderer->start();
 
 	return 0;
 }

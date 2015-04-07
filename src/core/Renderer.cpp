@@ -163,8 +163,10 @@ void Renderer::drawScene(Camera camera, Scene scene, float currentTime)
 */
 void Renderer::drawShadowCasters(GLuint shaderProgram, Scene scene)
 {
-	setUniformSlow(shaderProgram, "object_reflectiveness", 1.5f);
-	drawModel(*scene.car, shaderProgram);
+	if (scene.car != NULL) {
+		setUniformSlow(shaderProgram, "object_reflectiveness", 1.5f);
+		drawModel(*scene.car, shaderProgram);
+	}
 
 	setUniformSlow(shaderProgram, "object_reflectiveness", 0.0f);
 	for (int i = 0; i < scene.shadowCasters.size(); i++) {
@@ -205,7 +207,7 @@ void Renderer::setFog(GLuint shaderProgram) {
 	setUniformSlow(shaderProgram, "fog.vColor", FogParams::vColor);
 }
 
-void Renderer::initGL(float3 carLoc) 
+void Renderer::initGL() 
 {
 	int w = width;
 	int h = height;
