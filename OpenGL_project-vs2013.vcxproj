@@ -148,6 +148,7 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\core\Renderer.cpp" />
     <ClCompile Include="src\objects\Scene.cpp" />
     <ClCompile Include="src\collision\Collider.cpp" />
     <ClCompile Include="includes\glutil\glutil.cpp" />
@@ -162,6 +163,7 @@
     <ClCompile Include="src\Triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\core\Renderer.h" />
     <ClInclude Include="src\objects\Scene.h" />
     <ClInclude Include="src\collision\Collider.h" />
     <ClInclude Include="includes\AABB.h" />

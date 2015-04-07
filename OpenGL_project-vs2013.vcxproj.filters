@@ -30,7 +30,12 @@
     <ClCompile Include="src\collision\Collider.cpp">
       <Filter>Collider</Filter>
     </ClCompile>
-    <ClCompile Include="src\objects\Scene.cpp" />
+    <ClCompile Include="src\objects\Scene.cpp">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\Renderer.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="includes\Camera.h">
@@ -64,7 +69,12 @@
     <ClInclude Include="src\collision\Collider.h">
       <Filter>Collider</Filter>
     </ClInclude>
-    <ClInclude Include="src\objects\Scene.h" />
+    <ClInclude Include="src\objects\Scene.h">
+      <Filter>objects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\Renderer.h">
+      <Filter>core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Camera">
@@ -87,6 +97,9 @@
     </Filter>
     <Filter Include="Collider">
       <UniqueIdentifier>{464f9930-cb97-4e31-abde-7cfdf4fb091d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core">
+      <UniqueIdentifier>{672f009d-705e-44df-8217-cd4220849f13}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

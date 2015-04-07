@@ -6,7 +6,7 @@ using namespace std;
 class Logger
 {
 public:
-	Logger();
+
 	~Logger();
 
 	void setDebug(bool debug);
@@ -16,9 +16,17 @@ public:
 	void logSevere(string msg);
 	void logInfo(string msg);
 
+	static Logger& instance()
+	{
+		static Logger INSTANCE;
+		return INSTANCE;
+	}
+
+	bool debug = true;
+	bool saveToFile = false;
+
 private:
-	bool debug;
-	bool saveToFile;
+	Logger();
 
 	string getTime();
 };

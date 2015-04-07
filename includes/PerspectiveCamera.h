@@ -1,3 +1,6 @@
+#ifndef __PESRPECTIVECAMERA_H__
+#define __PESRPECTIVECAMERA_H__
+
 #include "Camera.h"
 
 class PerspectiveCamera : public Camera{ 
@@ -13,3 +16,5 @@ public:
 	void setUpVector(float3 up);
 private:
 };
+
+#endif //__PESRPECTIVECAMERA_H__
