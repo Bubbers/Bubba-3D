@@ -163,13 +163,8 @@ void Renderer::drawScene(Camera camera, Scene scene, float currentTime)
 */
 void Renderer::drawShadowCasters(GLuint shaderProgram, Scene scene)
 {
-	if (scene.car != NULL) {
-		setUniformSlow(shaderProgram, "object_reflectiveness", 1.5f);
-		drawModel(*scene.car, shaderProgram);
-	}
-
-	setUniformSlow(shaderProgram, "object_reflectiveness", 0.0f);
 	for (int i = 0; i < scene.shadowCasters.size(); i++) {
+		setUniformSlow(shaderProgram, "object_reflectiveness", (*scene.shadowCasters[i]).shininess);
 		drawModel(*scene.shadowCasters[i], shaderProgram);
 	}
 }

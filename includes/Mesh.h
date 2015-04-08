@@ -79,6 +79,7 @@ public:
 
 	chag::float4x4 m_modelMatrix;
 	std::vector<Chunk> m_chunks;
+	float shininess = 0.0;
 	AABB m_aabb;
 };
 

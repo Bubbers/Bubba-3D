@@ -580,7 +580,8 @@ void createCameras() {
 
 	car.loadMesh("scenes/car.obj");
 	car.m_modelMatrix = make_identity<float4x4>();
-	scene.car = &car;
+	car.shininess = 1.5f;
+	scene.shadowCasters.push_back(&car);
 
 	skybox = new Skybox(playerCamera);
 	skybox->init("scenes/posx.jpg", "scenes/negx.jpg", "scenes/posy.jpg", "scenes/posy.jpg", "scenes/negz.jpg", "scenes/posz.jpg");
