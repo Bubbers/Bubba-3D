@@ -148,6 +148,8 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="includes\AABB.cpp" />
+    <ClCompile Include="src\objects\SkinnedMesh.cpp" />
     <ClCompile Include="src\core\Renderer.cpp" />
     <ClCompile Include="src\objects\Scene.cpp" />
     <ClCompile Include="src\collision\Collider.cpp" />
@@ -163,10 +165,11 @@
     <ClCompile Include="src\objects\Triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\objects\SkinnedMesh.h" />
     <ClInclude Include="src\core\Renderer.h" />
     <ClInclude Include="src\objects\Scene.h" />
     <ClInclude Include="src\collision\Collider.h" />
-    <ClInclude Include="includes\AABB.h" />
+    <ClInclude Include="includes\AABB2.h" />
     <ClInclude Include="includes\Camera.h" />
     <ClInclude Include="includes\CubeMapTexture.h" />
     <ClInclude Include="includes\glutil\glutil.h" />

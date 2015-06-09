@@ -38,6 +38,7 @@
 #include "Skybox.h"
 #include "objects\Scene.h"
 #include "core\Renderer.h"
+#include "objects\SkinnedMesh.h"
 
 using namespace std;
 using namespace chag;
@@ -536,6 +537,9 @@ void createMeshes() {
 	water.loadMesh("../scenes/water.obj");
 	water.m_modelMatrix = make_translation(make_vector(0.0f, -6.0f, 0.0f));
 	scene.shadowCasters.push_back(&water);
+
+	SkinnedMesh h;
+	h.loadMesh("../scenes:water.obj");
 
 	logger.logInfo("Finished loading models.");
 

@@ -36,6 +36,10 @@
     <ClCompile Include="src\logging\Logger.cpp">
       <Filter>Log</Filter>
     </ClCompile>
+    <ClCompile Include="src\objects\SkinnedMesh.cpp">
+      <Filter>objects</Filter>
+    </ClCompile>
+    <ClCompile Include="includes\AABB.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="includes\Camera.h">
@@ -62,9 +66,6 @@
     <ClInclude Include="includes\Octree.h">
       <Filter>Datastructures</Filter>
     </ClInclude>
-    <ClInclude Include="includes\AABB.h">
-      <Filter>Datastructures</Filter>
-    </ClInclude>
     <ClInclude Include="includes\glutil\glutil.h" />
     <ClInclude Include="src\collision\Collider.h">
       <Filter>Collider</Filter>
@@ -77,6 +78,12 @@
     </ClInclude>
     <ClInclude Include="src\Misc\Utils.h">
       <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="src\objects\SkinnedMesh.h">
+      <Filter>objects</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\AABB2.h">
+      <Filter>Datastructures</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

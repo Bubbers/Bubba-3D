@@ -1,7 +1,5 @@
-#ifndef __MESH_H__
-#define __MESH_H__
-
-
+#ifndef __SKINNEDMESH_H__
+#define __SKINNEDMESH_H__
 
 #include <string>
 #include <vector>
@@ -16,11 +14,11 @@
 #include <assimp/scene.h>
 #include "AABB2.h"
 
-class Mesh
+class SkinnedMesh
 {
 public:
-	Mesh();
-	~Mesh();
+	SkinnedMesh();
+	~SkinnedMesh();
 
 	bool loadMesh(const std::string& fileName);
 	void render();
@@ -53,7 +51,7 @@ private:
 			unsigned int textureIndex);
 		~Chunk() {};
 
-		
+
 		// Data on host
 		std::vector<chag::float3> m_positions;
 		std::vector<chag::float3> m_normals;
@@ -72,10 +70,10 @@ private:
 	};
 
 
-	
+
 	std::vector<Material> m_textures;
 
-public: 
+public:
 
 	chag::float4x4 m_modelMatrix;
 	std::vector<Chunk> m_chunks;
