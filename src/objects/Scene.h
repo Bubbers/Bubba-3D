@@ -5,6 +5,7 @@
 #include <Skybox.h>
 #include <CubeMapTexture.h>
 #include "..\Misc\Utils.h"
+#include "lights\Lights.h"
 
 
 class Scene
@@ -18,6 +19,7 @@ public:
 	Mesh *car;
 
 	Fbo *cubeMap;
+	DirectionalLight directionalLight;
 	std::vector<Mesh*> lights;
 	std::vector<Mesh*> shadowCasters;
 	std::vector<Mesh*> transparentObjects;

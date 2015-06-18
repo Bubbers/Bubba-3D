@@ -6,6 +6,16 @@ precision highp float;
 #define FOG_EQUATION_EXP    1
 #define FOG_EQUATION_EXP2   2
 
+uniform struct Fog {
+	vec3 vColor;
+	float fStart;
+	float fEnd;
+	float fDensity;
+
+	int iEquation;
+} fog;
+
+
 // inputs from vertex shader.
 in vec4 color;
 in vec2 texCoord;
@@ -27,7 +37,7 @@ uniform samplerCube cubeMap;
 uniform vec3 scene_ambient_light = vec3(0.05, 0.05, 0.05);
 
 //Suns real light
-uniform vec3 scene_light = vec3(0.6, 0.6, 0.6);
+uniform vec3 scene_light;
 
 // object specific uniforms, change once per object but are the same for all materials in object.
 uniform float object_alpha; 
@@ -43,14 +53,6 @@ uniform int has_diffuse_texture;
 uniform sampler2D diffuse_texture;
 
 
-uniform struct Fog {
-	vec3 vColor;
-	float fStart;
-	float fEnd;
-	float fDensity;
-
-	int iEquation;
-} fog;
 
 
 vec3 calculateAmbient(vec3 lightAmbient, vec3 materialAmbient);

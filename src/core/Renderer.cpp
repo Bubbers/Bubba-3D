@@ -121,6 +121,7 @@ void Renderer::drawScene(Camera camera, Scene scene, float currentTime)
 	setUniformSlow(shaderProgram, "projectionMatrix", projectionMatrix);
 	setUniformSlow(shaderProgram, "lightpos", scene.sun->getPosition());
 	setUniformSlow(shaderProgram, "lightMatrix", lightMatrix);
+	setUniformSlow(shaderProgram, "scene_light", scene.directionalLight.color);
 	setUniformSlow(shaderProgram, "inverseViewNormalMatrix", transpose(viewMatrix));
 
 	//Sets fog

@@ -38,8 +38,7 @@
 #include "Skybox.h"
 #include "objects\Scene.h"
 #include "core\Renderer.h"
-#include "objects\SkinnedMesh.h"
-
+#include "objects\lights\Lights.h"
 using namespace std;
 using namespace chag;
 using namespace chrono;
@@ -88,11 +87,6 @@ float camera_theta = M_PI / 1.0f;
 float camera_phi = M_PI / 4.0f;
 float camera_r = 30.0; 
 float camera_target_altitude = 5.2; 
-
-//*****************************************************************************
-//	Light state variables (updated in idle())
-//*****************************************************************************
-float3 lightPosition = {30.1f, 450.0f, 0.1f};
 
 //****************************************************************************
 //	Input state variables
@@ -158,6 +152,7 @@ void drawCubeMap(Fbo fbo, Scene scene);
 void createCubeMaps();
 void createMeshes();
 void createCameras();
+void createLights();
 
 
 float degreeToRad(float degree);
@@ -405,8 +400,8 @@ void idle( int v )
 		// do one full revolution every 20 seconds.
 		float4x4 rotateLight = make_rotation_x<float4x4>(2.0f * M_PI * currentTime / 20.0f);
 		// rotate and update global light position.
-		lightPosition = make_vector3(rotateLight * make_vector(30.1f, 450.0f, 0.1f, 1.0f));
-		sunCamera->setPosition(lightPosition);
+		scene.directionalLight.position = make_vector3(rotateLight * make_vector(30.1f, 450.0f, 0.1f, 1.0f));
+		sunCamera->setPosition(scene.directionalLight.position);
 
 		//Calculate camera matrix
 		playerCamera->setLookAt(carLoc.location + make_vector(0.0f, camera_target_altitude, 0.0f));
@@ -449,10 +444,18 @@ int main(int argc, char *argv[])
 	createCubeMaps();
 	createMeshes();
 	createCameras();
+	createLights();
 	
 	renderer->start();
 
 	return 0;
+}
+
+void createLights() {
+	DirectionalLight sun;
+	sun.color = make_vector(0.6f, 0.6f, 0.6f);
+	sun.position = make_vector(30.1f, 450.0f, 0.1f);
+	scene.directionalLight = sun;
 }
 
 void createCubeMaps() {
@@ -538,8 +541,6 @@ void createMeshes() {
 	water.m_modelMatrix = make_translation(make_vector(0.0f, -6.0f, 0.0f));
 	scene.shadowCasters.push_back(&water);
 
-	SkinnedMesh h;
-	h.loadMesh("../scenes:water.obj");
 
 	logger.logInfo("Finished loading models.");
 
@@ -572,7 +573,7 @@ void createCameras() {
 	int w = SCREEN_WIDTH;
 	int h = SCREEN_HEIGHT;
 
-	sunCamera = new PerspectiveCamera(lightPosition, make_vector(0.0f, 0.0f, 0.0f), make_vector(0.0f, 1.0f, 0.0f), 45.0f, 1.0f, 280.0f, 600.0f);
+	sunCamera = new PerspectiveCamera(scene.directionalLight.position, make_vector(0.0f, 0.0f, 0.0f), make_vector(0.0f, 1.0f, 0.0f), 45.0f, 1.0f, 280.0f, 600.0f);
 	scene.sun = sunCamera;
 
 	playerCamera = new PerspectiveCamera(
