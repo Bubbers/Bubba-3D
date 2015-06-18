@@ -3,8 +3,13 @@ This is a small game engine programmed in C++
 using Glut and Glew.  
 Bubba-3D provides a helpful API for running OpenGL,
 while leaving the programmer much freedom to customize.  
-  
-Currently under heavy development.
+
+***  
+###Current todos
+* Add spot / point lights
+* Support skinned meshes
+* lots more fun stuff!
+
 ***
 ###Example
     #include "core\Renderer.h"
