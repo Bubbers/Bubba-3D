@@ -454,6 +454,7 @@ int main(int argc, char *argv[])
 void createLights() {
 	PointLight sun;
 	sun.diffuseColor = make_vector(0.6f , 0.6f , 0.6f );
+	sun.specularColor = sun.diffuseColor;
 	sun.ambientColor = make_vector(0.05f, 0.05f, 0.05f);
 	sun.position = make_vector(30.1f, 450.0f, 0.1f);
 	scene.pointLight = sun;

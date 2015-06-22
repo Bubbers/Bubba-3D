@@ -121,6 +121,11 @@ void Renderer::drawScene(Camera camera, Scene scene, float currentTime)
 	setUniformSlow(shaderProgram, "projectionMatrix", projectionMatrix);
 	setUniformSlow(shaderProgram, "lightpos", scene.sun->getPosition());
 	setUniformSlow(shaderProgram, "lightMatrix", lightMatrix);
+	setUniformSlow(shaderProgram, "pointLights[0].position", scene.pointLight.position);
+	setUniformSlow(shaderProgram, "pointLights[0].colors.ambientColor" , scene.pointLight.ambientColor);
+	setUniformSlow(shaderProgram, "pointLights[0].colors.diffuseColor" , scene.pointLight.diffuseColor);
+	setUniformSlow(shaderProgram, "pointLights[0].colors.specularColor", scene.pointLight.specularColor);
+
 	setUniformSlow(shaderProgram, "scene_light", scene.pointLight.diffuseColor);
 	setUniformSlow(shaderProgram, "scene_ambient_light", scene.pointLight.ambientColor);
 	setUniformSlow(shaderProgram, "inverseViewNormalMatrix", transpose(viewMatrix));

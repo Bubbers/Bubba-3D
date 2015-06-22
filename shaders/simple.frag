@@ -15,6 +15,29 @@ uniform struct Fog {
 	int iEquation;
 } fog;
 
+struct Light
+{
+	vec3 ambientColor;
+	vec3 diffuseColor;
+	vec3 specularColor;
+};
+
+struct Attenuation{
+	float constant;
+	float linear;
+	float exp;
+};
+
+struct PointLight{
+	Light colors;
+	vec3 position;
+	Attenuation atten;
+};
+
+#define MAX_POINT_LIGHTS 1
+uniform PointLight pointLights[MAX_POINT_LIGHTS];
+
+
 
 // inputs from vertex shader.
 in vec4 color;
@@ -54,46 +77,60 @@ uniform sampler2D diffuse_texture;
 
 
 
+vec3 calculatePointLight(int index, vec3 normal);
 
 vec3 calculateAmbient(vec3 lightAmbient, vec3 materialAmbient);
-
 vec3 calculateDiffuse(vec3 normal, vec3 directionToLight, vec3 materialLight, vec3 sceneLight);
-
 vec3 calculateSpecular(vec3 normal, vec3 directionToLight, vec3 directionToEye, vec3 materialSpecular, vec3 sceneLight, float materialShininess);
-
 vec3 calculateFresnel(vec3 directionToLight, vec3 directionToEye, vec3 materialSpecular);
-
 vec3 calculateFog(vec3 color, float distance);
 
 void main() 
 {
-	vec3 directionToLight = normalize(viewSpaceLightPosition - viewSpacePosition.xyz);
-	vec3 directionToEye = normalize(vec3(0.0) -viewSpacePosition.xyz);
-
 	vec3 normal = normalize(viewSpaceNormal);
+	vec3 color = vec3(0.0);
 
+	for (int i = 0; i < MAX_POINT_LIGHTS; i++) {
+		color += calculatePointLight(i, normal);
+	}
+	
+	fragmentColor = vec4(color, object_alpha);
+
+	/*if (object_reflectiveness > 0.0) {
+		fragmentColor = vec4(texture(cubeMap, reflectionVector).rgb, object_alpha);
+	}*/
+}
+
+vec3 calculatePointLight(int index, vec3 normal) {
+
+	vec3 ambi_color = pointLights[index].colors.ambientColor;
+	vec3 diff_color = pointLights[index].colors.diffuseColor;
+	vec3 spec_color = pointLights[index].colors.specularColor;
+
+	vec3 directionToLight = normalize(viewSpaceLightPosition - viewSpacePosition.xyz);
+	vec3 directionToEye = normalize(vec3(0.0) - viewSpacePosition.xyz);
 	float visibility = textureProj(shadowMap, shadowTexCoord);
 
-	vec3 reflectionVector = normalize((inverseViewNormalMatrix * vec4(reflect(-directionToEye, normal),0.0)).xyz);
+	vec3 reflectionVector = normalize((inverseViewNormalMatrix * vec4(reflect(-directionToEye, normal), 0.0)).xyz);
 
+	vec3 diffuse = calculateDiffuse(normal, directionToLight, material_diffuse_color, diff_color);
 
-	vec3 diffuse = calculateDiffuse(normal, directionToLight, material_diffuse_color, scene_light);
-	
 	vec3 fresnelTerm = calculateFresnel(normal, directionToEye, material_specular_color);
-	vec3 specular = calculateSpecular(normal, directionToLight, directionToEye, fresnelTerm, scene_light, material_shininess);
-	
+	vec3 specular = calculateSpecular(normal, directionToLight, directionToEye, fresnelTerm, spec_color, material_shininess);
+
 	vec3 emissive = material_emissive_color;
-	vec3 ambient = calculateAmbient(scene_ambient_light, material_diffuse_color);
+	vec3 ambient = calculateAmbient(ambi_color, material_diffuse_color);
 
 	vec3 cubeMapSample = texture(cubeMap, reflectionVector).rgb * object_reflectiveness;
 	vec3 reflection = fresnelTerm * cubeMapSample;
-	
+
 	// if we have a texture we modulate all of the color properties
 	if (has_diffuse_texture == 1)
 	{
-		diffuse *= texture(diffuse_texture, texCoord.xy).xyz;
-		ambient *= texture(diffuse_texture, texCoord.xy).xyz;
-		emissive *= texture(diffuse_texture, texCoord.xy).xyz;
+		vec3 tex_color = texture(diffuse_texture, texCoord.xy).xyz;
+		diffuse  *= tex_color;
+		ambient  *= tex_color;
+		emissive *= tex_color;
 	}
 
 	specular *= visibility;
@@ -102,12 +139,8 @@ void main()
 
 	vec3 color = ambient + diffuse + emissive + specular + reflection;
 	vec3 foggedColor = calculateFog(color, abs(viewSpacePosition.z / viewSpacePosition.w));
-	
-	fragmentColor = vec4(foggedColor, object_alpha);
 
-	/*if (object_reflectiveness > 0.0) {
-		fragmentColor = vec4(texture(cubeMap, reflectionVector).rgb, object_alpha);
-	}*/
+	return foggedColor;	
 }
 
 vec3 calculateFog(vec3 color, float dist) {
