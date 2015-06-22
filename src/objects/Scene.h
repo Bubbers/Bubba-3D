@@ -19,7 +19,7 @@ public:
 	Mesh *car;
 
 	Fbo *cubeMap;
-	DirectionalLight directionalLight;
+	PointLight pointLight;
 	std::vector<Mesh*> lights;
 	std::vector<Mesh*> shadowCasters;
 	std::vector<Mesh*> transparentObjects;

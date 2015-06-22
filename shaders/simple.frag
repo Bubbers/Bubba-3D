@@ -34,7 +34,7 @@ uniform sampler2DShadow shadowMap;
 uniform samplerCube cubeMap; 
 
 //Suns ambient light
-uniform vec3 scene_ambient_light = vec3(0.05, 0.05, 0.05);
+uniform vec3 scene_ambient_light;
 
 //Suns real light
 uniform vec3 scene_light;
