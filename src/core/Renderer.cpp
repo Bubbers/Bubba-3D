@@ -126,8 +126,6 @@ void Renderer::drawScene(Camera camera, Scene scene, float currentTime)
 	setUniformSlow(shaderProgram, "pointLights[0].colors.diffuseColor" , scene.pointLight.diffuseColor);
 	setUniformSlow(shaderProgram, "pointLights[0].colors.specularColor", scene.pointLight.specularColor);
 
-	setUniformSlow(shaderProgram, "scene_light", scene.pointLight.diffuseColor);
-	setUniformSlow(shaderProgram, "scene_ambient_light", scene.pointLight.ambientColor);
 	setUniformSlow(shaderProgram, "inverseViewNormalMatrix", transpose(viewMatrix));
 
 	//Sets fog

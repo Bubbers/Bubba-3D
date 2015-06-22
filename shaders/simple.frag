@@ -56,12 +56,6 @@ out vec4 fragmentColor;
 uniform sampler2DShadow shadowMap;
 uniform samplerCube cubeMap; 
 
-//Suns ambient light
-uniform vec3 scene_ambient_light;
-
-//Suns real light
-uniform vec3 scene_light;
-
 // object specific uniforms, change once per object but are the same for all materials in object.
 uniform float object_alpha; 
 uniform float object_reflectiveness = 0.0;
