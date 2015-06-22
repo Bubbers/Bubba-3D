@@ -400,8 +400,8 @@ void idle( int v )
 		// do one full revolution every 20 seconds.
 		float4x4 rotateLight = make_rotation_x<float4x4>(2.0f * M_PI * currentTime / 20.0f);
 		// rotate and update global light position.
-		scene.pointLight.position = make_vector3(rotateLight * make_vector(30.1f, 450.0f, 0.1f, 1.0f));
-		sunCamera->setPosition(scene.pointLight.position);
+		scene.pointLight[0].position = make_vector3(rotateLight * make_vector(30.1f, 450.0f, 0.1f, 1.0f));
+		sunCamera->setPosition(scene.pointLight[0].position);
 
 		//Calculate camera matrix
 		playerCamera->setLookAt(carLoc.location + make_vector(0.0f, camera_target_altitude, 0.0f));
@@ -457,7 +457,7 @@ void createLights() {
 	sun.specularColor = sun.diffuseColor;
 	sun.ambientColor = make_vector(0.05f, 0.05f, 0.05f);
 	sun.position = make_vector(30.1f, 450.0f, 0.1f);
-	scene.pointLight = sun;
+	scene.pointLight[0] = sun;
 }
 
 void createCubeMaps() {
@@ -575,7 +575,7 @@ void createCameras() {
 	int w = SCREEN_WIDTH;
 	int h = SCREEN_HEIGHT;
 
-	sunCamera = new PerspectiveCamera(scene.pointLight.position, make_vector(0.0f, 0.0f, 0.0f), make_vector(0.0f, 1.0f, 0.0f), 45.0f, 1.0f, 280.0f, 600.0f);
+	sunCamera = new PerspectiveCamera(scene.pointLight[0].position, make_vector(0.0f, 0.0f, 0.0f), make_vector(0.0f, 1.0f, 0.0f), 45.0f, 1.0f, 280.0f, 600.0f);
 	scene.sun = sunCamera;
 
 	playerCamera = new PerspectiveCamera(

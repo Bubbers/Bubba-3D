@@ -1,6 +1,8 @@
 #ifndef __SCENE_H__
 #define __SCENE_H__
 
+#define MAX_POINT_LIGHTS 2
+
 #include <Mesh.h>
 #include <Skybox.h>
 #include <CubeMapTexture.h>
@@ -19,7 +21,7 @@ public:
 	Mesh *car;
 
 	Fbo *cubeMap;
-	PointLight pointLight;
+	PointLight pointLight[MAX_POINT_LIGHTS];
 	std::vector<Mesh*> lights;
 	std::vector<Mesh*> shadowCasters;
 	std::vector<Mesh*> transparentObjects;

@@ -34,7 +34,7 @@ struct PointLight{
 	Attenuation atten;
 };
 
-#define MAX_POINT_LIGHTS 1
+#define MAX_POINT_LIGHTS 2
 uniform PointLight pointLights[MAX_POINT_LIGHTS];
 
 
