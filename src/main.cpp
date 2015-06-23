@@ -69,6 +69,7 @@ Mesh car;
 Mesh factory;
 Mesh water;
 Mesh spider;
+Mesh lamp;
 
 Scene scene;
 
@@ -453,11 +454,24 @@ int main(int argc, char *argv[])
 
 void createLights() {
 	PointLight sun;
-	sun.diffuseColor = make_vector(0.6f , 0.6f , 0.6f );
+	sun.diffuseColor = make_vector(0.6f, 0.6f, 0.6f);
 	sun.specularColor = sun.diffuseColor;
 	sun.ambientColor = make_vector(0.05f, 0.05f, 0.05f);
 	sun.position = make_vector(30.1f, 450.0f, 0.1f);
+	sun.attenuation.constant = 1.0f;
+	sun.attenuation.linear = 0.0f;
+	sun.attenuation.exp = 0.0f;
 	scene.pointLight[0] = sun;
+
+	PointLight sun2;
+	sun2.diffuseColor = make_vector(100.6f, 0.6f, 0.6f);
+	sun2.specularColor = make_vector(1.0f, 0.0f, 0.0f);
+	sun2.ambientColor = make_vector(0.05f, 0.05f, 0.05f);
+	sun2.position = make_vector(10.0f, 7.0f, 10.0f);
+	sun2.attenuation.constant = 1.0f;
+	sun2.attenuation.linear = 0.7f;
+	sun2.attenuation.exp = 1.8f;
+	scene.pointLight[1] = sun2;
 }
 
 void createCubeMaps() {
@@ -542,6 +556,10 @@ void createMeshes() {
 	water.loadMesh("../scenes/water.obj");
 	water.m_modelMatrix = make_translation(make_vector(0.0f, -6.0f, 0.0f));
 	scene.shadowCasters.push_back(&water);
+
+	lamp.loadMesh("../scenes/sphere.obj");
+	lamp.m_modelMatrix = make_translation(make_vector(10.0f, 10.0f, 10.0f));
+	scene.shadowCasters.push_back(&lamp);
 
 
 	logger.logInfo("Finished loading models.");

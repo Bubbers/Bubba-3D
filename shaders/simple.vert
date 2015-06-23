@@ -8,6 +8,7 @@ in  vec3	normalIn;
 out vec4	viewSpacePosition; 
 out vec3	viewSpaceNormal; 
 out vec3	viewSpaceLightPosition; 
+out vec4    worldSpacePosition;
 out vec4	color;
 out	vec2	texCoord;	// outgoing interpolated texcoord to fragshader
 out vec4    shadowTexCoord;
@@ -29,7 +30,8 @@ void main()
 	// modelViewMatrix, but that doesn't compile on current drivers.
 	// Just using the modelView matrix works fine, as long as it does not
 	// contain any nonuniform scaling. 
-	mat4 normalMatrix = inverse(transpose(modelViewMatrix));
+	//mat4 normalMatrix = inverse(transpose(modelViewMatrix));
+	mat4 normalMatrix = inverse(transpose(modelMatrix));
 	///////////////////////////////////////////////////////////////////////////
 	color = vec4(colorIn,1); 
 	texCoord = texCoordIn; 
@@ -37,7 +39,7 @@ void main()
 	viewSpacePosition = modelViewMatrix * vec4(position, 1.0); 
 	viewSpaceNormal = normalize( (normalMatrix * vec4(normalIn,0.0)).xyz );
 	viewSpaceLightPosition = (modelViewMatrix * vec4(lightpos, 1)).xyz; 
-	vec4 worldSpacePosition = modelMatrix * vec4(position, 1); 
+	worldSpacePosition = modelMatrix * vec4(position, 1); 
 
 	shadowTexCoord = lightMatrix *vec4(viewSpacePosition.xyz, 1.0);
 	//shadowTexCoord.xyz *= vec3(0.5, 0.5, 0.5);

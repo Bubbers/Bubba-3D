@@ -31,7 +31,7 @@ struct Attenuation{
 struct PointLight{
 	Light colors;
 	vec3 position;
-	Attenuation atten;
+	Attenuation attenuation;
 };
 
 #define MAX_POINT_LIGHTS 2
@@ -45,9 +45,12 @@ in vec2 texCoord;
 in vec4 viewSpacePosition; 
 in vec3 viewSpaceNormal; 
 in vec3 viewSpaceLightPosition; 
+in vec4 worldSpacePosition;
 in vec4 shadowTexCoord;
 
 uniform mat4 inverseViewNormalMatrix;
+
+uniform vec3 viewPosition;
 
 // output to frame buffer.
 out vec4 fragmentColor;
@@ -71,7 +74,7 @@ uniform sampler2D diffuse_texture;
 
 
 
-vec3 calculatePointLight(int index, vec3 normal);
+vec3 calculatePointLight(PointLight light, vec3 normal, vec3 directionToEye);
 
 vec3 calculateAmbient(vec3 lightAmbient, vec3 materialAmbient);
 vec3 calculateDiffuse(vec3 normal, vec3 directionToLight, vec3 materialLight, vec3 sceneLight);
@@ -82,30 +85,35 @@ vec3 calculateFog(vec3 color, float distance);
 void main() 
 {
 	vec3 normal = normalize(viewSpaceNormal);
+	//vec3 directionToEye = normalize(vec3(0.0) - viewSpacePosition.xyz);
+	vec3 directionToEye = normalize(viewPosition - worldSpacePosition.xyz);
 	vec3 color = vec3(0.0);
 
 	for (int i = 0; i < MAX_POINT_LIGHTS; i++) {
-		color += calculatePointLight(i, normal);
+		color += calculatePointLight(pointLights[i], normal, directionToEye);
 	}
 	
-	fragmentColor = vec4(color, object_alpha);
+
+	vec3 foggedColor = calculateFog(color, abs(viewSpacePosition.z / viewSpacePosition.w));
+
+	fragmentColor = vec4(foggedColor, object_alpha);
 
 	/*if (object_reflectiveness > 0.0) {
 		fragmentColor = vec4(texture(cubeMap, reflectionVector).rgb, object_alpha);
 	}*/
 }
 
-vec3 calculatePointLight(int index, vec3 normal) {
+vec3 calculatePointLight(PointLight light, vec3 normal, vec3 directionToEye) {
 
-	vec3 ambi_color = pointLights[index].colors.ambientColor;
-	vec3 diff_color = pointLights[index].colors.diffuseColor;
-	vec3 spec_color = pointLights[index].colors.specularColor;
+	vec3 ambi_color = light.colors.ambientColor;
+	vec3 diff_color = light.colors.diffuseColor;
+	vec3 spec_color = light.colors.specularColor;
 
-	vec3 directionToLight = normalize(viewSpaceLightPosition - viewSpacePosition.xyz);
-	vec3 directionToEye = normalize(vec3(0.0) - viewSpacePosition.xyz);
-	float visibility = textureProj(shadowMap, shadowTexCoord);
+	//vec3 directionToLight = normalize(viewSpaceLightPosition - viewSpacePosition.xyz);
+	vec3 directionToLight = normalize(light.position - worldSpacePosition.xyz);
+	//float visibility = textureProj(shadowMap, shadowTexCoord);
 
-	vec3 reflectionVector = normalize((inverseViewNormalMatrix * vec4(reflect(-directionToEye, normal), 0.0)).xyz);
+	//vec3 reflectionVector = normalize((inverseViewNormalMatrix * vec4(reflect(-directionToEye, normal), 0.0)).xyz);
 
 	vec3 diffuse = calculateDiffuse(normal, directionToLight, material_diffuse_color, diff_color);
 
@@ -115,8 +123,8 @@ vec3 calculatePointLight(int index, vec3 normal) {
 	vec3 emissive = material_emissive_color;
 	vec3 ambient = calculateAmbient(ambi_color, material_diffuse_color);
 
-	vec3 cubeMapSample = texture(cubeMap, reflectionVector).rgb * object_reflectiveness;
-	vec3 reflection = fresnelTerm * cubeMapSample;
+	//vec3 cubeMapSample = texture(cubeMap, reflectionVector).rgb * object_reflectiveness;
+	//vec3 reflection = fresnelTerm * cubeMapSample;
 
 	// if we have a texture we modulate all of the color properties
 	if (has_diffuse_texture == 1)
@@ -126,15 +134,18 @@ vec3 calculatePointLight(int index, vec3 normal) {
 		ambient  *= tex_color;
 		emissive *= tex_color;
 	}
+	//specular *= visibility;
+	//diffuse *= visibility;
+	//reflection *= max(visibility, 0.2);
 
-	specular *= visibility;
-	diffuse *= visibility;
-	reflection *= max(visibility, 0.2);
+	float distance = length(light.position - worldSpacePosition.xyz);
+	float attenuation = 1.0f / (light.attenuation.constant + light.attenuation.linear * distance + light.attenuation.exp * (distance * distance));
 
-	vec3 color = ambient + diffuse + emissive + specular + reflection;
-	vec3 foggedColor = calculateFog(color, abs(viewSpacePosition.z / viewSpacePosition.w));
+	diffuse *= attenuation;
+	specular *= attenuation;
 
-	return foggedColor;	
+	vec3 color = ambient + diffuse + emissive + specular; // +reflection;
+	return color;	
 }
 
 vec3 calculateFog(vec3 color, float dist) {

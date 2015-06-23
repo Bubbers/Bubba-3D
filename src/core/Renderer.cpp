@@ -124,12 +124,18 @@ void Renderer::drawScene(Camera camera, Scene scene, float currentTime)
 	
 	for (int i = 0; i < MAX_POINT_LIGHTS; i++) {
 		string name = std::string("pointLights[") + std::to_string(i).c_str() + "]";
-		setUniformSlow(shaderProgram, (name + ".position").c_str()            , scene.pointLight[i].position);
-		setUniformSlow(shaderProgram, (name + ".colors.ambientColor" ).c_str(), scene.pointLight[i].ambientColor);
-		setUniformSlow(shaderProgram, (name + ".colors.diffuseColor" ).c_str(), scene.pointLight[i].diffuseColor);
+		setUniformSlow(shaderProgram, (name + ".position").c_str(), scene.pointLight[i].position);
+		setUniformSlow(shaderProgram, (name + ".colors.ambientColor").c_str(), scene.pointLight[i].ambientColor);
+		setUniformSlow(shaderProgram, (name + ".colors.diffuseColor").c_str(), scene.pointLight[i].diffuseColor);
 		setUniformSlow(shaderProgram, (name + ".colors.specularColor").c_str(), scene.pointLight[i].specularColor);
+		setUniformSlow(shaderProgram, (name + ".attenuation.constant").c_str(), scene.pointLight[i].attenuation.constant);
+		setUniformSlow(shaderProgram, (name + ".attenuation.linear").c_str(),   scene.pointLight[i].attenuation.linear);
+		setUniformSlow(shaderProgram, (name + ".attenuation.exp").c_str(),      scene.pointLight[i].attenuation.exp);
 	}
 	setUniformSlow(shaderProgram, "inverseViewNormalMatrix", transpose(viewMatrix));
+	setUniformSlow(shaderProgram, "viewPosition", camera.getPosition());
+
+	
 
 	//Sets fog
 	setFog(shaderProgram);
