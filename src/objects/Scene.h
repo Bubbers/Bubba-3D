@@ -21,6 +21,8 @@ public:
 	Mesh *car;
 
 	Fbo *cubeMap;
+
+	DirectionalLight directionalLight;
 	PointLight pointLight[MAX_POINT_LIGHTS];
 	std::vector<Mesh*> lights;
 	std::vector<Mesh*> shadowCasters;

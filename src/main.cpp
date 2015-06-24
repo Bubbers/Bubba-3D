@@ -454,24 +454,31 @@ int main(int argc, char *argv[])
 
 void createLights() {
 	PointLight sun;
-	sun.diffuseColor = make_vector(0.6f, 0.6f, 0.6f);
+	sun.diffuseColor  = make_vector(0.6f, 0.6f, 0.6f);
 	sun.specularColor = sun.diffuseColor;
-	sun.ambientColor = make_vector(0.05f, 0.05f, 0.05f);
-	sun.position = make_vector(30.1f, 450.0f, 0.1f);
+	sun.ambientColor  = make_vector(0.05f, 0.05f, 0.05f);
+	sun.position      = make_vector(30.1f, 450.0f, 0.1f);
 	sun.attenuation.constant = 1.0f;
-	sun.attenuation.linear = 0.0f;
-	sun.attenuation.exp = 0.0f;
-	scene.pointLight[0] = sun;
+	sun.attenuation.linear   = 0.0f;
+	sun.attenuation.exp      = 0.0f;
+	scene.pointLight[0]      = sun;
 
 	PointLight sun2;
-	sun2.diffuseColor = make_vector(100.6f, 0.6f, 0.6f);
+	sun2.diffuseColor  = make_vector(100.6f, 0.6f, 0.6f);
 	sun2.specularColor = make_vector(1.0f, 0.0f, 0.0f);
-	sun2.ambientColor = make_vector(0.05f, 0.05f, 0.05f);
-	sun2.position = make_vector(10.0f, 7.0f, 10.0f);
+	sun2.ambientColor  = make_vector(0.05f, 0.05f, 0.05f);
+	sun2.position      = make_vector(10.0f, 7.0f, 10.0f);
 	sun2.attenuation.constant = 1.0f;
-	sun2.attenuation.linear = 0.7f;
-	sun2.attenuation.exp = 1.8f;
-	scene.pointLight[1] = sun2;
+	sun2.attenuation.linear   = 0.7f;
+	sun2.attenuation.exp      = 1.8f;
+	scene.pointLight[1]       = sun2;
+
+	DirectionalLight sun3;
+	sun3.diffuseColor  = make_vector(0.06f, 0.06f, 1.06f);
+	sun3.specularColor = make_vector(0.0f, 0.0f, 0.0f);
+	sun3.ambientColor  = make_vector(0.05f, 0.05f, 0.05f);
+	sun3.direction     = make_vector(0.0f, -100.0f, 0.0f);
+	scene.directionalLight = sun3;
 }
 
 void createCubeMaps() {

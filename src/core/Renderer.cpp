@@ -122,6 +122,14 @@ void Renderer::drawScene(Camera camera, Scene scene, float currentTime)
 	setUniformSlow(shaderProgram, "lightpos", scene.sun->getPosition());
 	setUniformSlow(shaderProgram, "lightMatrix", lightMatrix);
 	
+	//set dirlights
+	setUniformSlow(shaderProgram, "directionalLight.colors.ambientColor", scene.directionalLight.ambientColor);
+	setUniformSlow(shaderProgram, "directionalLight.colors.diffuseColor", scene.directionalLight.diffuseColor);
+	setUniformSlow(shaderProgram, "directionalLight.colors.specularColor", scene.directionalLight.specularColor);
+	setUniformSlow(shaderProgram, "directionalLight.direction", scene.directionalLight.diffuseColor);
+	
+
+	//set pointLights
 	for (int i = 0; i < MAX_POINT_LIGHTS; i++) {
 		string name = std::string("pointLights[") + std::to_string(i).c_str() + "]";
 		setUniformSlow(shaderProgram, (name + ".position").c_str(), scene.pointLight[i].position);

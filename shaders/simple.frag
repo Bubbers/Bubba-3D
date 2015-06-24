@@ -28,6 +28,11 @@ struct Attenuation{
 	float exp;
 };
 
+struct DirectionalLight{
+	Light colors;
+	vec3 direction;
+};
+
 struct PointLight{
 	Light colors;
 	vec3 position;
@@ -36,15 +41,14 @@ struct PointLight{
 
 #define MAX_POINT_LIGHTS 2
 uniform PointLight pointLights[MAX_POINT_LIGHTS];
-
+uniform DirectionalLight directionalLight;
 
 
 // inputs from vertex shader.
 in vec4 color;
 in vec2 texCoord;
 in vec4 viewSpacePosition; 
-in vec3 viewSpaceNormal; 
-in vec3 viewSpaceLightPosition; 
+in vec3 worldSpaceNormal;
 in vec4 worldSpacePosition;
 in vec4 shadowTexCoord;
 
@@ -67,14 +71,14 @@ uniform float object_reflectiveness = 0.0;
 uniform float material_shininess;
 uniform vec3 material_diffuse_color; 
 uniform vec3 material_specular_color; 
-//uniform vec3 material_ambient_color;
 uniform vec3 material_emissive_color; 
 uniform int has_diffuse_texture; 
 uniform sampler2D diffuse_texture;
 
-
-
+// FUNCTIONS DECLARATION
 vec3 calculatePointLight(PointLight light, vec3 normal, vec3 directionToEye);
+vec3 calculateDirectionalLight(DirectionalLight light, vec3 normal, vec3 directionToEye);
+Light calculateGeneralLight(Light colors, vec3 directionToLight, vec3 directionToEye, vec3 normal);
 
 vec3 calculateAmbient(vec3 lightAmbient, vec3 materialAmbient);
 vec3 calculateDiffuse(vec3 normal, vec3 directionToLight, vec3 materialLight, vec3 sceneLight);
@@ -84,68 +88,84 @@ vec3 calculateFog(vec3 color, float distance);
 
 void main() 
 {
-	vec3 normal = normalize(viewSpaceNormal);
-	//vec3 directionToEye = normalize(vec3(0.0) - viewSpacePosition.xyz);
+	vec3 normal = normalize(worldSpaceNormal);
 	vec3 directionToEye = normalize(viewPosition - worldSpacePosition.xyz);
 	vec3 color = vec3(0.0);
+
+	color += calculateDirectionalLight(directionalLight, normal, directionToEye);
 
 	for (int i = 0; i < MAX_POINT_LIGHTS; i++) {
 		color += calculatePointLight(pointLights[i], normal, directionToEye);
 	}
 	
-
 	vec3 foggedColor = calculateFog(color, abs(viewSpacePosition.z / viewSpacePosition.w));
+	vec3 emissive = material_emissive_color;
 
-	fragmentColor = vec4(foggedColor, object_alpha);
+	//TODO
+	//vec3 reflectionVector = normalize((inverseViewNormalMatrix * vec4(reflect(-directionToEye, normal), 0.0)).xyz);
+	//vec3 cubeMapSample = texture(cubeMap, reflectionVector).rgb * object_reflectiveness;
+	//vec3 reflection = fresnelTerm * cubeMapSample;
+	//float visibility = textureProj(shadowMap, shadowTexCoord);
+	//specular *= visibility;
+	//diffuse *= visibility;
+	//reflection *= max(visibility, 0.2);
 
-	/*if (object_reflectiveness > 0.0) {
+	fragmentColor = vec4(foggedColor + emissive, object_alpha);
+
+	/*if (object_reflectiveness > 0.0) { Debugging cubemap
 		fragmentColor = vec4(texture(cubeMap, reflectionVector).rgb, object_alpha);
 	}*/
 }
 
-vec3 calculatePointLight(PointLight light, vec3 normal, vec3 directionToEye) {
+Light calculateGeneralLight(Light colors, vec3 directionToLight, vec3 directionToEye, vec3 normal) {
+	vec3 ambi_color = colors.ambientColor;
+	vec3 diff_color = colors.diffuseColor;
+	vec3 spec_color = colors.specularColor;
 
-	vec3 ambi_color = light.colors.ambientColor;
-	vec3 diff_color = light.colors.diffuseColor;
-	vec3 spec_color = light.colors.specularColor;
-
-	//vec3 directionToLight = normalize(viewSpaceLightPosition - viewSpacePosition.xyz);
-	vec3 directionToLight = normalize(light.position - worldSpacePosition.xyz);
-	//float visibility = textureProj(shadowMap, shadowTexCoord);
-
-	//vec3 reflectionVector = normalize((inverseViewNormalMatrix * vec4(reflect(-directionToEye, normal), 0.0)).xyz);
-
-	vec3 diffuse = calculateDiffuse(normal, directionToLight, material_diffuse_color, diff_color);
-
-	vec3 fresnelTerm = calculateFresnel(normal, directionToEye, material_specular_color);
-	vec3 specular = calculateSpecular(normal, directionToLight, directionToEye, fresnelTerm, spec_color, material_shininess);
-
-	vec3 emissive = material_emissive_color;
+	//Ambient tem
 	vec3 ambient = calculateAmbient(ambi_color, material_diffuse_color);
 
-	//vec3 cubeMapSample = texture(cubeMap, reflectionVector).rgb * object_reflectiveness;
-	//vec3 reflection = fresnelTerm * cubeMapSample;
+	//Diffuse term
+	vec3 diffuse = calculateDiffuse(normal, directionToLight, material_diffuse_color, diff_color);
+
+	//Specular term
+	vec3 fresnelTerm = calculateFresnel(normal, directionToEye, material_specular_color);
+	vec3 specular = calculateSpecular(normal, directionToLight, directionToEye, fresnelTerm, spec_color, material_shininess);
 
 	// if we have a texture we modulate all of the color properties
 	if (has_diffuse_texture == 1)
 	{
 		vec3 tex_color = texture(diffuse_texture, texCoord.xy).xyz;
-		diffuse  *= tex_color;
-		ambient  *= tex_color;
-		emissive *= tex_color;
+		diffuse *= tex_color;
+		ambient *= tex_color;
 	}
-	//specular *= visibility;
-	//diffuse *= visibility;
-	//reflection *= max(visibility, 0.2);
+
+	Light light;
+	light.ambientColor  = ambient;
+	light.diffuseColor  = diffuse;
+	light.specularColor = specular;
+
+	return light;
+}
+
+vec3 calculateDirectionalLight(DirectionalLight light, vec3 normal, vec3 directionToEye) {
+	Light lt =  calculateGeneralLight(light.colors, normalize(-light.direction), directionToEye, normal);
+	return lt.ambientColor +lt.diffuseColor + lt.specularColor;
+}
+
+vec3 calculatePointLight(PointLight light, vec3 normal, vec3 directionToEye) {
+
+	vec3 directionToLight = normalize(light.position - worldSpacePosition.xyz);
+	
+	Light lt = calculateGeneralLight(light.colors, directionToLight, directionToEye, normal);
 
 	float distance = length(light.position - worldSpacePosition.xyz);
 	float attenuation = 1.0f / (light.attenuation.constant + light.attenuation.linear * distance + light.attenuation.exp * (distance * distance));
 
-	diffuse *= attenuation;
-	specular *= attenuation;
+	lt.diffuseColor  *= attenuation;
+	lt.specularColor *= attenuation;
 
-	vec3 color = ambient + diffuse + emissive + specular; // +reflection;
-	return color;	
+	return lt.ambientColor + lt.diffuseColor + lt.specularColor;	
 }
 
 vec3 calculateFog(vec3 color, float dist) {
