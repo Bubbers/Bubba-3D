@@ -39,7 +39,8 @@ struct PointLight{
 	Attenuation attenuation;
 };
 
-#define MAX_POINT_LIGHTS 2
+#define MAX_POINT_LIGHTS 4
+uniform int nrPointLights = 0;
 uniform PointLight pointLights[MAX_POINT_LIGHTS];
 uniform DirectionalLight directionalLight;
 
@@ -94,7 +95,7 @@ void main()
 
 	color += calculateDirectionalLight(directionalLight, normal, directionToEye);
 
-	for (int i = 0; i < MAX_POINT_LIGHTS; i++) {
+	for (int i = 0; i < nrPointLights; i++) {
 		color += calculatePointLight(pointLights[i], normal, directionToEye);
 	}
 	
@@ -151,7 +152,6 @@ vec3 calculateDirectionalLight(DirectionalLight light, vec3 normal, vec3 directi
 	float visibility = textureProj(shadowMap, shadowTexCoord);
 	lt.specularColor *= visibility;
 	lt.diffuseColor *= visibility;
-	lt.ambientColor *= visibility;
 
 	return lt.ambientColor +lt.diffuseColor + lt.specularColor;
 }
@@ -167,6 +167,7 @@ vec3 calculatePointLight(PointLight light, vec3 normal, vec3 directionToEye) {
 
 	lt.diffuseColor  *= attenuation;
 	lt.specularColor *= attenuation;
+	lt.ambientColor  *= attenuation;
 
 	return lt.ambientColor + lt.diffuseColor + lt.specularColor;	
 }

@@ -457,24 +457,34 @@ int main(int argc, char *argv[])
 
 void createLights() {
 	PointLight sun;
-	sun.diffuseColor  = make_vector(0.6f, 0.6f, 100.6f);
+	sun.diffuseColor  = make_vector(0.6f, 50.6f, 0.6f);
 	sun.specularColor = make_vector(1.0f, 0.0f, 0.0f);
 	sun.ambientColor  = make_vector(0.05f, 0.05f, 0.05f);
-	sun.position      = make_vector(10.1f, 7.0f, 0.1f);
+	sun.position      = make_vector(10.1f, 7.0f, 10.1f);
 	sun.attenuation.constant = 1.0f;
 	sun.attenuation.linear   = 0.7f;
 	sun.attenuation.exp      = 1.8f;
-	scene.pointLight[0]      = sun;
+	scene.pointLight.push_back(sun);
 
 	PointLight sun2;
-	sun2.diffuseColor  = make_vector(100.6f, 0.6f, 0.6f);
+	sun2.diffuseColor = make_vector(100.6f, 0.6f, 0.6f);
 	sun2.specularColor = make_vector(1.0f, 0.0f, 0.0f);
-	sun2.ambientColor  = make_vector(0.05f, 0.05f, 0.05f);
-	sun2.position      = make_vector(10.0f, 7.0f, 10.0f);
+	sun2.ambientColor = make_vector(0.05f, 0.05f, 0.05f);
+	sun2.position = make_vector(30.0f, 7.0f, 30.0f);
 	sun2.attenuation.constant = 1.0f;
-	sun2.attenuation.linear   = 0.7f;
-	sun2.attenuation.exp      = 1.8f;
-	scene.pointLight[1]       = sun2;
+	sun2.attenuation.linear = 0.7f;
+	sun2.attenuation.exp = 1.8f;
+	scene.pointLight.push_back(sun2);
+
+	PointLight houseLight;
+	houseLight.diffuseColor = make_vector(10.0f, 10.0f, 0.0f);
+	houseLight.specularColor = make_vector(1.0f, 0.0f, 0.0f);
+	houseLight.ambientColor = make_vector(0.05f, 0.05f, 0.05f);
+	houseLight.position = make_vector(93.0f, 2.0f, -93.0f);
+	houseLight.attenuation.constant = 1.0f;
+	houseLight.attenuation.linear = 0.7f;
+	houseLight.attenuation.exp = 1.8f;
+	scene.pointLight.push_back(houseLight);
 
 	DirectionalLight sun3;
 	sun3.diffuseColor  = make_vector(0.6f, 0.6f, 0.6f);
@@ -572,7 +582,7 @@ void createMeshes() {
 	scene.shadowCasters.push_back(&lamp);
 
 	lamp2.loadMesh("../scenes/sphere.obj");
-	lamp2.m_modelMatrix = make_translation(make_vector(10.0f, 10.0f, 00.0f));
+	lamp2.m_modelMatrix = make_translation(make_vector(30.0f, 10.0f, 30.0f));
 	scene.shadowCasters.push_back(&lamp2);
 
 
