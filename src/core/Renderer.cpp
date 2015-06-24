@@ -94,8 +94,8 @@ void Renderer::drawScene(Camera camera, Scene scene, float currentTime)
 	int w = glutGet((GLenum)GLUT_WINDOW_WIDTH);
 	int h = glutGet((GLenum)GLUT_WINDOW_HEIGHT);
 
-	float4x4 lightViewMatrix = scene.sun->getViewMatrix();
-	float4x4 lightProjectionMatrix = scene.sun->getProjectionMatrix();
+	float4x4 lightViewMatrix = scene.shadowMapCamera->getViewMatrix();
+	float4x4 lightProjectionMatrix = scene.shadowMapCamera->getProjectionMatrix();
 	float4x4 lightViewProjectionMatrix = lightProjectionMatrix * lightViewMatrix;
 
 	float4x4 lightMatrix =
@@ -119,14 +119,14 @@ void Renderer::drawScene(Camera camera, Scene scene, float currentTime)
 	//Sets matrices
 	setUniformSlow(shaderProgram, "viewMatrix", viewMatrix);
 	setUniformSlow(shaderProgram, "projectionMatrix", projectionMatrix);
-	setUniformSlow(shaderProgram, "lightpos", scene.sun->getPosition());
+	setUniformSlow(shaderProgram, "lightpos", scene.shadowMapCamera->getPosition());
 	setUniformSlow(shaderProgram, "lightMatrix", lightMatrix);
 	
 	//set dirlights
 	setUniformSlow(shaderProgram, "directionalLight.colors.ambientColor", scene.directionalLight.ambientColor);
 	setUniformSlow(shaderProgram, "directionalLight.colors.diffuseColor", scene.directionalLight.diffuseColor);
 	setUniformSlow(shaderProgram, "directionalLight.colors.specularColor", scene.directionalLight.specularColor);
-	setUniformSlow(shaderProgram, "directionalLight.direction", scene.directionalLight.diffuseColor);
+	setUniformSlow(shaderProgram, "directionalLight.direction", scene.directionalLight.direction);
 	
 
 	//set pointLights
@@ -461,7 +461,7 @@ void Renderer::drawFullScreenQuad()
 
 void Renderer::drawDebug(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, Scene scene) {
 	//debugDrawOctree(viewMatrix, projectionMatrix, t);
-	debugDrawLight(viewMatrix, projectionMatrix, scene.sun->getPosition() );
+	debugDrawLight(viewMatrix, projectionMatrix, scene.shadowMapCamera->getPosition());
 	/*debugDrawQuad(viewMatrix, projectionMatrix, carLoc.location + make_vector(0.2f, 1.2f, 0.0f), make_vector(1.0f, 1.0f, 1.5f));
 	float3x3 rot = make_rotation_y<float3x3>(carLoc.angley);
 	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location + rot * carLoc.wheel1, -carLoc.upDir);

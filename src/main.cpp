@@ -58,6 +58,7 @@ float currentTime = 0.0f;			// Tells us the current time
 float timeSinceDraw = 0.0f;
 
 const float3 vUp = make_vector(0.0f, 1.0f, 0.0f);
+float3 startPosSun = make_vector(30.1f, 450.0f, 0.1f);
 
 
 //*****************************************************************************
@@ -69,7 +70,8 @@ Mesh car;
 Mesh factory;
 Mesh water;
 Mesh spider;
-Mesh lamp;
+Mesh lamp; 
+Mesh lamp2;
 
 Scene scene;
 
@@ -401,8 +403,9 @@ void idle( int v )
 		// do one full revolution every 20 seconds.
 		float4x4 rotateLight = make_rotation_x<float4x4>(2.0f * M_PI * currentTime / 20.0f);
 		// rotate and update global light position.
-		scene.pointLight[0].position = make_vector3(rotateLight * make_vector(30.1f, 450.0f, 0.1f, 1.0f));
-		sunCamera->setPosition(scene.pointLight[0].position);
+		float3 pos = make_vector3(rotateLight * make_vector(30.1f, 450.0f, 0.1f, 1.0f));
+		scene.directionalLight.direction = -pos;
+		sunCamera->setPosition(pos);
 
 		//Calculate camera matrix
 		playerCamera->setLookAt(carLoc.location + make_vector(0.0f, camera_target_altitude, 0.0f));
@@ -454,13 +457,13 @@ int main(int argc, char *argv[])
 
 void createLights() {
 	PointLight sun;
-	sun.diffuseColor  = make_vector(0.6f, 0.6f, 0.6f);
-	sun.specularColor = sun.diffuseColor;
+	sun.diffuseColor  = make_vector(0.6f, 0.6f, 100.6f);
+	sun.specularColor = make_vector(1.0f, 0.0f, 0.0f);
 	sun.ambientColor  = make_vector(0.05f, 0.05f, 0.05f);
-	sun.position      = make_vector(30.1f, 450.0f, 0.1f);
+	sun.position      = make_vector(10.1f, 7.0f, 0.1f);
 	sun.attenuation.constant = 1.0f;
-	sun.attenuation.linear   = 0.0f;
-	sun.attenuation.exp      = 0.0f;
+	sun.attenuation.linear   = 0.7f;
+	sun.attenuation.exp      = 1.8f;
 	scene.pointLight[0]      = sun;
 
 	PointLight sun2;
@@ -474,8 +477,8 @@ void createLights() {
 	scene.pointLight[1]       = sun2;
 
 	DirectionalLight sun3;
-	sun3.diffuseColor  = make_vector(0.06f, 0.06f, 1.06f);
-	sun3.specularColor = make_vector(0.0f, 0.0f, 0.0f);
+	sun3.diffuseColor  = make_vector(0.6f, 0.6f, 0.6f);
+	sun3.specularColor = make_vector(0.6f, 0.6f, 0.6f);
 	sun3.ambientColor  = make_vector(0.05f, 0.05f, 0.05f);
 	sun3.direction     = make_vector(0.0f, -100.0f, 0.0f);
 	scene.directionalLight = sun3;
@@ -568,6 +571,10 @@ void createMeshes() {
 	lamp.m_modelMatrix = make_translation(make_vector(10.0f, 10.0f, 10.0f));
 	scene.shadowCasters.push_back(&lamp);
 
+	lamp2.loadMesh("../scenes/sphere.obj");
+	lamp2.m_modelMatrix = make_translation(make_vector(10.0f, 10.0f, 00.0f));
+	scene.shadowCasters.push_back(&lamp2);
+
 
 	logger.logInfo("Finished loading models.");
 
@@ -600,8 +607,8 @@ void createCameras() {
 	int w = SCREEN_WIDTH;
 	int h = SCREEN_HEIGHT;
 
-	sunCamera = new PerspectiveCamera(scene.pointLight[0].position, make_vector(0.0f, 0.0f, 0.0f), make_vector(0.0f, 1.0f, 0.0f), 45.0f, 1.0f, 280.0f, 600.0f);
-	scene.sun = sunCamera;
+	sunCamera = new PerspectiveCamera(startPosSun, make_vector(0.0f, 0.0f, 0.0f), make_vector(0.0f, 1.0f, 0.0f), 45.0f, 1.0f, 280.0f, 600.0f);
+	scene.shadowMapCamera = sunCamera;
 
 	playerCamera = new PerspectiveCamera(
 		carLoc.location + sphericalToCartesian(camera_theta, camera_phi, camera_r),

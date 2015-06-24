@@ -17,11 +17,10 @@ public:
 	~Scene();
 
 	Skybox *skybox;
-	Camera *sun;
 	Mesh *car;
-
 	Fbo *cubeMap;
 
+	Camera *shadowMapCamera; //Will follow directional light
 	DirectionalLight directionalLight;
 	PointLight pointLight[MAX_POINT_LIGHTS];
 	std::vector<Mesh*> lights;

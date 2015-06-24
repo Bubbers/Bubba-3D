@@ -105,9 +105,6 @@ void main()
 	//vec3 reflectionVector = normalize((inverseViewNormalMatrix * vec4(reflect(-directionToEye, normal), 0.0)).xyz);
 	//vec3 cubeMapSample = texture(cubeMap, reflectionVector).rgb * object_reflectiveness;
 	//vec3 reflection = fresnelTerm * cubeMapSample;
-	//float visibility = textureProj(shadowMap, shadowTexCoord);
-	//specular *= visibility;
-	//diffuse *= visibility;
 	//reflection *= max(visibility, 0.2);
 
 	fragmentColor = vec4(foggedColor + emissive, object_alpha);
@@ -150,6 +147,12 @@ Light calculateGeneralLight(Light colors, vec3 directionToLight, vec3 directionT
 
 vec3 calculateDirectionalLight(DirectionalLight light, vec3 normal, vec3 directionToEye) {
 	Light lt =  calculateGeneralLight(light.colors, normalize(-light.direction), directionToEye, normal);
+
+	float visibility = textureProj(shadowMap, shadowTexCoord);
+	lt.specularColor *= visibility;
+	lt.diffuseColor *= visibility;
+	lt.ambientColor *= visibility;
+
 	return lt.ambientColor +lt.diffuseColor + lt.specularColor;
 }
 
