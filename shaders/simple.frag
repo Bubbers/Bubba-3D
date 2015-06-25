@@ -33,6 +33,15 @@ struct DirectionalLight{
 	vec3 direction;
 };
 
+struct SpotLight{
+	Light colors;
+	vec3 position;
+	vec3 direction;
+	float cutoff;
+	float cutoffOuter;
+	Attenuation attenuation;
+};
+
 struct PointLight{
 	Light colors;
 	vec3 position;
@@ -40,8 +49,11 @@ struct PointLight{
 };
 
 #define MAX_POINT_LIGHTS 4
+#define MAX_SPOT_LIGHTS  4
 uniform int nrPointLights = 0;
+uniform int nrSpotLights  = 0;
 uniform PointLight pointLights[MAX_POINT_LIGHTS];
+uniform SpotLight  spotLights [MAX_SPOT_LIGHTS];
 uniform DirectionalLight directionalLight;
 
 
@@ -77,6 +89,7 @@ uniform int has_diffuse_texture;
 uniform sampler2D diffuse_texture;
 
 // FUNCTIONS DECLARATION
+vec3 calculateSpotLight(SpotLight light, vec3 normal, vec3 directionToEye);
 vec3 calculatePointLight(PointLight light, vec3 normal, vec3 directionToEye);
 vec3 calculateDirectionalLight(DirectionalLight light, vec3 normal, vec3 directionToEye);
 Light calculateGeneralLight(Light colors, vec3 directionToLight, vec3 directionToEye, vec3 normal);
@@ -97,6 +110,10 @@ void main()
 
 	for (int i = 0; i < nrPointLights; i++) {
 		color += calculatePointLight(pointLights[i], normal, directionToEye);
+	}
+	
+	for (int i = 0; i < nrSpotLights; i++) {
+		color += calculateSpotLight(spotLights[i], normal, directionToEye);
 	}
 	
 	vec3 foggedColor = calculateFog(color, abs(viewSpacePosition.z / viewSpacePosition.w));
@@ -144,6 +161,25 @@ Light calculateGeneralLight(Light colors, vec3 directionToLight, vec3 directionT
 	light.specularColor = specular;
 
 	return light;
+}
+
+vec3 calculateSpotLight(SpotLight light, vec3 normal, vec3 directionToEye){
+	vec3 directionToLight = normalize(light.position - worldSpacePosition.xyz);
+	float theta = dot(directionToLight, normalize(-light.direction));
+	float epsilon = light.cutoff - light.cutoffOuter;
+	float intensity = clamp(((theta - light.cutoffOuter) / epsilon ), 0.0, 1.0);
+
+	Light lt = calculateGeneralLight(light.colors, directionToLight, directionToEye, normal);
+
+	float distance = length(light.position - worldSpacePosition.xyz);
+	float attenuation = 1.0f / (light.attenuation.constant + light.attenuation.linear * distance + light.attenuation.exp * (distance * distance));
+	float multiple = attenuation * intensity;
+
+	lt.diffuseColor  *= multiple;
+	lt.specularColor *= multiple;
+	lt.ambientColor  *= multiple;
+
+	return lt.ambientColor + lt.diffuseColor + lt.specularColor;
 }
 
 vec3 calculateDirectionalLight(DirectionalLight light, vec3 normal, vec3 directionToEye) {

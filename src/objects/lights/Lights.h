@@ -18,23 +18,25 @@ struct Light
 	}
 };
 
+struct Attenuation {
+	float constant;
+	float linear;
+	float exp;
+};
+
 struct DirectionalLight : public Light {
 	float3 direction;
 };
 
 struct PointLight : public Light {
 	float3 position;
-
-	struct {
-		float constant;
-		float linear;
-		float exp;
-	} attenuation;
+	Attenuation attenuation;
 };
 
 struct SpotLight : public Light {
 	float3 direction;
 	float3 position;
+	Attenuation attenuation;
 	float cutOff; //cos(rads) of the wanted angle 
 	float outerCutOff; //used for smooth edges
 };

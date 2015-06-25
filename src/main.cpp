@@ -70,8 +70,9 @@ Mesh car;
 Mesh factory;
 Mesh water;
 Mesh spider;
-Mesh lamp; 
+Mesh lamp;
 Mesh lamp2;
+Mesh lamp3;
 
 Scene scene;
 
@@ -464,7 +465,7 @@ void createLights() {
 	sun.attenuation.constant = 1.0f;
 	sun.attenuation.linear   = 0.7f;
 	sun.attenuation.exp      = 1.8f;
-	scene.pointLight.push_back(sun);
+	scene.pointLights.push_back(sun);
 
 	PointLight sun2;
 	sun2.diffuseColor = make_vector(100.6f, 0.6f, 0.6f);
@@ -474,7 +475,7 @@ void createLights() {
 	sun2.attenuation.constant = 1.0f;
 	sun2.attenuation.linear = 0.7f;
 	sun2.attenuation.exp = 1.8f;
-	scene.pointLight.push_back(sun2);
+	scene.pointLights.push_back(sun2);
 
 	PointLight houseLight;
 	houseLight.diffuseColor = make_vector(10.0f, 10.0f, 0.0f);
@@ -484,7 +485,7 @@ void createLights() {
 	houseLight.attenuation.constant = 1.0f;
 	houseLight.attenuation.linear = 0.7f;
 	houseLight.attenuation.exp = 1.8f;
-	scene.pointLight.push_back(houseLight);
+	scene.pointLights.push_back(houseLight);
 
 	DirectionalLight sun3;
 	sun3.diffuseColor  = make_vector(0.6f, 0.6f, 0.6f);
@@ -492,6 +493,19 @@ void createLights() {
 	sun3.ambientColor  = make_vector(0.05f, 0.05f, 0.05f);
 	sun3.direction     = make_vector(0.0f, -100.0f, 0.0f);
 	scene.directionalLight = sun3;
+
+	SpotLight spot;
+	spot.diffuseColor  = make_vector(0.6f, 0.6f, 0.6f);
+	spot.specularColor = make_vector(0.6f, 0.6f, 0.6f);
+	spot.ambientColor  = make_vector(0.05f, 0.05f, 0.05f);
+	spot.direction = make_vector(0.0f, -10.0f, 0.0f);
+	spot.position = make_vector(0.0f, 10.0f, -10.0f);
+	spot.cutOff      = cos(degreeToRad(20.5));
+	spot.outerCutOff = cos(degreeToRad(50.5));
+	spot.attenuation.constant = 1.0f;
+	spot.attenuation.linear = 0.0f;
+	spot.attenuation.exp = 0.0f;
+	scene.spotLights.push_back(spot);
 }
 
 void createCubeMaps() {
@@ -584,6 +598,10 @@ void createMeshes() {
 	lamp2.loadMesh("../scenes/sphere.obj");
 	lamp2.m_modelMatrix = make_translation(make_vector(30.0f, 10.0f, 30.0f));
 	scene.shadowCasters.push_back(&lamp2);
+
+	lamp3.loadMesh("../scenes/sphere.obj");
+	lamp3.m_modelMatrix = make_translation(make_vector(0.0f, 10.0f, -10.0f));
+	scene.shadowCasters.push_back(&lamp3);
 
 
 	logger.logInfo("Finished loading models.");

@@ -22,7 +22,8 @@ public:
 
 	Camera *shadowMapCamera; //Will follow directional light
 	DirectionalLight directionalLight;
-	std::vector<PointLight> pointLight;
+	std::vector<PointLight> pointLights;
+	std::vector<SpotLight> spotLights;
 	std::vector<Mesh*> lights;
 	std::vector<Mesh*> shadowCasters;
 	std::vector<Mesh*> transparentObjects;
