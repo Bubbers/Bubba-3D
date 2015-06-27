@@ -42,8 +42,8 @@ private:
 		chag::float4 specularColor;
 		chag::float4 emissiveColor;
 		float specularExponent;
-		GLuint diffuse_map_id; 
-		GLuint bump_map_id;
+		GLint diffuse_map_id; 
+		GLint bump_map_id;
 	};
 
 	struct Chunk

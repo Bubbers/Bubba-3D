@@ -99,8 +99,6 @@ void Mesh::initMats(const aiScene* pScene, const std::string& fileName) {
 		m.bump_map_id = getTexture(material, fileName, aiTextureType_HEIGHT);
 		
 
-
-
 		aiColor3D diffuse;
 		aiColor3D ambient;
 		aiColor3D specular;
@@ -138,29 +136,29 @@ GLuint Mesh::getTexture(const aiMaterial *material, const std::string& fileName,
 	}
 
 	if (material->GetTextureCount(type) > 0) {
-			aiString path;
+		aiString path;
 
-			if (material->GetTexture(type, 0, &path, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS) {
-				string p(path.data);
+		if (material->GetTexture(type, 0, &path, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS) {
+			string p(path.data);
 
-				if (p.substr(0, 2) == ".\\") {
-					p = p.substr(2, p.size() - 2);
-				}
-				string fullPath = dir + "/" + p;
-
-				Logger l = Logger::instance();
-				l.logInfo("Loading texture: " + fullPath);
-				return loadTexture(fullPath);
+			if (p.substr(0, 2) == ".\\") {
+				p = p.substr(2, p.size() - 2);
 			}
-			else
-			{
-				return -1;
-			}
+			string fullPath = dir + "/" + p;
+
+			Logger l = Logger::instance();
+			l.logInfo("Loading texture: " + fullPath);
+			return loadTexture(fullPath);
 		}
 		else
 		{
 			return -1;
 		}
+	}
+	else
+	{
+		return -1;
+	}
 }
 
 void Mesh::initMesh(unsigned int index, const aiMesh* paiMesh) {
