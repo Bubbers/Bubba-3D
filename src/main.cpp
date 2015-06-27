@@ -73,6 +73,7 @@ Mesh spider;
 Mesh lamp;
 Mesh lamp2;
 Mesh lamp3;
+Mesh normalTest;
 
 Scene scene;
 
@@ -501,7 +502,7 @@ void createLights() {
 	spot.direction = make_vector(0.0f, -10.0f, 0.0f);
 	spot.position = make_vector(0.0f, 10.0f, -10.0f);
 	spot.cutOff      = cos(degreeToRad(20.5));
-	spot.outerCutOff = cos(degreeToRad(50.5));
+	spot.outerCutOff = cos(degreeToRad(28.5));
 	spot.attenuation.constant = 1.0f;
 	spot.attenuation.linear = 0.0f;
 	spot.attenuation.exp = 0.0f;
@@ -602,6 +603,12 @@ void createMeshes() {
 	lamp3.loadMesh("../scenes/sphere.obj");
 	lamp3.m_modelMatrix = make_translation(make_vector(0.0f, 10.0f, -10.0f));
 	scene.shadowCasters.push_back(&lamp3);
+
+	normalTest.loadMesh("scenes/boxwNormals.obj");
+	normalTest.m_modelMatrix = make_translation(make_vector(0.0f, 10.0f, 0.0f));
+	scene.shadowCasters.push_back(&normalTest);
+
+	
 
 
 	logger.logInfo("Finished loading models.");

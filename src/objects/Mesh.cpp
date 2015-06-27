@@ -95,30 +95,11 @@ void Mesh::initMats(const aiScene* pScene, const std::string& fileName) {
 		const aiMaterial* material = pScene->mMaterials[i];
 		Material m;
 
-		if (material->GetTextureCount(aiTextureType_DIFFUSE) > 0) {
-			aiString path;
+		m.diffuse_map_id = getTexture(material, fileName, aiTextureType_DIFFUSE);
+		m.bump_map_id = getTexture(material, fileName, aiTextureType_HEIGHT);
+		
 
-			if (material->GetTexture(aiTextureType_DIFFUSE, 0, &path, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS) {
-				string p(path.data);
 
-				if (p.substr(0, 2) == ".\\") {
-					p = p.substr(2, p.size() - 2);
-				}
-				string fullPath = dir + "/" + p;
-
-				Logger l = Logger::instance();
-				l.logInfo("Loading texture: " + fullPath);
-				m.diffuse_map_id = loadTexture(fullPath);
-			}
-			else
-			{
-				m.diffuse_map_id = -1;
-			}
-		}
-		else
-		{
-			m.diffuse_map_id = -1;
-		}
 
 		aiColor3D diffuse;
 		aiColor3D ambient;
@@ -129,7 +110,7 @@ void Mesh::initMats(const aiScene* pScene, const std::string& fileName) {
 		material->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse);
 		material->Get(AI_MATKEY_COLOR_AMBIENT, ambient);
 		material->Get(AI_MATKEY_COLOR_SPECULAR, specular);
-		material->Get(AI_MATKEY_COLOR_EMISSIVE, emissive); 
+		material->Get(AI_MATKEY_COLOR_EMISSIVE, emissive);
 		material->Get(AI_MATKEY_SHININESS, specExp);
 
 		m.ambientColor = make_vector(ambient.r, ambient.g, ambient.b, 1.0f);
@@ -140,6 +121,46 @@ void Mesh::initMats(const aiScene* pScene, const std::string& fileName) {
 
 		m_textures.push_back(m);
 	}
+}
+
+GLuint Mesh::getTexture(const aiMaterial *material, const std::string& fileName, aiTextureType type) {
+	std::string::size_type index = fileName.find_last_of("/");
+	std::string dir;
+
+	if (index == std::string::npos) {
+		dir = ".";
+	}
+	else if (index == 0) {
+		dir = "/";
+	}
+	else {
+		dir = fileName.substr(0, index);
+	}
+
+	if (material->GetTextureCount(type) > 0) {
+			aiString path;
+
+			if (material->GetTexture(type, 0, &path, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS) {
+				string p(path.data);
+
+				if (p.substr(0, 2) == ".\\") {
+					p = p.substr(2, p.size() - 2);
+				}
+				string fullPath = dir + "/" + p;
+
+				Logger l = Logger::instance();
+				l.logInfo("Loading texture: " + fullPath);
+				return loadTexture(fullPath);
+			}
+			else
+			{
+				return -1;
+			}
+		}
+		else
+		{
+			return -1;
+		}
 }
 
 void Mesh::initMesh(unsigned int index, const aiMesh* paiMesh) {

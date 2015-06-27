@@ -32,6 +32,7 @@ private:
 	bool initFromScene(const aiScene* pScene, const std::string& fileName);
 	void initMesh(unsigned int index, const aiMesh* paiMesh);
 	void initMats(const aiScene* pScene, const std::string& fileName);
+	GLuint getTexture(const aiMaterial *material, const std::string& fileName, aiTextureType type);
 	GLuint loadTexture(std::string fileName);
 
 	struct Material
@@ -41,7 +42,8 @@ private:
 		chag::float4 specularColor;
 		chag::float4 emissiveColor;
 		float specularExponent;
-		GLuint diffuse_map_id;
+		GLuint diffuse_map_id; 
+		GLuint bump_map_id;
 	};
 
 	struct Chunk
