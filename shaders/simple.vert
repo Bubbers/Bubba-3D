@@ -3,7 +3,9 @@
 in vec3		position;
 in vec3		colorIn;
 in	vec2	texCoordIn;	// incoming texcoord from the texcoord array
-in  vec3	normalIn;
+in  vec3	normalIn; 
+in	vec3	tangent;	// incoming texcoord from the texcoord array
+in  vec3	bittangent;
 
 out vec4	viewSpacePosition; 
 out vec3	worldSpaceNormal;

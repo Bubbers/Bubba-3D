@@ -60,7 +60,7 @@ bool Mesh::loadMesh(const std::string& fileName) {
 	Assimp::Importer importer;
 
 	const aiScene* pScene = importer.ReadFile(
-		fileName.c_str(), aiProcess_GenSmoothNormals | aiProcess_Triangulate );
+		fileName.c_str(), aiProcess_GenSmoothNormals | aiProcess_Triangulate | aiProcess_CalcTangentSpace);
 	
 
 	if (!pScene) {
@@ -103,11 +103,10 @@ void Mesh::initMats(const aiScene* pScene, const std::string& fileName) {
 	for (unsigned int i = 0; i < pScene->mNumMaterials; i++) {
 		const aiMaterial* material = pScene->mMaterials[i];
 		Material m;
-
+		
 		m.diffuse_map_id = getTexture(material, fileName, aiTextureType_DIFFUSE);
 		m.bump_map_id = getTexture(material, fileName, aiTextureType_HEIGHT);
 		
-
 		aiColor3D diffuse;
 		aiColor3D ambient;
 		aiColor3D specular;
@@ -173,6 +172,8 @@ GLuint Mesh::getTexture(const aiMaterial *material, const std::string& fileName,
 void Mesh::initMesh(unsigned int index, const aiMesh* paiMesh) {
 	std::vector<float3> positions;
 	std::vector<float3> normals;
+	std::vector<float3> tangents;
+	std::vector<float3> bittangents;
 	std::vector<float2> uvs;
 	std::vector<unsigned int> indices;
 
@@ -185,10 +186,17 @@ void Mesh::initMesh(unsigned int index, const aiMesh* paiMesh) {
 		const aiVector3D pPos = paiMesh->mVertices[i];
 		const aiVector3D pNormal = paiMesh->mNormals[i];
 		const aiVector3D pTexCoord = paiMesh->HasTextureCoords(0) ? paiMesh->mTextureCoords[0][i] : Zero3D;
+		
 
 		positions.push_back(make_vector(pPos.x, pPos.y, pPos.z));
 		normals.push_back(make_vector(pNormal.x, pNormal.y, pNormal.z));
 		uvs.push_back(make_vector(pTexCoord.x, pTexCoord.y));
+		if (paiMesh->HasTangentsAndBitangents()) {
+			const aiVector3D pBitTangents = paiMesh->mBitangents[i];
+			const aiVector3D pTangents = paiMesh->mTangents[i];
+			bittangents.push_back(make_vector(pBitTangents.x, pBitTangents.y, pBitTangents.z));
+			tangents.push_back(make_vector(pTangents.x, pTangents.y, pTangents.z));
+		}
 
 		checkMinMax(pPos.x, pPos.y, pPos.z, &minV, &maxV);
 	}
@@ -203,7 +211,9 @@ void Mesh::initMesh(unsigned int index, const aiMesh* paiMesh) {
 		indices.push_back(face.mIndices[2]);
 	}
 
-	Chunk c(positions, normals, uvs, indices, paiMesh->mMaterialIndex);
+
+
+	Chunk c(positions, normals, uvs, indices, tangents, bittangents, paiMesh->mMaterialIndex);
 	glGenVertexArrays(1, &c.m_vaob);
 	glBindVertexArray(c.m_vaob);
 
@@ -237,6 +247,7 @@ void Mesh::initMesh(unsigned int index, const aiMesh* paiMesh) {
 
 
 
+
 	m_chunks.push_back(c);
 }
 
@@ -245,8 +256,10 @@ Mesh::Chunk::Chunk(std::vector<chag::float3>& positions,
 	std::vector<chag::float3>& normals,
 	std::vector<chag::float2>& uvs,
 	std::vector<unsigned int>& indices,
+	std::vector<chag::float3>& tangents,
+	std::vector<chag::float3>& bittangents,
 	unsigned int textureIndex) :
-	m_positions(positions), m_normals(normals), m_uvs(uvs), m_indices(indices), m_textureIndex(textureIndex)
+	m_positions(positions), m_normals(normals), m_uvs(uvs), m_indices(indices), m_textureIndex(textureIndex), m_tangents(tangents), m_bittangents(bittangents)
 {
 	m_numIndices = indices.size();
 }
