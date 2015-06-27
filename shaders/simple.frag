@@ -87,6 +87,9 @@ uniform vec3 material_specular_color;
 uniform vec3 material_emissive_color; 
 uniform int has_diffuse_texture; 
 uniform sampler2D diffuse_texture;
+uniform int has_normal_texture;
+uniform sampler2D normal_texture;
+
 
 // FUNCTIONS DECLARATION
 vec3 calculateSpotLight(SpotLight light, vec3 normal, vec3 directionToEye);
@@ -102,7 +105,15 @@ vec3 calculateFog(vec3 color, float distance);
 
 void main() 
 {
-	vec3 normal = normalize(worldSpaceNormal);
+	vec3 normal;
+	
+	if (has_normal_texture == 1) {
+		normal = texture(normal_texture, texCoord.xy).xyz;
+		normal = normalize(normal * 2.0 - 1.0);
+	}
+	else { 
+		normal = normalize(worldSpaceNormal);
+	};
 	vec3 directionToEye = normalize(viewPosition - worldSpacePosition.xyz);
 	vec3 color = vec3(0.0);
 
