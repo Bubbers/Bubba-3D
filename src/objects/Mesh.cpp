@@ -245,7 +245,20 @@ void Mesh::initMesh(unsigned int index, const aiMesh* paiMesh) {
 	glVertexAttribPointer(3, 3, GL_FLOAT, false, 0, 0);
 	glEnableVertexAttribArray(3);
 
+	if (c.m_bittangents.size() > 0) {
+		glGenBuffers(1, &c.m_tangents_bo);
+		glBindBuffer(GL_ARRAY_BUFFER_ARB, c.m_tangents_bo);
+		glBufferData(GL_ARRAY_BUFFER_ARB, c.m_tangents.size() * sizeof(float3), &c.m_tangents[0].x, GL_STATIC_DRAW);
+		glVertexAttribPointer(4, 3, GL_FLOAT, false, 0, 0);
+		glEnableVertexAttribArray(4);
 
+		glGenBuffers(1, &c.m_bittangents_bo);
+		glBindBuffer(GL_ARRAY_BUFFER_ARB, c.m_bittangents_bo);
+		glBufferData(GL_ARRAY_BUFFER_ARB, c.m_bittangents.size() * sizeof(float3), &c.m_bittangents[0].x, GL_STATIC_DRAW);
+		glVertexAttribPointer(5, 3, GL_FLOAT, false, 0, 0);
+		glEnableVertexAttribArray(5);
+
+	}
 
 
 	m_chunks.push_back(c);

@@ -64,6 +64,7 @@ in vec4 viewSpacePosition;
 in vec3 worldSpaceNormal;
 in vec4 worldSpacePosition;
 in vec4 shadowTexCoord;
+in mat3 TBN;
 
 uniform mat4 inverseViewNormalMatrix;
 
@@ -110,10 +111,12 @@ void main()
 	if (has_normal_texture == 1) {
 		normal = texture(normal_texture, texCoord.xy).xyz;
 		normal = normalize(normal * 2.0 - 1.0);
+		normal = normalize(TBN * normal);
 	}
 	else { 
 		normal = normalize(worldSpaceNormal);
 	};
+
 	vec3 directionToEye = normalize(viewPosition - worldSpacePosition.xyz);
 	vec3 color = vec3(0.0);
 

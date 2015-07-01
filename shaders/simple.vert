@@ -4,7 +4,7 @@ in vec3		position;
 in vec3		colorIn;
 in	vec2	texCoordIn;	// incoming texcoord from the texcoord array
 in  vec3	normalIn; 
-in	vec3	tangent;	// incoming texcoord from the texcoord array
+in	vec3	tangent;
 in  vec3	bittangent;
 
 out vec4	viewSpacePosition; 
@@ -13,6 +13,7 @@ out vec4    worldSpacePosition;
 out vec4	color;
 out	vec2	texCoord;	// outgoing interpolated texcoord to fragshader
 out vec4    shadowTexCoord;
+out mat3    TBN;
 
 uniform mat4 modelMatrix; 
 uniform mat4 viewMatrix; 
@@ -27,6 +28,11 @@ void main()
 	mat4 modelViewMatrix = viewMatrix * modelMatrix; 
 	mat4 modelViewProjectionMatrix = projectionMatrix * modelViewMatrix; 
 	mat4 normalMatrix = inverse(transpose(modelMatrix));
+
+	vec3 T = normalize(normalMatrix * vec4(tangent, 0.0)).xyz;
+	vec3 B = normalize(normalMatrix * vec4(bittangent, 0.0)).xyz;
+	vec3 N = normalize(normalMatrix * vec4(normalIn, 0.0)).xyz;
+	TBN = mat3(T, B, N);
 
 	color = vec4(colorIn,1); 
 	texCoord = texCoordIn; 
