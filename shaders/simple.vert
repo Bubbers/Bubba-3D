@@ -18,7 +18,6 @@ out mat3    TBN;
 uniform mat4 modelMatrix; 
 uniform mat4 viewMatrix; 
 uniform mat4 projectionMatrix; 
-uniform vec3 lightpos; 
 
 uniform mat4 lightMatrix;
 

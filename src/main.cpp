@@ -2,43 +2,18 @@
 #include <windows.h>
 #endif
 
-
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 
-#include <IL/il.h>
-#include <IL/ilut.h>
-
+#include <vector>
+#include <thread>
 #include <stdlib.h>
-#include <algorithm>
 
-#include <glutil\glutil.h>
-#include <float4x4.h>
-#include <float3x3.h>
-#include "AABB.h"
 #include <Quaternion.h>
 #include "collision\Collider.h"
 
-#include <vector>
-#include <thread>
-
-#include <ctime>
-
-#include "Octree.h"
-#include "Triangle.h"
-#include "PerspectiveCamera.h"
-#include "Logger.h"
-#include <chrono>
-#include "Mesh.h"
-#include <assimp/Importer.hpp>
-#include <assimp/postprocess.h>
-#include <assimp/scene.h>
-#include "OBJModel.h"
-#include "CubeMapTexture.h"
-#include "Skybox.h"
-#include "objects\Scene.h"
 #include "core\Renderer.h"
-#include "objects\lights\Lights.h"
+
 using namespace std;
 using namespace chag;
 using namespace chrono;
@@ -74,6 +49,7 @@ Mesh lamp;
 Mesh lamp2;
 Mesh lamp3;
 Mesh normalTest;
+Mesh normalTestWithout;
 
 Scene scene;
 
@@ -83,6 +59,7 @@ Scene scene;
 //*****************************************************************************
 CubeMapTexture* reflectionCubeMap;
 Skybox* skybox;
+Fbo cMapAll;
 
 
 //*****************************************************************************
@@ -103,12 +80,10 @@ int prev_x = 0;
 int prev_y = 0;
 bool keysDown[256];
 
-Fbo cMapAll;
 
 //*****************************************************************************
 //	Camera
 //*****************************************************************************
-
 Camera *cubeMapCameras[6];
 Camera *sunCamera;
 Camera *playerCamera;
@@ -117,7 +92,6 @@ int camera = 6;
 //*****************************************************************************
 //	Car object variables
 //*****************************************************************************
-
 struct Car{
 	float3 frontDir = make_vector(0.0f, 0.0f, 1.0f);
 	float3 upDir = make_vector(0.0f, 1.0f, 0.0f);
@@ -152,13 +126,11 @@ Logger logger = Logger::instance();
 //*****************************************************************************
 //	Function declarations
 //*****************************************************************************
-
 void drawCubeMap(Fbo fbo, Scene scene);
 void createCubeMaps();
 void createMeshes();
 void createCameras();
 void createLights();
-
 
 float degreeToRad(float degree);
 float radToDegree(float rad);
@@ -166,6 +138,10 @@ float3 sphericalToCartesian(float theta, float phi, float r);
 
 void updatePlayer();
 
+
+//*****************************************************************************
+//	Function implementation
+//*****************************************************************************
 void checkIntersection() {
 	float3 upVec = make_vector(0.0f, 1.0f, 0.0f);
 
@@ -238,7 +214,6 @@ void display(void)
 	
 	renderer->swapBuffer();
 }
-
 void handleKeys(unsigned char key, int /*x*/, int /*y*/)
 {
 	switch(key)
@@ -295,7 +270,6 @@ void handleKeysRelease(unsigned char key, int /*x*/, int /*y*/)
 		break;
 	}
 }
-
 void handleSpecialKeys(int key, int /*x*/, int /*y*/)
 {
 	switch(key)
@@ -314,7 +288,6 @@ void handleSpecialKeys(int key, int /*x*/, int /*y*/)
 		break;
 	}
 }
-
 void mouse(int button, int state, int x, int y)
 {
 	// reset the previous position, such that we only get movement performed after the button
@@ -338,7 +311,6 @@ void mouse(int button, int state, int x, int y)
 		break;
 	}
 }
-
 void motion(int x, int y)
 {
 	int delta_x = x - prev_x;
@@ -364,7 +336,6 @@ void motion(int x, int y)
 	prev_x = x;
 	prev_y = y;
 }
-
 void tick() {
 	if (keysDown[(int)'w']) {
 		float3 term = carLoc.frontDir * carLoc.moveSpeed;
@@ -389,7 +360,6 @@ void tick() {
 		hasChanged = true;
 	}
 }
-
 void idle( int v )
 {
 	float time = (1000 / TICK_PER_SECOND) - (float(glutGet(GLUT_ELAPSED_TIME) - timeSinceDraw));
@@ -427,7 +397,6 @@ void idle( int v )
 		glutTimerFunc(time, idle, 0);
 	}
 }
-
 
 int main(int argc, char *argv[])
 {
@@ -605,10 +574,12 @@ void createMeshes() {
 	scene.shadowCasters.push_back(&lamp3);
 
 	normalTest.loadMesh("scenes/boxwNormals.obj");
-	normalTest.m_modelMatrix = make_translation(make_vector(0.0f, 10.0f, 0.0f));
+	normalTest.m_modelMatrix = make_translation(make_vector(0.0f, 10.0f, 0.0f)) * make_rotation_x<float4x4>(M_PI / 180 * 30);
 	scene.shadowCasters.push_back(&normalTest);
 
-	
+	normalTestWithout.loadMesh("scenes/boxwoNormals.obj");
+	normalTestWithout.m_modelMatrix = make_translation(make_vector(5.0f, 10.0f, 0.0f)) * make_rotation_x<float4x4>(M_PI / 180 * 30);
+	scene.shadowCasters.push_back(&normalTestWithout);
 
 
 	logger.logInfo("Finished loading models.");
@@ -678,13 +649,6 @@ float3 sphericalToCartesian(float theta, float phi, float r)
 		r * cosf(theta)*sinf(phi));
 }
 
-/* TIME COUNT
-high_resolution_clock::time_point start = high_resolution_clock::now();
-high_resolution_clock::time_point end = high_resolution_clock::now();
-duration<double> time_span = duration_cast<duration<double>>(end - start);
-printf("TIME FOR COLL:%f\n", time_span.count());
-*/
-
 void updatePlayer() {
 	float3 frontDir = normalize(carLoc.frontDir);
 	float3 rightDir = normalize(cross(frontDir, vUp));
@@ -701,3 +665,10 @@ void updatePlayer() {
 		* makematrix(qatY)
 		* makematrix(qatZ);
 }
+
+/* TIME COUNT
+high_resolution_clock::time_point start = high_resolution_clock::now();
+high_resolution_clock::time_point end = high_resolution_clock::now();
+duration<double> time_span = duration_cast<duration<double>>(end - start);
+printf("TIME FOR COLL:%f\n", time_span.count());
+*/

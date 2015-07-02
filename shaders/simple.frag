@@ -107,7 +107,6 @@ vec3 calculateFog(vec3 color, float distance);
 void main() 
 {
 	vec3 normal;
-	
 	if (has_normal_texture == 1) {
 		normal = texture(normal_texture, texCoord.xy).xyz;
 		normal = normalize(normal * 2.0 - 1.0);

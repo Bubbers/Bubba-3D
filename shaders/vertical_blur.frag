@@ -7,7 +7,6 @@
 precision highp float;
 
 uniform sampler2DRect frameBufferTexture;
-uniform float time;
 out vec4 fragmentColor;
 
 

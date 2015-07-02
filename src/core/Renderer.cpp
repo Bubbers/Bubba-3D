@@ -38,11 +38,10 @@ Renderer::Renderer(int argc, char *argv[], int width, int height) : width(width)
 #	endif // ~ GLUT_SRGB
 	glutInitWindowSize(width, height);
 
-
 	glutInitContextVersion(3, 0);
 	glutInitContextFlags(GLUT_DEBUG);
 
-	glutCreateWindow("Project");
+	glutCreateWindow("Bubba-3D");
 	/* If sRGB is available, enable rendering in sRGB. Note: we should do
 	* this *after* initGL(), since initGL() initializes GLEW.
 	*/
@@ -90,28 +89,29 @@ void Renderer::drawScene(Camera camera, Scene scene, float currentTime)
 	//*************************************************************************
 	// Render shadow map
 	//*************************************************************************
+	float4x4 lightMatrix;
+		
+	if (scene.shadowMapCamera != NULL) {
+		float4x4 lightViewMatrix = scene.shadowMapCamera->getViewMatrix();
+		float4x4 lightProjectionMatrix = scene.shadowMapCamera->getProjectionMatrix();
+		float4x4 lightViewProjectionMatrix = lightProjectionMatrix * lightViewMatrix;
 
-	int w = glutGet((GLenum)GLUT_WINDOW_WIDTH);
-	int h = glutGet((GLenum)GLUT_WINDOW_HEIGHT);
+		lightMatrix =	make_translation({ 0.5, 0.5, 0.5 }) *
+						make_scale<float4x4>(make_vector(0.5f, 0.5f, 0.5f)) *
+						lightViewProjectionMatrix * inverse(viewMatrix);
 
-	float4x4 lightViewMatrix = scene.shadowMapCamera->getViewMatrix();
-	float4x4 lightProjectionMatrix = scene.shadowMapCamera->getProjectionMatrix();
-	float4x4 lightViewProjectionMatrix = lightProjectionMatrix * lightViewMatrix;
-
-	float4x4 lightMatrix =
-		make_translation({ 0.5, 0.5, 0.5 }) *
-		make_scale<float4x4>(make_vector(0.5f, 0.5f, 0.5f)) *
-		lightViewProjectionMatrix * inverse(viewMatrix);
-
-	drawShadowMap(sbo, lightViewProjectionMatrix, scene);
-	glBindFramebuffer(GL_FRAMEBUFFER, postProcessFbo.id);
+		drawShadowMap(sbo, lightViewProjectionMatrix, scene);
+	}
 
 	//*************************************************************************
 	// Render the scene from the cameras viewpoint, to the default framebuffer
 	//*************************************************************************
+	glBindFramebuffer(GL_FRAMEBUFFER, postProcessFbo.id);
 	glClearColor(0.2, 0.2, 0.8, 1.0);
 	glClearDepth(1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	int w = glutGet((GLenum)GLUT_WINDOW_WIDTH);
+	int h = glutGet((GLenum)GLUT_WINDOW_HEIGHT);
 	glViewport(0, 0, w, h);
 	// Use shader and set up uniforms
 	glUseProgram(shaderProgram);
@@ -119,15 +119,48 @@ void Renderer::drawScene(Camera camera, Scene scene, float currentTime)
 	//Sets matrices
 	setUniformSlow(shaderProgram, "viewMatrix", viewMatrix);
 	setUniformSlow(shaderProgram, "projectionMatrix", projectionMatrix);
-	setUniformSlow(shaderProgram, "lightpos", scene.shadowMapCamera->getPosition());
 	setUniformSlow(shaderProgram, "lightMatrix", lightMatrix);
+	setUniformSlow(shaderProgram, "inverseViewNormalMatrix", transpose(viewMatrix));
+	setUniformSlow(shaderProgram, "viewPosition", camera.getPosition());
 	
+	setLights(shaderProgram, scene);
+
+	setFog(shaderProgram);
+
+	//Set shadowmap
+	if (scene.shadowMapCamera != NULL) {
+		setUniformSlow(shaderProgram, "shadowMap", 1);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, sbo.texture);
+	}
+
+	//Set cube map
+	if (scene.cubeMap != NULL) {
+		setUniformSlow(shaderProgram, "cubeMap", 2);
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, scene.cubeMap->texture);
+	}
+
+	drawShadowCasters(shaderProgram, scene);
+	drawDebug(viewMatrix, projectionMatrix, scene);
+
+	if (scene.skybox != NULL) {
+		scene.skybox->render();
+	}
+
+	renderPostProcess();
+
+	//Cleanup
+	glUseProgram(0);
+}
+
+void Renderer::setLights(GLuint shaderProgram, Scene scene) {
 	//set dirlights
 	setUniformSlow(shaderProgram, "directionalLight.colors.ambientColor", scene.directionalLight.ambientColor);
 	setUniformSlow(shaderProgram, "directionalLight.colors.diffuseColor", scene.directionalLight.diffuseColor);
 	setUniformSlow(shaderProgram, "directionalLight.colors.specularColor", scene.directionalLight.specularColor);
 	setUniformSlow(shaderProgram, "directionalLight.direction", scene.directionalLight.direction);
-	
+
 	//set pointLights
 	setUniformSlow(shaderProgram, "nrPointLights", (int)scene.pointLights.size());
 	for (int i = 0; i < (int)scene.pointLights.size(); i++) {
@@ -140,7 +173,7 @@ void Renderer::drawScene(Camera camera, Scene scene, float currentTime)
 		setUniformSlow(shaderProgram, (name + ".attenuation.linear").c_str(), scene.pointLights[i].attenuation.linear);
 		setUniformSlow(shaderProgram, (name + ".attenuation.exp").c_str(), scene.pointLights[i].attenuation.exp);
 	}
-	
+
 	//set spotLights
 	setUniformSlow(shaderProgram, "nrSpotLights", (int)scene.spotLights.size());
 	for (int i = 0; i < (int)scene.spotLights.size(); i++) {
@@ -156,43 +189,6 @@ void Renderer::drawScene(Camera camera, Scene scene, float currentTime)
 		setUniformSlow(shaderProgram, (name + ".cutoff").c_str(), scene.spotLights[i].cutOff);
 		setUniformSlow(shaderProgram, (name + ".cutoffOuter").c_str(), scene.spotLights[i].outerCutOff);
 	}
-	setUniformSlow(shaderProgram, "inverseViewNormalMatrix", transpose(viewMatrix));
-	setUniformSlow(shaderProgram, "viewPosition", camera.getPosition());
-
-	
-
-	//Sets fog
-	setFog(shaderProgram);
-
-	//Set shadowmap
-	setUniformSlow(shaderProgram, "shadowMap", 1);
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, sbo.texture);
-
-	//Set cube map
-	setUniformSlow(shaderProgram, "cubeMap", 2);
-
-	if (scene.cubeMap != NULL) {
-		glActiveTexture(GL_TEXTURE2);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, scene.cubeMap->texture);
-	}
-
-	//Render models
-	drawShadowCasters(shaderProgram, scene);
-
-	//Render debuggers
-	drawDebug(viewMatrix, projectionMatrix, scene);
-
-	//Render skybox
-	if (scene.skybox != NULL) {
-		scene.skybox->render();
-	}
-
-	//Perform post processing
-	renderPostProcess();
-
-	//Cleanup
-	glUseProgram(0);
 }
 
 /**
@@ -233,11 +229,11 @@ void Renderer::drawShadowMap(Fbo sbo, float4x4 viewProjectionMatrix, Scene scene
 }
 
 void Renderer::setFog(GLuint shaderProgram) {
-	setUniformSlow(shaderProgram, "fog.iEquation", FogParams::fEquation);
-	setUniformSlow(shaderProgram, "fog.fDensity", FogParams::fDensity);
-	setUniformSlow(shaderProgram, "fog.fEnd", FogParams::fEnd);
-	setUniformSlow(shaderProgram, "fog.fStart", FogParams::fStart);
-	setUniformSlow(shaderProgram, "fog.vColor", FogParams::vColor);
+	setUniformSlow(shaderProgram, "fog.iEquation", f.fEquation);
+	setUniformSlow(shaderProgram, "fog.fDensity", f.fDensity);
+	setUniformSlow(shaderProgram, "fog.fEnd", f.fEnd);
+	setUniformSlow(shaderProgram, "fog.fStart", f.fStart);
+	setUniformSlow(shaderProgram, "fog.vColor", f.vColor);
 }
 
 void Renderer::initGL() 
@@ -385,7 +381,6 @@ Fbo Renderer::createPostProcessFbo(int width, int height) {
 	return fbo;
 }
 
-
 void Renderer::renderPostProcess() {
 	int w = glutGet((GLenum)GLUT_WINDOW_WIDTH);
 	int h = glutGet((GLenum)GLUT_WINDOW_HEIGHT);
@@ -412,7 +407,7 @@ void Renderer::renderPostProcess() {
 	drawFullScreenQuad();
 }
 
-void Renderer::blurImage() {
+void Renderer::blurImage() { 
 	//CUTOFF
 	glUseProgram(cutoffShader);
 	glBindFramebuffer(GL_FRAMEBUFFER, cutOffFbo.id);
@@ -420,7 +415,7 @@ void Renderer::blurImage() {
 	glClearColor(1.0, 1.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	setUniformSlow(cutoffShader, "time", currentTime);
+	setUniformSlow(cutoffShader, "cutAt", 0.9f);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_RECTANGLE_ARB, postProcessFbo.texture);
 
@@ -434,7 +429,6 @@ void Renderer::blurImage() {
 	glUseProgram(horizontalBlurShader);
 
 	setUniformSlow(horizontalBlurShader, "frameBufferTexture", 0);
-	setUniformSlow(horizontalBlurShader, "time", currentTime);
 	glBindTexture(GL_TEXTURE_RECTANGLE_ARB, cutOffFbo.texture);
 	drawFullScreenQuad();
 
@@ -446,7 +440,6 @@ void Renderer::blurImage() {
 	glUseProgram(verticalBlurShader);
 
 	setUniformSlow(verticalBlurShader, "frameBufferTexture", 0);
-	setUniformSlow(verticalBlurShader, "time", currentTime);
 	glBindTexture(GL_TEXTURE_RECTANGLE_ARB, horizontalBlurFbo.texture);
 	drawFullScreenQuad();
 }
@@ -473,11 +466,11 @@ void Renderer::drawFullScreenQuad()
 	glDrawArrays(GL_QUADS, 0, nofVertices);
 }
 
-
-
 void Renderer::drawDebug(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, Scene scene) {
 	//debugDrawOctree(viewMatrix, projectionMatrix, t);
-	debugDrawLight(viewMatrix, projectionMatrix, scene.shadowMapCamera->getPosition());
+	if (scene.shadowMapCamera != NULL) {
+		debugDrawLight(viewMatrix, projectionMatrix, scene.shadowMapCamera->getPosition());
+	}
 	/*debugDrawQuad(viewMatrix, projectionMatrix, carLoc.location + make_vector(0.2f, 1.2f, 0.0f), make_vector(1.0f, 1.0f, 1.5f));
 	float3x3 rot = make_rotation_y<float3x3>(carLoc.angley);
 	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location + rot * carLoc.wheel1, -carLoc.upDir);

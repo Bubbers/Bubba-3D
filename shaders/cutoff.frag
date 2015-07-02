@@ -7,7 +7,7 @@
 precision highp float;
 
 uniform sampler2DRect frameBufferTexture;
-uniform float time;
+uniform float cutAt;
 out vec4 fragmentColor;
 
 
@@ -16,12 +16,10 @@ out vec4 fragmentColor;
  */
 void main() 
 {
-	float cutAt = 0.90;
 	vec4 sample = texture(frameBufferTexture, gl_FragCoord.xy);
 
-	float sunUp = max(0.0f, cos((time / 20.0f) * 2.0f * 3.14f));
-
-	if ((sample.r > cutAt || sample.g > cutAt || sample.b > cutAt) && sunUp < 0.1)
+	//float sunUp = max(0.0f, cos((time / 20.0f) * 2.0f * 3.14f));
+	if (sample.r > cutAt || sample.g > cutAt || sample.b > cutAt)
 	{
 		fragmentColor = sample;
 	}

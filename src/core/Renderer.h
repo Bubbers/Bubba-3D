@@ -21,6 +21,7 @@
 #include "..\objects\Scene.h"
 #include <Octree.h>
 #include "..\Misc\Utils.h"
+#include "..\effects\Effects.h"
 
 #define CUBE_MAP_RESOLUTION		512
 #define SHADOW_MAP_RESOLUTION	2048
@@ -50,13 +51,14 @@ public:
 private:
 	int width, height;
 	float currentTime;
-
+	Fog f;
 	
 
 	Fbo createPostProcessFbo(int width, int height);
 	void drawShadowMap(Fbo sbo, float4x4 viewProjectionMatrix, Scene scene);
 	void drawShadowCasters(GLuint shaderProgram, Scene scene);
 	void setFog(GLuint shaderProgram);
+	void setLights(GLuint shaderProgram, Scene scene);
 
 	GLuint shaderProgram;
 	Logger logger = Logger::instance();
