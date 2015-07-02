@@ -1,24 +1,6 @@
 #include "Renderer.h"
 
 
-
-#define FOG_EQUATION_LINEAR 0
-#define FOG_EQUATION_EXP    1
-#define FOG_EQUATION_EXP2   2
-#define FOG_EQUATION_NONE   3
-
-#ifndef __FOGPARAMS__
-#define __FOGPARAMS__
-namespace FogParams {
-	float fDensity = 0.001f;
-	float fStart = 50.0f;
-	float fEnd = 5000.0f;
-	float3 vColor = make_vector(1.0f, 1.0f, 1.0f);
-	int fEquation = FOG_EQUATION_LINEAR;
-};
-#endif //__FOGPARAMS__
-
-
 Renderer::Renderer(int argc, char *argv[], int width, int height) : width(width), height(height)
 {
 #	if defined(__linux__)
@@ -46,7 +28,6 @@ Renderer::Renderer(int argc, char *argv[], int width, int height) : width(width)
 	* this *after* initGL(), since initGL() initializes GLEW.
 	*/
 	glEnable(GL_FRAMEBUFFER_SRGB);
-
 }
 
 
@@ -229,11 +210,11 @@ void Renderer::drawShadowMap(Fbo sbo, float4x4 viewProjectionMatrix, Scene scene
 }
 
 void Renderer::setFog(GLuint shaderProgram) {
-	setUniformSlow(shaderProgram, "fog.iEquation", f.fEquation);
-	setUniformSlow(shaderProgram, "fog.fDensity", f.fDensity);
-	setUniformSlow(shaderProgram, "fog.fEnd", f.fEnd);
-	setUniformSlow(shaderProgram, "fog.fStart", f.fStart);
-	setUniformSlow(shaderProgram, "fog.vColor", f.vColor);
+	setUniformSlow(shaderProgram, "fog.iEquation",	effects.fog.fEquation);
+	setUniformSlow(shaderProgram, "fog.fDensity",	effects.fog.fDensity);
+	setUniformSlow(shaderProgram, "fog.fEnd",		effects.fog.fEnd);
+	setUniformSlow(shaderProgram, "fog.fStart",		effects.fog.fStart);
+	setUniformSlow(shaderProgram, "fog.vColor",		effects.fog.vColor);
 }
 
 void Renderer::initGL() 

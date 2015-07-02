@@ -131,6 +131,7 @@ void createCubeMaps();
 void createMeshes();
 void createCameras();
 void createLights();
+void createEffects();
 
 float degreeToRad(float degree);
 float radToDegree(float rad);
@@ -420,10 +421,17 @@ int main(int argc, char *argv[])
 	createMeshes();
 	createCameras();
 	createLights();
+	createEffects();
 	
 	renderer->start();
 
 	return 0;
+}
+
+void createEffects(){
+	Fog f;
+	f.fEquation = FOG_EQ::LINEAR;
+	renderer->effects.fog = f;
 }
 
 void createLights() {

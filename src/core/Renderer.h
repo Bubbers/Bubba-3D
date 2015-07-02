@@ -48,10 +48,11 @@ public:
 		CHECK_GL_ERROR();
 	}
 
+
+	Effects effects;
 private:
 	int width, height;
 	float currentTime;
-	Fog f;
 	
 
 	Fbo createPostProcessFbo(int width, int height);
