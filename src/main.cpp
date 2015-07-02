@@ -435,7 +435,7 @@ void createEffects(){
 
 	Blur b;
 	b.cutOff = 0.9f;
-	b.active = true;
+	b.active = false;
 	renderer->effects.blur = b;
 }
 
@@ -498,7 +498,7 @@ void createCubeMaps() {
 	// Load cube map texture
 	//*************************************************************************
 	reflectionCubeMap = new CubeMapTexture("scenes/posx.jpg", "scenes/negx.jpg", "scenes/posy.jpg", "scenes/posy.jpg", "scenes/negz.jpg", "scenes/posz.jpg");
-
+	scene.cubeMap = reflectionCubeMap;
 	//X
 	cubeMapCameras[0] = new PerspectiveCamera(carLoc.location + make_vector(0.0f, 3.0f, 0.0f), make_vector(100.0f, 3.0f, 0.0f), make_vector(0.0f, -1.0f, 0.0f), 90.0f, 1, 0.1f, 1000.0f);
 	cubeMapCameras[1] = new PerspectiveCamera(carLoc.location + make_vector(0.0f, 3.0f, 0.0f), make_vector(-100.0f, 3.0f, 0.0f), make_vector(0.0f, -1.0f, 0.0f), 90.0f, 1, 0.1f, 1000.0f);
@@ -592,8 +592,12 @@ void createMeshes() {
 
 	normalTestWithout.loadMesh("scenes/boxwoNormals.obj");
 	normalTestWithout.m_modelMatrix = make_translation(make_vector(5.0f, 10.0f, 0.0f)) * make_rotation_x<float4x4>(M_PI / 180 * 30);
-	scene.shadowCasters.push_back(&normalTestWithout);
+	scene.shadowCasters.push_back(&normalTestWithout); 
 
+	car.loadMesh("scenes/car.obj");
+	car.m_modelMatrix = make_identity<float4x4>();
+	car.shininess = 1.5f;
+	scene.shadowCasters.push_back(&car);
 
 	logger.logInfo("Finished loading models.");
 
@@ -635,11 +639,6 @@ void createCameras() {
 		make_vector(0.0f, 1.0f, 0.0f),
 		45.0f, float(w) / float(h), 0.1f, 1000.0f
 		);
-
-	car.loadMesh("scenes/car.obj");
-	car.m_modelMatrix = make_identity<float4x4>();
-	car.shininess = 1.5f;
-	scene.shadowCasters.push_back(&car);
 
 	skybox = new Skybox(playerCamera);
 	skybox->init("scenes/posx.jpg", "scenes/negx.jpg", "scenes/posy.jpg", "scenes/posy.jpg", "scenes/negz.jpg", "scenes/posz.jpg");

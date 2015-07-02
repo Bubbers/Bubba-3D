@@ -118,8 +118,7 @@ void Renderer::drawScene(Camera camera, Scene scene, float currentTime)
 	//Set cube map
 	if (scene.cubeMap != NULL) {
 		setUniformSlow(shaderProgram, "cubeMap", 2);
-		glActiveTexture(GL_TEXTURE2);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, scene.cubeMap->texture);
+		scene.cubeMap->bind(GL_TEXTURE2);
 	}
 
 	drawShadowCasters(shaderProgram, scene);
@@ -210,6 +209,7 @@ void Renderer::drawShadowMap(Fbo sbo, float4x4 viewProjectionMatrix, Scene scene
 }
 
 void Renderer::setFog(GLuint shaderProgram) {
+	if (effects.fog.fEquation == FOG_EQ::NONE){ return; }
 	setUniformSlow(shaderProgram, "fog.iEquation",	effects.fog.fEquation);
 	setUniformSlow(shaderProgram, "fog.fDensity",	effects.fog.fDensity);
 	setUniformSlow(shaderProgram, "fog.fEnd",		effects.fog.fEnd);

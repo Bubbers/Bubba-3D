@@ -132,17 +132,10 @@ void main()
 	vec3 foggedColor = calculateFog(color, abs(viewSpacePosition.z / viewSpacePosition.w));
 	vec3 emissive = material_emissive_color;
 
-	//TODO
-	//vec3 reflectionVector = normalize((inverseViewNormalMatrix * vec4(reflect(-directionToEye, normal), 0.0)).xyz);
-	//vec3 cubeMapSample = texture(cubeMap, reflectionVector).rgb * object_reflectiveness;
-	//vec3 reflection = fresnelTerm * cubeMapSample;
-	//reflection *= max(visibility, 0.2);
-
-	fragmentColor = vec4(foggedColor + emissive, object_alpha);
-
-	/*if (object_reflectiveness > 0.0) { Debugging cubemap
-		fragmentColor = vec4(texture(cubeMap, reflectionVector).rgb, object_alpha);
-	}*/
+	vec3 reflectionVector = normalize((inverseViewNormalMatrix * vec4(reflect(-directionToEye, normal), 0.0)).xyz);
+	vec3 cubeMapSample = texture(cubeMap, reflectionVector).rgb * object_reflectiveness;
+	
+	fragmentColor = vec4(foggedColor + emissive + cubeMapSample, object_alpha);
 }
 
 Light calculateGeneralLight(Light colors, vec3 directionToLight, vec3 directionToEye, vec3 normal) {
@@ -159,6 +152,7 @@ Light calculateGeneralLight(Light colors, vec3 directionToLight, vec3 directionT
 	//Specular term
 	vec3 fresnelTerm = calculateFresnel(normal, directionToEye, material_specular_color);
 	vec3 specular = calculateSpecular(normal, directionToLight, directionToEye, fresnelTerm, spec_color, material_shininess);
+
 
 	// if we have a texture we modulate all of the color properties
 	if (has_diffuse_texture == 1)
