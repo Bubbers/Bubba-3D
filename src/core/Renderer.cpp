@@ -389,6 +389,7 @@ void Renderer::renderPostProcess() {
 }
 
 void Renderer::blurImage() { 
+	if (!effects.blur.active) { return; }
 	//CUTOFF
 	glUseProgram(cutoffShader);
 	glBindFramebuffer(GL_FRAMEBUFFER, cutOffFbo.id);
@@ -396,7 +397,7 @@ void Renderer::blurImage() {
 	glClearColor(1.0, 1.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	setUniformSlow(cutoffShader, "cutAt", 0.9f);
+	setUniformSlow(cutoffShader, "cutAt", effects.blur.cutOff);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_RECTANGLE_ARB, postProcessFbo.texture);
 

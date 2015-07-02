@@ -17,9 +17,15 @@ struct Fog {
 	FOG_EQ::fog_equation fEquation = FOG_EQ::NONE;
 };
 
+struct Blur {
+	float cutOff = 1.0f;
+	boolean active = false;
+};
+
 
 struct Effects {
 	Fog fog;
+	Blur blur;
 };
 
 #endif //__EFFECTS_H__

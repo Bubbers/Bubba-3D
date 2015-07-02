@@ -432,6 +432,11 @@ void createEffects(){
 	Fog f;
 	f.fEquation = FOG_EQ::LINEAR;
 	renderer->effects.fog = f;
+
+	Blur b;
+	b.cutOff = 0.9f;
+	b.active = true;
+	renderer->effects.blur = b;
 }
 
 void createLights() {
