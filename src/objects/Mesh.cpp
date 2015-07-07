@@ -8,7 +8,9 @@
 
 using namespace chag;
 
-Mesh::Mesh() {};
+Mesh::Mesh() {
+  shininess = 0.0;
+};
 
 Mesh::~Mesh() {};
 

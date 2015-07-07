@@ -12,8 +12,6 @@
 #include <GL/glew.h>
 #include <GL/glut.h>
 
-#include <IL/il.h>
-#include <IL/ilut.h>
 
 #include "float2.h"
 #include "float3x3.h"
@@ -22,6 +20,7 @@
 #include <cmath>
 #include <cstring>
 #include <cstdlib>
+#include <stdio.h>
 
 #include <vector>
 #include <sstream>
@@ -58,73 +57,6 @@ float4x4 lookAt(const float3 &eye, const float3 &center, const float3 &up)
 	float3x3 R = make_matrix(right, newup, dir);
 	float4x4 invrot = make_matrix(transpose(R), make_vector(0.0f,0.0f,0.0f));
 	return invrot * make_translation(-eye); 
-}
-
-GLuint loadCubeMap(const char* facePosX, const char* faceNegX, const char* facePosY, const char* faceNegY, const char* facePosZ, const char* faceNegZ)
-{
-	//********************************************
-	//	Creating a local helper function in C++
-	//********************************************
-	class tempTexHelper {
-	public:
-		static void loadCubeMapFace(std::string filename, GLenum face)
-		{
-			ILuint image;
-			ilGenImages(1, &image);
-			ilBindImage(image);
-
-			if(ilLoadImage(filename.c_str()) == IL_FALSE)   {
-				std::cout << "Failed to load texture: " << filename << std::endl;
-				ILenum Error;
-				while ((Error = ilGetError()) != IL_NO_ERROR) 
-					printf("%d: %s\n", Error, iluErrorString(Error));
-			}
-			ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
-			int s = std::max(ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT));
-			iluScale(s, s, ilGetInteger(IL_IMAGE_DEPTH));
-			glTexImage2D(face, 0, GL_RGBA, ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT), 0, GL_RGBA, GL_UNSIGNED_BYTE, ilGetData());
-		}
-	};
-
-
-	//************************************************
-	//	Creating a texture ID for the OpenGL texture
-	//************************************************
-	GLuint textureID;
-	glGenTextures(1, &textureID);
-
-	//************************************************
-	//	 Load the faces into the cube map texture
-	//************************************************
-	glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
-
-	tempTexHelper::loadCubeMapFace(facePosX, GL_TEXTURE_CUBE_MAP_POSITIVE_X);
-	tempTexHelper::loadCubeMapFace(faceNegX, GL_TEXTURE_CUBE_MAP_NEGATIVE_X);
-	tempTexHelper::loadCubeMapFace(facePosY, GL_TEXTURE_CUBE_MAP_POSITIVE_Y);
-	tempTexHelper::loadCubeMapFace(faceNegY, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y);
-	tempTexHelper::loadCubeMapFace(facePosZ, GL_TEXTURE_CUBE_MAP_POSITIVE_Z);
-	tempTexHelper::loadCubeMapFace(faceNegZ, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z);
-
-	//************************************************
-	//			Set filtering parameters
-	//************************************************
-	
-	//glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
-
-	// Sets the type of mipmap interpolation to be used on magnifying and 
-	// minifying the active texture. 
-	// For cube maps, filtering across faces causes artifacts - so disable filtering
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-	// In case you want filtering anyway, try this below instead
-	//glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	//glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); // Use tri-linear mip map filtering
-	//glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16);			  // or replace trilinear mipmap filtering with nicest anisotropic filtering
-
-
-	CHECK_GL_ERROR();
-	return textureID;
 }
 
 
@@ -187,7 +119,7 @@ namespace
 	GLvoid CALLBACK_ handle_debug_message_( GLenum aSource, GLenum aType, GLuint aId, GLenum aSeverity, GLsizei /*aLength*/, GLchar const* aMessage, GLvoid* /*aUser*/ )
 	{
 		// source string
-		const char* srcStr = nullptr;
+		const char* srcStr = NULL;
 		switch (aSource) {
 		case GL_DEBUG_SOURCE_API:				srcStr = "API";	break;
 		case GL_DEBUG_SOURCE_WINDOW_SYSTEM:		srcStr = "WINDOW_SYSTEM"; break;
@@ -199,7 +131,7 @@ namespace
 		}
 
 		// type
-		const char* typeStr = nullptr;
+		const char* typeStr = NULL;
 		switch (aType)	{
 		case GL_DEBUG_TYPE_ERROR:				typeStr = "ERROR";	break;
 		case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:	typeStr = "DEPRECATED_BEHAVIOR";	break;
@@ -211,7 +143,7 @@ namespace
 		}
 
 		// severity
-		const char* sevStr = nullptr;
+		const char* sevStr = NULL;
 		switch( aSeverity ) {
 		case GL_DEBUG_SEVERITY_HIGH:			sevStr = "HIGH"; break;
 		case GL_DEBUG_SEVERITY_MEDIUM:			sevStr = "MEDIUM"; break;

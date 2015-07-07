@@ -3,6 +3,7 @@
 
 Renderer::Renderer(int argc, char *argv[], int width, int height) : width(width), height(height)
 {
+  logger = Logger::instance();
 #	if defined(__linux__)
 	linux_initialize_cwd();
 #	endif // ! __linux__

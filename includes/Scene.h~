@@ -18,7 +18,7 @@ public:
 
 	Skybox *skybox;
 	Mesh *car;
-	CubeMapTexture *cubeMap;
+	Fbo *cubeMap;
 
 	Camera *shadowMapCamera; //Will follow directional light
 	DirectionalLight directionalLight;

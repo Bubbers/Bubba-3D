@@ -3,6 +3,7 @@
 
 CubeMapTexture::CubeMapTexture(const string& posXFilename, const string& negXFilename, const string& posYFilename, const string& negYFilename, const string& posZFilename, const string& negZFilename) {
 
+  m_logger = Logger::instance();
 	//************************************************
 	//	Creating a texture ID for the OpenGL texture
 	//************************************************

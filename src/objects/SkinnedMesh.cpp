@@ -3,7 +3,7 @@
 #include "Logger.h"
 #include <IL/il.h>
 #include <IL/ilut.h>
-#include <glutil\glutil.h>
+#include <glutil/glutil.h>
 
 using namespace chag;
 

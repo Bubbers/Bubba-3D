@@ -1,6 +1,7 @@
 #include "Logger.h"
 
 #include<time.h>
+#include<cstdio>
 
 using namespace std;
 

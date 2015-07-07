@@ -3,7 +3,7 @@
 
 #include <float4x4.h>
 #include <float3.h>
-#include <glutil\glutil.h>
+#include <glutil/glutil.h>
 
 using namespace chag;
 

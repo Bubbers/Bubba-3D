@@ -8,6 +8,7 @@ class Logger
 public:
 
 	~Logger();
+	Logger();
 
 	void setDebug(bool debug);
 	void setFileSave(bool saveToFile);
@@ -22,11 +23,10 @@ public:
 		return INSTANCE;
 	}
 
-	bool debug = true;
-	bool saveToFile = false;
+	bool debug;
+	bool saveToFile;
 
 private:
-	Logger();
 
 	string getTime();
 };

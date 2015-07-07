@@ -20,7 +20,7 @@ public:
 private:
 	BoundingBox box;
 
-	BoundingBox Triangle::calculateBoundingBox();
+	BoundingBox calculateBoundingBox();
 };
 
 
