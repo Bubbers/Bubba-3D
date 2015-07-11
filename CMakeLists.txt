@@ -4,11 +4,25 @@ PROJECT(Bubba-test)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
-
-#file(GLOB files_SOURCE  )
-file(GLOB files_SOURCE "src/*.cpp" "includes/linmath/*.cpp" "includes/glutil/*.cpp" "src/logging/*.cpp"  "src/Misc/*.cpp" "src/effects/*.cpp" "src/cameras/*.cpp" "src/core/*.cpp" "src/objects/*.cpp" "src/collision/*.cpp")
-
+#########################################################
+# ADD SOURCE FILES TO EXECUTABLE
+#########################################################
+file(GLOB files_SOURCE "src/*.cpp" "includes/linmath/*.cpp" "includes/glutil/*.cpp" "src/logging/*.cpp"  "src/Misc/*.cpp" "src/effects/*.cpp" "src/cameras/*.cpp" "src/core/*.cpp" "src/objects/*.cpp" "src/collision/*.cpp" shaders/*)
 add_executable(testz src/main.cpp ${files_SOURCE})
+
+
+#########################################################
+# STRUCTURE MSVS
+#########################################################
+source_group(Logging	FILES src/logging/Logger.cpp)
+source_group(Cameras	FILES src/cameras/Camera.cpp src/cameras/PerspectiveCamera.cpp)
+source_group(Objects	FILES src/objects/Mesh.cpp src/objects/Scene.cpp src/objects/SkinnedMesh.cpp src/objects/Skybox.cpp src/objects/Triangle.cpp)
+source_group(Collision	FILES src/collision/Collider.cpp src/collision/Octree.cpp)
+source_group(Core		FILES src/core/Renderer.cpp)
+source_group(Misc		FILES src/Misc/CubeMapTexture.cpp includes/glutil/glutil.cpp)
+source_group(Math		FILES includes/linmath/float2.cpp includes/linmath/float3.cpp includes/linmath/float3x3.cpp includes/linmath/float4.cpp includes/linmath/float4x4.cpp includes/linmath/int2.cpp includes/linmath/int3.cpp includes/linmath/int4.cpp includes/linmath/Quaternion.cpp)
+source_group(Shaders    FILES shaders/simple.frag shaders/simple.vert shaders/skybox.frag shaders/skybox.vert shaders/vertical_blur.frag shaders/horizontal_blur.frag shaders/cutoff.frag shaders/postFx.frag shaders/postFx.vert shaders/shadowMap.frag shaders/shadowMap.vert)
+
 
 #########################################################
 # FIND GLUT
@@ -83,5 +97,4 @@ message("${PROJECT_SOURCE_DIR}/src")
 # Linking & stuff
 ###################################################### ###
 
-  # create the program "test"
-  target_link_libraries(testz ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${GLEW_LIBRARIES} ${IL_LIBRARIES} ${ILU_LIBRARIES} ${ILUT_LIBRARIES} ${ASSIMP_LIBRARY})
+target_link_libraries(testz ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${GLEW_LIBRARIES} ${IL_LIBRARIES} ${ILU_LIBRARIES} ${ILUT_LIBRARIES} ${ASSIMP_LIBRARY})
