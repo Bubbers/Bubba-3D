@@ -1,6 +1,7 @@
 #include "CubeMapTexture.h"
 #include <glutil\glutil.h>
 
+
 CubeMapTexture::CubeMapTexture(const string& posXFilename, const string& negXFilename, const string& posYFilename, const string& negYFilename, const string& posZFilename, const string& negZFilename) {
 
   m_logger = Logger::instance();
@@ -52,6 +53,8 @@ void CubeMapTexture::loadCubeMapFace(std::string filename, GLenum face)
 	ILuint image;
 	ilGenImages(1, &image);
 	ilBindImage(image);
+
+	bool he = ilLoadImage(filename.c_str());
 
 	if (ilLoadImage(filename.c_str()) == IL_FALSE)   {
 		m_logger.logSevere("Failed to load texture " + filename);

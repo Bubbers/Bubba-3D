@@ -2,10 +2,8 @@
 #include "Mesh.h"
 
 #include "Logger.h"
-#include <IL/il.h>
-#include <IL/ilut.h>
-#include <glutil\glutil.h>
-
+#include <IL\il.h>
+#include <IL\ilut.h>
 using namespace chag;
 
 Mesh::Mesh() {
@@ -13,6 +11,18 @@ Mesh::Mesh() {
 };
 
 Mesh::~Mesh() {};
+
+Chunk::Chunk(std::vector<chag::float3>& positions,
+	std::vector<chag::float3>& normals,
+	std::vector<chag::float2>& uvs,
+	std::vector<unsigned int>& indices,
+	std::vector<chag::float3>& tangents,
+	std::vector<chag::float3>& bittangents,
+	unsigned int textureIndex) :
+	m_positions(positions), m_normals(normals), m_uvs(uvs), m_indices(indices), m_textureIndex(textureIndex), m_tangents(tangents), m_bittangents(bittangents)
+{
+	m_numIndices = indices.size();
+}
 
 void Mesh::render() {
 	CHECK_GL_ERROR();
@@ -72,7 +82,7 @@ bool Mesh::loadMesh(const std::string& fileName) {
 	else {
 		initFromScene(pScene, fileName);
 	}
-
+	
 	return true;
 }
 
@@ -84,7 +94,7 @@ bool Mesh::initFromScene(const aiScene* pScene, const std::string& fileName) {
 	}
 
 	initMats(pScene, fileName);
-
+	
 	return true;
 }
 
@@ -169,6 +179,7 @@ GLuint Mesh::getTexture(const aiMaterial *material, const std::string& fileName,
 	{
 		return -1;
 	}
+	return 0;
 }
 
 void Mesh::initMesh(unsigned int index, const aiMesh* paiMesh) {
@@ -267,17 +278,7 @@ void Mesh::initMesh(unsigned int index, const aiMesh* paiMesh) {
 }
 
 
-Mesh::Chunk::Chunk(std::vector<chag::float3>& positions,
-	std::vector<chag::float3>& normals,
-	std::vector<chag::float2>& uvs,
-	std::vector<unsigned int>& indices,
-	std::vector<chag::float3>& tangents,
-	std::vector<chag::float3>& bittangents,
-	unsigned int textureIndex) :
-	m_positions(positions), m_normals(normals), m_uvs(uvs), m_indices(indices), m_textureIndex(textureIndex), m_tangents(tangents), m_bittangents(bittangents)
-{
-	m_numIndices = indices.size();
-}
+
 
 
 GLuint Mesh::loadTexture(std::string fileName)
@@ -334,5 +335,6 @@ GLuint Mesh::loadTexture(std::string fileName)
 	glBindTexture(GL_TEXTURE_2D, 0);
 	CHECK_GL_ERROR();
 	return texid;
+	return 0;
 }
 

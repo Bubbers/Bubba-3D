@@ -252,7 +252,7 @@ void Renderer::initGL()
 	//*************************************************************************
 	//	Load shaders
 	//*************************************************************************
-	shaderProgram = loadShaderProgram("shaders/simple.vert", "shaders/simple.frag");
+	shaderProgram = loadShaderProgram("../shaders/simple.vert", "../shaders/simple.frag");
 	glBindAttribLocation(shaderProgram, 0, "position");
 	glBindAttribLocation(shaderProgram, 2, "texCoordIn");
 	glBindAttribLocation(shaderProgram, 1, "normalIn");
@@ -265,7 +265,7 @@ void Renderer::initGL()
 	//*************************************************************************
 	logger.logInfo("Generating OpenGL data.");
 
-	sbo.shaderProgram = loadShaderProgram("shaders/shadowMap.vert", "shaders/shadowMap.frag");
+	sbo.shaderProgram = loadShaderProgram("../shaders/shadowMap.vert", "../shaders/shadowMap.frag");
 	glBindAttribLocation(sbo.shaderProgram, 0, "position");
 	glBindFragDataLocation(sbo.shaderProgram, 0, "fragmentColor");
 	linkShaderProgram(sbo.shaderProgram);
@@ -307,10 +307,10 @@ void Renderer::initGL()
 	//*************************************************************************
 	// Create post process Fbo
 	//*************************************************************************
-	postFxShader = loadShaderProgram("shaders/postFx.vert", "shaders/postFx.frag");
-	verticalBlurShader = loadShaderProgram("shaders/postFx.vert", "shaders/vertical_blur.frag");
-	horizontalBlurShader = loadShaderProgram("shaders/postFx.vert", "shaders/horizontal_blur.frag");
-	cutoffShader = loadShaderProgram("shaders/postFx.vert", "shaders/cutoff.frag");
+	postFxShader = loadShaderProgram("../shaders/postFx.vert", "../shaders/postFx.frag");
+	verticalBlurShader = loadShaderProgram("../shaders/postFx.vert", "../shaders/vertical_blur.frag");
+	horizontalBlurShader = loadShaderProgram("../shaders/postFx.vert", "../shaders/horizontal_blur.frag");
+	cutoffShader = loadShaderProgram("../shaders/postFx.vert", "../shaders/cutoff.frag");
 
 	glBindAttribLocation(postFxShader, 0, "position");
 	glBindFragDataLocation(postFxShader, 0, "fragmentColor");
@@ -567,7 +567,7 @@ void Renderer::debugDrawQuad(const float4x4 &viewMatrix, const float4x4 &project
 	glPopAttrib();
 }
 
-void Renderer::debugDrawOctree(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, Octree tree)
+/*void Renderer::debugDrawOctree(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, Octree tree)
 {
 	glPushAttrib(GL_ALL_ATTRIB_BITS);
 	GLint temp;
@@ -650,4 +650,4 @@ void Renderer::debugDrawOctree(const float4x4 &viewMatrix, const float4x4 &proje
 			debugDrawOctree(viewMatrix, projectionMatrix, children[i]);
 		}
 	}
-}
+}*/

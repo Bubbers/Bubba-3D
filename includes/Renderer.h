@@ -12,15 +12,16 @@
 #include <IL/il.h>
 #include <IL/ilut.h>
 
-#include <glutil/glutil.h>
+#include <glutil\glutil.h>
 #include <float4x4.h>
 #include <float3x3.h>
 
 #include "Logger.h"
 #include "PerspectiveCamera.h"
 #include "Scene.h"
-#include <Octree.h>
+//#include <Octree.h>
 #include "Utils.h"
+#include "Effects.h"
 
 #define CUBE_MAP_RESOLUTION		512
 #define SHADOW_MAP_RESOLUTION	2048
@@ -40,30 +41,32 @@ public:
 	void render();
 
 	void setIdleMethod(void(*idle)(int), float delay);
-	void setDisplayMethod(void (*display)(void));
+	void setDisplayMethod(void(*display)(void));
 
 	void swapBuffer() {
 		glutSwapBuffers();  // swap front and back buffer. This frame will now be displayed.
 		CHECK_GL_ERROR();
 	}
 
+
+	Effects effects;
 private:
 	int width, height;
 	float currentTime;
 
-	
 
 	Fbo createPostProcessFbo(int width, int height);
 	void drawShadowMap(Fbo sbo, float4x4 viewProjectionMatrix, Scene scene);
 	void drawShadowCasters(GLuint shaderProgram, Scene scene);
 	void setFog(GLuint shaderProgram);
+	void setLights(GLuint shaderProgram, Scene scene);
 
 	GLuint shaderProgram;
-	Logger logger;
+	Logger logger = Logger::instance();
 
 	Fbo sbo;
 	Camera *cubeMapCameras[6];
-	
+
 	//Drawing
 	void drawModel(Mesh &model, GLuint shaderProgram);
 	void drawFullScreenQuad();
@@ -82,7 +85,7 @@ private:
 	void drawDebug(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, Scene scene);
 	void debugDrawLine(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, float3 origin, float3 rayVector);
 	void debugDrawQuad(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, float3 origin, float3 halfVector);
-	void debugDrawOctree(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, Octree tree);
+	//void debugDrawOctree(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, Octree tree);
 };
 
 

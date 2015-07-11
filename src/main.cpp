@@ -12,7 +12,7 @@
 #include <Quaternion.h>
 #include "collision\Collider.h"
 
-#include "core\Renderer.h"
+#include "Renderer.h"
 
 using namespace std;
 using namespace chag;
@@ -215,14 +215,14 @@ void display(void)
 	
 	renderer->swapBuffer();
 }
-void handleKeys(unsigned char key, int /*x*/, int /*y*/)
+void handleKeys(unsigned char key, int x, int y)
 {
 	switch(key)
 	{
-	case 27:    /* ESC */
-		exit(0); /* dirty exit */
-		break;   /* unnecessary, I know */
-	case 32:    /* space */
+	case 27:   
+		exit(0);
+		break;   
+	case 32:   
 		paused = !paused;
 		break;
 	case 'w':
@@ -243,14 +243,15 @@ void handleKeys(unsigned char key, int /*x*/, int /*y*/)
 		break;
 	}
 }
-void handleKeysRelease(unsigned char key, int /*x*/, int /*y*/)
+
+void handleKeysRelease(unsigned char key, int x, int y)
 {
 	switch (key)
 	{
-	case 27:    /* ESC */
-		exit(0); /* dirty exit */
-		break;   /* unnecessary, I know */
-	case 32:    /* space */
+	case 27:   
+		exit(0);
+		break;  
+	case 32:   
 		paused = !paused;
 		break;
 	case 'w':
@@ -271,7 +272,7 @@ void handleKeysRelease(unsigned char key, int /*x*/, int /*y*/)
 		break;
 	}
 }
-void handleSpecialKeys(int key, int /*x*/, int /*y*/)
+void handleSpecialKeys(int key, int x, int y)
 {
 	switch(key)
 	{
@@ -405,7 +406,7 @@ int main(int argc, char *argv[])
 	int h = SCREEN_HEIGHT;
 
 	renderer = new Renderer(argc, argv, w, h);
-
+	
 	glutTimerFunc(50, idle, 0);
 	glutDisplayFunc(display);
 
@@ -424,7 +425,7 @@ int main(int argc, char *argv[])
 	createEffects();
 	
 	renderer->start();
-
+	
 	return 0;
 }
 
@@ -497,7 +498,7 @@ void createCubeMaps() {
 	//*************************************************************************
 	// Load cube map texture
 	//*************************************************************************
-	reflectionCubeMap = new CubeMapTexture("scenes/posx.jpg", "scenes/negx.jpg", "scenes/posy.jpg", "scenes/posy.jpg", "scenes/negz.jpg", "scenes/posz.jpg");
+	reflectionCubeMap = new CubeMapTexture("../scenes/posx.jpg", "../scenes/negx.jpg", "../scenes/posy.jpg", "../scenes/posy.jpg", "../scenes/negz.jpg", "../scenes/posz.jpg");
 	scene.cubeMap = reflectionCubeMap;
 	//X
 	cubeMapCameras[0] = new PerspectiveCamera(carLoc.location + make_vector(0.0f, 3.0f, 0.0f), make_vector(100.0f, 3.0f, 0.0f), make_vector(0.0f, -1.0f, 0.0f), 90.0f, 1, 0.1f, 1000.0f);
@@ -543,7 +544,7 @@ void createCubeMaps() {
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_Z, cMapAll.texture, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, cMapAll.texture, 0);
 
-	cMapAll.shaderProgram = loadShaderProgram("shaders/simple.vert", "shaders/simple.frag");
+	cMapAll.shaderProgram = loadShaderProgram("../shaders/simple.vert", "../shaders/simple.frag");
 	glBindAttribLocation(cMapAll.shaderProgram, 0, "position");
 	glBindAttribLocation(cMapAll.shaderProgram, 2, "texCoordIn");
 	glBindAttribLocation(cMapAll.shaderProgram, 1, "normalIn");
@@ -558,15 +559,15 @@ void createMeshes() {
 	logger.logInfo("Started loading models.");
 
 	//Load shadow casters
-	world.loadMesh("scenes/world.obj");
+	world.loadMesh("../scenes/world.obj");
 	world.m_modelMatrix = make_identity<float4x4>();
 	scene.shadowCasters.push_back(&world);
 
-	factory.loadMesh("scenes/test.obj");
+	factory.loadMesh("../scenes/test.obj");
 	factory.m_modelMatrix = make_translation(make_vector(-15.0f, 6.0f, 0.0f)) * make_rotation_y<float4x4>(M_PI / 180 * 90) * make_scale<float4x4>(make_vector(2.0f, 2.0f, 2.0f));
 	scene.shadowCasters.push_back(&factory);
 
-	spider.loadMesh("scenes/spider.obj");
+	spider.loadMesh("../scenes/spider.obj");
 	spider.m_modelMatrix = make_translation(make_vector(40.0f, 2.0f, 0.0f)) * make_rotation_x<float4x4>(M_PI / 180 * 0) *  make_scale<float4x4>(0.1f);
 	scene.shadowCasters.push_back(&spider);
 
@@ -586,15 +587,15 @@ void createMeshes() {
 	lamp3.m_modelMatrix = make_translation(make_vector(0.0f, 10.0f, -10.0f));
 	scene.shadowCasters.push_back(&lamp3);
 
-	normalTest.loadMesh("scenes/boxwNormals.obj");
+	normalTest.loadMesh("../scenes/boxwNormals.obj");
 	normalTest.m_modelMatrix = make_translation(make_vector(0.0f, 10.0f, 0.0f)) * make_rotation_x<float4x4>(M_PI / 180 * 30);
 	scene.shadowCasters.push_back(&normalTest);
 
-	normalTestWithout.loadMesh("scenes/boxwoNormals.obj");
+	normalTestWithout.loadMesh("../scenes/boxwoNormals.obj");
 	normalTestWithout.m_modelMatrix = make_translation(make_vector(5.0f, 10.0f, 0.0f)) * make_rotation_x<float4x4>(M_PI / 180 * 30);
 	scene.shadowCasters.push_back(&normalTestWithout); 
 
-	car.loadMesh("scenes/car.obj");
+	car.loadMesh("../scenes/car.obj");
 	car.m_modelMatrix = make_identity<float4x4>();
 	car.shininess = 1.5f;
 	scene.shadowCasters.push_back(&car);
@@ -641,7 +642,7 @@ void createCameras() {
 		);
 
 	skybox = new Skybox(playerCamera);
-	skybox->init("scenes/posx.jpg", "scenes/negx.jpg", "scenes/posy.jpg", "scenes/posy.jpg", "scenes/negz.jpg", "scenes/posz.jpg");
+	skybox->init("../scenes/posx.jpg", "../scenes/negx.jpg", "../scenes/posy.jpg", "../scenes/posy.jpg", "../scenes/negz.jpg", "../scenes/posz.jpg");
 	scene.skybox = skybox;
 }
 

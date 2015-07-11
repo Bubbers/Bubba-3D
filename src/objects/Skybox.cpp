@@ -8,12 +8,12 @@ Skybox::Skybox(Camera* camera) : m_camera(camera)
 bool Skybox::init(const string& posXFilename, const string& negXFilename, const string& posYFilename, const string& negYFilename, const string& posZFilename, const string& negZFilename) {
 	m_pCubemap = new CubeMapTexture(posXFilename, negXFilename, posYFilename, negYFilename, posZFilename, negZFilename);
 
-	m_shaderProgram = loadShaderProgram("shaders/skybox.vert", "shaders/skybox.frag");
+	m_shaderProgram = loadShaderProgram("../shaders/skybox.vert", "../shaders/skybox.frag");
 	glBindAttribLocation(m_shaderProgram, 0, "position");
 	glBindFragDataLocation(m_shaderProgram, 0, "fragmentColor");
 	linkShaderProgram(m_shaderProgram);
 
-	m_skyMesh.loadMesh("scenes/sphere.obj");
+	m_skyMesh.loadMesh("../scenes/sphere.obj");
 	
 	return true;
 }

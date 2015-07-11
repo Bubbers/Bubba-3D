@@ -83,8 +83,6 @@ class Mesh
   GLuint getTexture(const aiMaterial *material, const std::string& fileName, aiTextureType type);
   GLuint loadTexture(std::string fileName);
 
-	
-	
   std::vector<Material> m_textures;
 
  public: 
