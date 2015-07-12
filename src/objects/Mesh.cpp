@@ -2,8 +2,14 @@
 #include "Mesh.h"
 
 #include "Logger.h"
+#ifdef WIN32
+#include <IL/il.h>
+#include <IL/ilut.h>
+#else
 #include <il.h>
 #include <ilut.h>
+#endif // WIN32
+
 using namespace chag;
 
 Mesh::Mesh() {
