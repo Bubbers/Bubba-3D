@@ -30,11 +30,11 @@ void Octree::insertAll(std::vector<Triangle*> &triangles){
 
 		std::vector<Triangle*> newTris[8];
 
-		for (int i = 0; i < triangles.size(); i++) {
+		for (unsigned int i = 0; i < triangles.size(); i++) {
 			BoundingBox *b = triangles[i]->getBoundingBox();
 			std::set<int> octs;
-			for (int i = 0; i < 8; i++) {
-				octs.insert(getOctantContainingPoint(b->points[i]));
+			for (int j = 0; j < 8; j++) {
+				octs.insert(getOctantContainingPoint(b->points[j]));
 			}
 
 			for (std::set<int>::iterator it = octs.begin(); it != octs.end(); ++it)
@@ -51,7 +51,7 @@ void Octree::insertAll(std::vector<Triangle*> &triangles){
 
 	}
 	else {
-		for (int i = 0; i < triangles.size(); i++)
+		for (unsigned int i = 0; i < triangles.size(); i++)
 		{
 			ts.push_back(triangles[i]);
 		}
@@ -73,7 +73,7 @@ void Octree::insert(Triangle* t) {
 		}
 
 		addTriangle(t);
-		for (int i = 0; i < ts.size(); i++) {
+		for (unsigned int i = 0; i < ts.size(); i++) {
 			addTriangle(ts[i]);
 		}
 
@@ -212,7 +212,7 @@ void Octree::getGeometry(float3 rayOrigin, float3 rayVector, std::vector<Triangl
 			}
 		}
 		else {
-			for (int i = 0; i < ts.size(); i++) {
+			for (unsigned int i = 0; i < ts.size(); i++) {
 				tsp->push_back(ts[i]);
 			}
 		}
