@@ -2,12 +2,15 @@ cmake_minimum_required(VERSION 2.8)
 # Project Name
 PROJECT(Bubba-test)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
-
+if(UNIX)
+    set(ASSIMP_INCLUDE_DIR "$HOME/assimp/assimp/include")
+    #set(${ASSIMP_LIBRARY}  "$HOME/assimp/assimp/lib/libassimp.so.3.1.1")
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+endif(UNIX)
 #########################################################
 # ADD SOURCE FILES TO EXECUTABLE
 #########################################################
-file(GLOB files_SOURCE "src/*.cpp" "includes/linmath/*.cpp" "includes/glutil/*.cpp" "src/logging/*.cpp"  "src/Misc/*.cpp" "src/effects/*.cpp" "src/cameras/*.cpp" "src/core/*.cpp" "src/objects/*.cpp" "src/collision/*.cpp" shaders/*)
+file(GLOB files_SOURCE "src/*.cpp" "includes/linmath/*.cpp" "includes/glutil/*.cpp" "src/logging/*.cpp"  "src/Misc/*.cpp" "src/effects/*.cpp" "src/cameras/*.cpp" "src/core/*.cpp" "src/objects/*.cpp" "src/collision/*.cpp" "shaders/*")
 add_executable(testz src/main.cpp ${files_SOURCE})
 
 
@@ -77,7 +80,11 @@ endif(NOT IL_FOUND)
 #########################################################
 find_package(ASSIMP REQUIRED)
 include_directories(${ASSIMP_INCLUDE_DIR})
+find_library(ASSIMP_LIBRARY NAMES libassimp.so)
 target_link_libraries(testz ${ASSIMP_LIBRARY})
+target_link_libraries(testz ${ASSIMP_LIBRARIES})
+add_definitions(${ASSIMP_DEFINITIONS})
+
 
 if(NOT ASSIMP_FOUND)
     message(ERROR " ASSIMP not found!")

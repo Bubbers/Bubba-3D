@@ -1,11 +1,23 @@
 #include "Renderer.h"
+#include <sstream>
+#include <string>
+
+namespace patch
+{
+    template < typename T > std::string to_string( const T& n )
+    {
+        std::ostringstream stm ;
+        stm << n ;
+        return stm.str() ;
+    }
+}
 
 
 Renderer::Renderer(int argc, char *argv[], int width, int height) : width(width), height(height)
 {
   logger = Logger::instance();
 #	if defined(__linux__)
-	linux_initialize_cwd();
+  	linux_initialize_cwd();
 #	endif // ! __linux__
 
 
@@ -13,7 +25,7 @@ Renderer::Renderer(int argc, char *argv[], int width, int height) : width(width)
 
 
 #	if defined(GLUT_SRGB)
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_SRGB | GLUT_DEPTH);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 #	else // !GLUT_SRGB
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 	printf("--\n");
@@ -145,7 +157,7 @@ void Renderer::setLights(GLuint shaderProgram, Scene scene) {
 	//set pointLights
 	setUniformSlow(shaderProgram, "nrPointLights", (int)scene.pointLights.size());
 	for (int i = 0; i < (int)scene.pointLights.size(); i++) {
-		string name = std::string("pointLights[") + std::to_string(i).c_str() + "]";
+		string name = std::string("pointLights[") + patch::to_string(i).c_str() + "]";
 		setUniformSlow(shaderProgram, (name + ".position").c_str(), scene.pointLights[i].position);
 		setUniformSlow(shaderProgram, (name + ".colors.ambientColor").c_str(), scene.pointLights[i].ambientColor);
 		setUniformSlow(shaderProgram, (name + ".colors.diffuseColor").c_str(), scene.pointLights[i].diffuseColor);
@@ -158,7 +170,7 @@ void Renderer::setLights(GLuint shaderProgram, Scene scene) {
 	//set spotLights
 	setUniformSlow(shaderProgram, "nrSpotLights", (int)scene.spotLights.size());
 	for (int i = 0; i < (int)scene.spotLights.size(); i++) {
-		string name = std::string("spotLights[") + std::to_string(i).c_str() + "]";
+		string name = std::string("spotLights[") + patch::to_string(i).c_str() + "]";
 		setUniformSlow(shaderProgram, (name + ".position").c_str(), scene.spotLights[i].position);
 		setUniformSlow(shaderProgram, (name + ".colors.ambientColor").c_str(), scene.spotLights[i].ambientColor);
 		setUniformSlow(shaderProgram, (name + ".colors.diffuseColor").c_str(), scene.spotLights[i].diffuseColor);

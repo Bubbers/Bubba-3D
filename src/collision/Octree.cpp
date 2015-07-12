@@ -1,5 +1,5 @@
 #include "Octree.h"
-
+#include <cfloat>
 
 Octree::Octree(float3 origin, float3 halfVector, int depth)
 	:origin(origin), halfVector(halfVector), depth(depth)

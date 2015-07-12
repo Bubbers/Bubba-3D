@@ -6,17 +6,16 @@
 #include <GL/freeglut.h>
 
 #include <vector>
-#include <thread>
+//include <thread>
 #include <stdlib.h>
 
 #include <Quaternion.h>
-#include "collision\Collider.h"
+#include "collision/Collider.h"
 
 #include "Renderer.h"
 
 using namespace std;
 using namespace chag;
-using namespace chrono;
 
 
 #define SCREEN_WIDTH			1028
@@ -557,8 +556,12 @@ void createMeshes() {
 	// Load the models from disk
 	//*************************************************************************
 	logger.logInfo("Started loading models.");
-
 	//Load shadow casters
+	car.loadMesh("../scenes/car.obj");
+	car.m_modelMatrix = make_identity<float4x4>();
+	car.shininess = 1.5f;
+	scene.shadowCasters.push_back(&car);
+
 	world.loadMesh("../scenes/world.obj");
 	world.m_modelMatrix = make_identity<float4x4>();
 	scene.shadowCasters.push_back(&world);
@@ -566,7 +569,7 @@ void createMeshes() {
 	factory.loadMesh("../scenes/test.obj");
 	factory.m_modelMatrix = make_translation(make_vector(-15.0f, 6.0f, 0.0f)) * make_rotation_y<float4x4>(M_PI / 180 * 90) * make_scale<float4x4>(make_vector(2.0f, 2.0f, 2.0f));
 	scene.shadowCasters.push_back(&factory);
-
+	
 	spider.loadMesh("../scenes/spider.obj");
 	spider.m_modelMatrix = make_translation(make_vector(40.0f, 2.0f, 0.0f)) * make_rotation_x<float4x4>(M_PI / 180 * 0) *  make_scale<float4x4>(0.1f);
 	scene.shadowCasters.push_back(&spider);
@@ -595,10 +598,6 @@ void createMeshes() {
 	normalTestWithout.m_modelMatrix = make_translation(make_vector(5.0f, 10.0f, 0.0f)) * make_rotation_x<float4x4>(M_PI / 180 * 30);
 	scene.shadowCasters.push_back(&normalTestWithout); 
 
-	car.loadMesh("../scenes/car.obj");
-	car.m_modelMatrix = make_identity<float4x4>();
-	car.shininess = 1.5f;
-	scene.shadowCasters.push_back(&car);
 
 	logger.logInfo("Finished loading models.");
 
@@ -606,7 +605,7 @@ void createMeshes() {
 	// Generate Octtree from meshes
 	//*************************************************************************
 	logger.logInfo("Started creating octree");
-	high_resolution_clock::time_point start = high_resolution_clock::now();
+	//high_resolution_clock::time_point start = high_resolution_clock::now();
 
 	float3 origin = make_vector(0.0f, 0.0f, 0.0f);
 	float3 halfVector = make_vector(200.0f, 200.0f, 200.0f); //TODO
@@ -614,16 +613,16 @@ void createMeshes() {
 	octTree = new Octree(origin, halfVector, 0);
 
 	collider = new Collider(octTree);
-	collider->addMesh(&world);
+		collider->addMesh(&world);
 	collider->addMesh(&water);
 	collider->addMesh(&factory);
 	collider->addMesh(&spider);
 	collider->insertAll(); //TODO enlargen octrees afterhand instead
 
-	high_resolution_clock::time_point end = high_resolution_clock::now();
-	duration<double> time_span = duration_cast<duration<double>>(end - start);
+	//high_resolution_clock::time_point end = high_resolution_clock::now();
+	//duration<double> time_span = duration_cast<duration<double>>(end - start);
 
-	logger.logInfo("Created octree in : " + std::to_string(time_span.count()) + " seconds.");
+	//logger.logInfo("Created octree in : " + std::to_string(time_span.count()) + " seconds.");
 
 }
 

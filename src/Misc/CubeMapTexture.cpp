@@ -1,5 +1,5 @@
 #include "CubeMapTexture.h"
-#include <glutil\glutil.h>
+#include <glutil/glutil.h>
 
 
 CubeMapTexture::CubeMapTexture(const string& posXFilename, const string& negXFilename, const string& posYFilename, const string& negYFilename, const string& posZFilename, const string& negZFilename) {

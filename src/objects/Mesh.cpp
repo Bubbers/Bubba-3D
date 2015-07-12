@@ -2,8 +2,8 @@
 #include "Mesh.h"
 
 #include "Logger.h"
-#include <IL\il.h>
-#include <IL\ilut.h>
+#include <il.h>
+#include <ilut.h>
 using namespace chag;
 
 Mesh::Mesh() {
@@ -69,7 +69,7 @@ void Mesh::render() {
 }
 
 bool Mesh::loadMesh(const std::string& fileName) {
-	Assimp::Importer importer;
+  Assimp::Importer importer;
 
 	const aiScene* pScene = importer.ReadFile(
 		fileName.c_str(), aiProcess_GenSmoothNormals | aiProcess_Triangulate | aiProcess_CalcTangentSpace);

@@ -19,7 +19,7 @@ struct Fog {
 
 struct Blur {
 	float cutOff = 1.0f;
-	boolean active = false;
+	bool active = false;
 };
 
 
