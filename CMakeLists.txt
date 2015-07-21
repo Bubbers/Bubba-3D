@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 # Project Name
-PROJECT(Bubba-test)
+PROJECT(Bubba-3D)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 if(UNIX)
