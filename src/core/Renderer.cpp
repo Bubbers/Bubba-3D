@@ -460,7 +460,7 @@ void Renderer::drawFullScreenQuad()
 }
 
 void Renderer::drawDebug(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, Scene scene) {
-  debugDrawOctree(viewMatrix, projectionMatrix, octree);
+  //debugDrawOctree(viewMatrix, projectionMatrix, octree);
 	if (scene.shadowMapCamera != NULL) {
 		debugDrawLight(viewMatrix, projectionMatrix, scene.shadowMapCamera->getPosition());
 	}

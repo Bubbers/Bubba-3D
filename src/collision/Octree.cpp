@@ -151,8 +151,6 @@ int Octree::getCount() {
 bool testSlab(float rayO, float rayD, float minV, float maxV, float* tNear, float* tFar) {
 	if (rayD == 0.0f) {
 		if (rayO <= maxV && rayO >= minV) {
-			*tNear = 0;
-			//*tFar = 0;
 			return true;
 		}
 		else {
@@ -174,11 +172,11 @@ bool testSlab(float rayO, float rayD, float minV, float maxV, float* tNear, floa
 			*tFar = t2;
 		}
 
-		if (tNear < tFar) {
+		if (*tNear < *tFar) {
 			return false;
 		}
 
-		if (tFar < 0) {
+		if (*tFar < 0) {
 			return false;
 		}
 	}
@@ -195,14 +193,22 @@ bool Octree::intersect(float3 rayOrigin, float3 rayVector) {
 
 	float tNear = -FLT_MAX, tFar = FLT_MAX;
 
-	if (testSlab(rayOrigin.x, rayVector.x, minCorner.x, maxCorner.x, &tNear, &tFar)) {
+	if (testSlab(rayOrigin.x, rayVector.x, minCorner.x, maxCorner.x, &tNear, &tFar)
+		|| (testSlab(rayOrigin.y, rayVector.y, minCorner.y, maxCorner.y, &tNear, &tFar)) 
+			|| (testSlab(rayOrigin.z, rayVector.z, minCorner.z, maxCorner.z, &tNear, &tFar))) {
+
+		return true;
+	}
+
+
+	/*if (testSlab(rayOrigin.x, rayVector.x, minCorner.x, maxCorner.x, &tNear, &tFar)) {
 		if (testSlab(rayOrigin.y, rayVector.y, minCorner.y, maxCorner.y, &tNear, &tFar)) {
 			if (testSlab(rayOrigin.z, rayVector.z, minCorner.z, maxCorner.z, &tNear, &tFar)) {
 
 				return true;
 			}
 		}
-	}
+	}*/
 
 	return false;
 }
