@@ -25,7 +25,7 @@ Renderer::Renderer(int argc, char *argv[], int width, int height) : width(width)
 
 
 #	if defined(GLUT_SRGB)
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_SRGB | GLUT_DEPTH);
 #	else // !GLUT_SRGB
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 	printf("--\n");
@@ -143,6 +143,7 @@ void Renderer::drawScene(Camera camera, Scene scene, float currentTime)
 
 	//Cleanup
 	glUseProgram(0);
+
 }
 
 void Renderer::setLights(GLuint shaderProgram, Scene scene) {
