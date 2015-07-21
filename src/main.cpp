@@ -92,19 +92,30 @@ int camera = 6;
 //	Car object variables
 //*****************************************************************************
 struct Car{
-	float3 frontDir = make_vector(0.0f, 0.0f, 1.0f);
-	float3 upDir = make_vector(0.0f, 1.0f, 0.0f);
-	float3 location = make_vector(0.0f, 0.0f, 0.0f);
-	float3  
-		wheel1 = make_vector( 1.2f, 0.0f,  1.5f),
-		wheel2 = make_vector( 1.2f, 0.0f, -1.5f),
-		wheel3 = make_vector(-0.8f, 0.0f,  1.5f),
-		wheel4 = make_vector(-0.8f, 0.0f, -1.5f);
+  float3 frontDir;
+  float3 upDir;
+  float3 location;
+  float3 wheel1, wheel2, wheel3,  wheel4;
 
-	float rotationSpeed = 2 * M_PI / 180;
-	float moveSpeed = 0.5;
-	float angley = 0, anglez, anglex;
-	float lengthx = 2, lengthz = 3;
+  float rotationSpeed;
+  float moveSpeed;
+  float angley, anglez, anglex;
+  float lengthx, lengthz;
+
+  Car() {
+    frontDir = make_vector(0.0f, 0.0f, 1.0f);
+    upDir = make_vector(0.0f, 1.0f, 0.0f);
+    location = make_vector(0.0f, 0.0f, 0.0f);
+    wheel1 = make_vector( 1.2f, 0.0f,  1.5f);
+    wheel2 = make_vector( 1.2f, 0.0f, -1.5f);
+    wheel3 = make_vector(-0.8f, 0.0f,  1.5f);
+    wheel4 = make_vector(-0.8f, 0.0f, -1.5f);
+
+    rotationSpeed = 2 * M_PI / 180;
+    moveSpeed = 0.5;
+    angley = 0; anglez = 0; anglex = 0;
+    lengthx = 2; lengthz = 3;
+  }
 } carLoc;
 
 

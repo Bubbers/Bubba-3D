@@ -1,5 +1,5 @@
  all:
-	cd build;cmake ..;make;
+	cd build;cmake -DCMAKE_BUILD_TYPE:STRING=Debug ..;make;
 
 run:
-	cd build;cmake -DCMAKE_BUILD_TYPE=Debug ..;make;./testz;
+	cd build;cmake -DCMAKE_BUILD_TYPE:STRING=Debug ..;make;./testz;

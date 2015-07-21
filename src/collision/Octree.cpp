@@ -33,8 +33,8 @@ void Octree::insertAll(std::vector<Triangle*> &triangles){
 		for (int i = 0; i < triangles.size(); i++) {
 			BoundingBox *b = triangles[i]->getBoundingBox();
 			std::set<int> octs;
-			for (int i = 0; i < 8; i++) {
-				octs.insert(getOctantContainingPoint(b->points[i]));
+			for (int j = 0; j < 8; j++) {
+				octs.insert(getOctantContainingPoint(b->points[j]));
 			}
 
 			for (std::set<int>::iterator it = octs.begin(); it != octs.end(); ++it)

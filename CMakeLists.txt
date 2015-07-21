@@ -6,6 +6,7 @@ if(UNIX)
     set(ASSIMP_INCLUDE_DIR "$HOME/assimp/assimp/include")
     #set(${ASSIMP_LIBRARY}  "$HOME/assimp/assimp/lib/libassimp.so.3.1.1")
     set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+    set(CMAKE_CXX_FLAGS "-g")
 endif(UNIX)
 #########################################################
 # ADD SOURCE FILES TO EXECUTABLE

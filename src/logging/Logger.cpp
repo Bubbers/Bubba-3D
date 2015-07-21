@@ -7,7 +7,7 @@ using namespace std;
 
 Logger::Logger()
 {
-	debug      = false;
+	debug      = true;
 	saveToFile = false;
 }
 

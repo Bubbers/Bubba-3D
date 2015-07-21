@@ -69,15 +69,19 @@ void Mesh::render() {
 }
 
 bool Mesh::loadMesh(const std::string& fileName) {
+  Logger l = Logger::instance();
+  l.logInfo("Loading mesh " + fileName);
   Assimp::Importer importer;
 
-	const aiScene* pScene = importer.ReadFile(
+  const aiScene* pScene = importer.ReadFile(
 		fileName.c_str(), aiProcess_GenSmoothNormals | aiProcess_Triangulate | aiProcess_CalcTangentSpace);
+
+  /*  const aiScene* pScene = importer.ReadFile(
+      fileName.c_str(), aiProcess_GenSmoothNormals | aiProcess_Triangulate | aiProcess_CalcTangentSpace);*/
 	
 
 	if (!pScene) {
-		Logger l = Logger::instance();
-		l.logDebug("Error loading mesh for " + fileName);
+		l.logSevere("Error loading mesh for " + fileName);
 	}
 	else {
 		initFromScene(pScene, fileName);
