@@ -66,8 +66,8 @@ Fbo cMapAll;
 //*****************************************************************************
 float camera_theta = M_PI / 1.0f;
 float camera_phi = M_PI / 4.0f;
-float camera_r = 30.0; 
-float camera_target_altitude = 5.2; 
+float camera_r = 30.0f; 
+float camera_target_altitude = 5.2f; 
 
 //****************************************************************************
 //	Input state variables
@@ -406,7 +406,7 @@ void idle( int v )
 		glutPostRedisplay();
 	}
 	else {
-		glutTimerFunc(time, idle, 0);
+		glutTimerFunc(int(time), idle, 0);
 	}
 }
 
@@ -446,7 +446,7 @@ void createEffects(){
 
 	Blur b;
 	b.cutOff = 0.9f;
-	b.active = false;
+	b.active = true;
 	renderer->effects.blur = b;
 }
 
@@ -511,16 +511,16 @@ void createCubeMaps() {
 	reflectionCubeMap = new CubeMapTexture("../scenes/posx.jpg", "../scenes/negx.jpg", "../scenes/posy.jpg", "../scenes/posy.jpg", "../scenes/negz.jpg", "../scenes/posz.jpg");
 	scene.cubeMap = reflectionCubeMap;
 	//X
-	cubeMapCameras[0] = new PerspectiveCamera(carLoc.location + make_vector(0.0f, 3.0f, 0.0f), make_vector(100.0f, 3.0f, 0.0f), make_vector(0.0f, -1.0f, 0.0f), 90.0f, 1, 0.1f, 1000.0f);
-	cubeMapCameras[1] = new PerspectiveCamera(carLoc.location + make_vector(0.0f, 3.0f, 0.0f), make_vector(-100.0f, 3.0f, 0.0f), make_vector(0.0f, -1.0f, 0.0f), 90.0f, 1, 0.1f, 1000.0f);
+	cubeMapCameras[0] = new PerspectiveCamera(carLoc.location + make_vector(0.0f, 3.0f, 0.0f), make_vector(100.0f, 3.0f, 0.0f), make_vector(0.0f, -1.0f, 0.0f), 90, 1, 0.1f, 1000.0f);
+	cubeMapCameras[1] = new PerspectiveCamera(carLoc.location + make_vector(0.0f, 3.0f, 0.0f), make_vector(-100.0f, 3.0f, 0.0f), make_vector(0.0f, -1.0f, 0.0f), 90, 1, 0.1f, 1000.0f);
 
 	//Y
-	cubeMapCameras[2] = new PerspectiveCamera(carLoc.location + make_vector(0.0f, 3.0f, 0.0f), make_vector(0.1f, 100.1f, 0.0f), make_vector(0.0f, -1.0f, 0.0f), 90.0f, 1, 0.1f, 1000.0f);
-	cubeMapCameras[3] = new PerspectiveCamera(carLoc.location + make_vector(0.0f, 3.0f, 0.0f), make_vector(0.1f, -100.0f, 0.0f), make_vector(0.0f, -1.0f, 0.0f), 90.0f, 1, 0.1f, 1000.0f);
+	cubeMapCameras[2] = new PerspectiveCamera(carLoc.location + make_vector(0.0f, 3.0f, 0.0f), make_vector(0.1f, 100.1f, 0.0f), make_vector(0.0f, -1.0f, 0.0f), 90, 1, 0.1f, 1000.0f);
+	cubeMapCameras[3] = new PerspectiveCamera(carLoc.location + make_vector(0.0f, 3.0f, 0.0f), make_vector(0.1f, -100.0f, 0.0f), make_vector(0.0f, -1.0f, 0.0f), 90, 1, 0.1f, 1000.0f);
 
 	//Z
-	cubeMapCameras[4] = new PerspectiveCamera(carLoc.location + make_vector(0.0f, 3.0f, 0.0f), make_vector(0.1f, 3.0f, 100.0f), make_vector(0.0f, -1.0f, 0.0f), 90.0f, 1, 0.1f, 1000.0f);
-	cubeMapCameras[5] = new PerspectiveCamera(carLoc.location + make_vector(0.0f, 3.0f, 0.0f), make_vector(0.1f, 3.0f, -100.0f), make_vector(0.0f, -1.0f, 0.0f), 90.0f, 1, 0.1f, 1000.0f);
+	cubeMapCameras[4] = new PerspectiveCamera(carLoc.location + make_vector(0.0f, 3.0f, 0.0f), make_vector(0.1f, 3.0f, 100.0f), make_vector(0.0f, -1.0f, 0.0f), 90, 1, 0.1f, 1000.0f);
+	cubeMapCameras[5] = new PerspectiveCamera(carLoc.location + make_vector(0.0f, 3.0f, 0.0f), make_vector(0.1f, 3.0f, -100.0f), make_vector(0.0f, -1.0f, 0.0f), 90, 1, 0.1f, 1000.0f);
 
 	cMapAll.width = w;
 	cMapAll.height = h;
@@ -641,14 +641,14 @@ void createCameras() {
 	int w = SCREEN_WIDTH;
 	int h = SCREEN_HEIGHT;
 
-	sunCamera = new PerspectiveCamera(startPosSun, make_vector(0.0f, 0.0f, 0.0f), make_vector(0.0f, 1.0f, 0.0f), 45.0f, 1.0f, 280.0f, 600.0f);
+	sunCamera = new PerspectiveCamera(startPosSun, make_vector(0.0f, 0.0f, 0.0f), make_vector(0.0f, 1.0f, 0.0f), 45, 1.0f, 280.0f, 600.0f);
 	scene.shadowMapCamera = sunCamera;
 
 	playerCamera = new PerspectiveCamera(
 		carLoc.location + sphericalToCartesian(camera_theta, camera_phi, camera_r),
 		carLoc.location + make_vector(0.0f, camera_target_altitude, 0.0f),
 		make_vector(0.0f, 1.0f, 0.0f),
-		45.0f, float(w) / float(h), 0.1f, 1000.0f
+		45, float(w) / float(h), 0.1f, 1000.0f
 		);
 
 	skybox = new Skybox(playerCamera);
