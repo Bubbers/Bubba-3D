@@ -19,7 +19,7 @@
 #include "Logger.h"
 #include "PerspectiveCamera.h"
 #include "Scene.h"
-//#include <Octree.h>
+#include <Octree.h>
 #include "Utils.h"
 #include "Effects.h"
 
@@ -48,6 +48,9 @@ public:
 		CHECK_GL_ERROR();
 	}
 
+	void setOctree(Octree tree) {
+	  octree = tree;
+	}
 
 	Effects effects;
 private:
@@ -82,10 +85,11 @@ private:
 	Fbo postProcessFbo, horizontalBlurFbo, verticalBlurFbo, cutOffFbo;
 
 	//DEBUGS
+	Octree octree;
 	void drawDebug(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, Scene scene);
 	void debugDrawLine(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, float3 origin, float3 rayVector);
 	void debugDrawQuad(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, float3 origin, float3 halfVector);
-	//void debugDrawOctree(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, Octree tree);
+	void debugDrawOctree(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, Octree tree);
 };
 
 

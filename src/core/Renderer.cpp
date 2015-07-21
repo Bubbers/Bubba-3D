@@ -83,16 +83,14 @@ void Renderer::drawScene(Camera camera, Scene scene, float currentTime)
 	//*************************************************************************
 	// Render shadow map
 	//*************************************************************************
-	float4x4 lightMatrix;
+	float4x4 lightMatrix = make_identity<float4x4>();
 		
 	if (scene.shadowMapCamera != NULL) {
 		float4x4 lightViewMatrix = scene.shadowMapCamera->getViewMatrix();
 		float4x4 lightProjectionMatrix = scene.shadowMapCamera->getProjectionMatrix();
 		float4x4 lightViewProjectionMatrix = lightProjectionMatrix * lightViewMatrix;
 
-		lightMatrix =	make_translation({ 0.5, 0.5, 0.5 }) *
-						make_scale<float4x4>(make_vector(0.5f, 0.5f, 0.5f)) *
-						lightViewProjectionMatrix * inverse(viewMatrix);
+		lightMatrix = make_translation(make_vector( 0.5f, 0.5f, 0.5f )) * make_scale<float4x4>(make_vector(0.5f, 0.5f, 0.5f)) * lightViewProjectionMatrix * inverse(viewMatrix);
 
 		drawShadowMap(sbo, lightViewProjectionMatrix, scene);
 	}
@@ -462,7 +460,7 @@ void Renderer::drawFullScreenQuad()
 }
 
 void Renderer::drawDebug(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, Scene scene) {
-	//debugDrawOctree(viewMatrix, projectionMatrix, t);
+  debugDrawOctree(viewMatrix, projectionMatrix, octree);
 	if (scene.shadowMapCamera != NULL) {
 		debugDrawLight(viewMatrix, projectionMatrix, scene.shadowMapCamera->getPosition());
 	}
@@ -579,7 +577,7 @@ void Renderer::debugDrawQuad(const float4x4 &viewMatrix, const float4x4 &project
 	glPopAttrib();
 }
 
-/*void Renderer::debugDrawOctree(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, Octree tree)
+void Renderer::debugDrawOctree(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, Octree tree)
 {
 	glPushAttrib(GL_ALL_ATTRIB_BITS);
 	GLint temp;
@@ -662,4 +660,4 @@ void Renderer::debugDrawQuad(const float4x4 &viewMatrix, const float4x4 &project
 			debugDrawOctree(viewMatrix, projectionMatrix, children[i]);
 		}
 	}
-}*/
+}

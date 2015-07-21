@@ -105,7 +105,7 @@ struct Car{
   Car() {
     frontDir = make_vector(0.0f, 0.0f, 1.0f);
     upDir = make_vector(0.0f, 1.0f, 0.0f);
-    location = make_vector(0.0f, 0.0f, 0.0f);
+    location = make_vector(0.0f, 10.0f, 0.0f);
     wheel1 = make_vector( 1.2f, 0.0f,  1.5f);
     wheel2 = make_vector( 1.2f, 0.0f, -1.5f);
     wheel3 = make_vector(-0.8f, 0.0f,  1.5f);
@@ -568,9 +568,9 @@ void createMeshes() {
 	//*************************************************************************
 	logger.logInfo("Started loading models.");
 	//Load shadow casters
-	car.loadMesh("../scenes/car.obj");
+	car.loadMesh("../scenes/untitled.dae");
 	car.m_modelMatrix = make_identity<float4x4>();
-	car.shininess = 1.5f;
+	car.shininess = 0.0f;
 	scene.shadowCasters.push_back(&car);
 
 	world.loadMesh("../scenes/world.obj");
@@ -629,7 +629,9 @@ void createMeshes() {
 	collider->addMesh(&factory);
 	collider->addMesh(&spider);
 	collider->insertAll(); //TODO enlargen octrees afterhand instead
-
+	logger.logInfo("Finished loading octree");
+	renderer->setOctree(*octTree);
+       
 	//high_resolution_clock::time_point end = high_resolution_clock::now();
 	//duration<double> time_span = duration_cast<duration<double>>(end - start);
 

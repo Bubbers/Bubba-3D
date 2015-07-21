@@ -18,6 +18,7 @@ const int MAX_CHILDREN = 64;
 
 class Octree {
 public:
+  Octree();
 	Octree(float3 origin, float3 halfVector, int depth);
 	~Octree(void);
 
