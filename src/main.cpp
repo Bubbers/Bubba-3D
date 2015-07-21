@@ -204,7 +204,7 @@ void checkIntersection() {
 	float4 newLoc = makematrix(qatX) * makematrix(qatZ) * make_vector4(carLoc.wheel1, 1.0f);
 
 	carLoc.location += make_vector(0.0f, carLoc.wheel1.y + (carLoc.wheel1.y - newLoc.y), 0.0f);
-	printf("%f\n", carLoc.wheel1.y + (carLoc.wheel1.y - newLoc.y));
+	//printf("%f\n", carLoc.wheel1.y + (carLoc.wheel1.y - newLoc.y));
 }
 
 void display(void)
