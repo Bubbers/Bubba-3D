@@ -1,2 +1,0 @@
-all:
-	cd build;cmake ..;make;./test;
