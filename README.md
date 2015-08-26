@@ -19,7 +19,8 @@ Originally implemented as a school project, now extended for fun!
 * Refactor cube maps
 * Finish octrees / implement AABB collision structure
 * Support skinned meshes
-* lots more fun stuff!
+* Particle system
+* Optimizations!
 
 ***
 ###Example
@@ -37,3 +38,5 @@ For installation of these, please see their homepage.
 Linux: Install using the Makefile supplied in root map. You might need to change the assimp path in CMakeLists.txt first.
 
 Windows: Use CMake gui. Add the source catalogue and a build directory and then configure and generate! 
+
+Feel free to contact me regarding questions and/or installation trouble!
