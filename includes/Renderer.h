@@ -22,6 +22,7 @@
 #include <Octree.h>
 #include "Utils.h"
 #include "Effects.h"
+#include "IDrawable.h"
 
 #define CUBE_MAP_RESOLUTION		512
 #define SHADOW_MAP_RESOLUTION	2048
@@ -71,7 +72,7 @@ private:
 	Camera *cubeMapCameras[6];
 
 	//Drawing
-	void drawModel(Mesh &model, GLuint shaderProgram);
+	void drawModel(IDrawable &model, GLuint shaderProgram);
 	void drawFullScreenQuad();
 	void renderPostProcess();
 	void blurImage();

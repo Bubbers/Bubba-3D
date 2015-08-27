@@ -33,11 +33,13 @@ Chunk::Chunk(std::vector<chag::float3>& positions,
 void Mesh::render() {
 	CHECK_GL_ERROR();
 	glPushAttrib(GL_ALL_ATTRIB_BITS);
+	GLint current_program = 0;
+	glGetIntegerv(GL_CURRENT_PROGRAM, &current_program);
+	setUniformSlow(current_program, "modelMatrix", m_modelMatrix);
 	for (size_t i = 0; i < m_chunks.size(); ++i)
 	{
 		CHECK_GL_ERROR();
-		GLint current_program = 0;
-		glGetIntegerv(GL_CURRENT_PROGRAM, &current_program);
+		
 		Chunk &chunk = m_chunks[i];
 
 		if (m_textures[chunk.m_textureIndex].diffuse_map_id != -1) {

@@ -13,6 +13,9 @@
 #include "collision/Collider.h"
 
 #include "Renderer.h"
+#include "timer.h"
+#include "shader.h"
+#include "IDrawable.h"
 
 using namespace std;
 using namespace chag;
@@ -152,17 +155,22 @@ void updatePlayer();
 
 //*****************************************************************************
 //	Function implementation
-//*****************************************************************************
+//****************************************************************************
 void checkIntersection() {
 	float3 upVec = make_vector(0.0f, 1.0f, 0.0f);
+	logger.logInfo("haha");
 
 	//Calculate intersections
 	float3x3 rot = make_rotation_y<float3x3>(carLoc.angley);
+	utils::Timer timer;
+	timer.start();
 	float a = collider->rayIntersection(carLoc.location + rot * carLoc.wheel1, -upVec);
 	float b = collider->rayIntersection(carLoc.location + rot * carLoc.wheel2, -upVec);
 	float c = collider->rayIntersection(carLoc.location + rot * carLoc.wheel3, -upVec);
 	float d = collider->rayIntersection(carLoc.location + rot * carLoc.wheel4, -upVec);
-
+	timer.stop();
+	printf("here");
+	printf("Tested 4 ray/aabb intersections in %f ms", timer.getElapsedTime());
 	if (a == 0 && b == 0 && c == 0 && d == 0) {
 		return;
 	}
@@ -617,26 +625,30 @@ void createMeshes() {
 	//*************************************************************************
 	logger.logInfo("Started creating octree");
 	//high_resolution_clock::time_point start = high_resolution_clock::now();
-
+	utils::Timer timer;
+	timer.start();
 	float3 origin = make_vector(0.0f, 0.0f, 0.0f);
 	float3 halfVector = make_vector(200.0f, 200.0f, 200.0f); //TODO
 
 	octTree = new Octree(origin, halfVector, 0);
 
 	collider = new Collider(octTree);
-		collider->addMesh(&world);
+	collider->addMesh(&world);
 	collider->addMesh(&water);
 	collider->addMesh(&factory);
-	collider->addMesh(&spider);
+	for(int i = 0; i < 1; i++) { //11292.64
+	  collider->addMesh(&spider);
+	}
 	collider->insertAll(); //TODO enlargen octrees afterhand instead
 	logger.logInfo("Finished loading octree");
 	renderer->setOctree(*octTree);
-       
+	
+	timer.stop();
 	//high_resolution_clock::time_point end = high_resolution_clock::now();
 	//duration<double> time_span = duration_cast<duration<double>>(end - start);
 
 	//logger.logInfo("Created octree in : " + std::to_string(time_span.count()) + " seconds.");
-
+	printf("Created octree in : %f ms", timer.getElapsedTime()); //TODO Logger
 }
 
 void createCameras() {

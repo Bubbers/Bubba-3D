@@ -13,8 +13,13 @@ Collider::~Collider()
 
 float Collider::rayIntersection(float3 rayOrigin, float3 rayVec) {
 	std::vector<Triangle*> geometry;
+	float3 rayVecInv = make_vector(1.0f / rayVec.x, 1.0f / rayVec.y, 1.0f / rayVec.z);
+	if(rayVec.x < 0.001f) rayVecInv.x = 0.0f;
+	if(rayVec.y < 0.001f) rayVecInv.y = 0.0f;
+	if(rayVec.z < 0.001f) rayVecInv.z = 0.0f;
 
-	tree->getGeometry(rayOrigin, rayVec, &geometry);
+
+	tree->getGeometry(rayOrigin, rayVecInv, &geometry);
 
 	float minIns = NULL;
 	for (int i = 0; i < geometry.size(); i++) {

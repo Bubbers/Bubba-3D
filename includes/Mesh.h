@@ -15,6 +15,7 @@
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 #include "AABB2.h"
+#include "IDrawable.h"
 
 struct Material
 {
@@ -64,14 +65,14 @@ struct Chunk
 
 
 
-class Mesh
+class Mesh : public IDrawable
 {
  public:
   Mesh();
   ~Mesh();
 
   bool loadMesh(const std::string& fileName);
-  void render();
+  virtual void render();
   GLuint getDiffuseTexture(int chunk){
     return m_textures[m_chunks[chunk].m_textureIndex].diffuse_map_id;
   }
@@ -89,7 +90,6 @@ class Mesh
 
   chag::float4x4 m_modelMatrix;
   std::vector<Chunk> m_chunks;
-  float shininess;
   AABB m_aabb;
 };
 

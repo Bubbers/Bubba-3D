@@ -6,10 +6,11 @@
 #include "Camera.h"
 #include "CubeMapTexture.h"
 #include "Mesh.h"
+#include "IDrawable.h"
 
 using namespace std;
 
-class Skybox
+class Skybox : public IDrawable
 {
 public:
 	Skybox(Camera* camera);
@@ -17,7 +18,7 @@ public:
 
 	bool init(const string& posXFilename, const string& negXFilename, const string& posYFilename, const string& negYFilename, const string& posZFilename, const string& negZFilename);
 	
-	void render();
+	virtual void render();
 private:
 	Camera* m_camera;
 	CubeMapTexture* m_pCubemap;
