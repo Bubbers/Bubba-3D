@@ -14,6 +14,8 @@
 
 #include "Renderer.h"
 #include "timer.h"
+#include "shader.h"
+#include "IDrawable.h"
 
 using namespace std;
 using namespace chag;
@@ -634,7 +636,7 @@ void createMeshes() {
 	collider->addMesh(&world);
 	collider->addMesh(&water);
 	collider->addMesh(&factory);
-	for(int i = 0; i < 100; i++) { //11292.64
+	for(int i = 0; i < 1; i++) { //11292.64
 	  collider->addMesh(&spider);
 	}
 	collider->insertAll(); //TODO enlargen octrees afterhand instead

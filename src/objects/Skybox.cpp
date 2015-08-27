@@ -1,6 +1,7 @@
 #include "Skybox.h"
 
 #include <Quaternion.h>
+
 Skybox::Skybox(Camera* camera) : m_camera(camera)
 {
 }

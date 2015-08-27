@@ -64,9 +64,8 @@ void Renderer::setIdleMethod(void(*idle)(int), float delay) {
 	glutTimerFunc(delay, idle, 0);
 }
 
-void Renderer::drawModel(Mesh &model, GLuint shaderProgram)
+void Renderer::drawModel(IDrawable &model, GLuint shaderProgram)
 {
-	setUniformSlow(shaderProgram, "modelMatrix", model.m_modelMatrix);
 	model.render();
 }
 
