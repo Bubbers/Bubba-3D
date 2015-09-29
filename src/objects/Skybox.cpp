@@ -15,7 +15,7 @@ bool Skybox::init(const string& posXFilename, const string& negXFilename, const 
 	linkShaderProgram(m_shaderProgram);
 
 	m_skyMesh.loadMesh("../scenes/sphere.obj");
-	
+	m_skyObject = new GameObject(m_skyMesh);
 	return true;
 }
 
@@ -38,7 +38,7 @@ void Skybox::render() {
 	setUniformSlow(m_shaderProgram, "viewProjectionMatrix", viewProj);
 	setUniformSlow(m_shaderProgram, "modelMatrix", modelMat);
 	m_pCubemap->bind(GL_TEXTURE0);
-	m_skyMesh.render();
+	m_skyObject->render();
 
 	glCullFace(OldCullFaceMode);
 	glDepthFunc(OldDepthFuncMode);

@@ -6,6 +6,7 @@ class IDrawable {
 public:
   virtual ~IDrawable() {};
   virtual void render() = 0;
+  void setupUniforms() {};
   
   float shininess;
 };

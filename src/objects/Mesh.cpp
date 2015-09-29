@@ -31,8 +31,8 @@ Chunk::Chunk(std::vector<chag::float3>& positions,
 }
 
 void Mesh::render() {
-	CHECK_GL_ERROR();
-	glPushAttrib(GL_ALL_ATTRIB_BITS);
+  CHECK_GL_ERROR();
+  glPushAttrib(GL_ALL_ATTRIB_BITS);
 	GLint current_program = 0;
 	glGetIntegerv(GL_CURRENT_PROGRAM, &current_program);
 	setUniformSlow(current_program, "modelMatrix", m_modelMatrix);
@@ -41,8 +41,9 @@ void Mesh::render() {
 		CHECK_GL_ERROR();
 		
 		Chunk &chunk = m_chunks[i];
+		
 
-		if (m_textures[chunk.m_textureIndex].diffuse_map_id != -1) {
+			if (m_textures[chunk.m_textureIndex].diffuse_map_id != -1) {
 			glActiveTexture(GL_TEXTURE0);
 			glEnable(GL_TEXTURE_2D);
 			glBindTexture(GL_TEXTURE_2D, m_textures[chunk.m_textureIndex].diffuse_map_id);
@@ -52,7 +53,7 @@ void Mesh::render() {
 			glActiveTexture(GL_TEXTURE3);
 			glEnable(GL_TEXTURE_2D);
 			glBindTexture(GL_TEXTURE_2D, m_textures[chunk.m_textureIndex].bump_map_id);
-		}
+			}
 
 		
 		glUniform1i(glGetUniformLocation(current_program, "has_diffuse_texture"), m_textures[chunk.m_textureIndex].diffuse_map_id != -1);

@@ -7,6 +7,7 @@
 #include "CubeMapTexture.h"
 #include "Mesh.h"
 #include "IDrawable.h"
+#include "GameObject.h"
 
 using namespace std;
 
@@ -24,6 +25,7 @@ private:
 	CubeMapTexture* m_pCubemap;
 	GLuint m_shaderProgram;
 	Mesh m_skyMesh;
+	GameObject* m_skyObject;
 };
 
 

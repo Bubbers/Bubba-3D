@@ -5,10 +5,10 @@
 
 #include <string>
 #include <vector>
-#include <float2.h>
-#include <float3.h>
-#include <float4.h>
-#include <glutil/glutil.h>
+#include "float2.h"
+#include "float3.h"
+#include "float4.h"
+#include "glutil/glutil.h"
 #include "GL/glew.h"
 #include "GL/glut.h"
 #include <assimp/Importer.hpp>
@@ -84,10 +84,10 @@ class Mesh : public IDrawable
   GLuint getTexture(const aiMaterial *material, const std::string& fileName, aiTextureType type);
   GLuint loadTexture(std::string fileName);
 
-  std::vector<Material> m_textures;
+
 
  public: 
-
+  std::vector<Material> m_textures;
   chag::float4x4 m_modelMatrix;
   std::vector<Chunk> m_chunks;
   AABB m_aabb;

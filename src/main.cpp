@@ -15,7 +15,7 @@
 #include "Renderer.h"
 #include "timer.h"
 #include "shader.h"
-#include "IDrawable.h"
+#include "GameObject.h"
 
 using namespace std;
 using namespace chag;
@@ -41,17 +41,17 @@ float3 startPosSun = make_vector(30.1f, 450.0f, 0.1f);
 //*****************************************************************************
 //	OBJ Model declarations
 //*****************************************************************************
-Mesh world;
+GameObject world;
 Mesh worldCollision;
 Mesh car;
-Mesh factory;
-Mesh water;
-Mesh spider;
-Mesh lamp;
-Mesh lamp2;
-Mesh lamp3;
-Mesh normalTest;
-Mesh normalTestWithout;
+GameObject factory;
+GameObject water;
+GameObject spider;
+GameObject lamp;
+GameObject lamp2;
+GameObject lamp3;
+GameObject normalTest;
+GameObject normalTestWithout;
 
 Scene scene;
 
@@ -217,6 +217,7 @@ void checkIntersection() {
 
 void display(void)
 {
+
 	Camera *cam;
 	if (camera == 6) {
 		cam = playerCamera;
@@ -233,6 +234,7 @@ void display(void)
 	
 	renderer->swapBuffer();
 }
+
 void handleKeys(unsigned char key, int x, int y)
 {
 	switch(key)
@@ -571,52 +573,79 @@ void createCubeMaps() {
 }
 
 void createMeshes() {
+        Mesh* lampM = new Mesh();
+	lampM->loadMesh("../scenes/sphere.obj");
+	lampM->m_modelMatrix = make_translation(make_vector(10.0f, 10.0f, 10.0f));
+	scene.shadowCasters.push_back(lampM);
+
+	Mesh* lamp2M = new Mesh();
+	lamp2M->loadMesh("../scenes/sphere.obj");
+	lamp2M->m_modelMatrix = make_translation(make_vector(30.0f, 10.0f, 30.0f));
+	lamp2 = GameObject(*lamp2M);
+	scene.shadowCasters.push_back(&lamp2);
 	//*************************************************************************
 	// Load the models from disk
 	//*************************************************************************
-	logger.logInfo("Started loading models.");
+	/*logger.logInfo("Started loading models.");
 	//Load shadow casters
 	car.loadMesh("../scenes/untitled.dae");
 	car.m_modelMatrix = make_identity<float4x4>();
 	car.shininess = 0.0f;
 	scene.shadowCasters.push_back(&car);
 
-	world.loadMesh("../scenes/world.obj");
-	world.m_modelMatrix = make_identity<float4x4>();
+	Mesh* worldM = new Mesh();
+	worldM->loadMesh("../scenes/world.obj");
+	worldM->m_modelMatrix = make_identity<float4x4>();
+	world = GameObject(*worldM);
 	scene.shadowCasters.push_back(&world);
 
-	factory.loadMesh("../scenes/test.obj");
-	factory.m_modelMatrix = make_translation(make_vector(-15.0f, 6.0f, 0.0f)) * make_rotation_y<float4x4>(M_PI / 180 * 90) * make_scale<float4x4>(make_vector(2.0f, 2.0f, 2.0f));
+	Mesh* factoryM = new Mesh();
+	factoryM->loadMesh("../scenes/test.obj");
+	factoryM->m_modelMatrix = make_translation(make_vector(-15.0f, 6.0f, 0.0f)) * make_rotation_y<float4x4>(M_PI / 180 * 90) * make_scale<float4x4>(make_vector(2.0f, 2.0f, 2.0f));
+	factory = GameObject(*factoryM);
 	scene.shadowCasters.push_back(&factory);
 	
-	spider.loadMesh("../scenes/spider.obj");
-	spider.m_modelMatrix = make_translation(make_vector(40.0f, 2.0f, 0.0f)) * make_rotation_x<float4x4>(M_PI / 180 * 0) *  make_scale<float4x4>(0.1f);
+	Mesh* spiderM = new Mesh();
+	spiderM->loadMesh("../scenes/spider.obj");
+	spiderM->m_modelMatrix = make_translation(make_vector(40.0f, 2.0f, 0.0f)) * make_rotation_x<float4x4>(M_PI / 180 * 0) *  make_scale<float4x4>(0.1f);
+	spider = GameObject(*spiderM);
 	scene.shadowCasters.push_back(&spider);
 
-	water.loadMesh("../scenes/water.obj");
-	water.m_modelMatrix = make_translation(make_vector(0.0f, -6.0f, 0.0f));
+	Mesh* waterM = new Mesh();
+	waterM->loadMesh("../scenes/water.obj");
+	waterM->m_modelMatrix = make_translation(make_vector(0.0f, -6.0f, 0.0f));
+	water = GameObject(*waterM);
 	scene.shadowCasters.push_back(&water);
+	
+	Mesh* lampM = new Mesh();
+	lampM->loadMesh("../scenes/sphere.obj");
+	lampM->m_modelMatrix = make_translation(make_vector(10.0f, 10.0f, 10.0f));
+	lamp = GameObject(*lampM);
+	scene.shadowCasters.push_back(lampM);
 
-	lamp.loadMesh("../scenes/sphere.obj");
-	lamp.m_modelMatrix = make_translation(make_vector(10.0f, 10.0f, 10.0f));
-	scene.shadowCasters.push_back(&lamp);
-
-	lamp2.loadMesh("../scenes/sphere.obj");
-	lamp2.m_modelMatrix = make_translation(make_vector(30.0f, 10.0f, 30.0f));
+	lamp2M->loadMesh("../scenes/sphere.obj");
+	lamp2M->m_modelMatrix = make_translation(make_vector(30.0f, 10.0f, 30.0f));
+	lamp2 = GameObject(*lamp2M);
 	scene.shadowCasters.push_back(&lamp2);
-
-	lamp3.loadMesh("../scenes/sphere.obj");
-	lamp3.m_modelMatrix = make_translation(make_vector(0.0f, 10.0f, -10.0f));
+	
+	Mesh* lamp3M = new Mesh();
+	lamp3M->loadMesh("../scenes/sphere.obj");
+	lamp3M->m_modelMatrix = make_translation(make_vector(0.0f, 10.0f, -10.0f));
+	lamp3 = GameObject(*lamp3M);
 	scene.shadowCasters.push_back(&lamp3);
 
-	normalTest.loadMesh("../scenes/boxwNormals.obj");
-	normalTest.m_modelMatrix = make_translation(make_vector(0.0f, 10.0f, 0.0f)) * make_rotation_x<float4x4>(M_PI / 180 * 30);
+	Mesh* normalTestM = new Mesh();
+	normalTestM->loadMesh("../scenes/boxwNormals.obj");
+	normalTestM->m_modelMatrix = make_translation(make_vector(0.0f, 10.0f, 0.0f)) * make_rotation_x<float4x4>(M_PI / 180 * 30);
+	normalTest = GameObject(*normalTestM);
 	scene.shadowCasters.push_back(&normalTest);
 
-	normalTestWithout.loadMesh("../scenes/boxwoNormals.obj");
-	normalTestWithout.m_modelMatrix = make_translation(make_vector(5.0f, 10.0f, 0.0f)) * make_rotation_x<float4x4>(M_PI / 180 * 30);
-	scene.shadowCasters.push_back(&normalTestWithout); 
-
+	Mesh* normalTestWithoutM = new Mesh();
+	normalTestWithoutM->loadMesh("../scenes/boxwoNormals.obj");
+	normalTestWithoutM->m_modelMatrix = make_translation(make_vector(5.0f, 10.0f, 0.0f)) * make_rotation_x<float4x4>(M_PI / 180 * 30);
+	normalTestWithout = GameObject(*normalTestWithoutM);
+	scene.shadowCasters.push_back(&normalTestWithout); */
+	
 
 	logger.logInfo("Finished loading models.");
 
@@ -633,12 +662,11 @@ void createMeshes() {
 	octTree = new Octree(origin, halfVector, 0);
 
 	collider = new Collider(octTree);
-	collider->addMesh(&world);
-	collider->addMesh(&water);
-	collider->addMesh(&factory);
-	for(int i = 0; i < 1; i++) { //11292.64
-	  collider->addMesh(&spider);
-	}
+	/*	collider->addMesh(worldM);
+	collider->addMesh(waterM);
+	collider->addMesh(factoryM);
+        collider->addMesh(spiderM);*/
+	  
 	collider->insertAll(); //TODO enlargen octrees afterhand instead
 	logger.logInfo("Finished loading octree");
 	renderer->setOctree(*octTree);

@@ -3,9 +3,9 @@
 
 #define MAX_POINT_LIGHTS 2
 
-#include <Mesh.h>
-#include <Skybox.h>
-#include <CubeMapTexture.h>
+#include "Mesh.h"
+#include "Skybox.h"
+#include "CubeMapTexture.h"
 #include "Utils.h"
 #include "Lights.h"
 #include "IDrawable.h"

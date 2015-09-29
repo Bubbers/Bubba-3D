@@ -66,7 +66,8 @@ void Renderer::setIdleMethod(void(*idle)(int), float delay) {
 
 void Renderer::drawModel(IDrawable &model, GLuint shaderProgram)
 {
-	model.render();
+  glUseProgram(shaderProgram);
+  model.render();
 }
 
 void Renderer::drawScene(Camera camera, Scene scene, float currentTime)
