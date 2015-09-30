@@ -690,7 +690,7 @@ void createCameras() {
 
 	skybox = new Skybox(playerCamera);
 	skybox->init("../scenes/posx.jpg", "../scenes/negx.jpg", "../scenes/posy.jpg", "../scenes/posy.jpg", "../scenes/negz.jpg", "../scenes/posz.jpg");
-	scene.skybox = skybox;
+	scene.shadowCasters.push_back(skybox);
 }
 
 float degreeToRad(float degree) {

@@ -135,10 +135,6 @@ void Renderer::drawScene(Camera camera, Scene scene, float currentTime)
 	drawShadowCasters(shaderProgram, scene);
 	drawDebug(viewMatrix, projectionMatrix, scene);
 
-	if (scene.skybox != NULL) {
-		scene.skybox->render();
-	}
-
 	renderPostProcess();
 
 	//Cleanup

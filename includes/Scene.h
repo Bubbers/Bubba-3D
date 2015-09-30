@@ -16,7 +16,6 @@ public:
 	Scene();
 	~Scene();
 
-	IDrawable *skybox;
 	CubeMapTexture *cubeMap;
 
 	Camera *shadowMapCamera; //Will follow directional light
