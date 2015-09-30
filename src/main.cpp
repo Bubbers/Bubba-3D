@@ -573,20 +573,12 @@ void createCubeMaps() {
 }
 
 void createMeshes() {
-        Mesh* lampM = new Mesh();
-	lampM->loadMesh("../scenes/sphere.obj");
-	lampM->m_modelMatrix = make_translation(make_vector(10.0f, 10.0f, 10.0f));
-	scene.shadowCasters.push_back(lampM);
 
-	Mesh* lamp2M = new Mesh();
-	lamp2M->loadMesh("../scenes/sphere.obj");
-	lamp2M->m_modelMatrix = make_translation(make_vector(30.0f, 10.0f, 30.0f));
-	lamp2 = GameObject(*lamp2M);
-	scene.shadowCasters.push_back(&lamp2);
+
 	//*************************************************************************
 	// Load the models from disk
 	//*************************************************************************
-	/*logger.logInfo("Started loading models.");
+	logger.logInfo("Started loading models.");
 	//Load shadow casters
 	car.loadMesh("../scenes/untitled.dae");
 	car.m_modelMatrix = make_identity<float4x4>();
@@ -621,8 +613,9 @@ void createMeshes() {
 	lampM->loadMesh("../scenes/sphere.obj");
 	lampM->m_modelMatrix = make_translation(make_vector(10.0f, 10.0f, 10.0f));
 	lamp = GameObject(*lampM);
-	scene.shadowCasters.push_back(lampM);
+	scene.shadowCasters.push_back(&lamp);
 
+	Mesh* lamp2M = new Mesh();
 	lamp2M->loadMesh("../scenes/sphere.obj");
 	lamp2M->m_modelMatrix = make_translation(make_vector(30.0f, 10.0f, 30.0f));
 	lamp2 = GameObject(*lamp2M);
@@ -644,7 +637,7 @@ void createMeshes() {
 	normalTestWithoutM->loadMesh("../scenes/boxwoNormals.obj");
 	normalTestWithoutM->m_modelMatrix = make_translation(make_vector(5.0f, 10.0f, 0.0f)) * make_rotation_x<float4x4>(M_PI / 180 * 30);
 	normalTestWithout = GameObject(*normalTestWithoutM);
-	scene.shadowCasters.push_back(&normalTestWithout); */
+	scene.shadowCasters.push_back(&normalTestWithout);
 	
 
 	logger.logInfo("Finished loading models.");
@@ -662,10 +655,10 @@ void createMeshes() {
 	octTree = new Octree(origin, halfVector, 0);
 
 	collider = new Collider(octTree);
-	/*	collider->addMesh(worldM);
+	collider->addMesh(worldM);
 	collider->addMesh(waterM);
 	collider->addMesh(factoryM);
-        collider->addMesh(spiderM);*/
+    collider->addMesh(spiderM);
 	  
 	collider->insertAll(); //TODO enlargen octrees afterhand instead
 	logger.logInfo("Finished loading octree");

@@ -1,17 +1,17 @@
 #ifndef __TIMER_H__
 #define __TIMER_H__
 
-#include <sys/time.h>
+//#include <sys/time.h>
 
 namespace utils{
   class Timer {
   public:
     void start() {
-      gettimeofday(&tStart, NULL);
+     // gettimeofday(&tStart, NULL);
     }
 
     void stop() {
-      gettimeofday(&tEnd, NULL);
+    //  gettimeofday(&tEnd, NULL);
     }
 
     double getElapsedTime() {
