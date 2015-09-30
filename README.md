@@ -24,7 +24,8 @@ Originally implemented as a school project, now extended for fun!
 
 ***
 ###Example
-Outdated, new coming soon!
+Code example is outdated, new coming soon!
+Executable files are available for linux and win32 in the bin folder.
 
 ###Installation
 Requirements:
