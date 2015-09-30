@@ -43,7 +43,7 @@ float3 startPosSun = make_vector(30.1f, 450.0f, 0.1f);
 //*****************************************************************************
 GameObject world;
 Mesh worldCollision;
-Mesh car;
+GameObject car;
 GameObject factory;
 GameObject water;
 GameObject spider;
@@ -580,8 +580,10 @@ void createMeshes() {
 	//*************************************************************************
 	logger.logInfo("Started loading models.");
 	//Load shadow casters
-	car.loadMesh("../scenes/untitled.dae");
-	car.m_modelMatrix = make_identity<float4x4>();
+	Mesh* carM = new Mesh();
+	carM->loadMesh("../scenes/untitled.dae");
+	carM->m_modelMatrix = make_identity<float4x4>();
+	car = GameObject(*carM);
 	car.shininess = 0.0f;
 	scene.shadowCasters.push_back(&car);
 
@@ -718,7 +720,7 @@ void updatePlayer() {
 	Quaternion qatY = make_quaternion_axis_angle(vUp, carLoc.angley);
 	Quaternion qatZ = make_quaternion_axis_angle(make_rotation_y<float3x3>(-carLoc.angley) * frontDir, anglez);
 
-	car.m_modelMatrix = make_translation(carLoc.location)
+	car.mesh.m_modelMatrix = make_translation(carLoc.location)
 		* makematrix(qatX)
 		* makematrix(qatY)
 		* makematrix(qatZ);

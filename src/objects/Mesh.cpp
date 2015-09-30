@@ -13,7 +13,7 @@
 using namespace chag;
 
 Mesh::Mesh() {
-  shininess = 0.0;
+
 };
 
 Mesh::~Mesh() {};
@@ -30,7 +30,7 @@ Chunk::Chunk(std::vector<chag::float3>& positions,
 	m_numIndices = indices.size();
 }
 
-void Mesh::render() {
+/*void Mesh::render() {
   CHECK_GL_ERROR();
   glPushAttrib(GL_ALL_ATTRIB_BITS);
 	GLint current_program = 0;
@@ -75,7 +75,7 @@ void Mesh::render() {
 
 	glPopAttrib();
 	CHECK_GL_ERROR();
-}
+}*/
 
 bool Mesh::loadMesh(const std::string& fileName) {
   Logger l = Logger::instance();

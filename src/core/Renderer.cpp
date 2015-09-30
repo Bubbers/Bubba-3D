@@ -136,7 +136,7 @@ void Renderer::drawScene(Camera camera, Scene scene, float currentTime)
 	drawDebug(viewMatrix, projectionMatrix, scene);
 
 	if (scene.skybox != NULL) {
-		//scene.skybox->render();
+		scene.skybox->render();
 	}
 
 	renderPostProcess();

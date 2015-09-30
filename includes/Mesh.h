@@ -65,14 +65,13 @@ struct Chunk
 
 
 
-class Mesh : public IDrawable
+class Mesh
 {
  public:
   Mesh();
   ~Mesh();
 
   bool loadMesh(const std::string& fileName);
-  virtual void render();
   GLuint getDiffuseTexture(int chunk){
     return m_textures[m_chunks[chunk].m_textureIndex].diffuse_map_id;
   }

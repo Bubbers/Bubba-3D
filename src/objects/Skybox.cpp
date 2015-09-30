@@ -35,15 +35,14 @@ void Skybox::render() {
 
 	float4x4 viewProj = m_camera->getProjectionMatrix() * m_camera->getViewMatrix();
 	float4x4 modelMat = make_translation(make_vector(0.0f, 2.0f, 0.0f)) * make_translation(m_camera->getPosition()) * make_scale<float4x4>(make_vector(20.0f, 20.0f, 20.0f));
+	m_skyObject->mesh.m_modelMatrix = modelMat;
 	setUniformSlow(m_shaderProgram, "viewProjectionMatrix", viewProj);
-	setUniformSlow(m_shaderProgram, "modelMatrix", modelMat);
 	m_pCubemap->bind(GL_TEXTURE0);
 	m_skyObject->render();
 
 	glCullFace(OldCullFaceMode);
 	glDepthFunc(OldDepthFuncMode);
 	glUseProgram(currentProgram);
-
 }
 
 

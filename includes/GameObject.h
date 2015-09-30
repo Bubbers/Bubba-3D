@@ -12,8 +12,9 @@ public:
 
   virtual void render();
 
-private:
   Mesh mesh;
+private:
+  
 };
 
 
