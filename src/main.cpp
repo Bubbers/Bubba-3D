@@ -648,7 +648,7 @@ void createMeshes() {
 	// Generate Octtree from meshes
 	//*************************************************************************
 	logger.logInfo("Started creating octree");
-	//high_resolution_clock::time_point start = high_resolution_clock::now();
+	
 	utils::Timer timer;
 	timer.start();
 	float3 origin = make_vector(0.0f, 0.0f, 0.0f);
@@ -667,8 +667,7 @@ void createMeshes() {
 	renderer->setOctree(*octTree);
 	
 	timer.stop();
-	//high_resolution_clock::time_point end = high_resolution_clock::now();
-	//duration<double> time_span = duration_cast<duration<double>>(end - start);
+
 
 	//logger.logInfo("Created octree in : " + std::to_string(time_span.count()) + " seconds.");
 	printf("Created octree in : %f ms", timer.getElapsedTime()); //TODO Logger
