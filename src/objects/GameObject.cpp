@@ -2,6 +2,7 @@
 
 GameObject::GameObject(Mesh mesh) {
   this->mesh = mesh;
+  this->shininess = 0.0f;
 };
 
 void GameObject::render() {

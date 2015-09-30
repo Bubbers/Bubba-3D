@@ -8,7 +8,7 @@ public:
   virtual void render() = 0;
   void setupUniforms() {};
   
-  float shininess = 0.0f;
+  float shininess;
 };
 
 
