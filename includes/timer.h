@@ -1,11 +1,12 @@
 #ifndef __TIMER_H__
 #define __TIMER_H__
 
+#ifdef _WIN32
 #include <chrono>
+using namespace chrono;
+#endif
 
 using namespace std;
-using namespace chrono;
-
 
 #ifdef __linux__
 #include <sys/time.h>
