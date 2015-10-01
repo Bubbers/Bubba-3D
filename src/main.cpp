@@ -16,6 +16,7 @@
 #include "timer.h"
 #include "shader.h"
 #include "GameObject.h"
+#include "ParticleGenerator.h"
 
 using namespace std;
 using namespace chag;
@@ -52,6 +53,7 @@ GameObject lamp2;
 GameObject lamp3;
 GameObject normalTest;
 GameObject normalTestWithout;
+ParticleGenerator* gen;
 
 Scene scene;
 
@@ -572,7 +574,14 @@ void createCubeMaps() {
 	linkShaderProgram(cMapAll.shaderProgram);
 }
 
+
+GLuint partShader;
 void createMeshes() {
+
+	partShader = loadShaderProgram("../shaders/particle.vert", "../shaders/particle.frag");
+	linkShaderProgram(partShader);
+	gen = new ParticleGenerator(partShader, 0, 0);
+	scene.shadowCasters.push_back(gen);
 
 
 	//*************************************************************************
@@ -580,7 +589,7 @@ void createMeshes() {
 	//*************************************************************************
 	logger.logInfo("Started loading models.");
 	//Load shadow casters
-	Mesh* carM = new Mesh();
+	/*Mesh* carM = new Mesh();
 	carM->loadMesh("../scenes/untitled.dae");
 	carM->m_modelMatrix = make_identity<float4x4>();
 	car = GameObject(*carM);
@@ -639,7 +648,7 @@ void createMeshes() {
 	normalTestWithoutM->loadMesh("../scenes/boxwoNormals.obj");
 	normalTestWithoutM->m_modelMatrix = make_translation(make_vector(5.0f, 10.0f, 0.0f)) * make_rotation_x<float4x4>(M_PI / 180 * 30);
 	normalTestWithout = GameObject(*normalTestWithoutM);
-	scene.shadowCasters.push_back(&normalTestWithout);
+	scene.shadowCasters.push_back(&normalTestWithout);*/
 	
 
 	logger.logInfo("Finished loading models.");
@@ -657,10 +666,10 @@ void createMeshes() {
 	octTree = new Octree(origin, halfVector, 0);
 
 	collider = new Collider(octTree);
-	collider->addMesh(worldM);
+	/*collider->addMesh(worldM);
 	collider->addMesh(waterM);
 	collider->addMesh(factoryM);
-    collider->addMesh(spiderM);
+    collider->addMesh(spiderM);*/
 	  
 	collider->insertAll(); //TODO enlargen octrees afterhand instead
 	logger.logInfo("Finished loading octree");

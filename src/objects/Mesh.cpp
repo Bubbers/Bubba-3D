@@ -345,6 +345,5 @@ GLuint Mesh::loadTexture(std::string fileName)
 	glBindTexture(GL_TEXTURE_2D, 0);
 	CHECK_GL_ERROR();
 	return texid;
-	return 0;
 }
 
