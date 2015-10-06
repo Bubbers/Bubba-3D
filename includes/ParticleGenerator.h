@@ -5,6 +5,7 @@
 #include <vector>
 #include "IDrawable.h"
 #include "GL\glew.h"
+#include "Camera.h"
 
 using namespace chag;
 
@@ -24,6 +25,8 @@ public:
 	~ParticleGenerator();
 
 	void render();
+
+	Camera *m_camera;
 
 private:
 	std::vector<Particle> m_particles;

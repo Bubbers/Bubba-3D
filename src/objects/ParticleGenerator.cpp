@@ -1,5 +1,15 @@
 #include "ParticleGenerator.h"
 
+#ifdef WIN32
+#include <IL/il.h>
+#include <IL/ilut.h>
+#else
+#include <il.h>
+#include <ilut.h>
+#endif // WIN32
+#include "Logger.h"
+#include "glutil\glutil.h"
+
 
 ParticleGenerator::ParticleGenerator(GLuint shaderProgram, GLuint texture, int amount)
 	: m_shaderProgram(shaderProgram), m_texture(texture), m_amount(amount)
@@ -42,12 +52,20 @@ ParticleGenerator::~ParticleGenerator()
 }
 
 void ParticleGenerator::render() {
-/*	glActiveTexture(m_texture);
-	glEnable(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, m_texture);*/
+	glDisable(GL_CULL_FACE);
+
+	glBindTexture(GL_TEXTURE_2D, m_texture);
 	GLint current_program = 0;
 	glGetIntegerv(GL_CURRENT_PROGRAM, &current_program);
 	glUseProgram(m_shaderProgram);
+
+	setUniformSlow(m_shaderProgram, "offset", make_vector(-0.0f, 15.0f, 0.0f));
+	setUniformSlow(m_shaderProgram, "projectionMatrix", m_camera->getProjectionMatrix());
+	setUniformSlow(m_shaderProgram, "viewMatrix", m_camera->getViewMatrix());
+	m_camera->getProjectionMatrix();
+	glUniform1i(glGetUniformLocation(current_program, "sprite"), 0);
+	glActiveTexture(GL_TEXTURE0);
+	glEnable(GL_TEXTURE_2D);
 
 	glBindVertexArray(m_vaob);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -56,4 +74,7 @@ void ParticleGenerator::render() {
 	glBindVertexArray(0);
 	glUseProgram(current_program);
 
+	glEnable(GL_CULL_FACE);
+
 }
+

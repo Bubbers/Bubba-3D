@@ -2,8 +2,12 @@
 
 precision highp float;
 
+in vec2 texCoord;
+
 out vec4 fragmentColor;
 
+uniform sampler2D sprite;
+
 void main() {
-	fragmentColor = vec4(0.0, 0.0, 0.0, 0.0);
+	fragmentColor = texture(sprite, texCoord);
 }

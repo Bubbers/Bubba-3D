@@ -1,8 +1,18 @@
+#version 150
 
-in vec3 position;
-in vec2 texCoordsIn;
+#define scale 1
+in	vec3	position;
+in	vec2	texCoordIn;
+
+uniform vec3 offset;
+uniform mat4 projectionMatrix;
+uniform mat4 viewMatrix;
+
+out	vec2	texCoord;
+
 
 
 void main() {
-	gl_Position = vec4(position, 1.0);
+	texCoord = texCoordIn;
+	gl_Position = projectionMatrix * viewMatrix * vec4((position * scale) + offset, 1.0);
 }
