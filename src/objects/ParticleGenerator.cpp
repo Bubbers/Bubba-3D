@@ -45,8 +45,9 @@ ParticleGenerator::ParticleGenerator(GLuint shaderProgram, GLuint texture, int a
 
 	for (int i = 0; i < amount; i++) {
 		Particle *part = new Particle();
-		part->position = make_vector(0.0f, 15.0f, 0.0f);
-		part->velocity = make_vector(0.0f, ((rand() % 5) / 500.0f), 0.0f);
+		part->position = make_vector(0.0f, 15.0f + ((rand() % 5) / 500.0f), 0.0f);
+		part->velocity = make_vector((((rand() % 5) - 2.5f) / 500.0f), (((rand() % 5) - 2.5f) / 500.0f), (((rand() % 5) - 2.5f) / 500.0f));
+		part->life = 1.0f + ((rand() % 5) / 5.0f);
 		this->m_particles.push_back(part);
 	}
 }
@@ -58,6 +59,8 @@ ParticleGenerator::~ParticleGenerator()
 
 void ParticleGenerator::render() {
 	glDisable(GL_CULL_FACE);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
 	glBindTexture(GL_TEXTURE_2D, m_texture);
 	GLint current_program = 0;
@@ -71,23 +74,37 @@ void ParticleGenerator::render() {
 	glUniform1i(glGetUniformLocation(current_program, "sprite"), 0);
 	glActiveTexture(GL_TEXTURE0);
 	glEnable(GL_TEXTURE_2D);
-
+	glBindVertexArray(m_vaob);
+	
 	for (Particle *particle : this->m_particles) {
-		setUniformSlow(m_shaderProgram, "offset", particle->position);
-		glBindVertexArray(m_vaob);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
+		if (particle->life > 0.0f) {
+			setUniformSlow(m_shaderProgram, "offset", particle->position);
+
+			glDrawArrays(GL_TRIANGLES, 0, 6);
+		}
 	}
 
 
 	/* CLEANUP */
 	glBindVertexArray(0);
 	glUseProgram(current_program);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDisable(GL_BLEND);
 
 	glEnable(GL_CULL_FACE);
+}
 
+void ParticleGenerator::update() {
 	for (Particle *particle : this->m_particles) {
-		particle->position += particle->velocity;
+		if (particle->life > 0.0f){
+			particle->position += particle->velocity;
+			particle->life -= 0.01; //TODO dt
+		}
+		else {
+			particle->position = make_vector(0.0f, 15.0f + ((rand() % 5) / 500.0f), 0.0f);
+			particle->velocity = make_vector((((rand() % 5) - 2.5f) / 500.0f), (((rand() % 5) - 2.5f) / 500.0f), (((rand() % 5) - 2.5f) / 500.0f));
+			particle->life = 1.0f + ((rand() % 15) / 5.0f);
+		}
 	}
-
 }
 

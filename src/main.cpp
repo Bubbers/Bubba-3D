@@ -407,6 +407,8 @@ void idle( int v )
 		playerCamera->setLookAt(carLoc.location + make_vector(0.0f, camera_target_altitude, 0.0f));
 		playerCamera->setPosition(carLoc.location + sphericalToCartesian(camera_theta, camera_phi, camera_r));
 
+		gen->update();
+
 		tick();
 
 		if (hasChanged){
@@ -635,9 +637,9 @@ void createMeshes() {
 	
 	partShader = loadShaderProgram("../shaders/particle.vert", "../shaders/particle.frag");
 	linkShaderProgram(partShader);
-	gen = new ParticleGenerator(partShader, loadTexture("../scenes/brick.jpg"), 15);
+	gen = new ParticleGenerator(partShader, loadTexture("../scenes/engineflare1.jpg"), 15);
 	gen->m_camera = playerCamera;
-	scene.shadowCasters.push_back(gen);
+	scene.transparentObjects.push_back(gen);
 
 
 	//*************************************************************************

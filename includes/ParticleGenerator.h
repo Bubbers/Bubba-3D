@@ -24,6 +24,8 @@ public:
 	ParticleGenerator(GLuint shaderprogram, GLuint texture, int amount );
 	~ParticleGenerator();
 
+	void update();
+
 	void render();
 
 	Camera *m_camera;

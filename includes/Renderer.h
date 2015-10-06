@@ -62,6 +62,7 @@ private:
 	Fbo createPostProcessFbo(int width, int height);
 	void drawShadowMap(Fbo sbo, float4x4 viewProjectionMatrix, Scene scene);
 	void drawShadowCasters(GLuint shaderProgram, Scene scene);
+	void drawTransparent(GLuint shaderProgram, Scene scene);
 	void setFog(GLuint shaderProgram);
 	void setLights(GLuint shaderProgram, Scene scene);
 

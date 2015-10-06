@@ -133,6 +133,7 @@ void Renderer::drawScene(Camera camera, Scene scene, float currentTime)
 	}
 
 	drawShadowCasters(shaderProgram, scene);
+	drawTransparent(shaderProgram, scene);
 	drawDebug(viewMatrix, projectionMatrix, scene);
 
 	renderPostProcess();
@@ -188,6 +189,14 @@ void Renderer::drawShadowCasters(GLuint shaderProgram, Scene scene)
 	for (int i = 0; i < scene.shadowCasters.size(); i++) {
 		setUniformSlow(shaderProgram, "object_reflectiveness", (*scene.shadowCasters[i]).shininess);
 		drawModel(*scene.shadowCasters[i], shaderProgram);
+	}
+}
+
+void Renderer::drawTransparent(GLuint shaderProgram, Scene scene)
+{
+	for (int i = 0; i < scene.transparentObjects.size(); i++) {
+		setUniformSlow(shaderProgram, "object_reflectiveness", (*scene.transparentObjects[i]).shininess);
+		drawModel(*scene.transparentObjects[i], shaderProgram);
 	}
 }
 
