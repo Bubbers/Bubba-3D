@@ -635,7 +635,7 @@ void createMeshes() {
 	
 	partShader = loadShaderProgram("../shaders/particle.vert", "../shaders/particle.frag");
 	linkShaderProgram(partShader);
-	gen = new ParticleGenerator(partShader, loadTexture("../scenes/brick.jpg"), 0);
+	gen = new ParticleGenerator(partShader, loadTexture("../scenes/brick.jpg"), 15);
 	gen->m_camera = playerCamera;
 	scene.shadowCasters.push_back(gen);
 

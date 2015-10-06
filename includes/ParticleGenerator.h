@@ -15,7 +15,7 @@ struct Particle {
 	float3 color;
 	float  life;
 
-	Particle() : position(make_vector(0.0f, 0.0f, 0.0f)), velocity(make_vector(0.0f, 0.0f, 0.0f)), color(make_vector(0.0f, 0.0f, 0.0f)), life(0.0f) { };
+	Particle() : position(make_vector(0.0f, 0.0f, 0.0f)), velocity(make_vector(0.0f, 0.1f, 0.0f)), color(make_vector(0.0f, 0.0f, 0.0f)), life(0.0f) { };
 };
 
 class ParticleGenerator : public IDrawable
@@ -29,7 +29,7 @@ public:
 	Camera *m_camera;
 
 private:
-	std::vector<Particle> m_particles;
+	std::vector<Particle*> m_particles;
 	GLuint m_vaob;
 	GLuint m_texture;
 	GLuint m_shaderProgram;

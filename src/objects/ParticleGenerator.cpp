@@ -43,7 +43,12 @@ ParticleGenerator::ParticleGenerator(GLuint shaderProgram, GLuint texture, int a
 	/* CLEANUP */
 	glBindVertexArray(0);
 
-	this->m_particles.push_back(Particle()); // TODO AMOUNT
+	for (int i = 0; i < amount; i++) {
+		Particle *part = new Particle();
+		part->position = make_vector(0.0f, 15.0f, 0.0f);
+		part->velocity = make_vector(0.0f, ((rand() % 5) / 500.0f), 0.0f);
+		this->m_particles.push_back(part);
+	}
 }
 
 
@@ -59,7 +64,7 @@ void ParticleGenerator::render() {
 	glGetIntegerv(GL_CURRENT_PROGRAM, &current_program);
 	glUseProgram(m_shaderProgram);
 
-	setUniformSlow(m_shaderProgram, "offset", make_vector(-0.0f, 15.0f, 0.0f));
+	
 	setUniformSlow(m_shaderProgram, "projectionMatrix", m_camera->getProjectionMatrix());
 	setUniformSlow(m_shaderProgram, "viewMatrix", m_camera->getViewMatrix());
 	m_camera->getProjectionMatrix();
@@ -67,14 +72,22 @@ void ParticleGenerator::render() {
 	glActiveTexture(GL_TEXTURE0);
 	glEnable(GL_TEXTURE_2D);
 
-	glBindVertexArray(m_vaob);
-	glDrawArrays(GL_TRIANGLES, 0, 6);
+	for (Particle *particle : this->m_particles) {
+		setUniformSlow(m_shaderProgram, "offset", particle->position);
+		glBindVertexArray(m_vaob);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+	}
+
 
 	/* CLEANUP */
 	glBindVertexArray(0);
 	glUseProgram(current_program);
 
 	glEnable(GL_CULL_FACE);
+
+	for (Particle *particle : this->m_particles) {
+		particle->position += particle->velocity;
+	}
 
 }
 
