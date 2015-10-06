@@ -46,7 +46,7 @@ ParticleGenerator::ParticleGenerator(GLuint shaderProgram, GLuint texture, int a
 	for (int i = 0; i < amount; i++) {
 		Particle *part = new Particle();
 		part->position = make_vector(0.0f, 15.0f + ((rand() % 5) / 500.0f), 0.0f);
-		part->velocity = make_vector((((rand() % 5) - 2.5f) / 500.0f), (((rand() % 5) - 2.5f) / 500.0f), (((rand() % 5) - 2.5f) / 500.0f));
+		part->velocity = make_vector((((rand() % 10) - 5.0f) / 500.0f), (((rand() % 10) - 5.0f) / 500.0f), (((rand() % 10) - 5.0f) / 500.0f));
 		part->life = 1.0f + ((rand() % 5) / 5.0f);
 		this->m_particles.push_back(part);
 	}
@@ -55,6 +55,10 @@ ParticleGenerator::ParticleGenerator(GLuint shaderProgram, GLuint texture, int a
 
 ParticleGenerator::~ParticleGenerator()
 {
+}
+
+bool sortParticle(Particle* p1, Particle* p2) {
+	return p1->position.z > p2->position.z;
 }
 
 void ParticleGenerator::render() {
@@ -76,7 +80,9 @@ void ParticleGenerator::render() {
 	glEnable(GL_TEXTURE_2D);
 	glBindVertexArray(m_vaob);
 	
-	for (Particle *particle : this->m_particles) {
+	std::vector<Particle*> particles = this->m_particles;
+	std::sort(particles.begin(), particles.end(), sortParticle);
+	for (Particle *particle : particles) {
 		if (particle->life > 0.0f) {
 			setUniformSlow(m_shaderProgram, "offset", particle->position);
 
@@ -102,8 +108,8 @@ void ParticleGenerator::update() {
 		}
 		else {
 			particle->position = make_vector(0.0f, 15.0f + ((rand() % 5) / 500.0f), 0.0f);
-			particle->velocity = make_vector((((rand() % 5) - 2.5f) / 500.0f), (((rand() % 5) - 2.5f) / 500.0f), (((rand() % 5) - 2.5f) / 500.0f));
-			particle->life = 1.0f + ((rand() % 15) / 5.0f);
+			particle->velocity = make_vector((((rand() % 10) - 5.0f) / 500.0f), (((rand() % 10) - 5.0f) / 500.0f), (((rand() % 10) - 5.0f) / 500.0f));
+			particle->life = 1.0f + ((rand() % 5) / 5.0f);
 		}
 	}
 }

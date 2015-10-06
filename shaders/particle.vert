@@ -1,6 +1,6 @@
 #version 150
 
-#define scale 1
+#define scale 0.1
 in	vec3	position;
 in	vec2	texCoordIn;
 
