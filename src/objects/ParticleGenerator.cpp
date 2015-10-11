@@ -11,12 +11,10 @@
 #include "glutil\glutil.h"
 #include "float3x3.h"
 
-#define LINEAR_SCALE_FACTOR 50.0f
-#define LOD_FACTOR 25.0f
+
 
 using namespace chag;
 
-float3 Particle::startPosition;
 
 
 ParticleGenerator::ParticleGenerator(GLuint shaderProgram, GLuint texture, int amount, Camera *camera, float3 position)
@@ -51,9 +49,8 @@ ParticleGenerator::ParticleGenerator(GLuint shaderProgram, GLuint texture, int a
 	/* CLEANUP */
 	glBindVertexArray(0);
 
-	Particle::startPosition = this->m_position;
 	for (int i = 0; i < amount; i++) {
-		Particle *part = new Particle();
+		Particle *part = new Particle(&this->m_position);
 		part->init();
 		this->m_particles.push_back(part);
 	}
@@ -120,10 +117,13 @@ void ParticleGenerator::render() {
 }
 
 void ParticleGenerator::update(float dt) {
+	float distance = length(this->m_camera->getPosition() - this->m_position);
+
 	for (Particle *particle : this->m_particles) {
 		if (particle->life > 0.0f){
-			particle->position += particle->velocity;
-			particle->life -= dt;
+			particle->position += particle->velocity * dt / 1000;
+			particle->life -= dt + (distance * 2);
+
 		}
 		else {
 			particle->init();

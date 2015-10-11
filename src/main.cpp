@@ -160,7 +160,6 @@ void updatePlayer();
 //****************************************************************************
 void checkIntersection() {
 	float3 upVec = make_vector(0.0f, 1.0f, 0.0f);
-	logger.logInfo("haha");
 
 	//Calculate intersections
 	float3x3 rot = make_rotation_y<float3x3>(carLoc.angley);
@@ -171,8 +170,7 @@ void checkIntersection() {
 	float c = collider->rayIntersection(carLoc.location + rot * carLoc.wheel3, -upVec);
 	float d = collider->rayIntersection(carLoc.location + rot * carLoc.wheel4, -upVec);
 	timer.stop();
-	printf("here");
-	printf("Tested 4 ray/aabb intersections in %f ms", timer.getElapsedTime());
+	printf("Tested 4 ray/aabb intersections in %f ms\n", timer.getElapsedTime());
 	if (a == 0 && b == 0 && c == 0 && d == 0) {
 		return;
 	}
@@ -409,6 +407,7 @@ void idle( int v )
 		playerCamera->setPosition(carLoc.location + sphericalToCartesian(camera_theta, camera_phi, camera_r));
 
 		gen->update(elapsedTime);
+		gen->m_position = make_vector(3 * sin(currentTime) * sin(currentTime)* sin(currentTime), 3 * sin(currentTime), 5 * sin(currentTime) * cos(currentTime)) + make_vector(0.0f, 15.0f, 0.0f);
 
 		tick();
 
