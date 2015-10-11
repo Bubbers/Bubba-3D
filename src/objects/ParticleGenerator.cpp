@@ -11,6 +11,9 @@
 #include "glutil\glutil.h"
 #include "float3x3.h"
 
+#define LINEAR_SCALE_FACTOR 50.0f
+#define LOD_FACTOR 25.0f
+
 using namespace chag;
 
 float3 Particle::startPosition;
@@ -59,6 +62,7 @@ ParticleGenerator::ParticleGenerator(GLuint shaderProgram, GLuint texture, int a
 
 ParticleGenerator::~ParticleGenerator()
 {
+
 }
 
 
@@ -83,13 +87,21 @@ void ParticleGenerator::render() {
 	float4x4 viewMatrix = m_camera->getViewMatrix();
 	float4x4 vpMatrix = projectionMatrix * viewMatrix;
 
+	float distance = length(this->m_camera->getPosition() - this->m_position);
+	int maxParticles = (m_amount * LOD_FACTOR / distance ); //TODO EXPONENTIAL WITH RESPECT TO DISTANCE
 	glBindVertexArray(m_vaob);
 	
 	std::vector<Particle*> particles = this->m_particles;
 	std::sort(particles.begin(), particles.end(), [this](Particle* p1, Particle* p2) { return length(this->m_camera->getPosition() - p1->position) > length(this->m_camera->getPosition() - p2->position); });
+
+	int iterations = 0;
 	for (Particle *particle : particles) {
+		if (iterations > maxParticles) { break; }
+		iterations++;
+
 		if (particle->life > 0.0f) {
-			float4x4 modelMatrix4x4 = make_matrix(modelMatrix3x3, particle->position) * make_scale<float4x4>(make_vector(0.1f, 0.1f, 0.1f));
+			float3 scale = make_vector(0.1f, 0.1f, 0.1f) * (1.0 + distance / LINEAR_SCALE_FACTOR);
+			float4x4 modelMatrix4x4 = make_matrix(modelMatrix3x3, particle->position) * make_scale<float4x4>(scale);
 			float4x4 mvpMatrix = vpMatrix * modelMatrix4x4;
 			
 			glUniformMatrix4fv(glGetUniformLocation(m_shaderProgram, "mvpMatrix"), 1, false, &mvpMatrix.c1.x);
