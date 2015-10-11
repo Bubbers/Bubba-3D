@@ -637,8 +637,7 @@ void createMeshes() {
 	
 	partShader = loadShaderProgram("../shaders/particle.vert", "../shaders/particle.frag");
 	linkShaderProgram(partShader);
-	gen = new ParticleGenerator(partShader, loadTexture("../scenes/engineflare1.jpg"), 500);
-	gen->m_camera = playerCamera;
+	gen = new ParticleGenerator(partShader, loadTexture("../scenes/engineflare1.jpg"), 2000, playerCamera);
 	scene.transparentObjects.push_back(gen);
 
 

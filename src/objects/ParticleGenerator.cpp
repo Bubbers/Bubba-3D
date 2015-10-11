@@ -11,8 +11,8 @@
 #include "glutil\glutil.h"
 
 
-ParticleGenerator::ParticleGenerator(GLuint shaderProgram, GLuint texture, int amount)
-	: m_shaderProgram(shaderProgram), m_texture(texture), m_amount(amount)
+ParticleGenerator::ParticleGenerator(GLuint shaderProgram, GLuint texture, int amount, Camera *camera)
+	: m_shaderProgram(shaderProgram), m_texture(texture), m_amount(amount), m_camera(camera)
 {
 	
 	GLfloat quad[] = { //POSITION3 TEXCOORD2
@@ -57,9 +57,6 @@ ParticleGenerator::~ParticleGenerator()
 {
 }
 
-bool sortParticle(Particle* p1, Particle* p2) {
-	return p1->position.z > p2->position.z;
-}
 
 void ParticleGenerator::render() {
 	glDisable(GL_CULL_FACE);
@@ -74,6 +71,7 @@ void ParticleGenerator::render() {
 	
 	setUniformSlow(m_shaderProgram, "projectionMatrix", m_camera->getProjectionMatrix());
 	setUniformSlow(m_shaderProgram, "viewMatrix", m_camera->getViewMatrix());
+	setUniformSlow(m_shaderProgram, "color", make_vector(1.0f, 1.0f, 1.0f));
 	m_camera->getProjectionMatrix();
 	glUniform1i(glGetUniformLocation(current_program, "sprite"), 0);
 	glActiveTexture(GL_TEXTURE0);
@@ -81,7 +79,7 @@ void ParticleGenerator::render() {
 	glBindVertexArray(m_vaob);
 	
 	std::vector<Particle*> particles = this->m_particles;
-	std::sort(particles.begin(), particles.end(), sortParticle);
+	std::sort(particles.begin(), particles.end(), [this](Particle* p1, Particle* p2) { return length(this->m_camera->getPosition() - p1->position) > length(this->m_camera->getPosition() - p2->position); });
 	for (Particle *particle : particles) {
 		if (particle->life > 0.0f) {
 			setUniformSlow(m_shaderProgram, "offset", particle->position);

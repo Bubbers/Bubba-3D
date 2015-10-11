@@ -21,7 +21,7 @@ struct Particle {
 class ParticleGenerator : public IDrawable
 {
 public:
-	ParticleGenerator(GLuint shaderprogram, GLuint texture, int amount );
+	ParticleGenerator(GLuint shaderprogram, GLuint texture, int amount, Camera *camera);
 	~ParticleGenerator();
 
 	void update();
@@ -36,6 +36,7 @@ private:
 	GLuint m_texture;
 	GLuint m_shaderProgram;
 	int m_amount;
+
 };
 
 #endif
