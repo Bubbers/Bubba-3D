@@ -9,7 +9,9 @@
 #endif // WIN32
 #include "Logger.h"
 #include "glutil\glutil.h"
+#include "float3x3.h"
 
+using namespace chag;
 
 ParticleGenerator::ParticleGenerator(GLuint shaderProgram, GLuint texture, int amount, Camera *camera)
 	: m_shaderProgram(shaderProgram), m_texture(texture), m_amount(amount), m_camera(camera)
@@ -71,6 +73,7 @@ void ParticleGenerator::render() {
 	
 	setUniformSlow(m_shaderProgram, "projectionMatrix", m_camera->getProjectionMatrix());
 	setUniformSlow(m_shaderProgram, "viewMatrix", m_camera->getViewMatrix());
+	
 	setUniformSlow(m_shaderProgram, "color", make_vector(1.0f, 1.0f, 1.0f));
 	m_camera->getProjectionMatrix();
 	glUniform1i(glGetUniformLocation(current_program, "sprite"), 0);
@@ -83,6 +86,8 @@ void ParticleGenerator::render() {
 	for (Particle *particle : particles) {
 		if (particle->life > 0.0f) {
 			setUniformSlow(m_shaderProgram, "offset", particle->position);
+			float4x4 mat = getModelMatrix(*particle);
+			glUniformMatrix4fv(glGetUniformLocation(m_shaderProgram, "modelMatrix"), 1, false, &mat.c1.x);
 
 			glDrawArrays(GL_TRIANGLES, 0, 6);
 		}
@@ -112,3 +117,25 @@ void ParticleGenerator::update() {
 	}
 }
 
+float4x4 ParticleGenerator::getModelMatrix(Particle &p1) {
+
+	float ang = dot(normalize(make_vector(0.0f, 0.5f, 0.5f)), make_vector(0.0f, 1.0f, 0.0f)) * (180 / M_PI);
+	float3 cam = normalize(m_camera->getPosition() - m_camera->getLookAt());
+
+	float angleX = acos(dot(normalize(-(m_camera->getPosition() - m_camera->getLookAt())), make_vector(1.0f, 0.0f, 0.0f)));
+	float angleY = acos(dot(normalize(-(m_camera->getPosition() - m_camera->getLookAt())), make_vector(0.0f, 1.0f, 0.0f)));
+	float angleZ = acos(dot(normalize(-(m_camera->getPosition() - m_camera->getLookAt())), make_vector(0.0f, 0.0f, 1.0f)));
+
+	float3 u = normalize(m_camera->getUp());
+	float3 n = normalize(-(m_camera->getPosition() - m_camera->getLookAt()));
+	float3 r = normalize(cross(u, n));
+
+	float3 uprim = cross(n, r);
+	
+	float3x3 modelMatrix = make_matrix(r,uprim,n);
+	//return make_matrix(make_identity<float3x3>(), p1.position);
+	return make_matrix(modelMatrix, p1.position) * make_scale<float4x4>(make_vector(0.1f, 0.1f, 0.1f));
+
+	//return make_identity<float4x4>() * make_translation(p1.position) * make_rotation_y<float4x4>(angleX)* make_rotation_z<float4x4>(angleY)* make_rotation_x<float4x4>(angleZ) * make_scale<float4x4>(make_vector(0.5f, 0.5f, 0.5f));
+
+}

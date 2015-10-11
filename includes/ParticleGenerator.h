@@ -37,6 +37,7 @@ private:
 	GLuint m_shaderProgram;
 	int m_amount;
 
+	float4x4 getModelMatrix(Particle &p1);
 };
 
 #endif

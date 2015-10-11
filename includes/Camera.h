@@ -19,6 +19,8 @@ public:
 	virtual void setLookAt(float3 lookAt);
 	virtual void setUpVector(float3 up);
 	float3 getPosition() { return m_vPosition; };
+	float3 getLookAt() { return m_vLookAt; };
+	float3 getUp() { return m_vUp; };
 	
 protected:
 	float3 m_vPosition;
