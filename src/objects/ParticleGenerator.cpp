@@ -118,14 +118,6 @@ void ParticleGenerator::update() {
 }
 
 float4x4 ParticleGenerator::getModelMatrix(Particle &p1) {
-
-	float ang = dot(normalize(make_vector(0.0f, 0.5f, 0.5f)), make_vector(0.0f, 1.0f, 0.0f)) * (180 / M_PI);
-	float3 cam = normalize(m_camera->getPosition() - m_camera->getLookAt());
-
-	float angleX = acos(dot(normalize(-(m_camera->getPosition() - m_camera->getLookAt())), make_vector(1.0f, 0.0f, 0.0f)));
-	float angleY = acos(dot(normalize(-(m_camera->getPosition() - m_camera->getLookAt())), make_vector(0.0f, 1.0f, 0.0f)));
-	float angleZ = acos(dot(normalize(-(m_camera->getPosition() - m_camera->getLookAt())), make_vector(0.0f, 0.0f, 1.0f)));
-
 	float3 u = normalize(m_camera->getUp());
 	float3 n = normalize(-(m_camera->getPosition() - m_camera->getLookAt()));
 	float3 r = normalize(cross(u, n));
@@ -133,9 +125,5 @@ float4x4 ParticleGenerator::getModelMatrix(Particle &p1) {
 	float3 uprim = cross(n, r);
 	
 	float3x3 modelMatrix = make_matrix(r,uprim,n);
-	//return make_matrix(make_identity<float3x3>(), p1.position);
 	return make_matrix(modelMatrix, p1.position) * make_scale<float4x4>(make_vector(0.1f, 0.1f, 0.1f));
-
-	//return make_identity<float4x4>() * make_translation(p1.position) * make_rotation_y<float4x4>(angleX)* make_rotation_z<float4x4>(angleY)* make_rotation_x<float4x4>(angleZ) * make_scale<float4x4>(make_vector(0.5f, 0.5f, 0.5f));
-
 }
