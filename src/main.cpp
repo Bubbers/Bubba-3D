@@ -386,18 +386,19 @@ void tick() {
 }
 void idle( int v )
 {
-	float time = (1000 / TICK_PER_SECOND) - (float(glutGet(GLUT_ELAPSED_TIME) - timeSinceDraw));
+	float elapsedTime = float(glutGet(GLUT_ELAPSED_TIME) - timeSinceDraw);
+	float time = (1000 / TICK_PER_SECOND) - elapsedTime;
 	if (time < 0) {
 		glutTimerFunc(1000 / TICK_PER_SECOND, idle, 0);
 		timeSinceDraw = float(glutGet(GLUT_ELAPSED_TIME));
 		static float startTime = float(glutGet(GLUT_ELAPSED_TIME)) / 1000.0f;
-		// Here is a good place to put application logic.
-		currentTime = float(glutGet(GLUT_ELAPSED_TIME)) / 1000.0f - startTime;
 
+		currentTime = float(glutGet(GLUT_ELAPSED_TIME)) / 1000.0f - startTime;
 
 		// rotate light around X axis, sunlike fashion.
 		// do one full revolution every 20 seconds.
 		float4x4 rotateLight = make_rotation_x<float4x4>(2.0f * M_PI * currentTime / 20.0f);
+
 		// rotate and update global light position.
 		float3 pos = make_vector3(rotateLight * make_vector(30.1f, 450.0f, 0.1f, 1.0f));
 		scene.directionalLight.direction = -pos;
@@ -407,7 +408,7 @@ void idle( int v )
 		playerCamera->setLookAt(carLoc.location + make_vector(0.0f, camera_target_altitude, 0.0f));
 		playerCamera->setPosition(carLoc.location + sphericalToCartesian(camera_theta, camera_phi, camera_r));
 
-		gen->update();
+		gen->update(elapsedTime);
 
 		tick();
 
@@ -637,7 +638,7 @@ void createMeshes() {
 	
 	partShader = loadShaderProgram("../shaders/particle.vert", "../shaders/particle.frag");
 	linkShaderProgram(partShader);
-	gen = new ParticleGenerator(partShader, loadTexture("../scenes/engineflare1.jpg"), 500, playerCamera);
+	gen = new ParticleGenerator(partShader, loadTexture("../scenes/engineflare1.jpg"), 500, playerCamera, make_vector(0.0f, 15.0f, 0.0f));
 	scene.transparentObjects.push_back(gen);
 
 

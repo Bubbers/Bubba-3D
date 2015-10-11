@@ -9,22 +9,32 @@
 
 using namespace chag;
 
+
+
 struct Particle {
 	float3 position;
 	float3 velocity;
 	float3 color;
 	float  life;
 
-	Particle() : position(make_vector(0.0f, 0.0f, 0.0f)), velocity(make_vector(0.0f, 0.1f, 0.0f)), color(make_vector(0.0f, 0.0f, 0.0f)), life(0.0f) { };
+	static float3 Particle::startPosition;
+
+	Particle() : position(make_vector(0.0f, 0.0f, 0.0f)), velocity(make_vector(0.0f, 0.1f, 0.0f)), color(make_vector(0.0f, 0.0f, 0.0f)), life(0.0f) {	};
+
+	void init() {
+		position = startPosition;
+		velocity = make_vector((((rand() % 1000) - 500.0f) / 50000.0f), (((rand() % 1000) - 500.0f) / 50000.0f), (((rand() % 1000) - 500.0f) / 50000.0f));
+		life = 2000.0f + (rand() % 2000);
+	}
 };
 
 class ParticleGenerator : public IDrawable
 {
 public:
-	ParticleGenerator(GLuint shaderprogram, GLuint texture, int amount, Camera *camera);
+	ParticleGenerator(GLuint shaderprogram, GLuint texture, int amount, Camera *camera, float3 position);
 	~ParticleGenerator();
 
-	void update();
+	void update(float dt);
 
 	void render();
 
@@ -36,8 +46,9 @@ private:
 	GLuint m_texture;
 	GLuint m_shaderProgram;
 	int m_amount;
+	float3 m_position;
 
-	float4x4 getModelMatrix(Particle &p1);
+	float3x3 getModelMatrix3x3();
 };
 
 #endif

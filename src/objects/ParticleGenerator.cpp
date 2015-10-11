@@ -13,8 +13,11 @@
 
 using namespace chag;
 
-ParticleGenerator::ParticleGenerator(GLuint shaderProgram, GLuint texture, int amount, Camera *camera)
-	: m_shaderProgram(shaderProgram), m_texture(texture), m_amount(amount), m_camera(camera)
+float3 Particle::startPosition;
+
+
+ParticleGenerator::ParticleGenerator(GLuint shaderProgram, GLuint texture, int amount, Camera *camera, float3 position)
+	: m_shaderProgram(shaderProgram), m_texture(texture), m_amount(amount), m_camera(camera), m_position(position)
 {
 	
 	GLfloat quad[] = { //POSITION3 TEXCOORD2
@@ -45,11 +48,10 @@ ParticleGenerator::ParticleGenerator(GLuint shaderProgram, GLuint texture, int a
 	/* CLEANUP */
 	glBindVertexArray(0);
 
+	Particle::startPosition = this->m_position;
 	for (int i = 0; i < amount; i++) {
 		Particle *part = new Particle();
-		part->position = make_vector(0.0f, 15.0f + ((rand() % 5) / 500.0f), 0.0f);
-		part->velocity = make_vector((((rand() % 10) - 5.0f) / 500.0f), (((rand() % 10) - 5.0f) / 500.0f), (((rand() % 10) - 5.0f) / 500.0f));
-		part->life = 1.0f + ((rand() % 5) / 5.0f);
+		part->init();
 		this->m_particles.push_back(part);
 	}
 }
@@ -70,29 +72,31 @@ void ParticleGenerator::render() {
 	glGetIntegerv(GL_CURRENT_PROGRAM, &current_program);
 	glUseProgram(m_shaderProgram);
 
-	
-	setUniformSlow(m_shaderProgram, "projectionMatrix", m_camera->getProjectionMatrix());
-	setUniformSlow(m_shaderProgram, "viewMatrix", m_camera->getViewMatrix());
-	
 	setUniformSlow(m_shaderProgram, "color", make_vector(1.0f, 1.0f, 1.0f));
-	m_camera->getProjectionMatrix();
 	glUniform1i(glGetUniformLocation(current_program, "sprite"), 0);
+
 	glActiveTexture(GL_TEXTURE0);
 	glEnable(GL_TEXTURE_2D);
+
+	float3x3 modelMatrix3x3 = getModelMatrix3x3();
+	float4x4 projectionMatrix = m_camera->getProjectionMatrix();
+	float4x4 viewMatrix = m_camera->getViewMatrix();
+	float4x4 vpMatrix = projectionMatrix * viewMatrix;
+
 	glBindVertexArray(m_vaob);
 	
 	std::vector<Particle*> particles = this->m_particles;
 	std::sort(particles.begin(), particles.end(), [this](Particle* p1, Particle* p2) { return length(this->m_camera->getPosition() - p1->position) > length(this->m_camera->getPosition() - p2->position); });
 	for (Particle *particle : particles) {
 		if (particle->life > 0.0f) {
-			setUniformSlow(m_shaderProgram, "offset", particle->position);
-			float4x4 mat = getModelMatrix(*particle);
-			glUniformMatrix4fv(glGetUniformLocation(m_shaderProgram, "modelMatrix"), 1, false, &mat.c1.x);
+			float4x4 modelMatrix4x4 = make_matrix(modelMatrix3x3, particle->position) * make_scale<float4x4>(make_vector(0.1f, 0.1f, 0.1f));
+			float4x4 mvpMatrix = vpMatrix * modelMatrix4x4;
+			
+			glUniformMatrix4fv(glGetUniformLocation(m_shaderProgram, "mvpMatrix"), 1, false, &mvpMatrix.c1.x);
 
 			glDrawArrays(GL_TRIANGLES, 0, 6);
 		}
 	}
-
 
 	/* CLEANUP */
 	glBindVertexArray(0);
@@ -103,27 +107,24 @@ void ParticleGenerator::render() {
 	glEnable(GL_CULL_FACE);
 }
 
-void ParticleGenerator::update() {
+void ParticleGenerator::update(float dt) {
 	for (Particle *particle : this->m_particles) {
 		if (particle->life > 0.0f){
 			particle->position += particle->velocity;
-			particle->life -= 0.01; //TODO dt
+			particle->life -= dt;
 		}
 		else {
-			particle->position = make_vector(0.0f, 15.0f + ((rand() % 5) / 500.0f), 0.0f);
-			particle->velocity = make_vector((((rand() % 10) - 5.0f) / 500.0f), (((rand() % 10) - 5.0f) / 500.0f), (((rand() % 10) - 5.0f) / 500.0f));
-			particle->life = 1.0f + ((rand() % 5) / 5.0f);
+			particle->init();
 		}
 	}
 }
 
-float4x4 ParticleGenerator::getModelMatrix(Particle &p1) {
+float3x3 ParticleGenerator::getModelMatrix3x3() {
 	float3 u = normalize(m_camera->getUp());
 	float3 n = normalize(-(m_camera->getPosition() - m_camera->getLookAt()));
 	float3 r = normalize(cross(u, n));
 
 	float3 uprim = cross(n, r);
 	
-	float3x3 modelMatrix = make_matrix(r,uprim,n);
-	return make_matrix(modelMatrix, p1.position) * make_scale<float4x4>(make_vector(0.1f, 0.1f, 0.1f));
+	return make_matrix(r,uprim,n);
 }
