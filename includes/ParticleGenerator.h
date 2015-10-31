@@ -4,7 +4,7 @@
 #include "float3.h"
 #include <vector>
 #include "IDrawable.h"
-#include "GL\glew.h"
+#include "GL/glew.h"
 #include "Camera.h"
 
 using namespace chag;
@@ -17,7 +17,7 @@ struct Particle {
 	float3 color;
 	float  life;
 
-	static float3 Particle::startPosition;
+	static float3 startPosition;
 
 	Particle() : position(make_vector(0.0f, 0.0f, 0.0f)), velocity(make_vector(0.0f, 0.1f, 0.0f)), color(make_vector(0.0f, 0.0f, 0.0f)), life(0.0f) {	};
 
