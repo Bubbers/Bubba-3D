@@ -21,26 +21,29 @@ Renderer::Renderer(int argc, char *argv[], int width, int height) : width(width)
 #	endif // ! __linux__
 
 
-	glutInit(&argc, argv);
+        glutInit(&argc, argv);
 
-
+        
 #	if defined(GLUT_SRGB)
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_SRGB | GLUT_DEPTH);
+        //glutInitDisplayMode(GLUT_DOUBLE | GLUT_SRGB | GLUT_DEPTH);
+        glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 #	else // !GLUT_SRGB
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+       	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 	printf("--\n");
 	printf("-- WARNING: your GLUT doesn't support sRGB / GLUT_SRGB\n");
 #	endif // ~ GLUT_SRGB
-	glutInitWindowSize(width, height);
+        glutInitWindowSize(width, height);
 
 	glutInitContextVersion(3, 0);
 	glutInitContextFlags(GLUT_DEBUG);
-
+        
 	glutCreateWindow("Bubba-3D");
 	/* If sRGB is available, enable rendering in sRGB. Note: we should do
 	* this *after* initGL(), since initGL() initializes GLEW.
 	*/
-	glEnable(GL_FRAMEBUFFER_SRGB);
+#	if defined(GLUT_SRGB)
+        // glEnable(GL_FRAMEBUFFER_SRGB); //TODO CHECK SRGB
+#endif
 }
 
 
