@@ -8,8 +8,9 @@
 #include <ilut.h>
 #endif // WIN32
 #include "Logger.h"
-#include "glutil\glutil.h"
+#include "glutil/glutil.h"
 #include "float3x3.h"
+#include <algorithm>
 
 
 

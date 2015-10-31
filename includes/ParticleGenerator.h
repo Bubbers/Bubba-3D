@@ -4,7 +4,7 @@
 #include "float3.h"
 #include <vector>
 #include "IDrawable.h"
-#include "GL\glew.h"
+#include "GL/glew.h"
 #include "Camera.h"
 
 #define LINEAR_SCALE_FACTOR 50.0f
@@ -21,7 +21,8 @@ struct Particle {
 	float3 color;
 	float  life; //in ms
 
-	float3* startPosition;
+	static float3 startPosition;
+
 
 	Particle(float3* pos) : startPosition(pos), position(make_vector(0.0f, 0.0f, 0.0f)), velocity(make_vector(0.0f, 0.1f, 0.0f)), color(make_vector(0.0f, 0.0f, 0.0f)), life(0.0f) {	};
 
