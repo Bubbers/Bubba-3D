@@ -5,7 +5,7 @@
 #include <IL/ilut.h>
 #else
 #include <il.h>
-#include <ilut.h>
+#include <IL/ilut.h>
 #endif // WIN32
 #include "Logger.h"
 #include "glutil/glutil.h"

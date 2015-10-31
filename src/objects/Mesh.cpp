@@ -7,7 +7,7 @@
 #include <IL/ilut.h>
 #else
 #include <il.h>
-#include <ilut.h>
+#include <IL/ilut.h>
 #endif // WIN32
 
 using namespace chag;
