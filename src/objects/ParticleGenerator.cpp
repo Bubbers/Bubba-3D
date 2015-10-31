@@ -16,7 +16,7 @@
 
 using namespace chag;
 
-
+float3* Particle::startPosition = NULL; 
 
 ParticleGenerator::ParticleGenerator(GLuint shaderProgram, GLuint texture, int amount, Camera *camera, float3 position)
 	: m_shaderProgram(shaderProgram), m_texture(texture), m_amount(amount), m_camera(camera), m_position(position)
