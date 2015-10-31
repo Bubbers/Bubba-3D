@@ -6,3 +6,6 @@ run:
 
 clean:
 	rm -rf build;
+
+install:
+	sudo apt-get install freeglut3-dev libdevil-dev libassimp-dev libglw1-mesa-dev libglew-dev libxmu-dev libxi-dev

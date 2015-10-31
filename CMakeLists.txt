@@ -4,7 +4,7 @@ PROJECT(Bubba-3D)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 if(UNIX)
-    set(ASSIMP_INCLUDE_DIR "$HOME/assimp/assimp/include")
+    #set(ASSIMP_INCLUDE_DIR "$HOME/assimp/assimp/include")
     #set(${ASSIMP_LIBRARY}  "$HOME/assimp/assimp/lib/libassimp.so.3.1.1")
     set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
     set(CMAKE_CXX_FLAGS "-g")
@@ -85,7 +85,7 @@ endif(NOT IL_FOUND)
 # FIND ASSIMP
 #########################################################
 find_package(ASSIMP REQUIRED)
-include_directories(${ASSIMP_INCLUDE_DIR})
+#include_directories(${ASSIMP_INCLUDE_DIR})
 find_library(ASSIMP_LIBRARY NAMES libassimp.so)
 target_link_libraries(testz ${ASSIMP_LIBRARY})
 target_link_libraries(testz ${ASSIMP_LIBRARIES})

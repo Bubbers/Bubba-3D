@@ -14,18 +14,17 @@ Originally implemented as a school project, now extended for fun!
 * Skyboxes
 * Dynamic / static cube maps
 * Perspective camera
+* Particle system
 
 ###Current todos
 * Refactor cube maps
 * Finish octrees / implement AABB collision structure
 * Support skinned meshes
-* Particle system
 * Optimizations!
 
 ***
 ###Example
 Code example is outdated, new coming soon!
-Executable files are available for linux and win32 in the bin folder.
 
 ###Installation
 Requirements:
@@ -36,7 +35,7 @@ Requirements:
 * <a href="http://openil.sourceforge.net/">DevIL</a><br />
 For installation of these, please see their homepage.
 
-Linux: Install using the Makefile supplied in root map. You might need to change the assimp path in CMakeLists.txt first.
+Linux: Install using the Makefile supplied in root map. run make install. This will install all dependencies for the project. Then you may run it with make run.
 
 Windows: Use CMake gui. Add the source catalogue and a build directory and then configure and generate! 
 
