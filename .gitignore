@@ -3,3 +3,6 @@
 /Release/*
 Thumbs.db
 *~
+.idea
+*.swo
+*.swp
