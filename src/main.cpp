@@ -466,13 +466,13 @@ void createEffects(){
 
 void createLights() {
 	PointLight sun;
-	sun.diffuseColor  = make_vector(0.6f, 50.6f, 0.6f);
-	sun.specularColor = make_vector(1.0f, 0.0f, 0.0f);
-	sun.ambientColor  = make_vector(0.05f, 0.05f, 0.05f);
+	sun.diffuseColor  = make_vector(0.0f, 2.0f, 0.0f);
+	sun.specularColor = make_vector(0.1f, 0.1f, 0.1f);
+	sun.ambientColor  = make_vector(0.0f, 0.0f, 0.0f);
 	sun.position      = make_vector(10.1f, 7.0f, 10.1f);
 	sun.attenuation.constant = 1.0f;
-	sun.attenuation.linear   = 0.7f;
-	sun.attenuation.exp      = 1.8f;
+	sun.attenuation.linear   = 1.0f;
+	sun.attenuation.exp      = 0.0f;
 	scene.pointLights.push_back(sun);
 
 	PointLight sun2;
@@ -498,7 +498,7 @@ void createLights() {
 	DirectionalLight sun3;
 	sun3.diffuseColor  = make_vector(0.6f, 0.6f, 0.6f);
 	sun3.specularColor = make_vector(0.6f, 0.6f, 0.6f);
-	sun3.ambientColor  = make_vector(0.05f, 0.05f, 0.05f);
+	sun3.ambientColor  = make_vector(0.35f, 0.35f, 0.35f);
 	sun3.direction     = make_vector(0.0f, -100.0f, 0.0f);
 	scene.directionalLight = sun3;
 
