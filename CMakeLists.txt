@@ -85,7 +85,9 @@ endif(NOT IL_FOUND)
 # FIND ASSIMP
 #########################################################
 find_package(ASSIMP REQUIRED)
-#include_directories(${ASSIMP_INCLUDE_DIR})
+if(ASSIMP_INCLUDE_DIR) 
+	include_directories(${ASSIMP_INCLUDE_DIR})
+endif()
 find_library(ASSIMP_LIBRARY NAMES libassimp.so)
 target_link_libraries(testz ${ASSIMP_LIBRARY})
 target_link_libraries(testz ${ASSIMP_LIBRARIES})
