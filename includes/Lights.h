@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __LIGHTS_H__
+#define __LIGHTS_H__
 
 
 #include <float3.h>
@@ -40,3 +41,5 @@ struct SpotLight : public Light {
 	float cutOff; //cos(rads) of the wanted angle 
 	float outerCutOff; //used for smooth edges
 };
+
+#endif //__LIGHTS_H__

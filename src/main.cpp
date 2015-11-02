@@ -14,7 +14,7 @@
 
 #include "Renderer.h"
 #include "timer.h"
-#include "shader.h"
+#include "Shader.h"
 #include "GameObject.h"
 #include "ParticleGenerator.h"
 

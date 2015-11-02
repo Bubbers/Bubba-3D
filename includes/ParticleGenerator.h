@@ -6,6 +6,7 @@
 #include "IDrawable.h"
 #include "GL/glew.h"
 #include "Camera.h"
+#include "Shader.h"
 
 #define LINEAR_SCALE_FACTOR 50.0f
 #define LOD_FACTOR 25.0f
