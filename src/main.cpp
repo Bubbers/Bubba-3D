@@ -132,11 +132,6 @@ Collider *collider;
 Octree *octTree;
 bool hasChanged = true;
 
-//***********s******************************************************************
-//	Logger
-//*****************************************************************************
-Logger logger = Logger::instance();
-
 
 //*****************************************************************************
 //	Function declarations
@@ -430,7 +425,6 @@ int main(int argc, char *argv[])
 	int h = SCREEN_HEIGHT;
 
 	renderer = new Renderer(argc, argv, w, h);
-	
 	glutTimerFunc(50, idle, 0);
 	glutDisplayFunc(display);
 
@@ -584,8 +578,7 @@ GLuint loadTexture(std::string fileName)
 
 	if (ilLoadImage(fileName.c_str()) == IL_FALSE)
 	{
-		Logger l = Logger::instance();
-		l.logSevere("Error to load texture " + fileName);
+	  Logger::logSevere("Error to load texture " + fileName);
 		ILenum Error;
 		while ((Error = ilGetError()) != IL_NO_ERROR)
 		{
@@ -644,7 +637,7 @@ void createMeshes() {
 	//*************************************************************************
 	// Load the models from disk
 	//*************************************************************************
-	logger.logInfo("Started loading models.");
+	Logger::logInfo("Started loading models.");
 	//Load shadow casters
 	Mesh* carM = new Mesh();
 	carM->loadMesh("../scenes/untitled.dae");
@@ -708,12 +701,12 @@ void createMeshes() {
 	scene.shadowCasters.push_back(&normalTestWithout);
 	
 
-	logger.logInfo("Finished loading models.");
+	Logger::logInfo("Finished loading models.");
 
 	//*************************************************************************
 	// Generate Octtree from meshes
 	//*************************************************************************
-	logger.logInfo("Started creating octree");
+	Logger::logInfo("Started creating octree");
 	
 	utils::Timer timer;
 	timer.start();
@@ -729,7 +722,7 @@ void createMeshes() {
     collider->addMesh(spiderM);
 	  
 	collider->insertAll(); //TODO enlargen octrees afterhand instead
-	logger.logInfo("Finished loading octree");
+	Logger::logInfo("Finished loading octree");
 	renderer->setOctree(*octTree);
 	
 	timer.stop();

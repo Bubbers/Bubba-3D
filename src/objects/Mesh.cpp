@@ -31,8 +31,7 @@ Chunk::Chunk(std::vector<chag::float3>& positions,
 }
 
 bool Mesh::loadMesh(const std::string& fileName) {
-  Logger l = Logger::instance();
-  l.logInfo("Loading mesh " + fileName);
+  Logger::logInfo("Loading mesh " + fileName);
   Assimp::Importer importer;
 
     const aiScene* pScene = importer.ReadFile(
@@ -40,7 +39,7 @@ bool Mesh::loadMesh(const std::string& fileName) {
 	
 
 	if (!pScene) {
-		l.logSevere("Error loading mesh for " + fileName);
+	  Logger::logSevere("Error loading mesh for " + fileName);
 	}
 	else {
 		initFromScene(pScene, fileName);
@@ -129,8 +128,7 @@ GLuint Mesh::getTexture(const aiMaterial *material, const std::string& fileName,
 			}
 			string fullPath = dir + "/" + p;
 
-			Logger l = Logger::instance();
-			l.logInfo("Loading texture: " + fullPath);
+			Logger::logInfo("Loading texture: " + fullPath);
 			return loadTexture(fullPath);
 		}
 		else
@@ -252,8 +250,7 @@ GLuint Mesh::loadTexture(std::string fileName)
 
 	if (ilLoadImage(fileName.c_str()) == IL_FALSE)
 	{
-		Logger l = Logger::instance();
-		l.logSevere("Error to load texture " + fileName);
+	  Logger::logSevere("Error to load texture " + fileName);
 		ILenum Error;
 		while ((Error = ilGetError()) != IL_NO_ERROR)
 		{

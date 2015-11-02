@@ -23,7 +23,6 @@ public:
 
 private:
 	GLuint m_texture;
-	Logger m_logger;
 
 	void loadCubeMapFace(std::string filename, GLenum face);
 	

@@ -56,8 +56,7 @@ bool SkinnedMesh::loadMesh(const std::string& fileName) {
 
 
 	if (!pScene) {
-		Logger l = Logger::instance();
-		l.logDebug("Error loading mesh for " + fileName);
+	  Logger::logDebug("Error loading mesh for " + fileName);
 	}
 	else {
 		aiMatrix4x4 m = pScene->mRootNode->mTransformation;
@@ -112,8 +111,7 @@ void SkinnedMesh::initMats(const aiScene* pScene, const std::string& fileName) {
 				}
 				string fullPath = dir + "/" + p;
 
-				Logger l = Logger::instance();
-				l.logInfo("Loading texture: " + fullPath);
+				Logger::logInfo("Loading texture: " + fullPath);
 				m.diffuse_map_id = loadTexture(fullPath);
 			}
 			else
@@ -238,8 +236,7 @@ GLuint SkinnedMesh::loadTexture(std::string fileName)
 
 	if (ilLoadImage(fileName.c_str()) == IL_FALSE)
 	{
-		Logger l = Logger::instance();
-		l.logSevere("Error to load texture " + fileName);
+	  Logger::logSevere("Error to load texture " + fileName);
 		ILenum Error;
 		while ((Error = ilGetError()) != IL_NO_ERROR)
 		{

@@ -67,7 +67,6 @@ private:
 	void setLights(GLuint shaderProgram, Scene scene);
 
 	GLuint shaderProgram;
-	Logger logger;
 
 	Fbo sbo;
 	Camera *cubeMapCameras[6];

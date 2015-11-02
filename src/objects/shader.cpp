@@ -63,7 +63,6 @@ void Shader::setVector4F(const GLchar *name, float4   &value){
 void Shader::checkCompileErrors(GLuint object, std::string type){
   GLint success;
   GLchar infoLog[1024];
-  Logger l = Logger::instance();
   if (type != "PROGRAM")
     {
       glGetShaderiv(object, GL_COMPILE_STATUS, &success);
@@ -71,7 +70,7 @@ void Shader::checkCompileErrors(GLuint object, std::string type){
         {
 	  glGetShaderInfoLog(object, 1024, NULL, infoLog);
 
-	  l.logSevere("Error compiling shader" + string(infoLog));
+	  Logger::logSevere("Error compiling shader" + string(infoLog));
         }
     }
   else
@@ -80,7 +79,7 @@ void Shader::checkCompileErrors(GLuint object, std::string type){
       if (!success)
         {
 	  glGetProgramInfoLog(object, 1024, NULL, infoLog);
-	  l.logSevere("Error linking program" + string(infoLog));
+	  Logger::logSevere("Error linking program" + string(infoLog));
         }
     }
 };

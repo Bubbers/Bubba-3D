@@ -15,7 +15,6 @@ namespace patch
 
 Renderer::Renderer(int argc, char *argv[], int width, int height) : width(width), height(height)
 {
-  logger = Logger::instance();
 #	if defined(__linux__)
   	linux_initialize_cwd();
 #	endif // ! __linux__
@@ -282,7 +281,7 @@ void Renderer::initGL()
 	//*************************************************************************
 	// Generate shadow map frame buffer object
 	//*************************************************************************
-	logger.logInfo("Generating OpenGL data.");
+	Logger::logInfo("Generating OpenGL data.");
 
 	sbo.shaderProgram = loadShaderProgram("../shaders/shadowMap.vert", "../shaders/shadowMap.frag");
 	glBindAttribLocation(sbo.shaderProgram, 0, "position");
@@ -351,7 +350,7 @@ void Renderer::initGL()
 
 	glEnable(GL_DEPTH_TEST);
 
-	logger.logInfo("Generating OpenGL data completed.");
+	Logger::logInfo("Generating OpenGL data completed.");
 }
 
 Fbo Renderer::createPostProcessFbo(int width, int height) {
