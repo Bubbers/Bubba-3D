@@ -9,4 +9,4 @@ void main() {
 	vec4 wvp_pos = viewProjectionMatrix * modelMatrix * vec4(position, 1.0);
 	texCoord = position;
 	gl_Position = wvp_pos.xyww;
-} 
+}

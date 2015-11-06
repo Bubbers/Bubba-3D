@@ -66,9 +66,9 @@ void Renderer::setIdleMethod(void(*idle)(int), float delay) {
 	glutTimerFunc(delay, idle, 0);
 }
 
-void Renderer::drawModel(IDrawable &model, GLuint shaderProgram)
+void Renderer::drawModel(IDrawable &model, Shader shaderProgram)
 {
-  glUseProgram(shaderProgram);
+  shaderProgram.use();
   model.render();
 }
 
@@ -86,7 +86,7 @@ void Renderer::drawScene(Camera camera, Scene scene, float currentTime)
 	// Render shadow map
 	//*************************************************************************
 	float4x4 lightMatrix = make_identity<float4x4>();
-		
+
 	if (scene.shadowMapCamera != NULL) {
 		float4x4 lightViewMatrix = scene.shadowMapCamera->getViewMatrix();
 		float4x4 lightProjectionMatrix = scene.shadowMapCamera->getProjectionMatrix();
@@ -135,8 +135,8 @@ void Renderer::drawScene(Camera camera, Scene scene, float currentTime)
 		scene.cubeMap->bind(GL_TEXTURE2);
 	}
 
-	drawShadowCasters(shaderProgram.shaderID, scene);
-	drawTransparent(shaderProgram.shaderID, scene);
+	drawShadowCasters(shaderProgram, scene);
+	drawTransparent(shaderProgram, scene);
 	drawDebug(viewMatrix, projectionMatrix, scene);
 
 	renderPostProcess();
@@ -188,18 +188,18 @@ void Renderer::setLights(Shader shaderProgram, Scene scene) {
 * In this function, add all scene elements that should cast shadow, that way
 * there is only one draw call to each of these, as this function is called twice.
 */
-void Renderer::drawShadowCasters(GLuint shaderProgram, Scene scene)
+void Renderer::drawShadowCasters(Shader shaderProgram, Scene scene)
 {
 	for (int i = 0; i < scene.shadowCasters.size(); i++) {
-		setUniformSlow(shaderProgram, "object_reflectiveness", (*scene.shadowCasters[i]).shininess);
+		shaderProgram.setUniform1f("object_reflectiveness", (*scene.shadowCasters[i]).shininess);
 		drawModel(*scene.shadowCasters[i], shaderProgram);
 	}
 }
 
-void Renderer::drawTransparent(GLuint shaderProgram, Scene scene)
+void Renderer::drawTransparent(Shader shaderProgram, Scene scene)
 {
 	for (int i = 0; i < scene.transparentObjects.size(); i++) {
-		setUniformSlow(shaderProgram, "object_reflectiveness", (*scene.transparentObjects[i]).shininess);
+		shaderProgram.setUniform1f("object_reflectiveness", (*scene.transparentObjects[i]).shininess);
 		drawModel(*scene.transparentObjects[i], shaderProgram);
 	}
 }
@@ -217,9 +217,8 @@ void Renderer::drawShadowMap(Fbo sbo, float4x4 viewProjectionMatrix, Scene scene
 
 	GLint currentProgram;
 	glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
-	glUseProgram(sbo.shaderProgram);
-
-	setUniformSlow(sbo.shaderProgram, "viewProjectionMatrix", viewProjectionMatrix);
+	sbo.shaderProgram.use();
+	sbo.shaderProgram.setUniformMatrix4fv("viewProjectionMatrix", viewProjectionMatrix);
 
 	drawShadowCasters(sbo.shaderProgram, scene);
 
@@ -279,8 +278,7 @@ void Renderer::initGL()
 	//*************************************************************************
 	Logger::logInfo("Generating OpenGL data.");
 
-	sbo.shaderProgram = loadShaderProgram("../shaders/shadowMap.vert", "../shaders/shadowMap.frag");
-	linkShaderProgram(sbo.shaderProgram);
+	sbo.shaderProgram.loadShader("../shaders/shadowMap.vert", "../shaders/shadowMap.frag");
 
 	sbo.width = SHADOW_MAP_RESOLUTION;
 	sbo.height = SHADOW_MAP_RESOLUTION;
@@ -379,8 +377,8 @@ void Renderer::renderPostProcess() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	postFxShader.use();
-	setUniformSlow(postFxShader.shaderID, "frameBufferTexture", 0);
-	setUniformSlow(postFxShader.shaderID, "blurredFrameBufferTexture", 1);
+	postFxShader.setUniform1i("frameBufferTexture", 0);
+	postFxShader.setUniform1i("blurredFrameBufferTexture", 1);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_RECTANGLE_ARB, postProcessFbo.texture);
@@ -388,7 +386,7 @@ void Renderer::renderPostProcess() {
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_RECTANGLE_ARB, verticalBlurFbo.texture);
 
-	setUniformSlow(postFxShader.shaderID, "time", currentTime);
+	postFxShader.setUniform1f("time", currentTime);
 
 	drawFullScreenQuad();
 }
@@ -402,7 +400,7 @@ void Renderer::blurImage() {
 	glClearColor(1.0, 1.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	setUniformSlow(cutoffShader.shaderID, "cutAt", effects.blur.cutOff);
+	cutoffShader.setUniform1f("cutAt", effects.blur.cutOff);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_RECTANGLE_ARB, postProcessFbo.texture);
 
@@ -415,7 +413,7 @@ void Renderer::blurImage() {
 
 	horizontalBlurShader.use();
 
-	setUniformSlow(horizontalBlurShader.shaderID, "frameBufferTexture", 0);
+	horizontalBlurShader.setUniform1i("frameBufferTexture", 0);
 	glBindTexture(GL_TEXTURE_RECTANGLE_ARB, cutOffFbo.texture);
 	drawFullScreenQuad();
 
@@ -426,7 +424,7 @@ void Renderer::blurImage() {
 
 	verticalBlurShader.use();
 
-	setUniformSlow(verticalBlurShader.shaderID, "frameBufferTexture", 0);
+	verticalBlurShader.setUniform1i("frameBufferTexture", 0);
 	glBindTexture(GL_TEXTURE_RECTANGLE_ARB, horizontalBlurFbo.texture);
 	drawFullScreenQuad();
 }

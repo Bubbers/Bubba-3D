@@ -62,8 +62,8 @@ private:
 
 	Fbo createPostProcessFbo(int width, int height);
 	void drawShadowMap(Fbo sbo, float4x4 viewProjectionMatrix, Scene scene);
-	void drawShadowCasters(GLuint shaderProgram, Scene scene);
-	void drawTransparent(GLuint shaderProgram, Scene scene);
+	void drawShadowCasters(Shader shaderProgram, Scene scene);
+	void drawTransparent(Shader shaderProgram, Scene scene);
 	void setFog(GLuint shaderProgram);
 	void setLights(Shader shaderProgram, Scene scene);
 
@@ -73,7 +73,7 @@ private:
 	Camera *cubeMapCameras[6];
 
 	//Drawing
-	void drawModel(IDrawable &model, GLuint shaderProgram);
+	void drawModel(IDrawable &model, Shader shaderProgram);
 	void drawFullScreenQuad();
 	void renderPostProcess();
 	void blurImage();

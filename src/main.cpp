@@ -562,12 +562,7 @@ void createCubeMaps() {
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_Z, cMapAll.texture, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, cMapAll.texture, 0);
 
-	cMapAll.shaderProgram = loadShaderProgram("../shaders/simple.vert", "../shaders/simple.frag");
-	glBindAttribLocation(cMapAll.shaderProgram, 0, "position");
-	glBindAttribLocation(cMapAll.shaderProgram, 2, "texCoordIn");
-	glBindAttribLocation(cMapAll.shaderProgram, 1, "normalIn");
-	glBindFragDataLocation(cMapAll.shaderProgram, 0, "fragmentColor");
-	linkShaderProgram(cMapAll.shaderProgram);
+	cMapAll.shaderProgram.loadShader("../shaders/simple.vert", "../shaders/simple.frag");
 }
 
 GLuint loadTexture(std::string fileName)
