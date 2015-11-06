@@ -1,5 +1,5 @@
 #Bubba-3D!
-This is a small game engine programmed in C++
+This is a small 3D-engine programmed in C++
 using Glut and Glew.  Managed by cmake.
 Originally implemented as a school project, now extended for fun!
 
@@ -33,10 +33,9 @@ Requirements:
 * <a href="http://freeglut.sourceforge.net/">Glut (Freeglut)</a>
 * <a href="http://glew.sourceforge.net/">Glew</a>
 * <a href="http://openil.sourceforge.net/">DevIL</a><br />
-For installation of these, please see their homepage.
 
 Linux: Install using the Makefile supplied in root map. run make install. This will install all dependencies for the project. Then you may run it with make run.
 
-Windows: Use CMake gui. Add the source catalogue and a build directory and then configure and generate! 
+Windows: Either download the dependencies yourself from the links above, or use the specified libs in the libs folder. For more info how to config cmake using these, see README.md in libs/. 
 
 Feel free to contact me regarding questions and/or installation trouble!
