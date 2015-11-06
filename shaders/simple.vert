@@ -1,4 +1,7 @@
-#version 330
+#version 130
+#extension GL_ARB_gpu_shader5 : enable
+#extension GL_ARB_explicit_attrib_location : enable
+
 
 layout(location = 0) in vec3		position;
 in vec3		colorIn;

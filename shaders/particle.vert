@@ -1,4 +1,4 @@
-#version 150
+#version 130
 
 #define scale 0.1
 in	vec3	position;
