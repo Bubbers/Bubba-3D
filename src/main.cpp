@@ -627,12 +627,10 @@ GLuint loadTexture(std::string fileName)
 
 GLuint partShader;
 void createMeshes() {
-	
-	partShader = loadShaderProgram("../shaders/particle.vert", "../shaders/particle.frag");
-	linkShaderProgram(partShader);
-	gen = new ParticleGenerator(partShader, loadTexture("../scenes/engineflare1.jpg"), 200, playerCamera, make_vector(0.0f, 15.0f, 0.0f));
+	Shader shader;
+	shader.loadShader("../shaders/particle.vert", "../shaders/particle.frag");
+	gen = new ParticleGenerator(shader, loadTexture("../scenes/engineflare1.jpg"), 200, playerCamera, make_vector(0.0f, 15.0f, 0.0f));
 	scene.transparentObjects.push_back(gen);
-
 
 	//*************************************************************************
 	// Load the models from disk

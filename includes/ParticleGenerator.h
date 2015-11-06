@@ -8,6 +8,7 @@
 #include "Camera.h"
 #include "Shader.h"
 
+
 #define LINEAR_SCALE_FACTOR 50.0f
 #define LOD_FACTOR 25.0f
 
@@ -39,7 +40,7 @@ struct Particle {
 class ParticleGenerator : public IDrawable
 {
 public:
-	ParticleGenerator(GLuint shaderprogram, GLuint texture, int amount, Camera *camera, float3 position);
+	ParticleGenerator(Shader shaderProgram, GLuint texture, int amount, Camera *camera, float3 position);
 	~ParticleGenerator();
 
 	void update(float dt);
@@ -55,6 +56,7 @@ private:
 	GLuint m_texture;
 	GLuint m_shaderProgram;
 	int m_amount;
+	Shader shaderProgram;
 	
 
 	float3x3 getModelMatrix3x3();
