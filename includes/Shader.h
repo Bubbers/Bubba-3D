@@ -18,6 +18,7 @@ class Shader {
     void backupCurrentShaderProgram();
     void restorePreviousShaderProgram();
     void setUniform1i(std::string name, int value);
+    void setUniform1f(std::string name, float value);
     void setUniform3f(std::string name, float3 value);
     void setUniformMatrix4fv(std::string name, float4x4 matrix);
 

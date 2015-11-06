@@ -23,6 +23,7 @@
 #include "Utils.h"
 #include "Effects.h"
 #include "IDrawable.h"
+#include "Shader.h"
 
 #define CUBE_MAP_RESOLUTION		512
 #define SHADOW_MAP_RESOLUTION	2048
@@ -64,9 +65,9 @@ private:
 	void drawShadowCasters(GLuint shaderProgram, Scene scene);
 	void drawTransparent(GLuint shaderProgram, Scene scene);
 	void setFog(GLuint shaderProgram);
-	void setLights(GLuint shaderProgram, Scene scene);
+	void setLights(Shader shaderProgram, Scene scene);
 
-	GLuint shaderProgram;
+	Shader shaderProgram;
 
 	Fbo sbo;
 	Camera *cubeMapCameras[6];
@@ -79,10 +80,10 @@ private:
 
 
 	//Postprocess
-	GLuint postFxShader;
-	GLuint horizontalBlurShader;
-	GLuint verticalBlurShader;
-	GLuint cutoffShader;
+	Shader postFxShader;
+	Shader horizontalBlurShader;
+	Shader verticalBlurShader;
+	Shader cutoffShader;
 	Fbo postProcessFbo, horizontalBlurFbo, verticalBlurFbo, cutOffFbo;
 
 	//DEBUGS
