@@ -239,12 +239,6 @@ void Renderer::setFog(GLuint shaderProgram) {
 
 void Renderer::initGL() 
 {
-	int w = width;
-	int h = height;
-
-
-	/* Initialize GLEW; this gives us access to OpenGL Extensions.
-	*/
 	glewInit();
 
 	/* Print information about OpenGL and ensure that we've got at a context
