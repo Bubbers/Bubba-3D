@@ -1,9 +1,12 @@
-#version 150
+#version 130
+#extension GL_ARB_gpu_shader5 : enable
+#extension GL_ARB_explicit_attrib_location : enable
 
-in vec3		position;
+
+layout(location = 0) in vec3		position;
 in vec3		colorIn;
-in	vec2	texCoordIn;	// incoming texcoord from the texcoord array
-in  vec3	normalIn; 
+layout(location = 2) in	vec2	texCoordIn;	// incoming texcoord from the texcoord array
+layout(location = 1) in  vec3	normalIn;
 in	vec3	tangent;
 in  vec3	bittangent;
 

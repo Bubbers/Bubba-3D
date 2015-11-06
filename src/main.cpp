@@ -14,7 +14,7 @@
 
 #include "Renderer.h"
 #include "timer.h"
-#include "shader.h"
+#include "Shader.h"
 #include "GameObject.h"
 #include "ParticleGenerator.h"
 
@@ -131,11 +131,6 @@ Renderer *renderer;
 Collider *collider;
 Octree *octTree;
 bool hasChanged = true;
-
-//***********s******************************************************************
-//	Logger
-//*****************************************************************************
-Logger logger = Logger::instance();
 
 
 //*****************************************************************************
@@ -430,7 +425,6 @@ int main(int argc, char *argv[])
 	int h = SCREEN_HEIGHT;
 
 	renderer = new Renderer(argc, argv, w, h);
-	
 	glutTimerFunc(50, idle, 0);
 	glutDisplayFunc(display);
 
@@ -568,12 +562,7 @@ void createCubeMaps() {
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_Z, cMapAll.texture, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, cMapAll.texture, 0);
 
-	cMapAll.shaderProgram = loadShaderProgram("../shaders/simple.vert", "../shaders/simple.frag");
-	glBindAttribLocation(cMapAll.shaderProgram, 0, "position");
-	glBindAttribLocation(cMapAll.shaderProgram, 2, "texCoordIn");
-	glBindAttribLocation(cMapAll.shaderProgram, 1, "normalIn");
-	glBindFragDataLocation(cMapAll.shaderProgram, 0, "fragmentColor");
-	linkShaderProgram(cMapAll.shaderProgram);
+	cMapAll.shaderProgram.loadShader("../shaders/simple.vert", "../shaders/simple.frag");
 }
 
 GLuint loadTexture(std::string fileName)
@@ -584,8 +573,7 @@ GLuint loadTexture(std::string fileName)
 
 	if (ilLoadImage(fileName.c_str()) == IL_FALSE)
 	{
-		Logger l = Logger::instance();
-		l.logSevere("Error to load texture " + fileName);
+	  Logger::logSevere("Error to load texture " + fileName);
 		ILenum Error;
 		while ((Error = ilGetError()) != IL_NO_ERROR)
 		{
@@ -634,17 +622,15 @@ GLuint loadTexture(std::string fileName)
 
 GLuint partShader;
 void createMeshes() {
-	
-	partShader = loadShaderProgram("../shaders/particle.vert", "../shaders/particle.frag");
-	linkShaderProgram(partShader);
-	gen = new ParticleGenerator(partShader, loadTexture("../scenes/engineflare1.jpg"), 200, playerCamera, make_vector(0.0f, 15.0f, 0.0f));
-	scene.transparentObjects.push_back(gen);
-
+	Shader shader;
+	shader.loadShader("../shaders/particle.vert", "../shaders/particle.frag");
+	gen = new ParticleGenerator(shader, loadTexture("../scenes/engineflare1.jpg"), 200, playerCamera, make_vector(0.0f, 15.0f, 0.0f));
+	//scene.transparentObjects.push_back(gen);
 
 	//*************************************************************************
 	// Load the models from disk
 	//*************************************************************************
-	logger.logInfo("Started loading models.");
+	Logger::logInfo("Started loading models.");
 	//Load shadow casters
 	Mesh* carM = new Mesh();
 	carM->loadMesh("../scenes/untitled.dae");
@@ -708,12 +694,12 @@ void createMeshes() {
 	scene.shadowCasters.push_back(&normalTestWithout);
 	
 
-	logger.logInfo("Finished loading models.");
+	Logger::logInfo("Finished loading models.");
 
 	//*************************************************************************
 	// Generate Octtree from meshes
 	//*************************************************************************
-	logger.logInfo("Started creating octree");
+	Logger::logInfo("Started creating octree");
 	
 	utils::Timer timer;
 	timer.start();
@@ -729,13 +715,12 @@ void createMeshes() {
     collider->addMesh(spiderM);
 	  
 	collider->insertAll(); //TODO enlargen octrees afterhand instead
-	logger.logInfo("Finished loading octree");
+	Logger::logInfo("Finished loading octree");
 	renderer->setOctree(*octTree);
 	
 	timer.stop();
 
 
-	//logger.logInfo("Created octree in : " + std::to_string(time_span.count()) + " seconds.");
 	printf("Created octree in : %f ms", timer.getElapsedTime()); //TODO Logger
 }
 

@@ -23,6 +23,7 @@
 #include "Utils.h"
 #include "Effects.h"
 #include "IDrawable.h"
+#include "Shader.h"
 
 #define CUBE_MAP_RESOLUTION		512
 #define SHADOW_MAP_RESOLUTION	2048
@@ -61,29 +62,28 @@ private:
 
 	Fbo createPostProcessFbo(int width, int height);
 	void drawShadowMap(Fbo sbo, float4x4 viewProjectionMatrix, Scene scene);
-	void drawShadowCasters(GLuint shaderProgram, Scene scene);
-	void drawTransparent(GLuint shaderProgram, Scene scene);
+	void drawShadowCasters(Shader shaderProgram, Scene scene);
+	void drawTransparent(Shader shaderProgram, Scene scene);
 	void setFog(GLuint shaderProgram);
-	void setLights(GLuint shaderProgram, Scene scene);
+	void setLights(Shader shaderProgram, Scene scene);
 
-	GLuint shaderProgram;
-	Logger logger;
+	Shader shaderProgram;
 
 	Fbo sbo;
 	Camera *cubeMapCameras[6];
 
 	//Drawing
-	void drawModel(IDrawable &model, GLuint shaderProgram);
+	void drawModel(IDrawable &model, Shader shaderProgram);
 	void drawFullScreenQuad();
 	void renderPostProcess();
 	void blurImage();
 
 
 	//Postprocess
-	GLuint postFxShader;
-	GLuint horizontalBlurShader;
-	GLuint verticalBlurShader;
-	GLuint cutoffShader;
+	Shader postFxShader;
+	Shader horizontalBlurShader;
+	Shader verticalBlurShader;
+	Shader cutoffShader;
 	Fbo postProcessFbo, horizontalBlurFbo, verticalBlurFbo, cutOffFbo;
 
 	//DEBUGS

@@ -5,21 +5,13 @@
 
 using namespace std;
 
-Logger::Logger()
-{
-	debug      = true;
-	saveToFile = false;
-}
 
-
-Logger::~Logger()
-{
-}
-
+bool Logger::debug      = true;
+bool Logger::saveToFile = false;
 
 void Logger::logDebug(string msg) {
 	if (debug) {
-		printf("[DEBUG] %s %s\n", getTime().c_str(), msg.c_str());
+	  printf("[DEBUG] %s %s\n", getTime().c_str(), msg.c_str());
 	}
 }
 

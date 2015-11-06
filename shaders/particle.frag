@@ -1,4 +1,4 @@
-#version 150
+#version 130
 
 precision highp float;
 

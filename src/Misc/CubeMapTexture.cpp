@@ -4,7 +4,6 @@
 
 CubeMapTexture::CubeMapTexture(const string& posXFilename, const string& negXFilename, const string& posYFilename, const string& negYFilename, const string& posZFilename, const string& negZFilename) {
 
-  m_logger = Logger::instance();
 	//************************************************
 	//	Creating a texture ID for the OpenGL texture
 	//************************************************
@@ -57,7 +56,7 @@ void CubeMapTexture::loadCubeMapFace(std::string filename, GLenum face)
 	bool he = ilLoadImage(filename.c_str());
 
 	if (ilLoadImage(filename.c_str()) == IL_FALSE)   {
-		m_logger.logSevere("Failed to load texture " + filename);
+	  Logger::logSevere("Failed to load texture " + filename);
 		ILenum Error;
 		while ((Error = ilGetError()) != IL_NO_ERROR)
 			printf("%d: %s\n", Error, iluErrorString(Error));

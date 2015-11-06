@@ -18,8 +18,8 @@ using namespace chag;
 
 float3* Particle::startPosition = NULL; 
 
-ParticleGenerator::ParticleGenerator(GLuint shaderProgram, GLuint texture, int amount, Camera *camera, float3 position)
-	: m_shaderProgram(shaderProgram), m_texture(texture), m_amount(amount), m_camera(camera), m_position(position)
+ParticleGenerator::ParticleGenerator(Shader shaderProgram, GLuint texture, int amount, Camera *camera, float3 position)
+	: shaderProgram(shaderProgram), m_texture(texture), m_amount(amount), m_camera(camera), m_position(position)
 {
 	
 	GLfloat quad[] = { //POSITION3 TEXCOORD2
@@ -70,12 +70,11 @@ void ParticleGenerator::render() {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
 	glBindTexture(GL_TEXTURE_2D, m_texture);
-	GLint current_program = 0;
-	glGetIntegerv(GL_CURRENT_PROGRAM, &current_program);
-	glUseProgram(m_shaderProgram);
+	shaderProgram.backupCurrentShaderProgram();
+	shaderProgram.use();
 
-	setUniformSlow(m_shaderProgram, "color", make_vector(1.0f, 1.0f, 1.0f));
-	glUniform1i(glGetUniformLocation(current_program, "sprite"), 0);
+	shaderProgram.setUniform3f("color", make_vector(1.0f, 1.0f, 1.0f));
+	shaderProgram.setUniform1i("sprite", 0);
 
 	glActiveTexture(GL_TEXTURE0);
 	glEnable(GL_TEXTURE_2D);
@@ -86,7 +85,7 @@ void ParticleGenerator::render() {
 	float4x4 vpMatrix = projectionMatrix * viewMatrix;
 
 	float distance = length(this->m_camera->getPosition() - this->m_position);
-	int maxParticles = (m_amount * LOD_FACTOR / distance ); //TODO EXPONENTIAL WITH RESPECT TO DISTANCE
+	int maxParticles = (m_amount * LOD_FACTOR / distance );
 	glBindVertexArray(m_vaob);
 	
 	std::vector<Particle*> particles = this->m_particles;
@@ -102,7 +101,7 @@ void ParticleGenerator::render() {
 			float4x4 modelMatrix4x4 = make_matrix(modelMatrix3x3, particle->position) * make_scale<float4x4>(scale);
 			float4x4 mvpMatrix = vpMatrix * modelMatrix4x4;
 			
-			glUniformMatrix4fv(glGetUniformLocation(m_shaderProgram, "mvpMatrix"), 1, false, &mvpMatrix.c1.x);
+			shaderProgram.setUniformMatrix4fv("mvpMatrix", mvpMatrix);
 
 			glDrawArrays(GL_TRIANGLES, 0, 6);
 		}
@@ -110,7 +109,7 @@ void ParticleGenerator::render() {
 
 	/* CLEANUP */
 	glBindVertexArray(0);
-	glUseProgram(current_program);
+	shaderProgram.restorePreviousShaderProgram();
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDisable(GL_BLEND);
 

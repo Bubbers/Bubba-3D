@@ -19,7 +19,7 @@ struct Fog {
   Fog() {
     fDensity = 0.001f;
     fStart = 50.0f;
-    fEnd = 5000.0f;
+    fEnd = 900.0f;
     vColor = make_vector(1.0f, 1.0f, 1.0f);
     fEquation = FOG_EQ::NONE;
   }

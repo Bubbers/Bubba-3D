@@ -10,24 +10,18 @@ public:
 	~Logger();
 	Logger();
 
-	void setDebug(bool debug);
-	void setFileSave(bool saveToFile);
+	static void setDebug(bool debug);
+	static void setFileSave(bool saveToFile);
 
-	void logDebug(string msg);
-	void logSevere(string msg);
-	void logInfo(string msg);
+	static void logDebug(string msg);
+	static void logSevere(string msg);
+	static void logInfo(string msg);
 
-	static Logger& instance()
-	{
-		static Logger INSTANCE;
-		return INSTANCE;
-	}
-
-	bool debug;
-	bool saveToFile;
+	static bool debug;
+	static bool saveToFile;
 
 private:
 
-	string getTime();
+	static string getTime();
 };
 

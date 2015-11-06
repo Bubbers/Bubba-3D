@@ -1,6 +1,7 @@
 #version 130
+#extension GL_ARB_explicit_attrib_location : enable
 // This vertex shader simply outputs the input coordinates to the rasterizer. It only uses 2D coordinates.
-in vec2 position;
+layout(location = 0) in vec2 position;
 
 void main() 
 {
