@@ -72,6 +72,7 @@ void Renderer::setIdleMethod(void(*idle)(int), float delay) {
 void Renderer::drawModel(IDrawable &model, Shader shaderProgram)
 {
 	shaderProgram.use();
+	model.setShaderProgram(shaderProgram);
 	model.render();
 }
 

@@ -19,10 +19,10 @@
 
 struct Material
 {
-  chag::float4 diffuseColor;
-  chag::float4 ambientColor;
-  chag::float4 specularColor;
-  chag::float4 emissiveColor;
+  chag::float3 diffuseColor;
+  chag::float3 ambientColor;
+  chag::float3 specularColor;
+  chag::float3 emissiveColor;
   float specularExponent;
   GLint diffuse_map_id; 
   GLint bump_map_id;

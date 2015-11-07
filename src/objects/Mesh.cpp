@@ -93,10 +93,10 @@ void Mesh::initMats(const aiScene* pScene, const std::string& fileName) {
 		material->Get(AI_MATKEY_COLOR_EMISSIVE, emissive);
 		material->Get(AI_MATKEY_SHININESS, specExp);
 
-		m.ambientColor = make_vector(ambient.r, ambient.g, ambient.b, 1.0f);
-		m.diffuseColor = make_vector(diffuse.r, diffuse.g, diffuse.b, 1.0f);
-		m.specularColor = make_vector(specular.r, specular.g, specular.b, 1.0f);
-		m.emissiveColor = make_vector(emissive.r, emissive.g, emissive.b, 1.0f);
+		m.ambientColor = make_vector(ambient.r, ambient.g, ambient.b);
+		m.diffuseColor = make_vector(diffuse.r, diffuse.g, diffuse.b);
+		m.specularColor = make_vector(specular.r, specular.g, specular.b);
+		m.emissiveColor = make_vector(emissive.r, emissive.g, emissive.b);
 		m.specularExponent = specExp > 0.0f ? specExp : 0.0f;
 
 		m_textures.push_back(m);
