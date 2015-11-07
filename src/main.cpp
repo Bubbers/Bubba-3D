@@ -625,7 +625,7 @@ void createMeshes() {
 	Shader shader;
 	shader.loadShader("../shaders/particle.vert", "../shaders/particle.frag");
 	gen = new ParticleGenerator(shader, loadTexture("../scenes/engineflare1.jpg"), 200, playerCamera, make_vector(0.0f, 15.0f, 0.0f));
-	//scene.transparentObjects.push_back(gen);
+	scene.transparentObjects.push_back(gen);
 
 	//*************************************************************************
 	// Load the models from disk
