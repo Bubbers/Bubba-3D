@@ -107,6 +107,5 @@ void Shader::setUniform3f(std::string name, float3 value){
 }
 
 void Shader::setUniformMatrix4fv(std::string name, float4x4 matrix) {
-    glUniformMatrix4fv(glGetUniformLocation(this->shaderID, name.c_str()), 1, false, &matrix.c1.x);
-    //glUniformMatrix4fv(getUniformLocation(name), 1, false, &matrix.c1.x);
+    glUniformMatrix4fv(getUniformLocation(name), 1, false, &matrix.c1.x);
 }

@@ -23,9 +23,8 @@ public:
 private:
 	Camera* m_camera;
 	CubeMapTexture* m_pCubemap;
-	Shader m_shaderProgram;
 	Mesh m_skyMesh;
-	GameObject* m_skyObject;
+	GLuint m_shaderProgram;
 };
 
 
