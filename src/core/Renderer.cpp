@@ -41,7 +41,7 @@ Renderer::Renderer(int argc, char *argv[], int width, int height) : width(width)
 	* this *after* initGL(), since initGL() initializes GLEW.
 	*/
 #	if defined(GLUT_SRGB)
-        // glEnable(GL_FRAMEBUFFER_SRGB); //TODO CHECK SRGB
+	     glEnable(GL_FRAMEBUFFER_SRGB_EXT); //TODO CHECK SRGB
 #endif
 }
 

@@ -1,4 +1,5 @@
 #include "GameObject.h"
+#include "float3x3.h"
 
 GameObject::GameObject(Mesh mesh) {
   this->mesh = mesh;
@@ -10,7 +11,10 @@ void GameObject::render() {
   glPushAttrib(GL_ALL_ATTRIB_BITS);
   GLint current_program = 0;
   glGetIntegerv(GL_CURRENT_PROGRAM, &current_program);
+
+  chag::float4x4 normalMatrix = chag::inverse(chag::transpose(mesh.m_modelMatrix));
   setUniformSlow(current_program, "modelMatrix", mesh.m_modelMatrix);
+  setUniformSlow(current_program, "normalMatrix", normalMatrix);
 
   for (size_t i = 0; i < mesh.m_chunks.size(); ++i)
     {
