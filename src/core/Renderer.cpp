@@ -1,6 +1,9 @@
 #include "Renderer.h"
 #include <sstream>
 #include <string>
+#include "ResourceManager.h"
+
+#define SIMPLE_SHADER_NAME "simple_shader"
 
 namespace patch
 {
@@ -68,8 +71,8 @@ void Renderer::setIdleMethod(void(*idle)(int), float delay) {
 
 void Renderer::drawModel(IDrawable &model, Shader shaderProgram)
 {
-  shaderProgram.use();
-  model.render();
+	shaderProgram.use();
+	model.render();
 }
 
 void Renderer::drawScene(Camera camera, Scene scene, float currentTime)
@@ -265,7 +268,8 @@ void Renderer::initGL()
 	//*************************************************************************
 	//	Load shaders
 	//*************************************************************************
-	shaderProgram.loadShader("../shaders/simple.vert", "../shaders/simple.frag");
+	ResourceManager::loadShader("../shaders/simple.vert", "../shaders/simple.frag", SIMPLE_SHADER_NAME);
+	shaderProgram = ResourceManager::getShader(SIMPLE_SHADER_NAME);
 
 	//*************************************************************************
 	// Generate shadow map frame buffer object

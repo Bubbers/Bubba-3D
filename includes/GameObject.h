@@ -3,6 +3,7 @@
 
 #include "Mesh.h"
 #include "IDrawable.h"
+#include "Shader.h"
 
 class GameObject : public IDrawable{
 public:
@@ -14,6 +15,7 @@ public:
 
   Mesh mesh;
 private:
+
   
 };
 

@@ -1,40 +1,51 @@
+#include <Logger.h>
 #include "GameObject.h"
 #include "float3x3.h"
+#include "ResourceManager.h"
+
+#define SIMPLE_SHADER_NAME "simple_shader"
+
 
 GameObject::GameObject(Mesh mesh) {
-  this->mesh = mesh;
-  this->shininess = 0.0f;
+    this->mesh = mesh;
+    this->shininess = 0.0f;
+    this->shaderProgram = ResourceManager::getShader(SIMPLE_SHADER_NAME);
 };
 
 void GameObject::render() {
   CHECK_GL_ERROR();
   glPushAttrib(GL_ALL_ATTRIB_BITS);
-  GLint current_program = 0;
-  glGetIntegerv(GL_CURRENT_PROGRAM, &current_program);
 
-  chag::float4x4 normalMatrix = chag::inverse(chag::transpose(mesh.m_modelMatrix));
-  setUniformSlow(current_program, "modelMatrix", mesh.m_modelMatrix);
-  setUniformSlow(current_program, "normalMatrix", normalMatrix);
 
-  for (size_t i = 0; i < mesh.m_chunks.size(); ++i)
+    GLint current_program = 0;
+    glGetIntegerv(GL_CURRENT_PROGRAM, &current_program);
+
+    printf("current %d\n", current_program);
+    printf("and     %d\n", this->shaderProgram.shaderID);
+
+    chag::float4x4 normalMatrix = chag::inverse(chag::transpose(mesh.m_modelMatrix));
+    setUniformSlow(current_program, "modelMatrix", mesh.m_modelMatrix);
+    setUniformSlow(current_program, "normalMatrix", normalMatrix);
+
+      for (size_t i = 0; i < mesh.m_chunks.size(); ++i)
     {
       CHECK_GL_ERROR();
-		
+
       Chunk &chunk = mesh.m_chunks[i];
 
       if (mesh.m_textures[chunk.m_textureIndex].diffuse_map_id != -1) {
-	glActiveTexture(GL_TEXTURE0);
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, mesh.m_textures[chunk.m_textureIndex].diffuse_map_id);
+    glActiveTexture(GL_TEXTURE0);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, mesh.m_textures[chunk.m_textureIndex].diffuse_map_id);
       }
       if (mesh.m_textures[chunk.m_textureIndex].bump_map_id != -1) {
-	glUniform1i(glGetUniformLocation(current_program, "normal_texture"), 3);
-	glActiveTexture(GL_TEXTURE3);
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, mesh.m_textures[chunk.m_textureIndex].bump_map_id);
+    glUniform1i(glGetUniformLocation(current_program, "normal_texture"), 3);
+    glActiveTexture(GL_TEXTURE3);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, mesh.m_textures[chunk.m_textureIndex].bump_map_id);
       }
 
-		
+
       glUniform1i(glGetUniformLocation(current_program, "has_diffuse_texture"), mesh.m_textures[chunk.m_textureIndex].diffuse_map_id != -1);
       glUniform3fv(glGetUniformLocation(current_program, "material_diffuse_color"), 1, &mesh.m_textures[chunk.m_textureIndex].diffuseColor.x);
       glUniform3fv(glGetUniformLocation(current_program, "material_specular_color"), 1, &mesh.m_textures[chunk.m_textureIndex].specularColor.x);

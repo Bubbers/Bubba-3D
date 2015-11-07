@@ -6,7 +6,6 @@
 #include <GL/freeglut.h>
 
 #include <vector>
-//include <thread>
 #include <stdlib.h>
 
 #include <Quaternion.h>
@@ -17,6 +16,7 @@
 #include "Shader.h"
 #include "GameObject.h"
 #include "ParticleGenerator.h"
+#include "ResourceManager.h"
 
 using namespace std;
 using namespace chag;
@@ -492,7 +492,7 @@ void createLights() {
 	DirectionalLight sun3;
 	sun3.diffuseColor  = make_vector(0.6f, 0.6f, 0.6f);
 	sun3.specularColor = make_vector(0.6f, 0.6f, 0.6f);
-	sun3.ambientColor  = make_vector(0.35f, 0.35f, 0.35f);
+	sun3.ambientColor  = make_vector(0.05f, 0.05f, 0.05f);
 	sun3.direction     = make_vector(0.0f, -100.0f, 0.0f);
 	scene.directionalLight = sun3;
 
@@ -620,19 +620,20 @@ GLuint loadTexture(std::string fileName)
 	return texid;
 }
 
-GLuint partShader;
+
 void createMeshes() {
-	Shader shader;
-	shader.loadShader("../shaders/particle.vert", "../shaders/particle.frag");
+	ResourceManager::loadShader("../shaders/particle.vert", "../shaders/particle.frag", "particleShader");
+	Shader shader = ResourceManager::getShader("particleShader");
+
 	gen = new ParticleGenerator(shader, loadTexture("../scenes/engineflare1.jpg"), 200, playerCamera, make_vector(0.0f, 15.0f, 0.0f));
-	scene.transparentObjects.push_back(gen);
+	//scene.transparentObjects.push_back(gen);
 
 	//*************************************************************************
 	// Load the models from disk
 	//*************************************************************************
 	Logger::logInfo("Started loading models.");
 	//Load shadow casters
-	Mesh* carM = new Mesh();
+	/*Mesh* carM = new Mesh();
 	carM->loadMesh("../scenes/untitled.dae");
 	carM->m_modelMatrix = make_identity<float4x4>();
 	car = GameObject(*carM);
@@ -691,7 +692,7 @@ void createMeshes() {
 	normalTestWithoutM->loadMesh("../scenes/boxwoNormals.obj");
 	normalTestWithoutM->m_modelMatrix = make_translation(make_vector(5.0f, 10.0f, 0.0f)) * make_rotation_x<float4x4>(M_PI / 180 * 30);
 	normalTestWithout = GameObject(*normalTestWithoutM);
-	scene.shadowCasters.push_back(&normalTestWithout);
+	scene.shadowCasters.push_back(&normalTestWithout);*/
 	
 
 	Logger::logInfo("Finished loading models.");
@@ -708,11 +709,11 @@ void createMeshes() {
 
 	octTree = new Octree(origin, halfVector, 0);
 
-	collider = new Collider(octTree);
+	collider = new Collider(octTree);/*
 	collider->addMesh(worldM);
 	collider->addMesh(waterM);
 	collider->addMesh(factoryM);
-    collider->addMesh(spiderM);
+    collider->addMesh(spiderM);*/
 	  
 	collider->insertAll(); //TODO enlargen octrees afterhand instead
 	Logger::logInfo("Finished loading octree");
