@@ -1,6 +1,7 @@
 #version 130
+#extension GL_ARB_explicit_attrib_location : enable
 
-in vec3 position;
+layout(location = 0) in vec3 position;
 uniform mat4 viewProjectionMatrix;
 uniform mat4 modelMatrix;
 out vec3 texCoord;
