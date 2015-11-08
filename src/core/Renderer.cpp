@@ -71,7 +71,7 @@ void Renderer::setIdleMethod(void(*idle)(int), float delay) {
 void Renderer::drawModel(IDrawable &model, Shader shaderProgram)
 {
 	shaderProgram.use();
-	model.setShaderProgram(shaderProgram);
+	//model.setShaderProgram(shaderProgram);
 	model.render();
 }
 
@@ -223,7 +223,15 @@ void Renderer::drawShadowMap(Fbo sbo, float4x4 viewProjectionMatrix, Scene scene
 	sbo.shaderProgram.use();
 	sbo.shaderProgram.setUniformMatrix4fv("viewProjectionMatrix", viewProjectionMatrix);
 
-	drawShadowCasters(sbo.shaderProgram, scene);
+	//TODO HERE SETSHADER SHOULDNT BE ALLOWED
+	for (int i = 0; i < scene.shadowCasters.size(); i++) {
+		sbo.shaderProgram.setUniform1f("object_reflectiveness", (*scene.shadowCasters[i]).shininess);
+		Shader oldShaderProgram = (*scene.shadowCasters[i]).shaderProgram;
+		(*scene.shadowCasters[i]).setShaderProgram(sbo.shaderProgram);
+		drawModel(*scene.shadowCasters[i], shaderProgram);
+		(*scene.shadowCasters[i]).setShaderProgram(oldShaderProgram);
+	}
+	//drawShadowCasters(sbo.shaderProgram, scene);
 
 	//CLEANUP
 	glDisable(GL_POLYGON_OFFSET_FILL);

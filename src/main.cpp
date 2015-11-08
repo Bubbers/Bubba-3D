@@ -714,7 +714,7 @@ void createMeshes() {
 	collider->addMesh(waterM);
 	collider->addMesh(factoryM);
     collider->addMesh(spiderM);
-	  
+  
 	collider->insertAll(); //TODO enlargen octrees afterhand instead
 	Logger::logInfo("Finished loading octree");
 	renderer->setOctree(*octTree);
@@ -741,7 +741,7 @@ void createCameras() {
 
 	skybox = new Skybox(playerCamera);
 	skybox->init("../scenes/posx.jpg", "../scenes/negx.jpg", "../scenes/posy.jpg", "../scenes/posy.jpg", "../scenes/negz.jpg", "../scenes/posz.jpg");
-	scene.shadowCasters.push_back(skybox);
+	scene.transparentObjects.push_back(skybox);
 }
 
 float degreeToRad(float degree) {
