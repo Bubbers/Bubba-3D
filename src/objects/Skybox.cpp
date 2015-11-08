@@ -12,9 +12,6 @@ bool Skybox::init(const string &posXFilename, const string &negXFilename, const 
     ResourceManager::loadShader("../shaders/skybox.vert", "../shaders/skybox.frag", SKYBOX_SHADER_NAME);
     shaderProgram = ResourceManager::getShader(SKYBOX_SHADER_NAME);
 
-    m_shaderProgram = shaderProgram.shaderID;
-
-
     m_skyMesh.loadMesh("../scenes/sphere.obj");
     return true;
 }

@@ -62,3 +62,24 @@ void GameObject::render() {
 }
 
 
+void GameObject::renderShadow(Shader shaderProgram) {
+    CHECK_GL_ERROR();
+    glPushAttrib(GL_ALL_ATTRIB_BITS);
+
+    shaderProgram.setUniformMatrix4fv("modelMatrix", mesh.m_modelMatrix);
+
+    for (size_t i = 0; i < mesh.m_chunks.size(); ++i) {
+        CHECK_GL_ERROR();
+
+        Chunk &chunk = mesh.m_chunks[i];
+
+        glBindVertexArray(chunk.m_vaob);
+        glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, chunk.m_ind_bo);
+
+        glDrawElements(GL_TRIANGLES, mesh.m_chunks[i].m_numIndices, GL_UNSIGNED_INT, 0);
+        CHECK_GL_ERROR();
+    }
+
+    glPopAttrib();
+    CHECK_GL_ERROR();
+}

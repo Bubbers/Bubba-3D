@@ -44,6 +44,7 @@ public:
 	~ParticleGenerator();
 
 	void update(float dt);
+	virtual void renderShadow(Shader shaderProgram) {};
 
 	void render();
 

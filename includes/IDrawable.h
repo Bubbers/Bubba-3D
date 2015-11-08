@@ -9,14 +9,12 @@ public:
 	IDrawable() { shininess = 0.0f; };
   virtual ~IDrawable() {};
   virtual void render() = 0;
-
+  virtual void renderShadow(Shader shaderProgram) = 0;
   
     float shininess;
 	Shader shaderProgram;
 
-	void setShaderProgram(Shader shaderProgram) {
-		this->shaderProgram = shaderProgram;
-	}
+
 };
 
 

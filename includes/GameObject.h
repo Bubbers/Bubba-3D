@@ -12,6 +12,7 @@ public:
   ~GameObject() { };
 
   virtual void render();
+    virtual void renderShadow(Shader shaderProgram);
 
   Mesh mesh;
 private:
