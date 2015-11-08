@@ -8,7 +8,7 @@
 void Texture::bind(GLenum textureUnit){
     glActiveTexture(textureUnit);
     glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+    glBindTexture(GL_TEXTURE_2D, textureID);
 }
 
 

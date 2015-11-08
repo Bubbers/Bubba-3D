@@ -622,8 +622,10 @@ GLuint loadTexture(std::string fileName)
 void createMeshes() {
 	ResourceManager::loadShader("../shaders/particle.vert", "../shaders/particle.frag", "particleShader");
 	Shader shader = ResourceManager::getShader("particleShader");
+	Texture particleTexture = ResourceManager::loadAndFetch("../scenes/engineflare1.jpg");
 
-	gen = new ParticleGenerator(shader, loadTexture("../scenes/engineflare1.jpg"), 200, playerCamera, make_vector(0.0f, 15.0f, 0.0f));
+
+	gen = new ParticleGenerator(shader, particleTexture, 200, playerCamera, make_vector(0.0f, 15.0f, 0.0f));
 	scene.transparentObjects.push_back(gen);
 
 	//*************************************************************************

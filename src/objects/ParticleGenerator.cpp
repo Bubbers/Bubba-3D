@@ -1,25 +1,13 @@
 #include "ParticleGenerator.h"
 
-#ifdef WIN32
-#include <IL/il.h>
-#include <IL/ilut.h>
-#else
-#include <il.h>
-#include <IL/ilut.h>
-#endif // WIN32
-#include "Logger.h"
-#include "glutil/glutil.h"
 #include "float3x3.h"
-#include <algorithm>
-
-
 
 using namespace chag;
 
 float3* Particle::startPosition = NULL; 
 
-ParticleGenerator::ParticleGenerator(Shader shaderProgram, GLuint texture, int amount, Camera *camera, float3 position)
-	: shaderProgram(shaderProgram), m_texture(texture), m_amount(amount), m_camera(camera), m_position(position)
+ParticleGenerator::ParticleGenerator(Shader shaderProgram, Texture texture, int amount, Camera *camera, float3 position)
+	: shaderProgram(shaderProgram), texture(texture), m_amount(amount), m_camera(camera), m_position(position)
 {
 	
 	GLfloat quad[] = { //POSITION3 TEXCOORD2
@@ -69,15 +57,13 @@ void ParticleGenerator::render() {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
-	glBindTexture(GL_TEXTURE_2D, m_texture);
 	shaderProgram.backupCurrentShaderProgram();
 	shaderProgram.use();
 
+	texture.bind(GL_TEXTURE0);
+
 	shaderProgram.setUniform3f("color", make_vector(1.0f, 1.0f, 1.0f));
 	shaderProgram.setUniform1i("sprite", 0);
-
-	glActiveTexture(GL_TEXTURE0);
-	glEnable(GL_TEXTURE_2D);
 
 	float3x3 modelMatrix3x3 = getModelMatrix3x3();
 	float4x4 projectionMatrix = m_camera->getProjectionMatrix();
