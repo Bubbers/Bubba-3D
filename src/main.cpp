@@ -6,15 +6,13 @@
 #include <GL/freeglut.h>
 
 #include <vector>
-#include <stdlib.h>
 
 #include <Quaternion.h>
+#include <Texture.h>
 #include "collision/Collider.h"
 
 #include "Renderer.h"
 #include "timer.h"
-#include "Shader.h"
-#include "GameObject.h"
 #include "ParticleGenerator.h"
 #include "ResourceManager.h"
 
@@ -441,7 +439,7 @@ int main(int argc, char *argv[])
 	createMeshes();
 	createLights();
 	createEffects();
-	
+
 	renderer->start();
 	
 	return 0;
