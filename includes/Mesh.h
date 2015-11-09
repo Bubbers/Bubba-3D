@@ -23,8 +23,8 @@ struct Material {
     chag::float3 specularColor;
     chag::float3 emissiveColor;
     float specularExponent;
-    Texture *diffuseTexture;
-    Texture *bumpMapTexture;
+    Texture *diffuseTexture = NULL;
+    Texture *bumpMapTexture = NULL;
 };
 
 struct Chunk {
@@ -69,14 +69,19 @@ public:
 
     ~Mesh();
 
-    bool loadMesh(const std::string &fileName);
+    void loadMesh(const std::string &fileName);
 
 private:
 
-    bool initFromScene(const aiScene *pScene, const std::string &fileName);
+    void initMeshFromScene(const aiScene *pScene, const std::string &fileName);
     void initMesh(unsigned int index, const aiMesh *paiMesh);
-    void initMats(const aiScene *pScene, const std::string &fileName);
-
+    void initMaterials(const aiScene *pScene, const std::string &fileName);
+    void initMaterialTextures(Material *material, std::string fileName, const aiMaterial *loadedMaterial);
+    void initMaterialColors(Material *material, const aiMaterial *loadedMaterial);
+    std::string getAbsolutePath(const std::string &fileName, std::string textureName);
+    std::string getDirectoryFromPath(const std::string &fileName);
+    std::string cleanFileName(std::string filePath);
+    float3 getColorFromMaterial(const char* pKey, unsigned int type, unsigned int idx, const aiMaterial &material);
     Texture* getTexture(const aiMaterial *material, const std::string &fileName, aiTextureType type);
 
 public:
