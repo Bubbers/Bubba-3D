@@ -4,7 +4,8 @@
 #include "ResourceManager.h"
 
 #define SIMPLE_SHADER_NAME "simple_shader"
-
+#define NORMAL_TEXTURE_LOCATION 3
+#define DIFFUSE_TEXTURE_LOCATION 0
 
 GameObject::GameObject(Mesh mesh) {
     this->mesh = mesh;
@@ -20,22 +21,18 @@ void GameObject::render() {
     shaderProgram.setUniformMatrix4fv("modelMatrix", mesh.m_modelMatrix);
     shaderProgram.setUniformMatrix4fv("normalMatrix", normalMatrix);
 
-    for (size_t i = 0; i < mesh.m_chunks.size(); ++i) {
+    for (size_t i = 0; i < mesh.m_chunks.size(); i++) {
         CHECK_GL_ERROR();
 
         Chunk &chunk = mesh.m_chunks[i];
 
         if (mesh.materials[chunk.materialIndex].diffuseTexture != NULL) {
-            glActiveTexture(GL_TEXTURE0);
-            glEnable(GL_TEXTURE_2D);
-            glBindTexture(GL_TEXTURE_2D, mesh.materials[chunk.materialIndex].diffuseTexture->getID());
+            shaderProgram.setUniform1i("diffuse_texture", DIFFUSE_TEXTURE_LOCATION);
+            mesh.materials[chunk.materialIndex].diffuseTexture->bind(GL_TEXTURE0);
         }
         if (mesh.materials[chunk.materialIndex].bumpMapTexture != NULL) {
-            shaderProgram.setUniform1i("normal_texture", 3);
-
-            glActiveTexture(GL_TEXTURE3);
-            glEnable(GL_TEXTURE_2D);
-            glBindTexture(GL_TEXTURE_2D, mesh.materials[chunk.materialIndex].bumpMapTexture->getID());
+            shaderProgram.setUniform1i("normal_texture", NORMAL_TEXTURE_LOCATION);
+            mesh.materials[chunk.materialIndex].bumpMapTexture->bind(GL_TEXTURE3);
         }
 
         shaderProgram.setUniform1i("has_diffuse_texture", mesh.materials[chunk.materialIndex].diffuseTexture != NULL);
@@ -60,12 +57,11 @@ void GameObject::render() {
 
 
 void GameObject::renderShadow(Shader shaderProgram) {
-    CHECK_GL_ERROR();
     glPushAttrib(GL_ALL_ATTRIB_BITS);
 
     shaderProgram.setUniformMatrix4fv("modelMatrix", mesh.m_modelMatrix);
 
-    for (size_t i = 0; i < mesh.m_chunks.size(); ++i) {
+    for (size_t i = 0; i < mesh.m_chunks.size(); i++) {
         CHECK_GL_ERROR();
 
         Chunk &chunk = mesh.m_chunks[i];

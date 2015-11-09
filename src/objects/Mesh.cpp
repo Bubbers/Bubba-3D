@@ -1,8 +1,6 @@
 #include <ResourceManager.h>
 #include "Mesh.h"
-#include <exception>
 #include "Logger.h"
-#include "ResourceManager.h"
 
 using namespace chag;
 

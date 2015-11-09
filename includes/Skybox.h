@@ -24,7 +24,7 @@ public:
 private:
 	Camera* m_camera;
 	CubeMapTexture* m_pCubemap;
-	Mesh m_skyMesh;
+	Mesh *m_skyMesh;
 };
 
 
