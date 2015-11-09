@@ -64,7 +64,7 @@ private:
 	void drawShadowMap(Fbo sbo, float4x4 viewProjectionMatrix, Scene scene);
 	void drawShadowCasters(Shader shaderProgram, Scene scene);
 	void drawTransparent(Shader shaderProgram, Scene scene);
-	void setFog(GLuint shaderProgram);
+	void setFog(Shader shaderProgram);
 	void setLights(Shader shaderProgram, Scene scene);
 
 	Shader shaderProgram;

@@ -69,6 +69,7 @@ void CubeMapTexture::loadCubeMapFace(std::string filename, GLenum face)
 
 void CubeMapTexture::bind(GLenum textureUnit) {
 	glActiveTexture(textureUnit);
+	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, m_texture);
 }
 

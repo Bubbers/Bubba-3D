@@ -1,6 +1,8 @@
 #include "Renderer.h"
 #include <sstream>
-#include <string>
+#include "ResourceManager.h"
+
+#define SIMPLE_SHADER_NAME "simple_shader"
 
 namespace patch
 {
@@ -41,7 +43,7 @@ Renderer::Renderer(int argc, char *argv[], int width, int height) : width(width)
 	* this *after* initGL(), since initGL() initializes GLEW.
 	*/
 #	if defined(GLUT_SRGB)
-        // glEnable(GL_FRAMEBUFFER_SRGB); //TODO CHECK SRGB
+	     glEnable(GL_FRAMEBUFFER_SRGB_EXT); //TODO CHECK SRGB
 #endif
 }
 
@@ -68,8 +70,8 @@ void Renderer::setIdleMethod(void(*idle)(int), float delay) {
 
 void Renderer::drawModel(IDrawable &model, Shader shaderProgram)
 {
-  shaderProgram.use();
-  model.render();
+	shaderProgram.use();
+	model.render();
 }
 
 void Renderer::drawScene(Camera camera, Scene scene, float currentTime)
@@ -120,7 +122,7 @@ void Renderer::drawScene(Camera camera, Scene scene, float currentTime)
 
 	setLights(shaderProgram, scene);
 
-	setFog(shaderProgram.shaderID);
+	setFog(shaderProgram);
 
 	//Set shadowmap
 	if (scene.shadowMapCamera != NULL) {
@@ -220,7 +222,11 @@ void Renderer::drawShadowMap(Fbo sbo, float4x4 viewProjectionMatrix, Scene scene
 	sbo.shaderProgram.use();
 	sbo.shaderProgram.setUniformMatrix4fv("viewProjectionMatrix", viewProjectionMatrix);
 
-	drawShadowCasters(sbo.shaderProgram, scene);
+	//TODO
+	for (int i = 0; i < scene.shadowCasters.size(); i++) {
+		sbo.shaderProgram.setUniform1f("object_reflectiveness", (*scene.shadowCasters[i]).shininess);
+        (*scene.shadowCasters[i]).renderShadow(sbo.shaderProgram);
+   	}
 
 	//CLEANUP
 	glDisable(GL_POLYGON_OFFSET_FILL);
@@ -228,13 +234,13 @@ void Renderer::drawShadowMap(Fbo sbo, float4x4 viewProjectionMatrix, Scene scene
 	glUseProgram(currentProgram);
 }
 
-void Renderer::setFog(GLuint shaderProgram) {
+void Renderer::setFog(Shader shaderProgram) {
 	if (effects.fog.fEquation == FOG_EQ::NONE){ return; }
-	setUniformSlow(shaderProgram, "fog.iEquation",	effects.fog.fEquation);
-	setUniformSlow(shaderProgram, "fog.fDensity",	effects.fog.fDensity);
-	setUniformSlow(shaderProgram, "fog.fEnd",		effects.fog.fEnd);
-	setUniformSlow(shaderProgram, "fog.fStart",		effects.fog.fStart);
-	setUniformSlow(shaderProgram, "fog.vColor",		effects.fog.vColor);
+	shaderProgram.setUniform1i("fog.iEquation",	effects.fog.fEquation);
+	shaderProgram.setUniform1f("fog.fDensity",	effects.fog.fDensity);
+	shaderProgram.setUniform1f("fog.fEnd",		effects.fog.fEnd);
+	shaderProgram.setUniform1f("fog.fStart",    effects.fog.fStart);
+	shaderProgram.setUniform3f("fog.vColor",	effects.fog.vColor);
 }
 
 void Renderer::initGL() 
@@ -265,7 +271,8 @@ void Renderer::initGL()
 	//*************************************************************************
 	//	Load shaders
 	//*************************************************************************
-	shaderProgram.loadShader("../shaders/simple.vert", "../shaders/simple.frag");
+	ResourceManager::loadShader("../shaders/simple.vert", "../shaders/simple.frag", SIMPLE_SHADER_NAME);
+	shaderProgram = ResourceManager::getShader(SIMPLE_SHADER_NAME);
 
 	//*************************************************************************
 	// Generate shadow map frame buffer object

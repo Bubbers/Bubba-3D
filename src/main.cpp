@@ -6,17 +6,18 @@
 #include <GL/freeglut.h>
 
 #include <vector>
-//include <thread>
 #include <stdlib.h>
+#include <sstream>
 
 #include <Quaternion.h>
+#include <Texture.h>
 #include "collision/Collider.h"
 
 #include "Renderer.h"
 #include "timer.h"
-#include "Shader.h"
-#include "GameObject.h"
 #include "ParticleGenerator.h"
+#include "ResourceManager.h"
+
 
 using namespace std;
 using namespace chag;
@@ -165,7 +166,10 @@ void checkIntersection() {
 	float c = collider->rayIntersection(carLoc.location + rot * carLoc.wheel3, -upVec);
 	float d = collider->rayIntersection(carLoc.location + rot * carLoc.wheel4, -upVec);
 	timer.stop();
-	printf("Tested 4 ray/aabb intersections in %f ms\n", timer.getElapsedTime());
+
+	stringstream timeMessage;
+	timeMessage << "Tested 4 ray/aabb intersections in " << timer.getElapsedTime() << " ms";
+	Logger::logDebug(timeMessage.str());
 	if (a == 0 && b == 0 && c == 0 && d == 0) {
 		return;
 	}
@@ -441,7 +445,7 @@ int main(int argc, char *argv[])
 	createMeshes();
 	createLights();
 	createEffects();
-	
+
 	renderer->start();
 	
 	return 0;
@@ -492,7 +496,7 @@ void createLights() {
 	DirectionalLight sun3;
 	sun3.diffuseColor  = make_vector(0.6f, 0.6f, 0.6f);
 	sun3.specularColor = make_vector(0.6f, 0.6f, 0.6f);
-	sun3.ambientColor  = make_vector(0.35f, 0.35f, 0.35f);
+	sun3.ambientColor  = make_vector(0.05f, 0.05f, 0.05f);
 	sun3.direction     = make_vector(0.0f, -100.0f, 0.0f);
 	scene.directionalLight = sun3;
 
@@ -620,81 +624,70 @@ GLuint loadTexture(std::string fileName)
 	return texid;
 }
 
-GLuint partShader;
+
 void createMeshes() {
-	Shader shader;
-	shader.loadShader("../shaders/particle.vert", "../shaders/particle.frag");
-	gen = new ParticleGenerator(shader, loadTexture("../scenes/engineflare1.jpg"), 200, playerCamera, make_vector(0.0f, 15.0f, 0.0f));
-	//scene.transparentObjects.push_back(gen);
+	Logger::logInfo("Started loading meshes");
+	ResourceManager::loadShader("../shaders/particle.vert", "../shaders/particle.frag", "particleShader");
+	Shader shader = ResourceManager::getShader("particleShader");
+	Texture *particleTexture = ResourceManager::loadAndFetchTexture("../scenes/engineflare1.jpg");
+
+	gen = new ParticleGenerator(shader, particleTexture, 200, playerCamera, make_vector(0.0f, 15.0f, 0.0f));
+	scene.transparentObjects.push_back(gen);
 
 	//*************************************************************************
 	// Load the models from disk
 	//*************************************************************************
-	Logger::logInfo("Started loading models.");
 	//Load shadow casters
-	Mesh* carM = new Mesh();
-	carM->loadMesh("../scenes/untitled.dae");
-	carM->m_modelMatrix = make_identity<float4x4>();
+	Mesh* carM = ResourceManager::loadAndFetchMesh("../scenes/untitled.dae");
 	car = GameObject(*carM);
-	car.shininess = 0.0f;
 	scene.shadowCasters.push_back(&car);
 
-	Mesh* worldM = new Mesh();
-	worldM->loadMesh("../scenes/world.obj");
-	worldM->m_modelMatrix = make_identity<float4x4>();
+	Mesh* worldM = ResourceManager::loadAndFetchMesh("../scenes/world.obj");
 	world = GameObject(*worldM);
 	scene.shadowCasters.push_back(&world);
 
-	Mesh* factoryM = new Mesh();
-	factoryM->loadMesh("../scenes/test.obj");
+	Mesh* factoryM = ResourceManager::loadAndFetchMesh("../scenes/test.obj");
 	factoryM->m_modelMatrix = make_translation(make_vector(-15.0f, 6.0f, 0.0f)) * make_rotation_y<float4x4>(M_PI / 180 * 90) * make_scale<float4x4>(make_vector(2.0f, 2.0f, 2.0f));
 	factory = GameObject(*factoryM);
 	scene.shadowCasters.push_back(&factory);
 	
-	Mesh* spiderM = new Mesh();
-	spiderM->loadMesh("../scenes/spider.obj");
+	Mesh* spiderM = ResourceManager::loadAndFetchMesh("../scenes/spider.obj");
 	spiderM->m_modelMatrix = make_translation(make_vector(40.0f, 2.0f, 0.0f)) * make_rotation_x<float4x4>(M_PI / 180 * 0) *  make_scale<float4x4>(0.1f);
 	spider = GameObject(*spiderM);
 	scene.shadowCasters.push_back(&spider);
 
-	Mesh* waterM = new Mesh();
-	waterM->loadMesh("../scenes/water.obj");
+	Mesh* waterM = ResourceManager::loadAndFetchMesh("../scenes/water.obj");
 	waterM->m_modelMatrix = make_translation(make_vector(0.0f, -6.0f, 0.0f));
 	water = GameObject(*waterM);
 	scene.shadowCasters.push_back(&water);
 	
-	Mesh* lampM = new Mesh();
-	lampM->loadMesh("../scenes/sphere.obj");
+	Mesh* lampM = ResourceManager::loadAndFetchMesh("../scenes/sphere.obj");
 	lampM->m_modelMatrix = make_translation(make_vector(10.0f, 10.0f, 10.0f));
 	lamp = GameObject(*lampM);
 	scene.shadowCasters.push_back(&lamp);
 
-	Mesh* lamp2M = new Mesh();
-	lamp2M->loadMesh("../scenes/sphere.obj");
+	Mesh* lamp2M = ResourceManager::loadAndFetchMesh("../scenes/sphere.obj");
 	lamp2M->m_modelMatrix = make_translation(make_vector(30.0f, 10.0f, 30.0f));
 	lamp2 = GameObject(*lamp2M);
 	scene.shadowCasters.push_back(&lamp2);
 	
-	Mesh* lamp3M = new Mesh();
-	lamp3M->loadMesh("../scenes/sphere.obj");
+	Mesh* lamp3M = ResourceManager::loadAndFetchMesh("../scenes/sphere.obj");
 	lamp3M->m_modelMatrix = make_translation(make_vector(0.0f, 10.0f, -10.0f));
 	lamp3 = GameObject(*lamp3M);
 	scene.shadowCasters.push_back(&lamp3);
 
-	Mesh* normalTestM = new Mesh();
-	normalTestM->loadMesh("../scenes/boxwNormals.obj");
+	Mesh* normalTestM = ResourceManager::loadAndFetchMesh("../scenes/boxwNormals.obj");
 	normalTestM->m_modelMatrix = make_translation(make_vector(0.0f, 10.0f, 0.0f)) * make_rotation_x<float4x4>(M_PI / 180 * 30);
 	normalTest = GameObject(*normalTestM);
 	scene.shadowCasters.push_back(&normalTest);
 
-	Mesh* normalTestWithoutM = new Mesh();
-	normalTestWithoutM->loadMesh("../scenes/boxwoNormals.obj");
+	Mesh* normalTestWithoutM = ResourceManager::loadAndFetchMesh("../scenes/boxwoNormals.obj");
 	normalTestWithoutM->m_modelMatrix = make_translation(make_vector(5.0f, 10.0f, 0.0f)) * make_rotation_x<float4x4>(M_PI / 180 * 30);
 	normalTestWithout = GameObject(*normalTestWithoutM);
 	scene.shadowCasters.push_back(&normalTestWithout);
 	
 
-	Logger::logInfo("Finished loading models.");
+	Logger::logInfo("Finished loading meshes.");
 
 	//*************************************************************************
 	// Generate Octtree from meshes
@@ -713,15 +706,16 @@ void createMeshes() {
 	collider->addMesh(waterM);
 	collider->addMesh(factoryM);
     collider->addMesh(spiderM);
-	  
+  
 	collider->insertAll(); //TODO enlargen octrees afterhand instead
 	Logger::logInfo("Finished loading octree");
 	renderer->setOctree(*octTree);
 	
 	timer.stop();
-
-
-	printf("Created octree in : %f ms", timer.getElapsedTime()); //TODO Logger
+	
+	stringstream timeMessage;
+	timeMessage << "Created octree in : " << timer.getElapsedTime() << " ms";
+	Logger::logInfo(timeMessage.str());
 }
 
 void createCameras() {
@@ -740,7 +734,7 @@ void createCameras() {
 
 	skybox = new Skybox(playerCamera);
 	skybox->init("../scenes/posx.jpg", "../scenes/negx.jpg", "../scenes/posy.jpg", "../scenes/posy.jpg", "../scenes/negz.jpg", "../scenes/posz.jpg");
-	scene.shadowCasters.push_back(skybox);
+	scene.transparentObjects.push_back(skybox);
 }
 
 float degreeToRad(float degree) {
@@ -776,9 +770,3 @@ void updatePlayer() {
 		* makematrix(qatZ);
 }
 
-/* TIME COUNT
-high_resolution_clock::time_point start = high_resolution_clock::now();
-high_resolution_clock::time_point end = high_resolution_clock::now();
-duration<double> time_span = duration_cast<duration<double>>(end - start);
-printf("TIME FOR COLL:%f\n", time_span.count());
-*/

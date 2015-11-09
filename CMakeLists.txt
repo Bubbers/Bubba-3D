@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.8)
 # Project Name
 PROJECT(Bubba-3D)
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/build/")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 if(UNIX)
     #set(ASSIMP_INCLUDE_DIR "$HOME/assimp/assimp/include")
@@ -17,7 +18,7 @@ endif()
 # ADD SOURCE FILES TO EXECUTABLE
 #########################################################
 file(GLOB files_SOURCE "src/*.cpp" "includes/linmath/*.cpp" "includes/glutil/*.cpp" "src/logging/*.cpp"  "src/Misc/*.cpp" "src/effects/*.cpp" "src/cameras/*.cpp" "src/core/*.cpp" "src/objects/*.cpp" "src/collision/*.cpp" "shaders/*")
-add_executable(testz src/main.cpp ${files_SOURCE})
+add_executable(testz src/main.cpp ${files_SOURCE} includes/ResourceManager.h src/Misc/ResourceManager.cpp includes/Texture.h src/objects/Texture.cpp)
 
 
 #########################################################

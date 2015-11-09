@@ -1,4 +1,5 @@
 #version 130
+
 #extension GL_ARB_gpu_shader5 : enable
 #extension GL_ARB_explicit_attrib_location : enable
 
@@ -20,16 +21,15 @@ out mat3    TBN;
 
 uniform mat4 modelMatrix; 
 uniform mat4 viewMatrix; 
-uniform mat4 projectionMatrix; 
-
+uniform mat4 projectionMatrix;
+uniform mat4 normalMatrix;
 uniform mat4 lightMatrix;
 
 
 void main() 
 {
 	mat4 modelViewMatrix = viewMatrix * modelMatrix; 
-	mat4 modelViewProjectionMatrix = projectionMatrix * modelViewMatrix; 
-	mat4 normalMatrix = inverse(transpose(modelMatrix));
+	mat4 modelViewProjectionMatrix = projectionMatrix * modelViewMatrix;
 
 	vec3 T = normalize(normalMatrix * vec4(tangent, 0.0)).xyz;
 	vec3 B = normalize(normalMatrix * vec4(bittangent, 0.0)).xyz;
@@ -44,8 +44,5 @@ void main()
 	worldSpacePosition = modelMatrix * vec4(position, 1); 
 
 	shadowTexCoord = lightMatrix *vec4(viewSpacePosition.xyz, 1.0);
-	//shadowTexCoord.xyz *= vec3(0.5, 0.5, 0.5);
-	//shadowTexCoord.xyz += shadowTexCoord.w * vec3(0.5, 0.5, 0.5);
-
 	gl_Position = modelViewProjectionMatrix * vec4(position,1.0);
 }

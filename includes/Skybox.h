@@ -18,14 +18,13 @@ public:
 	~Skybox();
 
 	bool init(const string& posXFilename, const string& negXFilename, const string& posYFilename, const string& negYFilename, const string& posZFilename, const string& negZFilename);
-	
+
+	void renderShadow(Shader shaderProgram) {};
 	virtual void render();
 private:
 	Camera* m_camera;
 	CubeMapTexture* m_pCubemap;
-	GLuint m_shaderProgram;
-	Mesh m_skyMesh;
-	GameObject* m_skyObject;
+	Mesh *m_skyMesh;
 };
 
 
