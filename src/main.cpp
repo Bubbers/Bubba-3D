@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <stdlib.h>
+#include <sstream>
 
 #include <Quaternion.h>
 #include "collision/Collider.h"
@@ -17,6 +18,7 @@
 #include "GameObject.h"
 #include "ParticleGenerator.h"
 #include "ResourceManager.h"
+
 
 using namespace std;
 using namespace chag;
@@ -165,7 +167,10 @@ void checkIntersection() {
 	float c = collider->rayIntersection(carLoc.location + rot * carLoc.wheel3, -upVec);
 	float d = collider->rayIntersection(carLoc.location + rot * carLoc.wheel4, -upVec);
 	timer.stop();
-	printf("Tested 4 ray/aabb intersections in %f ms\n", timer.getElapsedTime());
+
+	stringstream timeMessage;
+	timeMessage << "Tested 4 ray/aabb intersections in " << timer.getElapsedTime() << " ms";
+	Logger::logDebug(timeMessage.str());
 	if (a == 0 && b == 0 && c == 0 && d == 0) {
 		return;
 	}
@@ -720,9 +725,10 @@ void createMeshes() {
 	renderer->setOctree(*octTree);
 	
 	timer.stop();
-
-
-	printf("Created octree in : %f ms", timer.getElapsedTime()); //TODO Logger
+	
+	stringstream timeMessage;
+	timeMessage << "Created octree in : " << timer.getElapsedTime() << " ms";
+	Logger::logInfo(timeMessage.str());
 }
 
 void createCameras() {
