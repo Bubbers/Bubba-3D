@@ -25,26 +25,26 @@ void GameObject::render() {
 
         Chunk &chunk = mesh.m_chunks[i];
 
-        if (mesh.m_textures[chunk.m_textureIndex].diffuse_map_id != -1) {
+        if (mesh.materials[chunk.materialIndex].diffuseTexture != NULL) {
             glActiveTexture(GL_TEXTURE0);
             glEnable(GL_TEXTURE_2D);
-            glBindTexture(GL_TEXTURE_2D, mesh.m_textures[chunk.m_textureIndex].diffuse_map_id);
+            glBindTexture(GL_TEXTURE_2D, mesh.materials[chunk.materialIndex].diffuseTexture->getID());
         }
-        if (mesh.m_textures[chunk.m_textureIndex].bump_map_id != -1) {
+        if (mesh.materials[chunk.materialIndex].bumpMapTexture != NULL) {
             shaderProgram.setUniform1i("normal_texture", 3);
 
             glActiveTexture(GL_TEXTURE3);
             glEnable(GL_TEXTURE_2D);
-            glBindTexture(GL_TEXTURE_2D, mesh.m_textures[chunk.m_textureIndex].bump_map_id);
+            glBindTexture(GL_TEXTURE_2D, mesh.materials[chunk.materialIndex].bumpMapTexture->getID());
         }
 
-        shaderProgram.setUniform1i("has_diffuse_texture", mesh.m_textures[chunk.m_textureIndex].diffuse_map_id != -1);
-        shaderProgram.setUniform3f("material_diffuse_color", mesh.m_textures[chunk.m_textureIndex].diffuseColor);
-        shaderProgram.setUniform3f("material_specular_color", mesh.m_textures[chunk.m_textureIndex].specularColor);
-        shaderProgram.setUniform3f("material_ambient_color", mesh.m_textures[chunk.m_textureIndex].ambientColor);
-        shaderProgram.setUniform3f("material_emissive_color", mesh.m_textures[chunk.m_textureIndex].emissiveColor);
-        shaderProgram.setUniform1i("has_normal_texture", mesh.m_textures[chunk.m_textureIndex].bump_map_id != -1);
-        shaderProgram.setUniform1f("material_shininess", mesh.m_textures[chunk.m_textureIndex].specularExponent);
+        shaderProgram.setUniform1i("has_diffuse_texture", mesh.materials[chunk.materialIndex].diffuseTexture != NULL);
+        shaderProgram.setUniform3f("material_diffuse_color", mesh.materials[chunk.materialIndex].diffuseColor);
+        shaderProgram.setUniform3f("material_specular_color", mesh.materials[chunk.materialIndex].specularColor);
+        shaderProgram.setUniform3f("material_ambient_color", mesh.materials[chunk.materialIndex].ambientColor);
+        shaderProgram.setUniform3f("material_emissive_color", mesh.materials[chunk.materialIndex].emissiveColor);
+        shaderProgram.setUniform1i("has_normal_texture", mesh.materials[chunk.materialIndex].bumpMapTexture != NULL);
+        shaderProgram.setUniform1f("material_shininess", mesh.materials[chunk.materialIndex].specularExponent);
         CHECK_GL_ERROR();
 
         glBindVertexArray(chunk.m_vaob);

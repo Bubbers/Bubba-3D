@@ -6,8 +6,11 @@
 
 class Texture {
 public:
+    Texture() {};
+    Texture(GLuint textureID) {this->textureID = textureID; };
     void bind(GLenum textureUnit);
     void loadTexture(std::string fileName);
+    GLuint getID() {return textureID; };
 private:
     GLuint textureID;
 };

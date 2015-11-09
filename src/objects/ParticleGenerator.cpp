@@ -6,7 +6,7 @@ using namespace chag;
 
 float3* Particle::startPosition = NULL; 
 
-ParticleGenerator::ParticleGenerator(Shader shaderProgram, Texture texture, int amount, Camera *camera, float3 position)
+ParticleGenerator::ParticleGenerator(Shader shaderProgram, Texture *texture, int amount, Camera *camera, float3 position)
 	: shaderProgram(shaderProgram), texture(texture), m_amount(amount), m_camera(camera), m_position(position)
 {
 	
@@ -60,7 +60,7 @@ void ParticleGenerator::render() {
 	shaderProgram.backupCurrentShaderProgram();
 	shaderProgram.use();
 
-	texture.bind(GL_TEXTURE0);
+	texture->bind(GL_TEXTURE0);
 
 	shaderProgram.setUniform3f("color", make_vector(1.0f, 1.0f, 1.0f));
 	shaderProgram.setUniform1i("sprite", 0);

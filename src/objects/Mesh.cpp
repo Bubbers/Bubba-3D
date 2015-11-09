@@ -1,19 +1,13 @@
-
+#include <ResourceManager.h>
 #include "Mesh.h"
-
+#include <exception>
 #include "Logger.h"
-#ifdef WIN32
-#include <IL/il.h>
-#include <IL/ilut.h>
-#else
-#include <il.h>
-#include <IL/ilut.h>
-#endif // WIN32
+#include "ResourceManager.h"
 
 using namespace chag;
 
-Mesh::Mesh() {
-
+Mesh::Mesh(){
+    m_modelMatrix = make_identity<float4x4>();
 };
 
 Mesh::~Mesh() {};
@@ -24,8 +18,8 @@ Chunk::Chunk(std::vector<chag::float3>& positions,
 	std::vector<unsigned int>& indices,
 	std::vector<chag::float3>& tangents,
 	std::vector<chag::float3>& bittangents,
-	unsigned int textureIndex) :
-	m_positions(positions), m_normals(normals), m_uvs(uvs), m_indices(indices), m_textureIndex(textureIndex), m_tangents(tangents), m_bittangents(bittangents)
+	unsigned int materialIndex) :
+	m_positions(positions), m_normals(normals), m_uvs(uvs), m_indices(indices), materialIndex(materialIndex), m_tangents(tangents), m_bittangents(bittangents)
 {
 	m_numIndices = indices.size();
 }
@@ -36,7 +30,6 @@ bool Mesh::loadMesh(const std::string& fileName) {
 
     const aiScene* pScene = importer.ReadFile(
       fileName.c_str(), aiProcess_GenSmoothNormals | aiProcess_Triangulate | aiProcess_CalcTangentSpace);
-	
 
 	if (!pScene) {
 	  Logger::logSevere("Error loading mesh for " + fileName);
@@ -77,10 +70,10 @@ void Mesh::initMats(const aiScene* pScene, const std::string& fileName) {
 	for (unsigned int i = 0; i < pScene->mNumMaterials; i++) {
 		const aiMaterial* material = pScene->mMaterials[i];
 		Material m;
-		
-		m.diffuse_map_id = getTexture(material, fileName, aiTextureType_DIFFUSE);
-		m.bump_map_id = getTexture(material, fileName, aiTextureType_HEIGHT);
-		
+
+		m.diffuseTexture = getTexture(material, fileName, aiTextureType_DIFFUSE);
+		m.bumpMapTexture = getTexture(material, fileName, aiTextureType_HEIGHT);
+
 		aiColor3D diffuse;
 		aiColor3D ambient;
 		aiColor3D specular;
@@ -99,13 +92,14 @@ void Mesh::initMats(const aiScene* pScene, const std::string& fileName) {
 		m.emissiveColor = make_vector(emissive.r, emissive.g, emissive.b);
 		m.specularExponent = specExp > 0.0f ? specExp : 0.0f;
 
-		m_textures.push_back(m);
+		materials.push_back(m);
 	}
 }
 
-GLuint Mesh::getTexture(const aiMaterial *material, const std::string& fileName, aiTextureType type) {
+Texture* Mesh::getTexture(const aiMaterial *material, const std::string& fileName, aiTextureType type) {
 	std::string::size_type index = fileName.find_last_of("/");
 	std::string dir;
+    aiString path;
 
 	if (index == std::string::npos) {
 		dir = ".";
@@ -117,30 +111,21 @@ GLuint Mesh::getTexture(const aiMaterial *material, const std::string& fileName,
 		dir = fileName.substr(0, index);
 	}
 
-	if (material->GetTextureCount(type) > 0) {
-		aiString path;
+	if (material->GetTextureCount(type) <= 0) {
+        return NULL;
+    }
 
-		if (material->GetTexture(type, 0, &path, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS) {
-			string p(path.data);
+    if (material->GetTexture(type, 0, &path, NULL, NULL, NULL, NULL, NULL) != AI_SUCCESS) {
+        return NULL;
+    }
+    string p(path.data);
 
-			if (p.substr(0, 2) == ".\\") {
-				p = p.substr(2, p.size() - 2);
-			}
-			string fullPath = dir + "/" + p;
+    if (p.substr(0, 2) == ".\\") {
+        p = p.substr(2, p.size() - 2);
+    }
+    string fullPath = dir + "/" + p;
 
-			Logger::logInfo("Loading texture: " + fullPath);
-			return loadTexture(fullPath);
-		}
-		else
-		{
-			return -1;
-		}
-	}
-	else
-	{
-		return -1;
-	}
-	return 0;
+    return ResourceManager::loadAndFetchTexture(fullPath);
 }
 
 void Mesh::initMesh(unsigned int index, const aiMesh* paiMesh) {
@@ -237,63 +222,3 @@ void Mesh::initMesh(unsigned int index, const aiMesh* paiMesh) {
 
 	m_chunks.push_back(c);
 }
-
-
-
-
-
-GLuint Mesh::loadTexture(std::string fileName)
-{
-	ILuint image = ilGenImage();
-	ilBindImage(image);
-	CHECK_GL_ERROR();
-
-	if (ilLoadImage(fileName.c_str()) == IL_FALSE)
-	{
-	  Logger::logSevere("Error to load texture " + fileName);
-		ILenum Error;
-		while ((Error = ilGetError()) != IL_NO_ERROR)
-		{
-			printf("  %d: %s\n", Error, iluErrorString(Error));
-		}
-		ilDeleteImage(image);
-		return 0;
-	}
-	CHECK_GL_ERROR();
-	// why not?
-	if (ilTypeFromExt(fileName.c_str()) == IL_PNG || ilTypeFromExt(fileName.c_str()) == IL_JPG)
-	{
-		iluFlipImage();
-	}
-	ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
-	GLuint texid;
-	glGenTextures(1, &texid);
-	glActiveTexture(GL_TEXTURE0);
-	CHECK_GL_ERROR();
-	glBindTexture(GL_TEXTURE_2D, texid);
-	CHECK_GL_ERROR();
-	int width = ilGetInteger(IL_IMAGE_WIDTH);
-	int height = ilGetInteger(IL_IMAGE_HEIGHT);
-	// Note: now with SRGB 
-	ILubyte* b = ilGetData();
-	ILubyte c = *b;
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB_ALPHA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, b);
-	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, ilGetData());
-	CHECK_GL_ERROR();
-	ilDeleteImage(image);
-	CHECK_GL_ERROR();
-	//GLuint texid = ilutGLLoadImage(const_cast<char *>(fileName.c_str()));
-	glGenerateMipmap(GL_TEXTURE_2D);
-	CHECK_GL_ERROR();
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16);
-	CHECK_GL_ERROR();
-
-	glBindTexture(GL_TEXTURE_2D, 0);
-	CHECK_GL_ERROR();
-	return texid;
-}
-
