@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.8)
 # Project Name
 PROJECT(Bubba-3D)
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/build/")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 if(UNIX)
     #set(ASSIMP_INCLUDE_DIR "$HOME/assimp/assimp/include")
