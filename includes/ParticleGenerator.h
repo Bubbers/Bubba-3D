@@ -7,6 +7,7 @@
 #include "GL/glew.h"
 #include "Camera.h"
 #include "Shader.h"
+#include "Texture.h"
 
 
 #define LINEAR_SCALE_FACTOR 50.0f
@@ -40,7 +41,7 @@ struct Particle {
 class ParticleGenerator : public IDrawable
 {
 public:
-	ParticleGenerator(Shader shaderProgram, GLuint texture, int amount, Camera *camera, float3 position);
+	ParticleGenerator(Shader shaderProgram, Texture texture, int amount, Camera *camera, float3 position);
 	~ParticleGenerator();
 
 	void update(float dt);
@@ -54,7 +55,7 @@ public:
 private:
 	std::vector<Particle*> m_particles;
 	GLuint m_vaob;
-	GLuint m_texture;
+	Texture texture;
 	GLuint m_shaderProgram;
 	int m_amount;
 	Shader shaderProgram;

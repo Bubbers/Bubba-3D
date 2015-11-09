@@ -16,9 +16,6 @@ void GameObject::render() {
     CHECK_GL_ERROR();
     glPushAttrib(GL_ALL_ATTRIB_BITS);
 
-	GLint current_program = 0;
-	glGetIntegerv(GL_CURRENT_PROGRAM, &current_program);
-
     chag::float4x4 normalMatrix = chag::inverse(chag::transpose(mesh.m_modelMatrix));
     shaderProgram.setUniformMatrix4fv("modelMatrix", mesh.m_modelMatrix);
     shaderProgram.setUniformMatrix4fv("normalMatrix", normalMatrix);
