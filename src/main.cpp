@@ -425,6 +425,7 @@ void idle( int v )
 
 int main(int argc, char *argv[])
 {
+	Logger::debug = false;
 	int w = SCREEN_WIDTH;
 	int h = SCREEN_HEIGHT;
 
