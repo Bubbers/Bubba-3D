@@ -189,7 +189,6 @@ bool Octree::intersect(float3 rayOrigin, float3 rayVector) {
 
 void Octree::getGeometry(float3 rayOrigin, float3 rayVector, std::vector<Triangle *> *tsp) {
     if (intersect(rayOrigin, rayVector)) {
-        bool t = hasChildren();
         if (hasChildren()) {
             for (int i = 0; i < 8; i++) {
                 children[i]->getGeometry(rayOrigin, rayVector, tsp);
