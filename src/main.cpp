@@ -70,8 +70,8 @@ Fbo cMapAll;
 //*****************************************************************************
 //	Camera state variables (updated in motion())
 //*****************************************************************************
-float camera_theta = M_PI / 1.0f;
-float camera_phi = M_PI / 4.0f;
+float camera_theta = (float) (M_PI / 1.0f);
+float camera_phi = (float) (M_PI / 4.0f);
 float camera_r = 30.0f; 
 float camera_target_altitude = 5.2f; 
 
@@ -117,7 +117,7 @@ struct Car{
     wheel3 = make_vector(-0.8f, 0.0f,  1.5f);
     wheel4 = make_vector(-0.8f, 0.0f, -1.5f);
 
-    rotationSpeed = 2 * M_PI / 180;
+    rotationSpeed = (float) (2 * M_PI / 180);
     moveSpeed = 0.5;
     angley = 0; anglez = 0; anglex = 0;
     lengthx = 2; lengthz = 3;
@@ -381,7 +381,7 @@ void tick() {
 }
 void idle( int v )
 {
-	float elapsedTime = float(glutGet(GLUT_ELAPSED_TIME) - timeSinceDraw);
+	float elapsedTime = glutGet(GLUT_ELAPSED_TIME) - timeSinceDraw;
 	float time = (1000 / TICK_PER_SECOND) - elapsedTime;
 	if (time < 0) {
 		glutTimerFunc(1000 / TICK_PER_SECOND, idle, 0);
@@ -392,7 +392,7 @@ void idle( int v )
 
 		// rotate light around X axis, sunlike fashion.
 		// do one full revolution every 20 seconds.
-		float4x4 rotateLight = make_rotation_x<float4x4>(2.0f * M_PI * currentTime / 20.0f);
+		float4x4 rotateLight = make_rotation_x<float4x4>((float) (2.0f * M_PI * currentTime / 20.0f));
 
 		// rotate and update global light position.
 		float3 pos = make_vector3(rotateLight * make_vector(30.1f, 450.0f, 0.1f, 1.0f));
@@ -650,12 +650,13 @@ void createMeshes() {
 
 	Mesh* factoryM = ResourceManager::loadAndFetchMesh("../scenes/test.obj");
 	factory = GameObject(factoryM);
-    factory.move(make_translation(make_vector(-15.0f, 6.0f, 0.0f)) * make_rotation_y<float4x4>(M_PI / 180 * 90) * make_scale<float4x4>(make_vector(2.0f, 2.0f, 2.0f)));
+    factory.move(make_translation(make_vector(-15.0f, 6.0f, 0.0f)) * make_rotation_y<float4x4>(
+			(float) (M_PI / 180 * 90)) * make_scale<float4x4>(make_vector(2.0f, 2.0f, 2.0f)));
 	scene.shadowCasters.push_back(&factory);
 	
 	Mesh* spiderM = ResourceManager::loadAndFetchMesh("../scenes/spider.obj");
 	spider = GameObject(spiderM);
-    spider.move(make_translation(make_vector(40.0f, 2.0f, 0.0f)) * make_rotation_x<float4x4>(M_PI / 180 * 0) *  make_scale<float4x4>(0.1f));
+    spider.move(make_translation(make_vector(40.0f, 2.0f, 0.0f)) * make_rotation_x<float4x4>((float) (M_PI / 180 * 0)) * make_scale<float4x4>(0.1f));
 	scene.shadowCasters.push_back(&spider);
 
 	Mesh* waterM = ResourceManager::loadAndFetchMesh("../scenes/water.obj");
@@ -681,12 +682,14 @@ void createMeshes() {
 
 	Mesh* normalTestM = ResourceManager::loadAndFetchMesh("../scenes/boxwNormals.obj");
 	normalTest = GameObject(normalTestM);
-    normalTest.move(make_translation(make_vector(0.0f, 10.0f, 0.0f)) * make_rotation_x<float4x4>(M_PI / 180 * 30));
+    normalTest.move(make_translation(make_vector(0.0f, 10.0f, 0.0f)) * make_rotation_x<float4x4>(
+			(float) (M_PI / 180 * 30)));
 	scene.shadowCasters.push_back(&normalTest);
 
 	Mesh* normalTestWithoutM = ResourceManager::loadAndFetchMesh("../scenes/boxwoNormals.obj");
 	normalTestWithout = GameObject(normalTestWithoutM);
-    normalTestWithout.move(make_translation(make_vector(5.0f, 10.0f, 0.0f)) * make_rotation_x<float4x4>(M_PI / 180 * 30));
+    normalTestWithout.move(make_translation(make_vector(5.0f, 10.0f, 0.0f)) * make_rotation_x<float4x4>(
+			(float) (M_PI / 180 * 30)));
 	scene.shadowCasters.push_back(&normalTestWithout);
 	
 
@@ -741,11 +744,11 @@ void createCameras() {
 }
 
 float degreeToRad(float degree) {
-	return degree * M_PI / 180;
+	return (float) (degree * M_PI / 180);
 }
 
 float radToDegree(float rad) {
-	return rad * 180 / M_PI;
+	return (float) (rad * 180 / M_PI);
 }
 
 // Helper function to turn spherical coordinates into cartesian (x,y,z)
