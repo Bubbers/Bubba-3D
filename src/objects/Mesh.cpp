@@ -5,7 +5,6 @@
 using namespace chag;
 
 Mesh::Mesh() {
-    m_modelMatrix = make_identity<float4x4>();
 };
 
 Mesh::~Mesh() { };

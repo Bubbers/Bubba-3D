@@ -1,7 +1,7 @@
 #ifndef __COLLIDER_H__
 #define __COLLIDER_H__
 
-#include <Mesh.h>
+#include <GameObject.h>
 #include <float4.h>
 #include <float3.h>
 #include <Triangle.h>
@@ -14,7 +14,7 @@ class Collider
 public:
 	Collider(Octree* tree);
 	~Collider();
-	void addMesh(Mesh* model);
+	void addMesh(GameObject*gameObject);
 	void insertAll();
 	float rayIntersection(float3 rayOrigin, float3 rayVec);
 

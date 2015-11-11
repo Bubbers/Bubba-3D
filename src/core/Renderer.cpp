@@ -68,9 +68,9 @@ void Renderer::setIdleMethod(void(*idle)(int), float delay) {
 	glutTimerFunc(delay, idle, 0);
 }
 
-void Renderer::drawModel(IDrawable &model, Shader shaderProgram)
+void Renderer::drawModel(IDrawable &model, Shader* shaderProgram)
 {
-	shaderProgram.use();
+	shaderProgram->use();
 	model.render();
 }
 
@@ -110,15 +110,15 @@ void Renderer::drawScene(Camera camera, Scene scene, float currentTime)
 	int h = glutGet((GLenum)GLUT_WINDOW_HEIGHT);
 	glViewport(0, 0, w, h);
 	// Use shader and set up uniforms
-	shaderProgram.use();
+	shaderProgram->use();
 
 	//Sets matrices
-	shaderProgram.setUniformMatrix4fv("viewMatrix", viewMatrix);
-	shaderProgram.setUniformMatrix4fv("projectionMatrix", projectionMatrix);
-	shaderProgram.setUniformMatrix4fv("lightMatrix", lightMatrix);
-	shaderProgram.setUniformMatrix4fv("inverseViewNormalMatrix", transpose(viewMatrix));
-	shaderProgram.setUniform3f("viewPosition", camera.getPosition());
-	shaderProgram.setUniformMatrix4fv("viewMatrix", viewMatrix);
+	shaderProgram->setUniformMatrix4fv("viewMatrix", viewMatrix);
+	shaderProgram->setUniformMatrix4fv("projectionMatrix", projectionMatrix);
+	shaderProgram->setUniformMatrix4fv("lightMatrix", lightMatrix);
+	shaderProgram->setUniformMatrix4fv("inverseViewNormalMatrix", transpose(viewMatrix));
+	shaderProgram->setUniform3f("viewPosition", camera.getPosition());
+	shaderProgram->setUniformMatrix4fv("viewMatrix", viewMatrix);
 
 	setLights(shaderProgram, scene);
 
@@ -126,14 +126,14 @@ void Renderer::drawScene(Camera camera, Scene scene, float currentTime)
 
 	//Set shadowmap
 	if (scene.shadowMapCamera != NULL) {
-		shaderProgram.setUniform1i("shadowMap", 1);
+		shaderProgram->setUniform1i("shadowMap", 1);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, sbo.texture);
 	}
 
 	//Set cube map
 	if (scene.cubeMap != NULL) {
-		shaderProgram.setUniform1i("cubeMap", 2);
+		shaderProgram->setUniform1i("cubeMap", 2);
 		scene.cubeMap->bind(GL_TEXTURE2);
 	}
 
@@ -148,41 +148,41 @@ void Renderer::drawScene(Camera camera, Scene scene, float currentTime)
 
 }
 
-void Renderer::setLights(Shader shaderProgram, Scene scene) {
+void Renderer::setLights(Shader* shaderProgram, Scene scene) {
 	//set dirlights
-	shaderProgram.setUniform3f("directionalLight.colors.ambientColor", scene.directionalLight.ambientColor);
-	shaderProgram.setUniform3f("directionalLight.colors.diffuseColor", scene.directionalLight.diffuseColor);
-	shaderProgram.setUniform3f("directionalLight.colors.specularColor", scene.directionalLight.specularColor);
-	shaderProgram.setUniform3f("directionalLight.direction", scene.directionalLight.direction);
+	shaderProgram->setUniform3f("directionalLight.colors.ambientColor", scene.directionalLight.ambientColor);
+	shaderProgram->setUniform3f("directionalLight.colors.diffuseColor", scene.directionalLight.diffuseColor);
+	shaderProgram->setUniform3f("directionalLight.colors.specularColor", scene.directionalLight.specularColor);
+	shaderProgram->setUniform3f("directionalLight.direction", scene.directionalLight.direction);
 
 	//set pointLights
 
-	shaderProgram.setUniform1i("nrPointLights", (int)scene.pointLights.size());
+	shaderProgram->setUniform1i("nrPointLights", (int)scene.pointLights.size());
 	for (int i = 0; i < (int)scene.pointLights.size(); i++) {
 		string name = std::string("pointLights[") + patch::to_string(i).c_str() + "]";
-		shaderProgram.setUniform3f((name + ".position").c_str(), scene.pointLights[i].position);
-		shaderProgram.setUniform3f((name + ".colors.ambientColor").c_str(), scene.pointLights[i].ambientColor);
-		shaderProgram.setUniform3f((name + ".colors.diffuseColor").c_str(), scene.pointLights[i].diffuseColor);
-		shaderProgram.setUniform3f((name + ".colors.specularColor").c_str(), scene.pointLights[i].specularColor);
-		shaderProgram.setUniform1f((name + ".attenuation.constant").c_str(), scene.pointLights[i].attenuation.constant);
-		shaderProgram.setUniform1f((name + ".attenuation.linear").c_str(), scene.pointLights[i].attenuation.linear);
-		shaderProgram.setUniform1f((name + ".attenuation.exp").c_str(), scene.pointLights[i].attenuation.exp);
+		shaderProgram->setUniform3f((name + ".position").c_str(), scene.pointLights[i].position);
+		shaderProgram->setUniform3f((name + ".colors.ambientColor").c_str(), scene.pointLights[i].ambientColor);
+		shaderProgram->setUniform3f((name + ".colors.diffuseColor").c_str(), scene.pointLights[i].diffuseColor);
+		shaderProgram->setUniform3f((name + ".colors.specularColor").c_str(), scene.pointLights[i].specularColor);
+		shaderProgram->setUniform1f((name + ".attenuation.constant").c_str(), scene.pointLights[i].attenuation.constant);
+		shaderProgram->setUniform1f((name + ".attenuation.linear").c_str(), scene.pointLights[i].attenuation.linear);
+		shaderProgram->setUniform1f((name + ".attenuation.exp").c_str(), scene.pointLights[i].attenuation.exp);
 	}
 
 	//set spotLights
-	shaderProgram.setUniform1i("nrSpotLights", (int)scene.spotLights.size());
+	shaderProgram->setUniform1i("nrSpotLights", (int)scene.spotLights.size());
 	for (int i = 0; i < (int)scene.spotLights.size(); i++) {
 		string name = std::string("spotLights[") + patch::to_string(i).c_str() + "]";
-		shaderProgram.setUniform3f((name + ".position").c_str(), scene.spotLights[i].position);
-		shaderProgram.setUniform3f((name + ".colors.ambientColor").c_str(), scene.spotLights[i].ambientColor);
-		shaderProgram.setUniform3f((name + ".colors.diffuseColor").c_str(), scene.spotLights[i].diffuseColor);
-		shaderProgram.setUniform3f((name + ".colors.specularColor").c_str(), scene.spotLights[i].specularColor);
-		shaderProgram.setUniform1f((name + ".attenuation.constant").c_str(), scene.spotLights[i].attenuation.constant);
-		shaderProgram.setUniform1f((name + ".attenuation.linear").c_str(), scene.spotLights[i].attenuation.linear);
-		shaderProgram.setUniform1f((name + ".attenuation.exp").c_str(), scene.spotLights[i].attenuation.exp);
-		shaderProgram.setUniform3f((name + ".direction").c_str(), scene.spotLights[i].direction);
-		shaderProgram.setUniform1f((name + ".cutoff").c_str(), scene.spotLights[i].cutOff);
-		shaderProgram.setUniform1f((name + ".cutoffOuter").c_str(), scene.spotLights[i].outerCutOff);
+		shaderProgram->setUniform3f((name + ".position").c_str(), scene.spotLights[i].position);
+		shaderProgram->setUniform3f((name + ".colors.ambientColor").c_str(), scene.spotLights[i].ambientColor);
+		shaderProgram->setUniform3f((name + ".colors.diffuseColor").c_str(), scene.spotLights[i].diffuseColor);
+		shaderProgram->setUniform3f((name + ".colors.specularColor").c_str(), scene.spotLights[i].specularColor);
+		shaderProgram->setUniform1f((name + ".attenuation.constant").c_str(), scene.spotLights[i].attenuation.constant);
+		shaderProgram->setUniform1f((name + ".attenuation.linear").c_str(), scene.spotLights[i].attenuation.linear);
+		shaderProgram->setUniform1f((name + ".attenuation.exp").c_str(), scene.spotLights[i].attenuation.exp);
+		shaderProgram->setUniform3f((name + ".direction").c_str(), scene.spotLights[i].direction);
+		shaderProgram->setUniform1f((name + ".cutoff").c_str(), scene.spotLights[i].cutOff);
+		shaderProgram->setUniform1f((name + ".cutoffOuter").c_str(), scene.spotLights[i].outerCutOff);
 	}
 }
 
@@ -190,18 +190,18 @@ void Renderer::setLights(Shader shaderProgram, Scene scene) {
 * In this function, add all scene elements that should cast shadow, that way
 * there is only one draw call to each of these, as this function is called twice.
 */
-void Renderer::drawShadowCasters(Shader shaderProgram, Scene scene)
+void Renderer::drawShadowCasters(Shader* shaderProgram, Scene scene)
 {
 	for (int i = 0; i < scene.shadowCasters.size(); i++) {
-		shaderProgram.setUniform1f("object_reflectiveness", (*scene.shadowCasters[i]).shininess);
+		shaderProgram->setUniform1f("object_reflectiveness", (*scene.shadowCasters[i]).shininess);
 		drawModel(*scene.shadowCasters[i], shaderProgram);
 	}
 }
 
-void Renderer::drawTransparent(Shader shaderProgram, Scene scene)
+void Renderer::drawTransparent(Shader* shaderProgram, Scene scene)
 {
 	for (int i = 0; i < scene.transparentObjects.size(); i++) {
-		shaderProgram.setUniform1f("object_reflectiveness", (*scene.transparentObjects[i]).shininess);
+		shaderProgram->setUniform1f("object_reflectiveness", (*scene.transparentObjects[i]).shininess);
 		drawModel(*scene.transparentObjects[i], shaderProgram);
 	}
 }
@@ -219,12 +219,12 @@ void Renderer::drawShadowMap(Fbo sbo, float4x4 viewProjectionMatrix, Scene scene
 
 	GLint currentProgram;
 	glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
-	sbo.shaderProgram.use();
-	sbo.shaderProgram.setUniformMatrix4fv("viewProjectionMatrix", viewProjectionMatrix);
+	sbo.shaderProgram->use();
+	sbo.shaderProgram->setUniformMatrix4fv("viewProjectionMatrix", viewProjectionMatrix);
 
 	//TODO
 	for (int i = 0; i < scene.shadowCasters.size(); i++) {
-		sbo.shaderProgram.setUniform1f("object_reflectiveness", (*scene.shadowCasters[i]).shininess);
+		sbo.shaderProgram->setUniform1f("object_reflectiveness", (*scene.shadowCasters[i]).shininess);
         (*scene.shadowCasters[i]).renderShadow(sbo.shaderProgram);
    	}
 
@@ -234,13 +234,13 @@ void Renderer::drawShadowMap(Fbo sbo, float4x4 viewProjectionMatrix, Scene scene
 	glUseProgram(currentProgram);
 }
 
-void Renderer::setFog(Shader shaderProgram) {
+void Renderer::setFog(Shader* shaderProgram) {
 	if (effects.fog.fEquation == FOG_EQ::NONE){ return; }
-	shaderProgram.setUniform1i("fog.iEquation",	effects.fog.fEquation);
-	shaderProgram.setUniform1f("fog.fDensity",	effects.fog.fDensity);
-	shaderProgram.setUniform1f("fog.fEnd",		effects.fog.fEnd);
-	shaderProgram.setUniform1f("fog.fStart",    effects.fog.fStart);
-	shaderProgram.setUniform3f("fog.vColor",	effects.fog.vColor);
+	shaderProgram->setUniform1i("fog.iEquation",	effects.fog.fEquation);
+	shaderProgram->setUniform1f("fog.fDensity",	effects.fog.fDensity);
+	shaderProgram->setUniform1f("fog.fEnd",		effects.fog.fEnd);
+	shaderProgram->setUniform1f("fog.fStart",    effects.fog.fStart);
+	shaderProgram->setUniform3f("fog.vColor",	effects.fog.vColor);
 }
 
 void Renderer::initGL() 
@@ -279,7 +279,8 @@ void Renderer::initGL()
 	//*************************************************************************
 	Logger::logInfo("Generating OpenGL data.");
 
-	sbo.shaderProgram.loadShader("../shaders/shadowMap.vert", "../shaders/shadowMap.frag");
+	ResourceManager::loadShader("../shaders/shadowMap.vert", "../shaders/shadowMap.frag", "SHADOW_SHADER");
+	sbo.shaderProgram = ResourceManager::getShader("SHADOW_SHADER");
 
 	sbo.width = SHADOW_MAP_RESOLUTION;
 	sbo.height = SHADOW_MAP_RESOLUTION;
@@ -318,10 +319,21 @@ void Renderer::initGL()
 	//*************************************************************************
 	// Create post process Fbo
 	//*************************************************************************
-	postFxShader.loadShader("../shaders/postFx.vert", "../shaders/postFx.frag");
-	verticalBlurShader.loadShader("../shaders/postFx.vert", "../shaders/vertical_blur.frag");
-	horizontalBlurShader.loadShader("../shaders/postFx.vert", "../shaders/horizontal_blur.frag");
-	cutoffShader.loadShader("../shaders/postFx.vert", "../shaders/cutoff.frag");
+
+	string post_fx = "POST_FX_SHADER";
+	string vert_blur = "VERTICAL_BLUR_SHADER";
+	string hor_blur = "HORIZONTAL_BLUR_SHADER";
+	string cutoff = "CUTOFF_SHADER";
+
+	ResourceManager::loadShader("../shaders/postFx.vert", "../shaders/postFx.frag", post_fx);
+	ResourceManager::loadShader("../shaders/postFx.vert", "../shaders/vertical_blur.frag", vert_blur);
+	ResourceManager::loadShader("../shaders/postFx.vert", "../shaders/horizontal_blur.frag", hor_blur);
+	ResourceManager::loadShader("../shaders/postFx.vert", "../shaders/cutoff.frag", cutoff);
+
+	postFxShader = ResourceManager::getShader(post_fx);
+	verticalBlurShader = ResourceManager::getShader(vert_blur);
+	horizontalBlurShader = ResourceManager::getShader(hor_blur);
+	cutoffShader = ResourceManager::getShader(cutoff);
 
 	postProcessFbo = createPostProcessFbo(width, height);
 	verticalBlurFbo = createPostProcessFbo(width, height);
@@ -377,9 +389,9 @@ void Renderer::renderPostProcess() {
 	glClearColor(0.6, 0.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	postFxShader.use();
-	postFxShader.setUniform1i("frameBufferTexture", 0);
-	postFxShader.setUniform1i("blurredFrameBufferTexture", 1);
+	postFxShader->use();
+	postFxShader->setUniform1i("frameBufferTexture", 0);
+	postFxShader->setUniform1i("blurredFrameBufferTexture", 1);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_RECTANGLE_ARB, postProcessFbo.texture);
@@ -387,7 +399,7 @@ void Renderer::renderPostProcess() {
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_RECTANGLE_ARB, verticalBlurFbo.texture);
 
-	postFxShader.setUniform1f("time", currentTime);
+	postFxShader->setUniform1f("time", currentTime);
 
 	drawFullScreenQuad();
 }
@@ -395,13 +407,13 @@ void Renderer::renderPostProcess() {
 void Renderer::blurImage() { 
 	if (!effects.blur.active) { return; }
 	//CUTOFF
-	cutoffShader.use();
+	cutoffShader->use();
 	glBindFramebuffer(GL_FRAMEBUFFER, cutOffFbo.id);
 	glViewport(0, 0, width, height);
 	glClearColor(1.0, 1.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	cutoffShader.setUniform1f("cutAt", effects.blur.cutOff);
+	cutoffShader->setUniform1f("cutAt", effects.blur.cutOff);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_RECTANGLE_ARB, postProcessFbo.texture);
 
@@ -412,9 +424,9 @@ void Renderer::blurImage() {
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	horizontalBlurShader.use();
+	horizontalBlurShader->use();
 
-	horizontalBlurShader.setUniform1i("frameBufferTexture", 0);
+	horizontalBlurShader->setUniform1i("frameBufferTexture", 0);
 	glBindTexture(GL_TEXTURE_RECTANGLE_ARB, cutOffFbo.texture);
 	drawFullScreenQuad();
 
@@ -423,9 +435,9 @@ void Renderer::blurImage() {
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	verticalBlurShader.use();
+	verticalBlurShader->use();
 
-	verticalBlurShader.setUniform1i("frameBufferTexture", 0);
+	verticalBlurShader->setUniform1i("frameBufferTexture", 0);
 	glBindTexture(GL_TEXTURE_RECTANGLE_ARB, horizontalBlurFbo.texture);
 	drawFullScreenQuad();
 }

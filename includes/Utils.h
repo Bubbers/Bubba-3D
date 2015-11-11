@@ -10,7 +10,7 @@
 struct Fbo{
 	GLuint id;
 	GLuint texture;
-	Shader shaderProgram;
+	Shader* shaderProgram;
 	GLuint depthbuffer;
 
 	int width, height;

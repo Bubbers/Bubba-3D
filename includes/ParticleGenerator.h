@@ -41,11 +41,11 @@ struct Particle {
 class ParticleGenerator : public IDrawable
 {
 public:
-	ParticleGenerator(Shader shaderProgram, Texture *texture, int amount, Camera *camera, float3 position);
+	ParticleGenerator(Shader* shaderProgram, Texture *texture, int amount, Camera *camera, float3 position);
 	~ParticleGenerator();
 
 	void update(float dt);
-	virtual void renderShadow(Shader shaderProgram) {};
+	virtual void renderShadow(Shader* shaderProgram) {};
 
 	void render();
 
@@ -56,9 +56,8 @@ private:
 	std::vector<Particle*> m_particles;
 	GLuint m_vaob;
 	Texture *texture;
-	GLuint m_shaderProgram;
 	int m_amount;
-	Shader shaderProgram;
+	Shader* shaderProgram;
 	
 
 	float3x3 getModelMatrix3x3();

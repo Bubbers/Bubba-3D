@@ -9,7 +9,7 @@
 class ResourceManager {
 public:
     static void loadShader(const std::string &vertexShader, const std::string &fragmentShader, std::string name);
-    static Shader getShader(std::string name);
+    static Shader* getShader(std::string name);
 
     static Texture* loadAndFetchTexture(const std::string &fileName);
     static void loadTexture(const std::string &fileName);

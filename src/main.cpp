@@ -496,7 +496,7 @@ void createLights() {
 	DirectionalLight sun3;
 	sun3.diffuseColor  = make_vector(0.6f, 0.6f, 0.6f);
 	sun3.specularColor = make_vector(0.6f, 0.6f, 0.6f);
-	sun3.ambientColor  = make_vector(0.05f, 0.05f, 0.05f);
+	sun3.ambientColor  = make_vector(0.35f, 0.35f, 0.35f);
 	sun3.direction     = make_vector(0.0f, -100.0f, 0.0f);
 	scene.directionalLight = sun3;
 
@@ -566,7 +566,9 @@ void createCubeMaps() {
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_Z, cMapAll.texture, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, cMapAll.texture, 0);
 
-	cMapAll.shaderProgram.loadShader("../shaders/simple.vert", "../shaders/simple.frag");
+	const string CUBE_MAP_SHADER = "CUBE_MAP_SHADER";
+	ResourceManager::loadShader("../shaders/simple.vert", "../shaders/simple.frag", CUBE_MAP_SHADER);
+	cMapAll.shaderProgram = ResourceManager::getShader(CUBE_MAP_SHADER);
 }
 
 GLuint loadTexture(std::string fileName)
@@ -628,7 +630,7 @@ GLuint loadTexture(std::string fileName)
 void createMeshes() {
 	Logger::logInfo("Started loading meshes");
 	ResourceManager::loadShader("../shaders/particle.vert", "../shaders/particle.frag", "particleShader");
-	Shader shader = ResourceManager::getShader("particleShader");
+	Shader* shader = ResourceManager::getShader("particleShader");
 	Texture *particleTexture = ResourceManager::loadAndFetchTexture("../scenes/engineflare1.jpg");
 
 	gen = new ParticleGenerator(shader, particleTexture, 200, playerCamera, make_vector(0.0f, 15.0f, 0.0f));
@@ -639,51 +641,54 @@ void createMeshes() {
 	//*************************************************************************
 	//Load shadow casters
 	Mesh* carM = ResourceManager::loadAndFetchMesh("../scenes/untitled.dae");
-	car = GameObject(*carM);
+	car = GameObject(carM);
+	car.move(make_translation(make_vector(0.0f, 0.0f, 0.0f)));
 	scene.shadowCasters.push_back(&car);
 
 	Mesh* worldM = ResourceManager::loadAndFetchMesh("../scenes/world.obj");
-	world = GameObject(*worldM);
+	world = GameObject(worldM);
+	world.move(make_translation(make_vector(0.0f, 0.0f, 0.0f)));
 	scene.shadowCasters.push_back(&world);
 
 	Mesh* factoryM = ResourceManager::loadAndFetchMesh("../scenes/test.obj");
-	factoryM->m_modelMatrix = make_translation(make_vector(-15.0f, 6.0f, 0.0f)) * make_rotation_y<float4x4>(M_PI / 180 * 90) * make_scale<float4x4>(make_vector(2.0f, 2.0f, 2.0f));
-	factory = GameObject(*factoryM);
+	factory = GameObject(factoryM);
+    factory.move(make_translation(make_vector(-15.0f, 6.0f, 0.0f)) * make_rotation_y<float4x4>(M_PI / 180 * 90) * make_scale<float4x4>(make_vector(2.0f, 2.0f, 2.0f)));
 	scene.shadowCasters.push_back(&factory);
 	
 	Mesh* spiderM = ResourceManager::loadAndFetchMesh("../scenes/spider.obj");
-	spiderM->m_modelMatrix = make_translation(make_vector(40.0f, 2.0f, 0.0f)) * make_rotation_x<float4x4>(M_PI / 180 * 0) *  make_scale<float4x4>(0.1f);
-	spider = GameObject(*spiderM);
+	spider = GameObject(spiderM);
+    spider.move(make_translation(make_vector(40.0f, 2.0f, 0.0f)) * make_rotation_x<float4x4>(M_PI / 180 * 0) *  make_scale<float4x4>(0.1f));
 	scene.shadowCasters.push_back(&spider);
 
 	Mesh* waterM = ResourceManager::loadAndFetchMesh("../scenes/water.obj");
-	waterM->m_modelMatrix = make_translation(make_vector(0.0f, -6.0f, 0.0f));
-	water = GameObject(*waterM);
+	water = GameObject(waterM);
+    water.move(make_translation(make_vector(0.0f, -6.0f, 0.0f)));
 	scene.shadowCasters.push_back(&water);
 	
 	Mesh* lampM = ResourceManager::loadAndFetchMesh("../scenes/sphere.obj");
-	lampM->m_modelMatrix = make_translation(make_vector(10.0f, 10.0f, 10.0f));
-	lamp = GameObject(*lampM);
+
+	lamp = GameObject(lampM);
+    lamp.move(make_translation(make_vector(10.0f, 10.0f, 10.0f)));
 	scene.shadowCasters.push_back(&lamp);
 
 	Mesh* lamp2M = ResourceManager::loadAndFetchMesh("../scenes/sphere.obj");
-	lamp2M->m_modelMatrix = make_translation(make_vector(30.0f, 10.0f, 30.0f));
-	lamp2 = GameObject(*lamp2M);
+	lamp2 = GameObject(lamp2M);
+    lamp2.move(make_translation(make_vector(30.0f, 10.0f, 30.0f)));
 	scene.shadowCasters.push_back(&lamp2);
 	
 	Mesh* lamp3M = ResourceManager::loadAndFetchMesh("../scenes/sphere.obj");
-	lamp3M->m_modelMatrix = make_translation(make_vector(0.0f, 10.0f, -10.0f));
-	lamp3 = GameObject(*lamp3M);
+	lamp3 = GameObject(lamp3M);
+    lamp3.move(make_translation(make_vector(0.0f, 10.0f, -10.0f)));
 	scene.shadowCasters.push_back(&lamp3);
 
 	Mesh* normalTestM = ResourceManager::loadAndFetchMesh("../scenes/boxwNormals.obj");
-	normalTestM->m_modelMatrix = make_translation(make_vector(0.0f, 10.0f, 0.0f)) * make_rotation_x<float4x4>(M_PI / 180 * 30);
-	normalTest = GameObject(*normalTestM);
+	normalTest = GameObject(normalTestM);
+    normalTest.move(make_translation(make_vector(0.0f, 10.0f, 0.0f)) * make_rotation_x<float4x4>(M_PI / 180 * 30));
 	scene.shadowCasters.push_back(&normalTest);
 
 	Mesh* normalTestWithoutM = ResourceManager::loadAndFetchMesh("../scenes/boxwoNormals.obj");
-	normalTestWithoutM->m_modelMatrix = make_translation(make_vector(5.0f, 10.0f, 0.0f)) * make_rotation_x<float4x4>(M_PI / 180 * 30);
-	normalTestWithout = GameObject(*normalTestWithoutM);
+	normalTestWithout = GameObject(normalTestWithoutM);
+    normalTestWithout.move(make_translation(make_vector(5.0f, 10.0f, 0.0f)) * make_rotation_x<float4x4>(M_PI / 180 * 30));
 	scene.shadowCasters.push_back(&normalTestWithout);
 	
 
@@ -702,10 +707,10 @@ void createMeshes() {
 	octTree = new Octree(origin, halfVector, 0);
 
 	collider = new Collider(octTree);
-	collider->addMesh(worldM);
-	collider->addMesh(waterM);
-	collider->addMesh(factoryM);
-    collider->addMesh(spiderM);
+	collider->addMesh(&world);
+	collider->addMesh(&water);
+	collider->addMesh(&factory);
+    collider->addMesh(&spider);
   
 	collider->insertAll(); //TODO enlargen octrees afterhand instead
 	Logger::logInfo("Finished loading octree");
@@ -764,9 +769,9 @@ void updatePlayer() {
 	Quaternion qatY = make_quaternion_axis_angle(vUp, carLoc.angley);
 	Quaternion qatZ = make_quaternion_axis_angle(make_rotation_y<float3x3>(-carLoc.angley) * frontDir, anglez);
 
-	car.mesh.m_modelMatrix = make_translation(carLoc.location)
-		* makematrix(qatX)
-		* makematrix(qatY)
-		* makematrix(qatZ);
+	car.move(make_translation(carLoc.location));
+	car.update(makematrix(qatX));
+	car.update(makematrix(qatY));
+	car.update(makematrix(qatZ));
 }
 

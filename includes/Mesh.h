@@ -86,7 +86,6 @@ private:
 
 public:
     std::vector<Material> materials;
-    chag::float4x4 m_modelMatrix;
     std::vector<Chunk> m_chunks;
     AABB m_aabb;
 };

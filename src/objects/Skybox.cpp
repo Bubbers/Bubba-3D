@@ -17,8 +17,8 @@ bool Skybox::init(const string &posXFilename, const string &negXFilename, const 
 }
 
 void Skybox::render() {
-    shaderProgram.backupCurrentShaderProgram();
-    shaderProgram.use();
+    shaderProgram->backupCurrentShaderProgram();
+    shaderProgram->use();
 
     GLint OldCullFaceMode;
     glGetIntegerv(GL_CULL_FACE_MODE, &OldCullFaceMode);
@@ -31,11 +31,11 @@ void Skybox::render() {
     float4x4 viewProj = m_camera->getProjectionMatrix() * m_camera->getViewMatrix();
     float4x4 modelMat = make_translation(make_vector(0.0f, 2.0f, 0.0f)) * make_translation(m_camera->getPosition()) *
                         make_scale<float4x4>(make_vector(20.0f, 20.0f, 20.0f));
-    m_skyMesh->m_modelMatrix = modelMat;
-    shaderProgram.setUniformMatrix4fv("viewProjectionMatrix", viewProj);
+    float4x4 m_modelMatrix = modelMat;
+    shaderProgram->setUniformMatrix4fv("viewProjectionMatrix", viewProj);
     m_pCubemap->bind(GL_TEXTURE0);
-    shaderProgram.setUniform1i("cubeMapSampler", 0);
-    shaderProgram.setUniformMatrix4fv("modelMatrix", m_skyMesh->m_modelMatrix);
+    shaderProgram->setUniform1i("cubeMapSampler", 0);
+    shaderProgram->setUniformMatrix4fv("modelMatrix", m_modelMatrix);
 
     for (size_t i = 0; i < m_skyMesh->m_chunks.size(); ++i) {
         Chunk &chunk = m_skyMesh->m_chunks[i];
@@ -49,7 +49,7 @@ void Skybox::render() {
 
     glCullFace(OldCullFaceMode);
     glDepthFunc(OldDepthFuncMode);
-    shaderProgram.restorePreviousShaderProgram();
+    shaderProgram->restorePreviousShaderProgram();
 }
 
 

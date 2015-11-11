@@ -1,3 +1,4 @@
+#include <GameObject.h>
 #include "Collider.h"
 
 bool rayTriangle(float3 r_o, float3 r_d, float3 v1, float3 v2, float3 v3, float *ins);
@@ -46,32 +47,9 @@ void Collider::insertAll() {
 }
 
 
-void Collider::addMesh(Mesh* model) {
-	float4x4 modelMatrix = model->m_modelMatrix;
-	for (int i = 0; i < model->m_chunks.size(); i++) {
-
-		for (int j = 0; j < model->m_chunks[i].m_positions.size(); j += 3) {
-
-
-			float4 p1 = modelMatrix * make_vector(model->m_chunks[i].m_positions[j + 0].x,
-				model->m_chunks[i].m_positions[j + 0].y,
-				model->m_chunks[i].m_positions[j + 0].z, 1.0f);
-
-			float4 p2 = modelMatrix * make_vector(model->m_chunks[i].m_positions[j + 1].x,
-				model->m_chunks[i].m_positions[j + 1].y,
-				model->m_chunks[i].m_positions[j + 1].z, 1.0f);
-
-			float4 p3 = modelMatrix * make_vector(model->m_chunks[i].m_positions[j + 2].x,
-				model->m_chunks[i].m_positions[j + 2].y,
-				model->m_chunks[i].m_positions[j + 2].z, 1.0f);
-
-			Triangle* t = new Triangle(make_vector(p1.x, p1.y, p1.z), make_vector(p2.x, p2.y, p2.z), make_vector(p3.x, p3.y, p3.z));
-
-			ts.push_back(t);
-		}
-	}
-	checkMinMax(model->m_aabb.maxV.x, model->m_aabb.maxV.y, model->m_aabb.maxV.z, &aabb_coll.minV, &aabb_coll.maxV);
-	checkMinMax(model->m_aabb.minV.x, model->m_aabb.minV.y, model->m_aabb.minV.z, &aabb_coll.minV, &aabb_coll.maxV);
+void Collider::addMesh(GameObject*gameObject) {
+	std::vector<Triangle*> gobTs = gameObject->getTriangles();
+	ts.insert(ts.end(), gobTs.begin(), gobTs.end());
 }
 
 

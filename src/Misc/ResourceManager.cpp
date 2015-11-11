@@ -12,10 +12,10 @@ void ResourceManager::loadShader(const std::string &vertexShader, const std::str
     shaders.insert(std::pair<std::string, Shader>(name, shaderProgram));
 }
 
-Shader ResourceManager::getShader(std::string name) {
+Shader* ResourceManager::getShader(std::string name) {
     std::map<std::string, Shader>::iterator it =  shaders.find(name);
     if( it != shaders.end()) {
-        return it->second;
+        return &(it->second);
     } else {
         std::stringstream errorMessage;
         errorMessage << "Shader " << name << " hasn't been loaded into ResourceManager before fetched";

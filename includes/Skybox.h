@@ -19,7 +19,7 @@ public:
 
 	bool init(const string& posXFilename, const string& negXFilename, const string& posYFilename, const string& negYFilename, const string& posZFilename, const string& negZFilename);
 
-	void renderShadow(Shader shaderProgram) {};
+	void renderShadow(Shader* shaderProgram) {};
 	virtual void render();
 private:
 	Camera* m_camera;
