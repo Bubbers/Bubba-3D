@@ -240,8 +240,7 @@ void handleKeys(unsigned char key, int x, int y)
 	{
 	case 27:   
 		exit(0);
-		break;   
-	case 32:   
+	case 32:
 		paused = !paused;
 		break;
 	case 'w':
@@ -269,8 +268,7 @@ void handleKeysRelease(unsigned char key, int x, int y)
 	{
 	case 27:   
 		exit(0);
-		break;  
-	case 32:   
+	case 32:
 		paused = !paused;
 		break;
 	case 'w':
