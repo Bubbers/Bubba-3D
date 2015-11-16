@@ -56,7 +56,10 @@ void CubeMapTexture::loadCubeMapFace(std::string filename, GLenum face)
 	width = FreeImage_GetWidth(image32Bit);
 	height = FreeImage_GetHeight(image32Bit);
 	GLubyte *textureData = FreeImage_GetBits(image32Bit);
+
 	glTexImage2D(face, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData);
+
+	FreeImage_Unload(image32Bit);
 }
 
 void CubeMapTexture::bind(GLenum textureUnit) {

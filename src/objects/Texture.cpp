@@ -26,7 +26,7 @@ void Texture::loadTexture(std::string fileName)
     glBindTexture(GL_TEXTURE_2D, texid);
     CHECK_GL_ERROR();
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB_ALPHA, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, textureData);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB_ALPHA_EXT, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, textureData);
     CHECK_GL_ERROR();
     glGenerateMipmap(GL_TEXTURE_2D);
     CHECK_GL_ERROR();
@@ -67,9 +67,9 @@ FIBITMAP* Texture::LoadImageIntoMemory(std::string fileName) {
 
     FIBITMAP *image = FreeImage_Load(imageFormat, fileName.c_str());
 
-    if(imageFormat == FIF_JNG || imageFormat == FIF_PNG) {
+    if(imageFormat == FIF_JPEG || imageFormat == FIF_PNG) {
         FreeImage_FlipVertical(image);
-        FreeImage_FlipHorizontal(image);
+        //FreeImage_FlipHorizontal(image);
     }
 
     FIBITMAP *image32Bit;

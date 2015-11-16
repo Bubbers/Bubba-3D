@@ -26,7 +26,7 @@ add_executable(testz src/main.cpp ${files_SOURCE} includes/ResourceManager.h src
 #########################################################
 source_group(Logging	FILES src/logging/Logger.cpp)
 source_group(Cameras	FILES src/cameras/Camera.cpp src/cameras/PerspectiveCamera.cpp)
-source_group(Objects	FILES src/objects/Mesh.cpp src/objects/Scene.cpp src/objects/SkinnedMesh.cpp src/objects/Skybox.cpp src/objects/Triangle.cpp)
+source_group(Objects	FILES src/objects/Mesh.cpp src/objects/Scene.cpp src/objects/Skybox.cpp src/objects/Triangle.cpp)
 source_group(Collision	FILES src/collision/Collider.cpp src/collision/Octree.cpp)
 source_group(Core		FILES src/core/Renderer.cpp)
 source_group(Misc		FILES src/Misc/CubeMapTexture.cpp includes/glutil/glutil.cpp)

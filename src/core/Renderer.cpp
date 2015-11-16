@@ -35,7 +35,7 @@ Renderer::Renderer(int argc, char *argv[], int width, int height) : width(width)
 #	endif // ~ GLUT_SRGB
         glutInitWindowSize(width, height);
 
-	glutInitContextVersion(3, 0);
+	glutInitContextVersion(3, 1);
 	//glutInitContextProfile(GLUT_CORE_PROFILE);
 	glutInitContextFlags(GLUT_DEBUG);
 
