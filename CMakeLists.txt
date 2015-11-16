@@ -82,6 +82,13 @@ if(NOT IL_FOUND)
 endif(NOT IL_FOUND)
 
 
+find_package(SOIL REQUIRED)
+include_directories(${SOIL_INCLUDE_DIRS})
+target_link_libraries(testz ${SOIL_LIBRARIES})
+if(NOT SOIL_FOUND)
+    message(ERROR " SOIL not found!")
+endif(NOT SOIL_FOUND)
+
 #########################################################
 # FIND ASSIMP
 #########################################################

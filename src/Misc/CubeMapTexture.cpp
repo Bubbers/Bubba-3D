@@ -1,5 +1,6 @@
 #include "CubeMapTexture.h"
 #include <glutil/glutil.h>
+#include "SOIL/SOIL.h"
 
 
 CubeMapTexture::CubeMapTexture(const string& posXFilename, const string& negXFilename, const string& posYFilename, const string& negYFilename, const string& posZFilename, const string& negZFilename) {
@@ -49,7 +50,7 @@ CubeMapTexture::CubeMapTexture(const string& posXFilename, const string& negXFil
 
 void CubeMapTexture::loadCubeMapFace(std::string filename, GLenum face)
 {
-	ILuint image;
+	/*ILuint image;
 	ilGenImages(1, &image);
 	ilBindImage(image);
 
@@ -63,13 +64,17 @@ void CubeMapTexture::loadCubeMapFace(std::string filename, GLenum face)
 	}
 	ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
 	int s = std::max(ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT));
-	iluScale(s, s, ilGetInteger(IL_IMAGE_DEPTH));
-	glTexImage2D(face, 0, GL_RGBA, ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT), 0, GL_RGBA, GL_UNSIGNED_BYTE, ilGetData());
+	iluScale(s, s, ilGetInteger(IL_IMAGE_DEPTH));*/
+
+	int width, height;
+	unsigned char* image = SOIL_load_image(filename.c_str(), &width, &height, 0, SOIL_LOAD_RGBA);
+	glTexImage2D(face, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
+	SOIL_free_image_data(image);
 }
 
 void CubeMapTexture::bind(GLenum textureUnit) {
 	glActiveTexture(textureUnit);
-	glEnable(GL_TEXTURE_2D);
+//	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, m_texture);
 }
 

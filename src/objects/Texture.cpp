@@ -1,13 +1,11 @@
-#include <IL/il.h>
 #include <glutil/glutil.h>
 #include <Logger.h>
-#include <IL/ilu.h>
 #include "Texture.h"
-
+#include "SOIL/SOIL.h"
 
 void Texture::bind(GLenum textureUnit){
     glActiveTexture(textureUnit);
-    glEnable(GL_TEXTURE_2D);
+//    glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, textureID);
 }
 
@@ -15,7 +13,7 @@ void Texture::bind(GLenum textureUnit){
 void Texture::loadTexture(std::string fileName)
 {
     Logger::logInfo("Loading texture: " + fileName);
-    ILuint image = ilGenImage();
+    /*ILuint image = ilGenImage();
     ilBindImage(image);
     CHECK_GL_ERROR();
 
@@ -35,23 +33,27 @@ void Texture::loadTexture(std::string fileName)
     {
         iluFlipImage();
     }
-    ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
+    ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);*/
+
+    int width, height;
+    unsigned char* image = SOIL_load_image(fileName.c_str(), &width, &height, 0, SOIL_LOAD_RGBA);
+
     GLuint texid;
     glGenTextures(1, &texid);
     glActiveTexture(GL_TEXTURE0);
     CHECK_GL_ERROR();
     glBindTexture(GL_TEXTURE_2D, texid);
     CHECK_GL_ERROR();
-    int width = ilGetInteger(IL_IMAGE_WIDTH);
-    int height = ilGetInteger(IL_IMAGE_HEIGHT);
+    //int width = ilGetInteger(IL_IMAGE_WIDTH);
+    //int height = ilGetInteger(IL_IMAGE_HEIGHT);
     // Note: now with SRGB
-    ILubyte* b = ilGetData();
-    ILubyte c = *b;
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB_ALPHA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, b);
+    //ILubyte* b = ilGetData();
+    //ILubyte c = *b;
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
     //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, ilGetData());
     CHECK_GL_ERROR();
-    ilDeleteImage(image);
-    CHECK_GL_ERROR();
+    //ilDeleteImage(image);
+
     //GLuint texid = ilutGLLoadImage(const_cast<char *>(fileName.c_str()));
     glGenerateMipmap(GL_TEXTURE_2D);
     CHECK_GL_ERROR();
@@ -61,6 +63,7 @@ void Texture::loadTexture(std::string fileName)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16);
     CHECK_GL_ERROR();
+    SOIL_free_image_data(image);
 
     glBindTexture(GL_TEXTURE_2D, 0);
     CHECK_GL_ERROR();

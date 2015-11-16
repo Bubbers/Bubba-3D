@@ -15,7 +15,7 @@ GameObject::GameObject(Mesh mesh) {
 
 void GameObject::render() {
     CHECK_GL_ERROR();
-    glPushAttrib(GL_ALL_ATTRIB_BITS);
+    //glPushAttrib(GL_ALL_ATTRIB_BITS);
 
     chag::float4x4 normalMatrix = chag::inverse(chag::transpose(mesh.m_modelMatrix));
     shaderProgram.setUniformMatrix4fv("modelMatrix", mesh.m_modelMatrix);
@@ -51,13 +51,13 @@ void GameObject::render() {
         CHECK_GL_ERROR();
     }
 
-    glPopAttrib();
+    //glPopAttrib();
     CHECK_GL_ERROR();
 }
 
 
 void GameObject::renderShadow(Shader shaderProgram) {
-    glPushAttrib(GL_ALL_ATTRIB_BITS);
+    //glPushAttrib(GL_ALL_ATTRIB_BITS);
 
     shaderProgram.setUniformMatrix4fv("modelMatrix", mesh.m_modelMatrix);
 
@@ -73,6 +73,6 @@ void GameObject::renderShadow(Shader shaderProgram) {
         CHECK_GL_ERROR();
     }
 
-    glPopAttrib();
+    //glPopAttrib();
     CHECK_GL_ERROR();
 }

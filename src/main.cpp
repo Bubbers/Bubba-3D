@@ -437,9 +437,16 @@ int main(int argc, char *argv[])
 	glutKeyboardUpFunc(handleKeysRelease);
 	glutSpecialFunc(handleSpecialKeys); 
 	glutMouseFunc(mouse); 
-	glutMotionFunc(motion); 
+	glutMotionFunc(motion);
 
 	renderer->initGL();
+
+	GLint n, i;
+	glGetIntegerv(GL_NUM_EXTENSIONS, &n);
+	for (i = 0; i < n; i++) {
+		printf("%s\n", glGetStringi(GL_EXTENSIONS, i));
+	}
+
 
 	createCubeMaps();
 	createCameras();
@@ -630,7 +637,7 @@ void createMeshes() {
 	Logger::logInfo("Started loading meshes");
 	ResourceManager::loadShader("../shaders/particle.vert", "../shaders/particle.frag", "particleShader");
 	Shader shader = ResourceManager::getShader("particleShader");
-	Texture *particleTexture = ResourceManager::loadAndFetchTexture("../scenes/engineflare1.jpg");
+	Texture *particleTexture = ResourceManager::loadAndFetchTexture("../scenes/bricks.jpg");
 
 	gen = new ParticleGenerator(shader, particleTexture, 200, playerCamera, make_vector(0.0f, 15.0f, 0.0f));
 	scene.transparentObjects.push_back(gen);
@@ -652,15 +659,15 @@ void createMeshes() {
 	factory = GameObject(*factoryM);
 	scene.shadowCasters.push_back(&factory);
 	
-	Mesh* spiderM = ResourceManager::loadAndFetchMesh("../scenes/spider.obj");
+	/*Mesh* spiderM = ResourceManager::loadAndFetchMesh("../scenes/spider.obj");
 	spiderM->m_modelMatrix = make_translation(make_vector(40.0f, 2.0f, 0.0f)) * make_rotation_x<float4x4>(M_PI / 180 * 0) *  make_scale<float4x4>(0.1f);
 	spider = GameObject(*spiderM);
-	scene.shadowCasters.push_back(&spider);
+	scene.shadowCasters.push_back(&spider);*/
 
-	Mesh* waterM = ResourceManager::loadAndFetchMesh("../scenes/water.obj");
+	/*Mesh* waterM = ResourceManager::loadAndFetchMesh("../scenes/water.obj");
 	waterM->m_modelMatrix = make_translation(make_vector(0.0f, -6.0f, 0.0f));
 	water = GameObject(*waterM);
-	scene.shadowCasters.push_back(&water);
+	scene.shadowCasters.push_back(&water);*/
 	
 	Mesh* lampM = ResourceManager::loadAndFetchMesh("../scenes/sphere.obj");
 	lampM->m_modelMatrix = make_translation(make_vector(10.0f, 10.0f, 10.0f));
@@ -704,9 +711,9 @@ void createMeshes() {
 
 	collider = new Collider(octTree);
 	collider->addMesh(worldM);
-	collider->addMesh(waterM);
+	//collider->addMesh(waterM);
 	collider->addMesh(factoryM);
-    collider->addMesh(spiderM);
+    //collider->addMesh(spiderM);
   
 	collider->insertAll(); //TODO enlargen octrees afterhand instead
 	Logger::logInfo("Finished loading octree");
