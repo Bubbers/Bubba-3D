@@ -33,7 +33,7 @@ void GameObject::update(float4x4 update_matrix) {
 
 void GameObject::render() {
     CHECK_GL_ERROR();
-    glPushAttrib(GL_ALL_ATTRIB_BITS);
+    //glPushAttrib(GL_ALL_ATTRIB_BITS);
 
     chag::float4x4 normalMatrix = chag::inverse(chag::transpose(m_modelMatrix));
     shaderProgram->setUniformMatrix4fv("modelMatrix", m_modelMatrix);
@@ -69,7 +69,7 @@ void GameObject::render() {
         CHECK_GL_ERROR();
     }
 
-    glPopAttrib();
+    //glPopAttrib();
     CHECK_GL_ERROR();
 }
 
@@ -102,8 +102,8 @@ std::vector<Triangle *> GameObject::getTriangles() {
     return ts;
 }
 
+
 void GameObject::renderShadow(Shader *shaderProgram) {
-    glPushAttrib(GL_ALL_ATTRIB_BITS);
 
     shaderProgram->setUniformMatrix4fv("modelMatrix", m_modelMatrix);
 
@@ -119,6 +119,6 @@ void GameObject::renderShadow(Shader *shaderProgram) {
         CHECK_GL_ERROR();
     }
 
-    glPopAttrib();
+    //glPopAttrib();
     CHECK_GL_ERROR();
 }

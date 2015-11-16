@@ -27,7 +27,7 @@ Renderer::Renderer(int argc, char *argv[], int width, int height) : width(width)
         
 #	if defined(GLUT_SRGB)
         //glutInitDisplayMode(GLUT_DOUBLE | GLUT_SRGB | GLUT_DEPTH);
-        glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+        glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH );
 #	else // !GLUT_SRGB
        	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 	printf("--\n");
@@ -35,8 +35,11 @@ Renderer::Renderer(int argc, char *argv[], int width, int height) : width(width)
 #	endif // ~ GLUT_SRGB
         glutInitWindowSize(width, height);
 
-	glutInitContextVersion(3, 0);
+	glutInitContextVersion(3, 1);
+	glutInitContextProfile(GLUT_CORE_PROFILE);
 	glutInitContextFlags(GLUT_DEBUG);
+
+	CHECK_GL_ERROR();
         
 	glutCreateWindow("Bubba-3D");
 	/* If sRGB is available, enable rendering in sRGB. Note: we should do
@@ -245,7 +248,9 @@ void Renderer::setFog(Shader* shaderProgram) {
 
 void Renderer::initGL() 
 {
+	glewExperimental = GL_TRUE;
 	glewInit();
+	glGetError();
 
 	/* Print information about OpenGL and ensure that we've got at a context
 	* that supports least OpenGL 3.0. Then setup the OpenGL Debug message
@@ -254,11 +259,7 @@ void Renderer::initGL()
 	startupGLDiagnostics();
 	setupGLDebugMessages();
 
-	/* Initialize DevIL, the image library that we use to load textures. Also
-	* tell IL that we intent to use it with OpenGL.
-	*/
-	ilInit();
-	ilutRenderer(ILUT_OPENGL);
+	FreeImage_Initialise(true);
 
 	/* Workaround for AMD. It might no longer be necessary, but I dunno if we
 	* are ever going to remove it. (Consider it a piece of living history.)
@@ -452,16 +453,33 @@ void Renderer::drawFullScreenQuad()
 	{
 		glGenVertexArrays(1, &vertexArrayObject);
 		static const float2 positions[] = {
-				{ -1.0f, -1.0f },
+		/*		{ -1.0f, -1.0f },
 				{ 1.0f, -1.0f },
 				{ 1.0f, 1.0f },
-				{ -1.0f, 1.0f },
+				{ -1.0f, 1.0f },*/
+				-1.0f, -1.0f,
+				1.0f, 1.0f,
+				-1.0f, 1.0f,
+
+				-1.0f, -1.0f,
+				1.0f, -1.0f,
+				1.0f, 1.0f
 		};
 		createAddAttribBuffer(vertexArrayObject, positions, sizeof(positions), 0, 2, GL_FLOAT);
+		GLuint pos_vbo;
+		glGenBuffers(1, &pos_vbo);
+		glBindBuffer(GL_ARRAY_BUFFER, pos_vbo);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(positions), positions, GL_STATIC_DRAW);
+
+		glBindVertexArray(vertexArrayObject);
+		glVertexAttribPointer(0, 2, GL_FLOAT, false, 0, 0 );
+		glEnableVertexAttribArray(0);
+		CHECK_GL_ERROR();
 	}
 
 	glBindVertexArray(vertexArrayObject);
-	glDrawArrays(GL_QUADS, 0, nofVertices);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+	//glDrawArrays(GL_QUADS, 0, nofVertices);
 }
 
 void Renderer::drawDebug(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, Scene scene) {
@@ -482,7 +500,6 @@ void Renderer::drawDebug(const float4x4 &viewMatrix, const float4x4 &projectionM
 }
 
 void Renderer::debugDrawLine(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, float3 origin, float3 rayVector) {
-	glPushAttrib(GL_ALL_ATTRIB_BITS);
 	GLint temp;
 	glColor3f(1.0, 1.0, 0.0);
 	glGetIntegerv(GL_CURRENT_PROGRAM, &temp);
@@ -505,11 +522,9 @@ void Renderer::debugDrawLine(const float4x4 &viewMatrix, const float4x4 &project
 
 	glEnd();
 	glUseProgram(temp);
-	glPopAttrib();
 }
 
 void Renderer::debugDrawQuad(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, float3 origin, float3 halfVector) {
-	glPushAttrib(GL_ALL_ATTRIB_BITS);
 	GLint temp;
 	glColor3f(1.0, 1.0, 0.0);
 	glGetIntegerv(GL_CURRENT_PROGRAM, &temp);
@@ -579,12 +594,10 @@ void Renderer::debugDrawQuad(const float4x4 &viewMatrix, const float4x4 &project
 
 	glEnd();
 	glUseProgram(temp);
-	glPopAttrib();
 }
 
 void Renderer::debugDrawOctree(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, Octree tree)
 {
-	glPushAttrib(GL_ALL_ATTRIB_BITS);
 	GLint temp;
 	glColor3f(1.0, 1.0, 0.0);
 	glGetIntegerv(GL_CURRENT_PROGRAM, &temp);
@@ -654,7 +667,6 @@ void Renderer::debugDrawOctree(const float4x4 &viewMatrix, const float4x4 &proje
 
 	glEnd();
 	glUseProgram(temp);
-	glPopAttrib();
 
 
 	std::vector<Octree> children;

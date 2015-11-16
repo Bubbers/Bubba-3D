@@ -26,7 +26,7 @@ add_executable(testz src/main.cpp ${files_SOURCE} includes/ResourceManager.h src
 #########################################################
 source_group(Logging	FILES src/logging/Logger.cpp)
 source_group(Cameras	FILES src/cameras/Camera.cpp src/cameras/PerspectiveCamera.cpp)
-source_group(Objects	FILES src/objects/Mesh.cpp src/objects/Scene.cpp src/objects/SkinnedMesh.cpp src/objects/Skybox.cpp src/objects/Triangle.cpp)
+source_group(Objects	FILES src/objects/Mesh.cpp src/objects/Scene.cpp src/objects/Skybox.cpp src/objects/Triangle.cpp)
 source_group(Collision	FILES src/collision/Collider.cpp src/collision/Octree.cpp)
 source_group(Core		FILES src/core/Renderer.cpp)
 source_group(Misc		FILES src/Misc/CubeMapTexture.cpp includes/glutil/glutil.cpp)
@@ -68,19 +68,16 @@ endif(NOT GLEW_FOUND)
 
 
 #########################################################
-# FIND DEVIL
+# FIND FREEIMAGE
 #########################################################
-find_package(DevIL REQUIRED)
-include_directories(${IL_INCLUDE_DIR})
-link_directories(${IL_LIBRARIES})
-link_directories(${ILU_LIBRARIES})
-link_directories(${ILUT_LIBRARIES})
+find_package(FREEIMAGE REQUIRED)
+include_directories(${FREEIMAGE_INCLUDE_PATH})
+target_link_libraries(testz ${FREEIMAGE_LIBRARY})
+target_link_libraries(testz ${FREEIMAGE_LIBRARIES})
 
-add_definitions(${IL_DEFINITIONS})
-if(NOT IL_FOUND)
-    message(ERROR " DevIL not found!")
-endif(NOT IL_FOUND)
-
+if(NOT FREEIMAGE_FOUND)
+    message(ERROR " FreeImage not found!")
+endif(NOT FREEIMAGE_FOUND)
 
 #########################################################
 # FIND ASSIMP

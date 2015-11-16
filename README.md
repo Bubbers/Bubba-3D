@@ -32,7 +32,7 @@ Requirements:
 * <a href="http://assimp.sourceforge.net/">Assimp</a>
 * <a href="http://freeglut.sourceforge.net/">Glut (Freeglut)</a>
 * <a href="http://glew.sourceforge.net/">Glew</a>
-* <a href="http://openil.sourceforge.net/">DevIL</a><br />
+* <a href="http://freeimage.sourceforge.net/">FreeImage</a><br />
 
 Linux: Install using the Makefile supplied in root map. run make install. This will install all dependencies for the project. Then you may run it with make run.
 

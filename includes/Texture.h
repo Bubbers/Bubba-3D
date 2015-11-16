@@ -2,6 +2,7 @@
 #define BUBBA_3D_TEXTURE_H
 
 #include <GL/glew.h>
+#include <FreeImage.h>
 
 
 class Texture {
@@ -11,6 +12,7 @@ public:
     void bind(GLenum textureUnit);
     void loadTexture(std::string fileName);
     GLuint getID() {return textureID; };
+    static FIBITMAP *LoadImageIntoMemory(std::string fileName);
 private:
     GLuint textureID;
 };

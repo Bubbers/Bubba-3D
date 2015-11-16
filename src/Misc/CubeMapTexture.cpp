@@ -1,5 +1,7 @@
 #include "CubeMapTexture.h"
 #include <glutil/glutil.h>
+#include <FreeImage.h>
+#include <Texture.h>
 
 
 CubeMapTexture::CubeMapTexture(const string& posXFilename, const string& negXFilename, const string& posYFilename, const string& negYFilename, const string& posZFilename, const string& negZFilename) {
@@ -49,27 +51,20 @@ CubeMapTexture::CubeMapTexture(const string& posXFilename, const string& negXFil
 
 void CubeMapTexture::loadCubeMapFace(std::string filename, GLenum face)
 {
-	ILuint image;
-	ilGenImages(1, &image);
-	ilBindImage(image);
+	FIBITMAP *image32Bit = Texture::LoadImageIntoMemory(filename);
+	int width, height;
+	width = FreeImage_GetWidth(image32Bit);
+	height = FreeImage_GetHeight(image32Bit);
+	GLubyte *textureData = FreeImage_GetBits(image32Bit);
 
-	bool he = ilLoadImage(filename.c_str());
+	glTexImage2D(face, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData);
 
-	if (ilLoadImage(filename.c_str()) == IL_FALSE)   {
-	  Logger::logSevere("Failed to load texture " + filename);
-		ILenum Error;
-		while ((Error = ilGetError()) != IL_NO_ERROR)
-			printf("%d: %s\n", Error, iluErrorString(Error));
-	}
-	ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
-	int s = std::max(ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT));
-	iluScale(s, s, ilGetInteger(IL_IMAGE_DEPTH));
-	glTexImage2D(face, 0, GL_RGBA, ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT), 0, GL_RGBA, GL_UNSIGNED_BYTE, ilGetData());
+	FreeImage_Unload(image32Bit);
 }
 
 void CubeMapTexture::bind(GLenum textureUnit) {
 	glActiveTexture(textureUnit);
-	glEnable(GL_TEXTURE_2D);
+//	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, m_texture);
 }
 

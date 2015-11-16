@@ -26,6 +26,7 @@ uniform mat4 normalMatrix;
 uniform mat4 lightMatrix;
 
 
+
 void main() 
 {
 	mat4 modelViewMatrix = viewMatrix * modelMatrix; 
