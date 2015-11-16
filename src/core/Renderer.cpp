@@ -38,8 +38,6 @@ Renderer::Renderer(int argc, char *argv[], int width, int height) : width(width)
 	glutInitContextVersion(3, 1);
 	glutInitContextProfile(GLUT_CORE_PROFILE);
 	glutInitContextFlags(GLUT_DEBUG);
-
-	CHECK_GL_ERROR();
         
 	glutCreateWindow("Bubba-3D");
 	/* If sRGB is available, enable rendering in sRGB. Note: we should do
