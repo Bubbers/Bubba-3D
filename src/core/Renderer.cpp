@@ -36,7 +36,7 @@ Renderer::Renderer(int argc, char *argv[], int width, int height) : width(width)
         glutInitWindowSize(width, height);
 
 	glutInitContextVersion(3, 1);
-	//glutInitContextProfile(GLUT_CORE_PROFILE);
+	glutInitContextProfile(GLUT_CORE_PROFILE);
 	glutInitContextFlags(GLUT_DEBUG);
 
 	CHECK_GL_ERROR();
@@ -142,7 +142,7 @@ void Renderer::drawScene(Camera camera, Scene scene, float currentTime)
 
 	drawShadowCasters(shaderProgram, scene);
 	drawTransparent(shaderProgram, scene);
-//	drawDebug(viewMatrix, projectionMatrix, scene);
+	drawDebug(viewMatrix, projectionMatrix, scene);
 
 	renderPostProcess();
 
@@ -488,7 +488,6 @@ void Renderer::drawDebug(const float4x4 &viewMatrix, const float4x4 &projectionM
 }
 
 void Renderer::debugDrawLine(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, float3 origin, float3 rayVector) {
-	glPushAttrib(GL_ALL_ATTRIB_BITS);
 	GLint temp;
 	glColor3f(1.0, 1.0, 0.0);
 	glGetIntegerv(GL_CURRENT_PROGRAM, &temp);
@@ -511,11 +510,9 @@ void Renderer::debugDrawLine(const float4x4 &viewMatrix, const float4x4 &project
 
 	glEnd();
 	glUseProgram(temp);
-	glPopAttrib();
 }
 
 void Renderer::debugDrawQuad(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, float3 origin, float3 halfVector) {
-	glPushAttrib(GL_ALL_ATTRIB_BITS);
 	GLint temp;
 	glColor3f(1.0, 1.0, 0.0);
 	glGetIntegerv(GL_CURRENT_PROGRAM, &temp);
@@ -585,12 +582,10 @@ void Renderer::debugDrawQuad(const float4x4 &viewMatrix, const float4x4 &project
 
 	glEnd();
 	glUseProgram(temp);
-	glPopAttrib();
 }
 
 void Renderer::debugDrawOctree(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, Octree tree)
 {
-	glPushAttrib(GL_ALL_ATTRIB_BITS);
 	GLint temp;
 	glColor3f(1.0, 1.0, 0.0);
 	glGetIntegerv(GL_CURRENT_PROGRAM, &temp);
@@ -660,7 +655,6 @@ void Renderer::debugDrawOctree(const float4x4 &viewMatrix, const float4x4 &proje
 
 	glEnd();
 	glUseProgram(temp);
-	glPopAttrib();
 
 
 	std::vector<Octree> children;

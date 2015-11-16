@@ -361,7 +361,6 @@ void debugDrawLight(const float4x4 &viewMatrix,
 					const float4x4 &projectionMatrix, 
 					const float3 &worldSpaceLightPos)
 {
-	glPushAttrib(GL_ALL_ATTRIB_BITS);
 	GLint temp; 
 	glColor3f(1.0, 1.0, 0.0); 
 	glGetIntegerv(GL_CURRENT_PROGRAM, &temp);
@@ -379,7 +378,6 @@ void debugDrawLight(const float4x4 &viewMatrix,
 	glTranslatef(worldSpaceLightPos.x, worldSpaceLightPos.y, worldSpaceLightPos.z);
 	glutSolidSphere(1.0, 20, 20);
 	glUseProgram(temp);
-	glPopAttrib();
 }
 
 #if defined(__linux__)
