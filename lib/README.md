@@ -1,6 +1,6 @@
 #FOR WINDOWS ONLY
 
-These should be all the libraries you need to compile the project.
+These should be all the libraries you need to compile the project. <br />
 
 Link the following in cmake:
 
@@ -18,8 +18,8 @@ GLEW_LIBRARY            -    Bubba-3D/lib/glew32s.lib <br />
 GLUT_INCLUDE_DIR        -    Bubba-3D/lib <br />
 GLUT_glut_LIBRARY       -    Bubba-3D/lib/freeglutd.lib <br />
 
-#DEVIL
-ILUT_LIBRARIES          -    Bubba-3D/lib/IL/ILUT.lib <br />
-ILU_LIBRARIES           -    Bubba-3D/lib/IL/ILU.lib <br />
-IL_LIBRARIES            -    Bubba-3D/lib/IL/DevIL.lib <br />
-IL_INCLUDE_DIR          -    Bubba-3D/lib/lib <br />
+#FREEIMAGE              
+FREEIMAGE_DIR           -    Bubba-3D/lib/freeimage <br />
+FREEIMAGE_FOUND         -    Check <br />
+FREEIMAGE_INCLUDE_PATH  -    Bubba-3D/lib/freeimage <br />
+FREEIMAGE_LIBRARY       -    Bubba-3D/lib/freeimage/FreeImage.lib <br />

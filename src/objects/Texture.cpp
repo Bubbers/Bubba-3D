@@ -17,7 +17,6 @@ void Texture::loadTexture(std::string fileName)
     height = FreeImage_GetHeight(image32Bit);
     GLubyte *textureData = FreeImage_GetBits(image32Bit);
 
-
     GLuint texid;
     glGenTextures(1, &texid);
     glActiveTexture(GL_TEXTURE0);
