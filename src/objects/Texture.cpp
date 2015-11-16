@@ -1,7 +1,8 @@
 #include <glutil/glutil.h>
 #include <Logger.h>
 #include "Texture.h"
-#include "SOIL/SOIL.h"
+#include "FreeImagePlus.h"
+#include "FreeImage.h"
 
 void Texture::bind(GLenum textureUnit){
     glActiveTexture(textureUnit);
@@ -9,34 +10,14 @@ void Texture::bind(GLenum textureUnit){
     glBindTexture(GL_TEXTURE_2D, textureID);
 }
 
-
 void Texture::loadTexture(std::string fileName)
 {
-    Logger::logInfo("Loading texture: " + fileName);
-    /*ILuint image = ilGenImage();
-    ilBindImage(image);
-    CHECK_GL_ERROR();
-
-    if (ilLoadImage(fileName.c_str()) == IL_FALSE)
-    {
-        Logger::logSevere("Error to load texture " + fileName);
-        ILenum Error;
-        while ((Error = ilGetError()) != IL_NO_ERROR)
-        {
-            printf("  %d: %s\n", Error, iluErrorString(Error));
-        }
-        ilDeleteImage(image);
-    }
-    CHECK_GL_ERROR();
-    // why not?
-    if (ilTypeFromExt(fileName.c_str()) == IL_PNG || ilTypeFromExt(fileName.c_str()) == IL_JPG)
-    {
-        iluFlipImage();
-    }
-    ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);*/
-
     int width, height;
-    unsigned char* image = SOIL_load_image(fileName.c_str(), &width, &height, 0, SOIL_LOAD_RGBA);
+    FIBITMAP *image32Bit = Texture::LoadImageIntoMemory(fileName);
+    width = FreeImage_GetWidth(image32Bit);
+    height = FreeImage_GetHeight(image32Bit);
+    GLubyte *textureData = FreeImage_GetBits(image32Bit);
+
 
     GLuint texid;
     glGenTextures(1, &texid);
@@ -44,17 +25,9 @@ void Texture::loadTexture(std::string fileName)
     CHECK_GL_ERROR();
     glBindTexture(GL_TEXTURE_2D, texid);
     CHECK_GL_ERROR();
-    //int width = ilGetInteger(IL_IMAGE_WIDTH);
-    //int height = ilGetInteger(IL_IMAGE_HEIGHT);
-    // Note: now with SRGB
-    //ILubyte* b = ilGetData();
-    //ILubyte c = *b;
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
-    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, ilGetData());
-    CHECK_GL_ERROR();
-    //ilDeleteImage(image);
 
-    //GLuint texid = ilutGLLoadImage(const_cast<char *>(fileName.c_str()));
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB_ALPHA, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, textureData);
+    CHECK_GL_ERROR();
     glGenerateMipmap(GL_TEXTURE_2D);
     CHECK_GL_ERROR();
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -63,9 +36,49 @@ void Texture::loadTexture(std::string fileName)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16);
     CHECK_GL_ERROR();
-    SOIL_free_image_data(image);
 
     glBindTexture(GL_TEXTURE_2D, 0);
     CHECK_GL_ERROR();
     textureID = texid;
+
+    FreeImage_Unload(image32Bit);
+}
+
+FIBITMAP* Texture::LoadImageIntoMemory(std::string fileName) {
+    Logger::logInfo("Loading texture: " + fileName);
+
+
+    FREE_IMAGE_FORMAT imageFormat = FreeImage_GetFileType(fileName.c_str(), 0 );
+    if(imageFormat == -1) {
+        Logger::logSevere("Couldn't find texture file " + fileName);
+        exit(0);
+    }
+
+    if (imageFormat == FIF_UNKNOWN)
+    {
+        imageFormat = FreeImage_GetFIFFromFilename(fileName.c_str());
+
+        if ( !FreeImage_FIFSupportsReading(imageFormat) )
+        {
+            Logger::logSevere("Couldn't load texture format " + fileName);
+            exit(-1);
+        }
+    }
+
+    FIBITMAP *image = FreeImage_Load(imageFormat, fileName.c_str());
+
+    if(imageFormat == FIF_JNG || imageFormat == FIF_PNG) {
+        FreeImage_FlipVertical(image);
+        FreeImage_FlipHorizontal(image);
+    }
+
+    FIBITMAP *image32Bit;
+    if(FreeImage_GetBPP(image) == 32) {
+        image32Bit = image;
+    } else {
+        image32Bit = FreeImage_ConvertTo32Bits(image);
+        FreeImage_Unload(image);
+    }
+
+    return image32Bit;
 }

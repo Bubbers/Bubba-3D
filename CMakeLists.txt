@@ -68,26 +68,16 @@ endif(NOT GLEW_FOUND)
 
 
 #########################################################
-# FIND DEVIL
+# FIND FREEIMAGE
 #########################################################
-find_package(DevIL REQUIRED)
-include_directories(${IL_INCLUDE_DIR})
-link_directories(${IL_LIBRARIES})
-link_directories(${ILU_LIBRARIES})
-link_directories(${ILUT_LIBRARIES})
+find_package(FREEIMAGE REQUIRED)
+include_directories(${FREEIMAGE_INCLUDE_PATH})
+target_link_libraries(testz ${FREEIMAGE_LIBRARY})
+target_link_libraries(testz ${FREEIMAGE_LIBRARIES})
 
-add_definitions(${IL_DEFINITIONS})
-if(NOT IL_FOUND)
-    message(ERROR " DevIL not found!")
-endif(NOT IL_FOUND)
-
-
-find_package(SOIL REQUIRED)
-include_directories(${SOIL_INCLUDE_DIRS})
-target_link_libraries(testz ${SOIL_LIBRARIES})
-if(NOT SOIL_FOUND)
-    message(ERROR " SOIL not found!")
-endif(NOT SOIL_FOUND)
+if(NOT FREEIMAGE_FOUND)
+    message(ERROR " FreeImage not found!")
+endif(NOT FREEIMAGE_FOUND)
 
 #########################################################
 # FIND ASSIMP

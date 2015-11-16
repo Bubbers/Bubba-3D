@@ -340,64 +340,6 @@ std::string GetShaderInfoLog(GLuint obj) {
 
 
 
-GLuint loadShaderProgram(const std::string &vertexShader, const std::string &fragmentShader)
-{
-	GLuint vShader = glCreateShader(GL_VERTEX_SHADER);
-	GLuint fShader = glCreateShader(GL_FRAGMENT_SHADER);
-
-	const char *vs = textFileRead(vertexShader.c_str());
-	const char *fs = textFileRead(fragmentShader.c_str());
-
-	glShaderSource(vShader, 1, &vs, NULL);
-	glShaderSource(fShader, 1, &fs, NULL);
-  // text data is not needed beyond this point
-  delete [] vs;
-	delete [] fs;
-
-	glCompileShader(vShader);
-	int compileOk = 0;
-	glGetShaderiv(vShader, GL_COMPILE_STATUS, &compileOk);
-	if (!compileOk) 
-  {
-		std::string err = GetShaderInfoLog(vShader);
-		fatal_error( err );
-		return 0;
-	}
-
-	glCompileShader(fShader);
-	glGetShaderiv(fShader, GL_COMPILE_STATUS, &compileOk);
-	if (!compileOk) 
-  {
-		std::string err = GetShaderInfoLog(fShader);
-		fatal_error( err );
-		return 0;
-	}
-
-	GLuint shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, fShader);
-	glDeleteShader( fShader );
-	glAttachShader(shaderProgram, vShader);
-	glDeleteShader( vShader );
-	CHECK_GL_ERROR();
-
-	return shaderProgram; 
-}
-
-
-void linkShaderProgram(GLuint shaderProgram)
-{
-	glLinkProgram(shaderProgram);
-  GLint linkOk = 0;
-  glGetProgramiv(shaderProgram, GL_LINK_STATUS, &linkOk);
-  if (!linkOk)
-	{
-	  std::string err = GetShaderInfoLog(shaderProgram);
-	  fatal_error(err);
-	  return;
-  }
-}
-
-
 GLuint createAddAttribBuffer(GLuint vertexArrayObject, const void *data, const size_t dataSize, GLuint attributeIndex, GLsizei attributeSize, GLenum type, GLenum bufferUsage)
 {
 	GLuint buffer = 0;
@@ -413,27 +355,6 @@ GLuint createAddAttribBuffer(GLuint vertexArrayObject, const void *data, const s
 	CHECK_GL_ERROR();
 
 	return buffer;
-}
-
-
-
-
-void setUniformSlow(GLuint shaderProgram, const char *name, const float4x4 &matrix)
-{
-	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, name), 1, false, &matrix.c1.x); 
-}
-void setUniformSlow(GLuint shaderProgram, const char *name, const float value)
-{
-	glUniform1f(glGetUniformLocation(shaderProgram, name), value); 
-}
-void setUniformSlow(GLuint shaderProgram, const char *name, const GLint value)
-{
-  int loc = glGetUniformLocation(shaderProgram, name);
-	glUniform1i(loc, value); 
-}
-void setUniformSlow(GLuint shaderProgram, const char *name, const float3 &value)
-{
-	glUniform3fv(glGetUniformLocation(shaderProgram, name), 1, &value.x); 
 }
 
 void debugDrawLight(const float4x4 &viewMatrix, 

@@ -1,6 +1,7 @@
 #include "CubeMapTexture.h"
 #include <glutil/glutil.h>
-#include "SOIL/SOIL.h"
+#include <FreeImage.h>
+#include <Texture.h>
 
 
 CubeMapTexture::CubeMapTexture(const string& posXFilename, const string& negXFilename, const string& posYFilename, const string& negYFilename, const string& posZFilename, const string& negZFilename) {
@@ -50,26 +51,12 @@ CubeMapTexture::CubeMapTexture(const string& posXFilename, const string& negXFil
 
 void CubeMapTexture::loadCubeMapFace(std::string filename, GLenum face)
 {
-	/*ILuint image;
-	ilGenImages(1, &image);
-	ilBindImage(image);
-
-	bool he = ilLoadImage(filename.c_str());
-
-	if (ilLoadImage(filename.c_str()) == IL_FALSE)   {
-	  Logger::logSevere("Failed to load texture " + filename);
-		ILenum Error;
-		while ((Error = ilGetError()) != IL_NO_ERROR)
-			printf("%d: %s\n", Error, iluErrorString(Error));
-	}
-	ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
-	int s = std::max(ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT));
-	iluScale(s, s, ilGetInteger(IL_IMAGE_DEPTH));*/
-
+	FIBITMAP *image32Bit = Texture::LoadImageIntoMemory(filename);
 	int width, height;
-	unsigned char* image = SOIL_load_image(filename.c_str(), &width, &height, 0, SOIL_LOAD_RGBA);
-	glTexImage2D(face, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
-	SOIL_free_image_data(image);
+	width = FreeImage_GetWidth(image32Bit);
+	height = FreeImage_GetHeight(image32Bit);
+	GLubyte *textureData = FreeImage_GetBits(image32Bit);
+	glTexImage2D(face, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData);
 }
 
 void CubeMapTexture::bind(GLenum textureUnit) {
