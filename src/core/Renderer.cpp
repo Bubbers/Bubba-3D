@@ -483,7 +483,7 @@ void Renderer::drawFullScreenQuad()
 void Renderer::drawDebug(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, Scene scene) {
   //debugDrawOctree(viewMatrix, projectionMatrix, octree);
 	if (scene.shadowMapCamera != NULL) {
-		debugDrawLight(viewMatrix, projectionMatrix, scene.shadowMapCamera->getPosition());
+		//debugDrawLight(viewMatrix, projectionMatrix, scene.shadowMapCamera->getPosition());
 	}
 	/*debugDrawQuad(viewMatrix, projectionMatrix, carLoc.location + make_vector(0.2f, 1.2f, 0.0f), make_vector(1.0f, 1.0f, 1.5f));
 	float3x3 rot = make_rotation_y<float3x3>(carLoc.angley);
