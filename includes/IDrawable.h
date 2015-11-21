@@ -7,7 +7,7 @@
 class IDrawable {
 public:
 	IDrawable() { shininess = 0.0f; };
-        virtual ~IDrawable()  = {};
+        ~IDrawable() {};
   virtual void render() = 0;
   virtual void renderShadow(Shader* shaderProgram) = 0;
   
