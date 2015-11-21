@@ -17,8 +17,8 @@ endif()
 #########################################################
 # ADD SOURCE FILES TO EXECUTABLE
 #########################################################
-file(GLOB files_SOURCE "src/*.cpp" "includes/linmath/*.cpp" "includes/glutil/*.cpp" "src/logging/*.cpp"  "src/Misc/*.cpp" "src/effects/*.cpp" "src/cameras/*.cpp" "src/core/*.cpp" "src/objects/*.cpp" "src/collision/*.cpp" "shaders/*")
-add_executable(testz src/main.cpp ${files_SOURCE} includes/ResourceManager.h src/Misc/ResourceManager.cpp includes/Texture.h src/objects/Texture.cpp)
+file(GLOB files_SOURCE "src/*.cpp" "includes/linmath/*.cpp" "includes/glutil/*.cpp" "src/logging/*.cpp" "src/util/*.cpp" "src/Misc/*.cpp" "src/effects/*.cpp" "src/cameras/*.cpp" "src/core/*.cpp" "src/objects/*.cpp" "src/collision/*.cpp" "shaders/*")
+add_executable(testz src/main.cpp ${files_SOURCE} includes/ResourceManager.h src/Misc/ResourceManager.cpp includes/Texture.h src/objects/Texture.cpp src/util/DestructorUtils.cpp includes/DestructorUtils.h)
 
 
 #########################################################
@@ -101,6 +101,7 @@ endif(NOT ASSIMP_FOUND)
 #########################################################
 
 include_directories("${PROJECT_SOURCE_DIR}/includes")
+include_directories("${PROJECT_SOURCE_DIR}/src/util")
 include_directories("${PROJECT_SOURCE_DIR}/includes/linmath")
 message("${PROJECT_SOURCE_DIR}/src")
 

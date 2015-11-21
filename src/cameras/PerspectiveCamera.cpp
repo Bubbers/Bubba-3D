@@ -7,7 +7,6 @@ PerspectiveCamera::PerspectiveCamera(float3 position, float3 lookAt, float3 up, 
 }
 
 PerspectiveCamera::~PerspectiveCamera() {
-
 }
 
 float4x4 PerspectiveCamera::getViewMatrix() {

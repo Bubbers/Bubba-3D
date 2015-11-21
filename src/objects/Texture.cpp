@@ -1,7 +1,6 @@
 #include <glutil/glutil.h>
 #include <Logger.h>
 #include "Texture.h"
-#include "FreeImagePlus.h"
 #include "FreeImage.h"
 
 void Texture::bind(GLenum textureUnit){
@@ -17,7 +16,6 @@ void Texture::loadTexture(std::string fileName)
     width = FreeImage_GetWidth(image32Bit);
     height = FreeImage_GetHeight(image32Bit);
     GLubyte *textureData = FreeImage_GetBits(image32Bit);
-
 
     GLuint texid;
     glGenTextures(1, &texid);
