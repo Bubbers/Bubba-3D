@@ -104,7 +104,6 @@ endif(NOT ASSIMP_FOUND)
 include_directories("${PROJECT_SOURCE_DIR}/includes")
 include_directories("${PROJECT_SOURCE_DIR}/src/util")
 include_directories("${PROJECT_SOURCE_DIR}/includes/linmath")
-message("${PROJECT_SOURCE_DIR}/src")
 
 
 

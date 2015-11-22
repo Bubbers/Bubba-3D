@@ -210,7 +210,7 @@ void setupGLDebugMessages()
 	/* Enable debug messages. Set a callback handle, and then enable all 
 	 * messages to begin with.
 	 */
-	//glDebugMessageCallbackARB( &handle_debug_message_, 0 );
+	glDebugMessageCallbackARB((GLDEBUGPROC)handle_debug_message_, 0 );
 	//glDebugMessageCallback((GLDEBUGPROC)handle_debug_message_, 0);
 	glDebugMessageControlARB( GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, 0, true );
 	
