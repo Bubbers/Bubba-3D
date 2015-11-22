@@ -3,6 +3,9 @@ This is a small 3D-engine programmed in C++
 using Glut and Glew.  Managed by cmake.
 Originally implemented as a school project, now extended for fun!
 
+###Status
+[![Build Status](https://travis-ci.org/Bubbad/Bubba-3D.svg?branch=develop)](https://travis-ci.org/Bubbad/Bubba-3D)
+
 ***  
 ###Implemented
 * Mesh loading using Assimp
