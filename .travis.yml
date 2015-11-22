@@ -26,6 +26,8 @@ addons:
 
 before_script:
         - sudo find / -name ai_assert.h
+        - sudo find / -name glew.h
+        - sudo find / -name FreeImage.h
         - mkdir -p build
         - cd build
         - cmake -DCMAKE_BUILD_TYPE:STRING=Debug ..

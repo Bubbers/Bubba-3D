@@ -21,6 +21,8 @@ ELSE (WIN32)
             /usr/include
             /usr/local/include
             /sw/include
+            /home/travis
+            /home/travis/build/Bubbad/Bubba-3D/lib
             /opt/local/include
             DOC "The directory where FreeImage.h resides")
     FIND_LIBRARY( FREEIMAGE_LIBRARY

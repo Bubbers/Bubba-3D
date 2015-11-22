@@ -14,7 +14,10 @@ IF (WIN32)
 
     IF(CYGWIN)
 
-        FIND_PATH( GLEW_INCLUDE_DIR GL/glew.h)
+        FIND_PATH( GLEW_INCLUDE_DIR GL/glew.h
+                /home/travis
+                /home/travis/build/Bubbad/Bubba-3D/lib
+                )
 
         FIND_LIBRARY( GLEW_GLEW_LIBRARY glew32
                 ${OPENGL_LIBRARY_DIR}
