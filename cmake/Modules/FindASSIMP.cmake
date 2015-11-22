@@ -34,6 +34,7 @@ FIND_PATH(ASSIMP_INCLUDE_DIR assimp/ai_assert.h
         /usr/local/include
         /usr/include/assimp
         /home/travis
+        /home/travis/build/Bubbad/Bubba-3D/lib
         /usr/include
         /sw/include/assimp # Fink
         /sw/include
