@@ -5,12 +5,12 @@
 #  ASSIMP_INCLUDE_DIR - the Assimp include directories
 #  ASSIMP_LIBRARIES - link these to use Assimp
 
-FIND_PATH( ASSIMP_INCLUDE_DIR assimp/mesh.h
-        /usr/include
-        /usr/local/include
-        /opt/local/include
-        /sw/include
-        )
+#FIND_PATH( ASSIMP_INCLUDE_DIR assimp/mesh.h
+#        /usr/include
+#        /usr/local/include
+#        /opt/local/include
+#        /sw/include
+#        )
 
 FIND_LIBRARY( ASSIMP_LIBRARY assimp libassimp
         /usr/lib64
@@ -21,6 +21,28 @@ FIND_LIBRARY( ASSIMP_LIBRARY assimp libassimp
         /usr/local/lib64
         /usr/local/lib
         /sw/lib
+        )
+
+
+FIND_PATH(ASSIMP_INCLUDE_DIR assimp/ai_assert.h
+        $ENV{ASSIMPSDIR}/include
+        $ENV{ASSIMPSDIR}
+        $ENV{ASSIMPSDIR}/..
+        ~/Library/Frameworks/AssImp.framework/Headers
+        /Library/Frameworks/AssImp.framework/Headers
+        /usr/local/include/assimp
+        /usr/local/include
+        /usr/include/assimp
+        /usr/include
+        /sw/include/assimp # Fink
+        /sw/include
+        /opt/local/include/assimp # DarwinPorts
+        /opt/local/include
+        /opt/csw/include/assimp # Blastwave
+        /opt/csw/include
+        /opt/include/assimp
+        /opt/include
+        ${_assimp_INCLUDE_SEARCH_DIRS_SYSTEM}
         )
 
 MESSAGE(STATUS "ASSIMPLIB: ${ASSIMP_LIBRARY}")
