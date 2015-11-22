@@ -33,6 +33,7 @@ FIND_PATH(ASSIMP_INCLUDE_DIR assimp/ai_assert.h
         /usr/local/include/assimp
         /usr/local/include
         /usr/include/assimp
+        /home/travis
         /usr/include
         /sw/include/assimp # Fink
         /sw/include
