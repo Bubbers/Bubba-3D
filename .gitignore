@@ -1,6 +1,7 @@
 /Debug/*
 /build/*
 /Release/*
+/Testing/*
 Thumbs.db
 *~
 .idea
