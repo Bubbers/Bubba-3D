@@ -30,4 +30,4 @@ before_script:
         - cmake -DCMAKE_BUILD_TYPE:STRING=Debug ..
 
 
-script: make && make tests
+script: make && make test
