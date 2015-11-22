@@ -25,6 +25,7 @@ addons:
         - libxi-dev
 
 before_script:
+        - find /usr/ -name ai_assert.h
         - mkdir -p build
         - cd build
         - cmake -DCMAKE_BUILD_TYPE:STRING=Debug ..

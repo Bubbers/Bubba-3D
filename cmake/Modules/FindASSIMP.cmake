@@ -34,7 +34,6 @@ FIND_PATH(ASSIMP_INCLUDE_DIR assimp/ai_assert.h
         /usr/local/include
         /usr/include/assimp
         /usr/include
-        /
         /sw/include/assimp # Fink
         /sw/include
         /opt/local/include/assimp # DarwinPorts
