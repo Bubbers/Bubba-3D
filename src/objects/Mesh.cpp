@@ -9,10 +9,10 @@ Mesh::Mesh() {
 };
 
 Mesh::~Mesh() {
-    deleteLoop(&m_chunks);
-    deleteLoop(&materials);
 
-    delete &m_aabb;
+    //deleteLoop(&m_chunks);
+    //deleteLoop(&materials);
+    //delete m_aabb;
 };
 
 Chunk::Chunk(std::vector<chag::float3> &positions,

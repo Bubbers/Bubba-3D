@@ -13,6 +13,7 @@ endif(UNIX)
 
 if (CMAKE_COMPILER_IS_GNUCXX)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGLEW_STATIC")
 endif()
 #########################################################
 # ADD SOURCE FILES TO EXECUTABLE
@@ -86,7 +87,7 @@ find_package(ASSIMP REQUIRED)
 if(ASSIMP_INCLUDE_DIR) 
 	include_directories(${ASSIMP_INCLUDE_DIR})
 endif()
-find_library(ASSIMP_LIBRARY NAMES libassimp.so)
+#find_library(ASSIMP_LIBRARY NAMES libassimp.so)
 target_link_libraries(testz ${ASSIMP_LIBRARY})
 target_link_libraries(testz ${ASSIMP_LIBRARIES})
 add_definitions(${ASSIMP_DEFINITIONS})
@@ -103,7 +104,6 @@ endif(NOT ASSIMP_FOUND)
 include_directories("${PROJECT_SOURCE_DIR}/includes")
 include_directories("${PROJECT_SOURCE_DIR}/src/util")
 include_directories("${PROJECT_SOURCE_DIR}/includes/linmath")
-message("${PROJECT_SOURCE_DIR}/src")
 
 
 

@@ -1,11 +1,33 @@
 language: cpp
 compiler:
         - gcc
-before_install:
-        - sudo apt-get update -qq
-        - sudo apt-get install -y software-properties-common freeglut3-dev libfreeimage3 libfreeimage-dev libassimp-dev libglw1-mesa-dev libglew-dev libxmu-dev libxi-dev
+
+
+
+install:
+  - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
+
+
+addons:
+  apt:
+      sources:
+        - ubuntu-toolchain-r-test
+      packages:
+        - gcc-4.8
+        - g++-4.8
+        - cmake
+        - freeglut3-dev
+        - libfreeimage3
+        - libfreeimage-dev
+        - libassimp-dev
+        - libglew-dev
+        - libxmu-dev
+        - libxi-dev
+
 before_script:
         - mkdir -p build
         - cd build
-        - cmake -DCMAKE_BUILD_TYPE:STRING=Debug
+        - cmake -DCMAKE_BUILD_TYPE:STRING=Debug ..
+
+
 script: make

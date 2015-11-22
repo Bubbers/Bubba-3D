@@ -21,6 +21,8 @@ ELSE (WIN32)
             /usr/include
             /usr/local/include
             /sw/include
+            /home/travis
+            /home/travis/build/Bubbad/Bubba-3D/lib
             /opt/local/include
             DOC "The directory where FreeImage.h resides")
     FIND_LIBRARY( FREEIMAGE_LIBRARY
@@ -39,7 +41,7 @@ SET(FREEIMAGE_LIBRARIES ${FREEIMAGE_LIBRARY})
 
 IF (FREEIMAGE_INCLUDE_PATH AND FREEIMAGE_LIBRARY)
     SET( FREEIMAGE_FOUND TRUE CACHE BOOL "Set to TRUE if GLEW is found, FALSE otherwise")
-    message("-- Found FREEIMAGE ${ASSIMP_LIBRARY}")
+    message("-- Found FREEIMAGE ${FREEIMAGE_LIBRARY}")
 ELSE (FREEIMAGE_INCLUDE_PATH AND FREEIMAGE_LIBRARY)
     SET( FREEIMAGE_FOUND FALSE CACHE BOOL "Set to TRUE if GLEW is found, FALSE otherwise")
 ENDIF (FREEIMAGE_INCLUDE_PATH AND FREEIMAGE_LIBRARY)
