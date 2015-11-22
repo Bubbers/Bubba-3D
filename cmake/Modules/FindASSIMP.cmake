@@ -1,38 +1,51 @@
+# Based on http://freya3d.org/browser/CMakeFind/FindAssimp.cmake
+# Based on http://www.daimi.au.dk/~cgd/code/extensions/Assimp/FindAssimp.cmake
 # - Try to find Assimp
-# Once done, this will define
+# Once done this will define
 #
 #  ASSIMP_FOUND - system has Assimp
-#  ASSIMP_INCLUDE_DIR - the Assimp include directories
-#  ASSIMP_LIBRARIES - link these to use Assimp
+#  ASSIMP_INCLUDE_DIR - the Assimp include directory
+#  ASSIMP_LIBRARY - Link these to use Assimp
+#  ASSIMP_LIBRARIES
 
-FIND_PATH( ASSIMP_INCLUDE_DIR assimp/mesh.h
-        /usr/include
-        /usr/local/include
-        /opt/local/include
-        /sw/include
+SET(ASSIMP_SEARCH_PATHS
+        ${POLYCODE_RELEASE_DIR}/Framework/Tools/Dependencies/lib
+        ${POLYCODE_RELEASE_DIR}/Framework/Tools/Dependencies/include/assimp
+        ${POLYCODE_RELEASE_DIR}/Framework/Tools/Dependencies/include/
         )
 
-FIND_LIBRARY( ASSIMP_LIBRARY assimp
-        /usr/lib64
-        /usr/lib
-        /usr/local/lib
-        /opt/local/lib
-        /usr/local/lib64
-        /usr/local/lib
-        /sw/lib
+
+find_path (ASSIMP_INCLUDE_DIR NAMES assimp.h
+        HINTS
+        NO_DEFAULT_PATH
+        NO_CMAKE_ENVIRONMENT_PATH
+        NO_CMAKE_SYSTEM_PATH
+        NO_SYSTEM_ENVIRONMENT_PATH
+        NO_CMAKE_PATH
+        CMAKE_FIND_FRAMEWORK NEVER
+        PATH_SUFFIXES lib lib64 win32/Dynamic_Release "Win32/${MSVC_YEAR_NAME}/x64/Release" "Win32/${MSVC_YEAR_NAME}/Win32/Release"
+        PATHS ${ASSIMP_SEARCH_PATHS}
         )
 
-IF(ASSIMP_INCLUDE_DIR AND ASSIMP_LIBRARY)
-    SET( ASSIMP_FOUND TRUE )
-    SET( ASSIMP_LIBRARIES ${ASSIMP_LIBRARY} )
-ENDIF(ASSIMP_INCLUDE_DIR AND ASSIMP_LIBRARY)
+find_library (ASSIMP_LIBRARY_DEBUG NAMES assimpd libassimpd libassimp_d PATHS ${ASSIMP_SEARCH_PATHS})
+find_library (ASSIMP_LIBRARY_RELEASE NAMES assimp libassimp PATHS ${ASSIMP_SEARCH_PATHS})
 
-IF(ASSIMP_FOUND)
-    IF(NOT ASSIMP_FIND_QUIETLY)
-        MESSAGE(STATUS "Found ASSIMP: ${ASSIMP_LIBRARY}")
-    ENDIF(NOT ASSIMP_FIND_QUIETLY)
-ELSE(ASSIMP_FOUND)
-    IF(ASSIMP_FIND_REQUIRED)
-        MESSAGE(FATAL_ERROR "Could not find libASSIMP")
-    ENDIF(ASSIMP_FIND_REQUIRED)
-ENDIF(ASSIMP_FOUND)
+if (ASSIMP_INCLUDE_DIR AND ASSIMP_LIBRARY_RELEASE)
+    set(ASSIMP_FOUND TRUE)
+endif()
+
+if (ASSIMP_LIBRARY_RELEASE)
+    set (ASSIMP_LIBRARY ${ASSIMP_LIBRARY_RELEASE})
+endif()
+
+if (ASSIMP_LIBRARY_DEBUG AND ASSIMP_LIBRARY_RELEASE)
+    set (ASSIMP_LIBRARY debug ${ASSIMP_LIBRARY_DEBUG} optimized ${ASSIMP_LIBRARY_RELEASE} )
+endif()
+
+
+if (ASSIMP_FOUND)
+    MESSAGE("-- Found Assimp ${ASSIMP_LIBRARIES}")
+    mark_as_advanced (ASSIMP_INCLUDE_DIR ASSIMP_LIBRARY ASSIMP_LIBRARIES)
+endif()
+
+
