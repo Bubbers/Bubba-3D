@@ -1,15 +1,16 @@
+COMPILESTRING = mkdir -p build;cd build;cmake -DCMAKE_BUILD_TYPE:STRING=Debug ..;make;
+
 all:
-	mkdir -p build;cd build;cmake -DCMAKE_BUILD_TYPE:STRING=Debug ..;make;
+	$(COMPILESTRING)
 
-tests:
-	mkdir -p build;cd build;cmake -DCMAKE_BUILD_TYPE:STRING=Debug ..;make; make test;
+tests: $(all)
+	$(COMPILESTRING) make test;
 
-testsX:
-	mkdir -p build;cd build;cmake -DCMAKE_BUILD_TYPE:STRING=Debug ..;make; ctest -V;
-
+testsX: $(all)
+	$(COMPILESTRING) ctest -V;
 
 run:
-	mkdir -p build;cd build;cmake -DCMAKE_BUILD_TYPE:STRING=Debug ..;make;./Bubba3D;
+	$(COMPILESTRING) ./Bubba3D;
 
 clean:
 	rm -rf build;
