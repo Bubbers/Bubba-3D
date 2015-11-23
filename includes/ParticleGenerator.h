@@ -41,7 +41,7 @@ struct Particle {
 class ParticleGenerator : public IDrawable
 {
 public:
-	ParticleGenerator(Shader* shaderProgram, Texture *texture, int amount, Camera *camera, float3 position);
+	ParticleGenerator(Texture *texture, int amount, Camera *camera, float3 position);
 	~ParticleGenerator();
 
 	void update(float dt);

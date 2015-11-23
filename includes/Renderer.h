@@ -59,7 +59,6 @@ private:
 	int width, height;
 	float currentTime;
 
-
 	Fbo createPostProcessFbo(int width, int height);
 	void drawShadowMap(Fbo sbo, float4x4 viewProjectionMatrix, Scene scene);
 	void drawShadowCasters(Shader* shaderProgram, Scene scene);

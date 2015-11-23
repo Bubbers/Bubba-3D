@@ -1,15 +1,22 @@
+#include <ResourceManager.h>
 #include "ParticleGenerator.h"
 
 #include "float3x3.h"
+
+#define UNIFORM_BUFFER_OBJECT_MATRICES_NAME "Matrices"
+#define UNIFORM_BUFFER_OBJECT_MATRICES_INDEX 0
+
 
 using namespace chag;
 
 float3* Particle::startPosition = NULL; 
 
-ParticleGenerator::ParticleGenerator(Shader* shaderProgram, Texture *texture, int amount, Camera *camera, float3 position)
-	: shaderProgram(shaderProgram), texture(texture), m_amount(amount), m_camera(camera), m_position(position)
+ParticleGenerator::ParticleGenerator(Texture *texture, int amount, Camera *camera, float3 position)
+	:  texture(texture), m_amount(amount), m_camera(camera), m_position(position)
 {
-	
+	ResourceManager::loadShader("../shaders/particle.vert", "../shaders/particle.frag", "particleShader");
+	shaderProgram = ResourceManager::getShader("particleShader");
+	shaderProgram->setUniformBufferObjectBinding(UNIFORM_BUFFER_OBJECT_MATRICES_NAME,UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
 	GLfloat quad[] = { //POSITION3 TEXCOORD2
 		0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
 		1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
@@ -66,9 +73,7 @@ void ParticleGenerator::render() {
 	shaderProgram->setUniform1i("sprite", 0);
 
 	float3x3 modelMatrix3x3 = getModelMatrix3x3();
-	float4x4 projectionMatrix = m_camera->getProjectionMatrix();
-	float4x4 viewMatrix = m_camera->getViewMatrix();
-	float4x4 vpMatrix = projectionMatrix * viewMatrix;
+
 
 	float distance = length(this->m_camera->getPosition() - this->m_position);
 	int maxParticles = (m_amount * LOD_FACTOR / distance );
@@ -85,9 +90,8 @@ void ParticleGenerator::render() {
 		if (particle->life > 0.0f) {
 			float3 scale = make_vector(0.1f, 0.1f, 0.1f) * (1.0 + distance / LINEAR_SCALE_FACTOR);
 			float4x4 modelMatrix4x4 = make_matrix(modelMatrix3x3, particle->position) * make_scale<float4x4>(scale);
-			float4x4 mvpMatrix = vpMatrix * modelMatrix4x4;
-			
-			shaderProgram->setUniformMatrix4fv("mvpMatrix", mvpMatrix);
+
+			shaderProgram->setUniformMatrix4fv("modelMatrix", modelMatrix4x4);
 
 			glDrawArrays(GL_TRIANGLES, 0, 6);
 		}

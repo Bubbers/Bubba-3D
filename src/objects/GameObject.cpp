@@ -6,6 +6,8 @@
 #define SIMPLE_SHADER_NAME "simple_shader"
 #define NORMAL_TEXTURE_LOCATION 3
 #define DIFFUSE_TEXTURE_LOCATION 0
+#define UNIFORM_BUFFER_OBJECT_MATRICES_NAME "Matrices"
+#define UNIFORM_BUFFER_OBJECT_MATRICES_INDEX 0
 
 GameObject::GameObject() {
     m_modelMatrix = make_identity<float4x4>();
@@ -16,6 +18,7 @@ GameObject::GameObject(Mesh *mesh) {
     this->mesh = mesh;
     shininess = 0.0f;
     shaderProgram = ResourceManager::getShader(SIMPLE_SHADER_NAME);
+    shaderProgram->setUniformBufferObjectBinding(UNIFORM_BUFFER_OBJECT_MATRICES_NAME, UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
 };
 
 GameObject::~GameObject() {
@@ -33,7 +36,6 @@ void GameObject::update(float4x4 update_matrix) {
 
 void GameObject::render() {
     CHECK_GL_ERROR();
-    //glPushAttrib(GL_ALL_ATTRIB_BITS);
 
     chag::float4x4 normalMatrix = chag::inverse(chag::transpose(m_modelMatrix));
     shaderProgram->setUniformMatrix4fv("modelMatrix", m_modelMatrix);
@@ -68,8 +70,6 @@ void GameObject::render() {
         glDrawElements(GL_TRIANGLES, mesh->m_chunks[i].m_numIndices, GL_UNSIGNED_INT, 0);
         CHECK_GL_ERROR();
     }
-
-    //glPopAttrib();
     CHECK_GL_ERROR();
 }
 
@@ -119,6 +119,5 @@ void GameObject::renderShadow(Shader *shaderProgram) {
         CHECK_GL_ERROR();
     }
 
-    //glPopAttrib();
     CHECK_GL_ERROR();
 }

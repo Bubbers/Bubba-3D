@@ -572,11 +572,11 @@ void createCubeMaps() {
 
 void createMeshes() {
 	Logger::logInfo("Started loading meshes");
-	ResourceManager::loadShader("../shaders/particle.vert", "../shaders/particle.frag", "particleShader");
-	Shader* shader = ResourceManager::getShader("particleShader");
+
 	Texture *particleTexture = ResourceManager::loadAndFetchTexture("../scenes/engineflare1.jpg");
 
-	gen = new ParticleGenerator(shader, particleTexture, 200, playerCamera, make_vector(0.0f, 15.0f, 0.0f));
+
+	gen = new ParticleGenerator(particleTexture, 200, playerCamera, make_vector(0.0f, 15.0f, 0.0f));
 	scene.transparentObjects.push_back(gen);
 
 	//*************************************************************************

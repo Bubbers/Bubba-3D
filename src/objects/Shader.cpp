@@ -109,3 +109,47 @@ void Shader::setUniform3f(std::string name, float3 value){
 void Shader::setUniformMatrix4fv(std::string name, float4x4 matrix) {
     glUniformMatrix4fv(getUniformLocation(name), 1, false, &matrix.c1.x);
 }
+
+void Shader::setUniformBufferObjectBinding(std::string bufferName, int index) {
+    GLuint matricesUniform = glGetUniformBlockIndex(shaderID, bufferName.c_str());
+    glUniformBlockBinding(shaderID, matricesUniform, index);
+}
+
+void Shader::initUniformBufferObject(std::string bufferName, int size, int index) {
+    GLuint uniformBufferObject;
+    glGenBuffers(1, &uniformBufferObject);
+    glBindBuffer(GL_UNIFORM_BUFFER, uniformBufferObject);
+    glBufferData(GL_UNIFORM_BUFFER, size, NULL, GL_STATIC_DRAW);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+    glBindBufferRange(GL_UNIFORM_BUFFER, index, uniformBufferObject, 0, size);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+    uniformLocations.insert(std::pair<std::string, GLint>(bufferName, uniformBufferObject));
+}
+
+void Shader::setUniformBufferSubData(std::string bufferName, int offset, int size, const GLvoid *data) {
+    glBindBuffer(GL_UNIFORM_BUFFER, getUniformLocation(bufferName));
+    glBufferSubData(GL_UNIFORM_BUFFER, offset, size, data);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

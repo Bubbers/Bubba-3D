@@ -15,7 +15,7 @@ unsigned int Factorial( unsigned int number ) {
     }
 
     TEST_CASE("Factorials are compuated", "lol2") {
-        REQUIRE(1 == 1);
+        REQUIRE(12 == 12);
     }
 
 

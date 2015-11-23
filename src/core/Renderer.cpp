@@ -3,6 +3,8 @@
 #include "ResourceManager.h"
 
 #define SIMPLE_SHADER_NAME "simple_shader"
+#define UNIFORM_BUFFER_OBJECT_MATRICES_NAME "Matrices"
+#define UNIFORM_BUFFER_OBJECT_MATRICES_INDEX 0
 
 namespace patch
 {
@@ -81,6 +83,9 @@ void Renderer::drawScene(Camera camera, Scene scene, float currentTime)
 
 	float4x4 viewMatrix = camera.getViewMatrix();
 	float4x4 projectionMatrix = camera.getProjectionMatrix();
+	float4x4 viewProjectionMatrix = projectionMatrix * viewMatrix;
+
+
 
 	// enable back face culling.
 	glEnable(GL_CULL_FACE);
@@ -113,9 +118,11 @@ void Renderer::drawScene(Camera camera, Scene scene, float currentTime)
 	// Use shader and set up uniforms
 	shaderProgram->use();
 
+	shaderProgram->setUniformBufferSubData( UNIFORM_BUFFER_OBJECT_MATRICES_NAME, 0 * sizeof(float4x4), sizeof(float4x4), &(viewMatrix.c1.x));
+	shaderProgram->setUniformBufferSubData( UNIFORM_BUFFER_OBJECT_MATRICES_NAME, 1 * sizeof(float4x4), sizeof(float4x4), &(projectionMatrix.c1.x));
+	shaderProgram->setUniformBufferSubData( UNIFORM_BUFFER_OBJECT_MATRICES_NAME, 2 * sizeof(float4x4), sizeof(float4x4), &(viewProjectionMatrix.c1.x));
+
 	//Sets matrices
-	shaderProgram->setUniformMatrix4fv("viewMatrix", viewMatrix);
-	shaderProgram->setUniformMatrix4fv("projectionMatrix", projectionMatrix);
 	shaderProgram->setUniformMatrix4fv("lightMatrix", lightMatrix);
 	shaderProgram->setUniformMatrix4fv("inverseViewNormalMatrix", transpose(viewMatrix));
 	shaderProgram->setUniform3f("viewPosition", camera.getPosition());
@@ -271,7 +278,11 @@ void Renderer::initGL()
 	//	Load shaders
 	//*************************************************************************
 	ResourceManager::loadShader("../shaders/simple.vert", "../shaders/simple.frag", SIMPLE_SHADER_NAME);
+
 	shaderProgram = ResourceManager::getShader(SIMPLE_SHADER_NAME);
+	shaderProgram->setUniformBufferObjectBinding(UNIFORM_BUFFER_OBJECT_MATRICES_NAME, UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
+	shaderProgram->initUniformBufferObject(UNIFORM_BUFFER_OBJECT_MATRICES_NAME, 3 * sizeof(float4x4), UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
+
 
 	//*************************************************************************
 	// Generate shadow map frame buffer object

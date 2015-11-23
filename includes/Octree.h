@@ -6,12 +6,10 @@
 #include <vector>
 #include <set>
 #include <ctime>
-//#include <chrono>
 #include <math.h>
 
 using namespace std;
 using namespace chag;
-//using namespace chrono;
 
 const int MAX_DEPTH = 8;
 const int MAX_CHILDREN = 64;
