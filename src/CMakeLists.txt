@@ -16,6 +16,7 @@ file(GLOB files_SOURCE
         "core/*.cpp"
         "objects/*.cpp"
         "collision/*.cpp"
+        "particle/*.cpp"
         "${PROJECT_SOURCE_DIR}/shaders/*")
 add_executable(${EXECUTABLE_NAME} main.cpp ${files_SOURCE})
 

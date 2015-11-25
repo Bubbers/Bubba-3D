@@ -7,8 +7,6 @@
 
 using namespace chag;
 
-float3* Particle::startPosition = NULL; 
-
 ParticleGenerator::ParticleGenerator(Texture *texture, int amount, Camera *camera, float3 position)
 	:  texture(texture), m_amount(amount), m_camera(camera), m_position(position)
 {
@@ -45,7 +43,7 @@ ParticleGenerator::ParticleGenerator(Texture *texture, int amount, Camera *camer
 
 	for (int i = 0; i < amount; i++) {
 		Particle *part = new Particle(&this->m_position);
-		part->init();
+		part->reset();
 		this->m_particles.push_back(part);
 	}
 }
@@ -78,16 +76,21 @@ void ParticleGenerator::render() {
 	glBindVertexArray(m_vaob);
 	
 	std::vector<Particle*> particles = this->m_particles;
-	std::sort(particles.begin(), particles.end(), [this](Particle* p1, Particle* p2) { return length(this->m_camera->getPosition() - p1->position) > length(this->m_camera->getPosition() - p2->position); });
+	std::sort(particles.begin(), particles.end(), [this](Particle* p1, Particle* p2) {
+		float l1 = length(this->m_camera->getPosition() - p1->getPosition());
+		float l2 = length(this->m_camera->getPosition() - p2->getPosition());
+
+		return l1 > l2;
+	});
 
 	int iterations = 0;
 	for (Particle *particle : particles) {
 		if (iterations > maxParticles) { break; }
 		iterations++;
 
-		if (particle->life > 0.0f) {
+		if (particle->isAlive()) {
 			float3 scale = make_vector(0.1f, 0.1f, 0.1f) * (1.0 + distance / LINEAR_SCALE_FACTOR);
-			float4x4 modelMatrix4x4 = make_matrix(modelMatrix3x3, particle->position) * make_scale<float4x4>(scale);
+			float4x4 modelMatrix4x4 = make_matrix(modelMatrix3x3, particle->getPosition()) * make_scale<float4x4>(scale);
 
 			shaderProgram->setUniformMatrix4fv("modelMatrix", modelMatrix4x4);
 
@@ -108,13 +111,11 @@ void ParticleGenerator::update(float dt) {
 	float distance = length(this->m_camera->getPosition() - this->m_position);
 
 	for (Particle *particle : this->m_particles) {
-		if (particle->life > 0.0f){
-			particle->position += particle->velocity * dt / 1000;
-			particle->life -= dt + (distance * 2);
-
+		if (particle->isAlive()){
+			particle->update(dt, distance);
 		}
 		else {
-			particle->init();
+			particle->reset();
 		}
 	}
 }
