@@ -1,10 +1,8 @@
 #include <ResourceManager.h>
 #include "ParticleGenerator.h"
-
+#include "constants.h"
 #include "float3x3.h"
 
-#define UNIFORM_BUFFER_OBJECT_MATRICES_NAME "Matrices"
-#define UNIFORM_BUFFER_OBJECT_MATRICES_INDEX 0
 
 
 using namespace chag;

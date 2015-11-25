@@ -1,10 +1,10 @@
 #include "Renderer.h"
 #include <sstream>
 #include "ResourceManager.h"
+#include "constants.h"
 
-#define SIMPLE_SHADER_NAME "simple_shader"
-#define UNIFORM_BUFFER_OBJECT_MATRICES_NAME "Matrices"
-#define UNIFORM_BUFFER_OBJECT_MATRICES_INDEX 0
+
+
 
 namespace patch
 {

@@ -2,12 +2,11 @@
 #include "GameObject.h"
 #include "float3x3.h"
 #include "ResourceManager.h"
+#include "constants.h"
 
-#define SIMPLE_SHADER_NAME "simple_shader"
 #define NORMAL_TEXTURE_LOCATION 3
 #define DIFFUSE_TEXTURE_LOCATION 0
-#define UNIFORM_BUFFER_OBJECT_MATRICES_NAME "Matrices"
-#define UNIFORM_BUFFER_OBJECT_MATRICES_INDEX 0
+
 
 GameObject::GameObject() {
     m_modelMatrix = make_identity<float4x4>();

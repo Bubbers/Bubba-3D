@@ -1,9 +1,7 @@
 #include "Skybox.h"
 #include "ResourceManager.h"
-
+#include "constants.h"
 #define SKYBOX_SHADER_NAME "skybox_shader"
-#define UNIFORM_BUFFER_OBJECT_MATRICES_NAME "Matrices"
-#define UNIFORM_BUFFER_OBJECT_MATRICES_INDEX 0
 
 Skybox::Skybox(Camera *camera) : m_camera(camera) {
 }
