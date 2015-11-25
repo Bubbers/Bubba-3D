@@ -1,20 +1,16 @@
 #include "Particle.h"
 
-Particle::Particle(float3* pos) :
-        position(make_vector(0.0f, 0.0f, 0.0f)),
-        velocity(make_vector(0.0f, 0.1f, 0.0f)),
-        color(make_vector(0.0f, 0.0f, 0.0f)), life(0.0f) {
-    startPosition = pos;
+Particle::Particle(float3* pos, ParticleConf *conf) {
+    generatorPos = pos;
+    reset(conf);
 };
 
-void Particle::reset() {
-    float x = PARTICLE_SPEED;
-    float y = fabs(PARTICLE_SPEED) * 3;
-    float z = PARTICLE_SPEED;
-    acceleration = make_vector(0.9f, 1.0f, 0.9f);
-    position = *startPosition;
-    velocity = make_vector(x, y, z);
-    life     = PARTICLE_LIFE;
+void Particle::reset(ParticleConf *conf) {
+#define PARTICLE_LIFE 1000.0f + (rand() % 1000)
+    position = *generatorPos;
+    acceleration = conf->getAcceleration();
+    velocity = conf->getVelocity();
+    life     = conf->getLife();
 }
 
 void Particle::update(float deltaTime, float distanceToCam) {

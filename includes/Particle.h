@@ -23,7 +23,7 @@ private:
     float3 velocity;
     float3 color;
     float3 acceleration;
-    float3 *startPosition;
+    float3* generatorPos;
 };
 
 #endif
