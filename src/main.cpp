@@ -16,7 +16,7 @@
 #include "timer.h"
 #include "ParticleGenerator.h"
 #include "ResourceManager.h"
-
+#include "FireParticle.h"
 
 using namespace std;
 using namespace chag;
@@ -575,8 +575,8 @@ void createMeshes() {
 
 	Texture *particleTexture = ResourceManager::loadAndFetchTexture("../scenes/engineflare1.jpg");
 
-
-	gen = new ParticleGenerator(particleTexture, 200, playerCamera, make_vector(0.0f, 15.0f, 0.0f));
+	FireParticle *fireConf = new FireParticle();
+	gen = new ParticleGenerator(particleTexture, 200, playerCamera, make_vector(0.0f, 15.0f, 0.0f), fireConf);
 	scene.transparentObjects.push_back(gen);
 
 	//*************************************************************************

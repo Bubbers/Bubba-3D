@@ -6,10 +6,9 @@ Particle::Particle(float3* pos, ParticleConf *conf) {
 };
 
 void Particle::reset(ParticleConf *conf) {
-#define PARTICLE_LIFE 1000.0f + (rand() % 1000)
     position = *generatorPos;
-    acceleration = conf->getAcceleration();
     velocity = conf->getVelocity();
+    acceleration = conf->getAcceleration(velocity);
     life     = conf->getLife();
 }
 

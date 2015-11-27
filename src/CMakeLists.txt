@@ -30,6 +30,7 @@ source_group(Objects	FILES objects/Mesh.cpp objects/Scene.cpp objects/Skybox.cpp
 source_group(Collision	FILES collision/Collider.cpp collision/Octree.cpp)
 source_group(Core		FILES core/Renderer.cpp)
 source_group(Misc		FILES Misc/CubeMapTexture.cpp ${PROJECT_SOURCE_DIR}/includes/glutil/glutil.cpp)
+source_group(Particle   FILES particle/Particle.cpp particle/FireParticle.cpp particle/ParticleGenerator.cpp)
 source_group(Math		FILES
         ${PROJECT_SOURCE_DIR}/includes/linmath/float2.cpp
         ${PROJECT_SOURCE_DIR}/includes/linmath/float3.cpp

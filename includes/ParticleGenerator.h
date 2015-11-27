@@ -8,6 +8,7 @@
 #include "Camera.h"
 #include "Shader.h"
 #include "Texture.h"
+#include "ParticleConf.h"
 #include "Particle.h"
 
 #define LINEAR_SCALE_FACTOR 50.0f
@@ -20,7 +21,7 @@ using namespace chag;
 class ParticleGenerator : public IDrawable
 {
 public:
-	ParticleGenerator(Texture *texture, int amount, Camera *camera, float3 position);
+	ParticleGenerator(Texture *texture, int amount, Camera *camera, float3 position, ParticleConf *conf);
 	~ParticleGenerator();
 
 	void update(float dt);
@@ -37,7 +38,8 @@ private:
 	Texture *texture;
 	int m_amount;
 	Shader* shaderProgram;
-	
+
+	ParticleConf *conf;
 
 	float3x3 getModelMatrix3x3();
 };

@@ -7,8 +7,8 @@
 
 using namespace chag;
 
-ParticleGenerator::ParticleGenerator(Texture *texture, int amount, Camera *camera, float3 position)
-	:  texture(texture), m_amount(amount), m_camera(camera), m_position(position)
+ParticleGenerator::ParticleGenerator(Texture *texture, int amount, Camera *camera, float3 position, ParticleConf *conf)
+	:  texture(texture), m_amount(amount), m_camera(camera), m_position(position), conf(conf)
 {
 	ResourceManager::loadShader("../shaders/particle.vert", "../shaders/particle.frag", "particleShader");
 	shaderProgram = ResourceManager::getShader("particleShader");
@@ -42,8 +42,7 @@ ParticleGenerator::ParticleGenerator(Texture *texture, int amount, Camera *camer
 	glBindVertexArray(0);
 
 	for (int i = 0; i < amount; i++) {
-		Particle *part = new Particle(&this->m_position);
-		part->reset();
+		Particle *part = new Particle(&this->m_position, conf);
 		this->m_particles.push_back(part);
 	}
 }
@@ -115,7 +114,7 @@ void ParticleGenerator::update(float dt) {
 			particle->update(dt, distance);
 		}
 		else {
-			particle->reset();
+			particle->reset(conf);
 		}
 	}
 }
