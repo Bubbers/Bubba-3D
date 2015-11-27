@@ -8,14 +8,11 @@ Particle::Particle(float3* pos, ParticleConf *conf) {
 void Particle::reset(ParticleConf *conf) {
     position = *generatorPos;
     velocity = conf->getVelocity();
-    acceleration = conf->getAcceleration(velocity);
     life     = conf->getLife();
 }
 
-void Particle::update(float deltaTime, float distanceToCam) {
-    velocity.x *= acceleration.x;
-    velocity.y *= acceleration.y;
-    velocity.z *= acceleration.z;
+void Particle::update(float deltaTime, float distanceToCam, ParticleConf *conf) {
+    velocity    = conf->accelerate(velocity);
     position   += velocity * deltaTime / 1000;
     life       -= deltaTime + (distanceToCam * 2);
 }
@@ -23,3 +20,4 @@ void Particle::update(float deltaTime, float distanceToCam) {
 bool Particle::isAlive() {
     return life > 0.0f;
 }
+

@@ -111,7 +111,7 @@ void ParticleGenerator::update(float dt) {
 
 	for (Particle *particle : this->m_particles) {
 		if (particle->isAlive()){
-			particle->update(dt, distance);
+			particle->update(dt, distance, conf);
 		}
 		else {
 			particle->reset(conf);

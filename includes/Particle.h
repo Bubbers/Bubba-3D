@@ -15,7 +15,7 @@ public:
     Particle(float3 *pos, ParticleConf *conf);
     void reset(ParticleConf *conf);
     bool isAlive();
-    void update(float deltaTime, float distanceToCam);
+    void update(float deltaTime, float distanceToCam, ParticleConf *conf);
     float3 getPosition() { return position; }
 
 private:
@@ -23,7 +23,6 @@ private:
     float3 position;
     float3 velocity;
     float3 color;
-    float3 acceleration;
     float3* generatorPos;
 };
 

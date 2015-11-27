@@ -9,7 +9,7 @@ public:
     ~FireParticle() {}
 
     float3 getVelocity();
-    float3 getAcceleration(float3 velocity);
+    float3 accelerate(float3 velocity);
     float getLife();
 };
 
