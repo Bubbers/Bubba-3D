@@ -3,7 +3,6 @@
 
 #include "Mesh.h"
 #include "IDrawable.h"
-#include "Shader.h"
 #include <Triangle.h>
 #include "IRenderComponent.h"
 
@@ -24,14 +23,21 @@ public:
     std::vector<Triangle*> getTriangles();
 
     float4x4* getModelMatrix();
-    Shader* getShaderProgram();
 
     void addRenderComponent(IRenderComponent*);
-    IRenderComponent* renderComponent;
+    void addComponent(IComponent*);
+
+    void update(float dt);
+
 
 private:
     Mesh *mesh;
     chag::float4x4 m_modelMatrix;
+
+    /* COMPONENTS */
+    IRenderComponent* renderComponent;
+    std::vector<IComponent*> components;
+
 };
 
 

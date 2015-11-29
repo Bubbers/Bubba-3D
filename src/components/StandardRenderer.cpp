@@ -19,6 +19,7 @@ void StandardRenderer::update(float dt){
 }
 
 void StandardRenderer::render() {
+    shaderProgram->use();
     CHECK_GL_ERROR();
 
     chag::float4x4 normalMatrix = chag::inverse(chag::transpose(*modelMatrix));

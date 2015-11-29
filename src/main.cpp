@@ -11,6 +11,7 @@
 #include <Quaternion.h>
 #include <Texture.h>
 #include <StandardRenderer.h>
+#include <CarMoveComponent.h>
 #include "collision/Collider.h"
 
 #include "Renderer.h"
@@ -18,7 +19,7 @@
 #include "ParticleGenerator.h"
 #include "ResourceManager.h"
 #include "FireParticle.h"
-#include "IRenderComponent.h"
+#include "constants.h"
 
 using namespace std;
 using namespace chag;
@@ -45,8 +46,8 @@ float3 startPosSun = make_vector(30.1f, 450.0f, 0.1f);
 //	OBJ Model declarations
 //*****************************************************************************
 GameObject world;
-Mesh worldCollision;
 GameObject car;
+Car carLoc;
 GameObject factory;
 GameObject water;
 GameObject spider;
@@ -95,36 +96,6 @@ Camera *sunCamera;
 Camera *playerCamera;
 int camera = 6;
 
-//*****************************************************************************
-//	Car object variables
-//*****************************************************************************
-struct Car{
-  float3 frontDir;
-  float3 upDir;
-  float3 location;
-  float3 wheel1, wheel2, wheel3,  wheel4;
-
-  float rotationSpeed;
-  float moveSpeed;
-  float angley, anglez, anglex;
-  float lengthx, lengthz;
-
-  Car() {
-    frontDir = make_vector(0.0f, 0.0f, 1.0f);
-    upDir = make_vector(0.0f, 1.0f, 0.0f);
-    location = make_vector(0.0f, 10.0f, 0.0f);
-    wheel1 = make_vector( 1.2f, 0.0f,  1.5f);
-    wheel2 = make_vector( 1.2f, 0.0f, -1.5f);
-    wheel3 = make_vector(-0.8f, 0.0f,  1.5f);
-    wheel4 = make_vector(-0.8f, 0.0f, -1.5f);
-
-    rotationSpeed = (float) (2 * M_PI / 180);
-    moveSpeed = 0.5;
-    angley = 0; anglez = 0; anglex = 0;
-    lengthx = 2; lengthz = 3;
-  }
-} carLoc;
-
 
 Renderer *renderer;
 //*****************************************************************************
@@ -145,11 +116,7 @@ void createCameras();
 void createLights();
 void createEffects();
 
-float degreeToRad(float degree);
-float radToDegree(float rad);
 float3 sphericalToCartesian(float theta, float phi, float r);
-
-void updatePlayer();
 
 
 //*****************************************************************************
@@ -192,8 +159,6 @@ void checkIntersection() {
 	float3 halfVector = normalize(newUpa - newUpb);
 	carLoc.upDir = -(rot * halfVector);
 
-	
-
 	//Change wheel locations 
 	carLoc.wheel1 += upVec * a;
 	carLoc.wheel2 += upVec * b;
@@ -212,7 +177,6 @@ void checkIntersection() {
 	float4 newLoc = makematrix(qatX) * makematrix(qatZ) * make_vector4(carLoc.wheel1, 1.0f);
 
 	carLoc.location += make_vector(0.0f, carLoc.wheel1.y + (carLoc.wheel1.y - newLoc.y), 0.0f);
-	//printf("%f\n", carLoc.wheel1.y + (carLoc.wheel1.y - newLoc.y));
 }
 
 void display(void)
@@ -356,30 +320,7 @@ void motion(int x, int y)
 	prev_x = x;
 	prev_y = y;
 }
-void tick() {
-	if (keysDown[(int)'w']) {
-		float3 term = carLoc.frontDir * carLoc.moveSpeed;
-		carLoc.location += term;
-		hasChanged = true;
 
-	}if (keysDown[(int)'s']) {
-		float3 term = carLoc.frontDir * carLoc.moveSpeed;
-		carLoc.location -= term;
-		hasChanged = true;
-
-	}if (keysDown[(int)'a'] && (keysDown[(int)'w'] || keysDown[(int)'s'])) {
-		carLoc.angley += carLoc.rotationSpeed;
-		carLoc.frontDir = make_rotation_y<float3x3>(carLoc.rotationSpeed) * carLoc.frontDir;
-		camera_theta += carLoc.rotationSpeed;
-		hasChanged = true;
-
-	}if (keysDown[(int)'d'] && (keysDown[(int)'w'] || keysDown[(int)'s'])) {
-		carLoc.angley -= carLoc.rotationSpeed;
-		carLoc.frontDir = make_rotation_y<float3x3>(-carLoc.rotationSpeed) * carLoc.frontDir;
-		camera_theta -= carLoc.rotationSpeed;
-		hasChanged = true;
-	}
-}
 void idle( int v )
 {
 	float elapsedTime = glutGet(GLUT_ELAPSED_TIME) - timeSinceDraw;
@@ -407,11 +348,10 @@ void idle( int v )
 		gen->update(elapsedTime);
 		gen->m_position = make_vector(3 * sin(currentTime) * sin(currentTime)* sin(currentTime), 3 * sin(currentTime), 5 * sin(currentTime) * cos(currentTime)) + make_vector(0.0f, 15.0f, 0.0f);
 
-		tick();
+        scene.update(elapsedTime);
 
 		if (hasChanged){
 			checkIntersection();
-			updatePlayer();
 			hasChanged = false;
 		}
 
@@ -579,29 +519,36 @@ void createMeshes() {
 
 	FireParticle *fireConf = new FireParticle();
 	gen = new ParticleGenerator(particleTexture, 200, playerCamera, make_vector(0.0f, 15.0f, 0.0f), fireConf);
-	scene.transparentObjects.push_back(gen);
+	//scene.transparentObjects.push_back(gen);
+
+    skybox = new Skybox(playerCamera);
+    skybox->init("../scenes/posx.jpg", "../scenes/negx.jpg", "../scenes/posy.jpg", "../scenes/posy.jpg", "../scenes/negz.jpg", "../scenes/posz.jpg");
+    //scene.transparentObjects.push_back(skybox);
 
 	//*************************************************************************
 	// Load the models from disk
 	//*************************************************************************
+	Shader* standardShader = ResourceManager::getShader(SIMPLE_SHADER_NAME);
+	standardShader->setUniformBufferObjectBinding(UNIFORM_BUFFER_OBJECT_MATRICES_NAME, UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
+
 	//Load shadow casters
 	Mesh* carM = ResourceManager::loadAndFetchMesh("../scenes/untitled.dae");
 	car = GameObject(carM);
 	car.move(make_translation(make_vector(0.0f, 0.0f, 0.0f)));
 
-	StandardRenderer *carRenderer = new StandardRenderer(carM, car.getModelMatrix(), car.getShaderProgram());
+	StandardRenderer *carRenderer = new StandardRenderer(carM, car.getModelMatrix(), standardShader);
 	car.addRenderComponent(carRenderer);
 
+	CarMoveComponent *carMoveComponent = new CarMoveComponent(keysDown, &hasChanged, &carLoc, &camera_theta, &car);
+	car.addComponent(carMoveComponent);
 	scene.shadowCasters.push_back(&car);
 
 
 	Mesh* worldM = ResourceManager::loadAndFetchMesh("../scenes/world.obj");
 	world = GameObject(worldM);
 	world.move(make_translation(make_vector(0.0f, 0.0f, 0.0f)));
-
-	StandardRenderer *worldRenderer = new StandardRenderer(worldM, world.getModelMatrix(), world.getShaderProgram());
+	StandardRenderer *worldRenderer = new StandardRenderer(worldM, world.getModelMatrix(), standardShader);
 	world.addRenderComponent(worldRenderer);
-
 	scene.shadowCasters.push_back(&world);
 
 	/*Mesh* factoryM = ResourceManager::loadAndFetchMesh("../scenes/test.obj");
@@ -664,8 +611,8 @@ void createMeshes() {
 	octTree = new Octree(origin, halfVector, 0);
 
 	collider = new Collider(octTree);
-	/*collider->addMesh(&world);
-	collider->addMesh(&water);
+	collider->addMesh(&world);
+	/*collider->addMesh(&water);
 	collider->addMesh(&factory);
     collider->addMesh(&spider);*/
   
@@ -694,17 +641,7 @@ void createCameras() {
 		45, float(w) / float(h), 0.1f, 1000.0f
 		);
 
-	skybox = new Skybox(playerCamera);
-	skybox->init("../scenes/posx.jpg", "../scenes/negx.jpg", "../scenes/posy.jpg", "../scenes/posy.jpg", "../scenes/negz.jpg", "../scenes/posz.jpg");
-	scene.transparentObjects.push_back(skybox);
-}
 
-float degreeToRad(float degree) {
-	return (float) (degree * M_PI / 180);
-}
-
-float radToDegree(float rad) {
-	return (float) (rad * 180 / M_PI);
 }
 
 // Helper function to turn spherical coordinates into cartesian (x,y,z)
@@ -714,21 +651,3 @@ float3 sphericalToCartesian(float theta, float phi, float r)
 		r * cosf(phi),
 		r * cosf(theta)*sinf(phi));
 }
-
-void updatePlayer() {
-	float3 frontDir = normalize(carLoc.frontDir);
-	float3 rightDir = normalize(cross(frontDir, vUp));
-
-	float anglex = -(degreeToRad(90.0f) - acosf(dot(normalize(carLoc.upDir), frontDir)));
-	float anglez = (degreeToRad(90.0f) - acosf(dot(normalize(carLoc.upDir), rightDir)));
-
-	Quaternion qatX = make_quaternion_axis_angle(rightDir, anglex);
-	Quaternion qatY = make_quaternion_axis_angle(vUp, carLoc.angley);
-	Quaternion qatZ = make_quaternion_axis_angle(make_rotation_y<float3x3>(-carLoc.angley) * frontDir, anglez);
-
-	car.move(make_translation(carLoc.location));
-	car.update(makematrix(qatX));
-	car.update(makematrix(qatY));
-	car.update(makematrix(qatZ));
-}
-

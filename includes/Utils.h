@@ -16,4 +16,13 @@ struct Fbo{
 	int width, height;
 };
 
+
+static float degreeToRad(float degree) {
+	return (float) (degree * M_PI / 180);
+}
+
+static float radToDegree(float rad) {
+	return (float) (rad * 180 / M_PI);
+}
+
 #endif

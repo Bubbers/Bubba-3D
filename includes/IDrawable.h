@@ -13,8 +13,8 @@ public:
   virtual void render() = 0;
   virtual void renderShadow(Shader* shaderProgram) = 0;
   
-    float shininess;
-	Shader* shaderProgram;
+  float shininess;
+
 
 
 };

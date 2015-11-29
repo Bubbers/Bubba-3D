@@ -23,8 +23,10 @@ public:
 	std::vector<PointLight> pointLights;
 	std::vector<SpotLight> spotLights;
 
-	std::vector<IDrawable*> shadowCasters;
-	std::vector<IDrawable*> transparentObjects;
+	std::vector<GameObject*> shadowCasters;
+	std::vector<GameObject*> transparentObjects;
+
+	void update(float dt);
 };
 
 #endif // __SCENE_H__

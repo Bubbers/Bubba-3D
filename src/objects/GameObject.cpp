@@ -1,3 +1,4 @@
+
 #include <Logger.h>
 #include "GameObject.h"
 #include "float3x3.h"
@@ -16,13 +17,10 @@ GameObject::GameObject(Mesh *mesh) {
     GameObject();
     this->mesh = mesh;
     shininess = 0.0f;
-    shaderProgram = ResourceManager::getShader(SIMPLE_SHADER_NAME);
-    shaderProgram->setUniformBufferObjectBinding(UNIFORM_BUFFER_OBJECT_MATRICES_NAME, UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
 };
 
 GameObject::~GameObject() {
     mesh = nullptr;
-    shaderProgram = nullptr;
 }
 
 void GameObject::move(float4x4 model_matrix) {
@@ -70,9 +68,6 @@ float4x4* GameObject::getModelMatrix(){
     return &m_modelMatrix;
 }
 
-Shader* GameObject::getShaderProgram(){
-    return shaderProgram;
-}
 
 void GameObject::renderShadow(Shader *shaderProgram) {
     renderComponent->renderShadow(shaderProgram);
@@ -80,4 +75,15 @@ void GameObject::renderShadow(Shader *shaderProgram) {
 
 void GameObject::addRenderComponent(IRenderComponent* renderer){
     this->renderComponent = renderer;
+    components.push_back(renderer);
+}
+
+void GameObject::addComponent(IComponent* newComponent) {
+    components.push_back(newComponent);
+}
+
+void GameObject::update(float dt) {
+    for(auto &component : components) {
+        component->update(dt);
+    }
 }
