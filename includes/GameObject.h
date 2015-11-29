@@ -5,6 +5,7 @@
 #include "IDrawable.h"
 #include "Shader.h"
 #include <Triangle.h>
+#include "IRenderComponent.h"
 
 class GameObject : public IDrawable {
 public:
@@ -21,6 +22,12 @@ public:
     void move(float4x4 model_matrix);
     void update(float4x4 update_matrix);
     std::vector<Triangle*> getTriangles();
+
+    float4x4* getModelMatrix();
+    Shader* getShaderProgram();
+
+    void addRenderComponent(IRenderComponent*);
+    IRenderComponent* renderComponent;
 
 private:
     Mesh *mesh;

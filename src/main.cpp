@@ -10,6 +10,7 @@
 
 #include <Quaternion.h>
 #include <Texture.h>
+#include <StandardRenderer.h>
 #include "collision/Collider.h"
 
 #include "Renderer.h"
@@ -17,6 +18,7 @@
 #include "ParticleGenerator.h"
 #include "ResourceManager.h"
 #include "FireParticle.h"
+#include "IRenderComponent.h"
 
 using namespace std;
 using namespace chag;
@@ -586,14 +588,23 @@ void createMeshes() {
 	Mesh* carM = ResourceManager::loadAndFetchMesh("../scenes/untitled.dae");
 	car = GameObject(carM);
 	car.move(make_translation(make_vector(0.0f, 0.0f, 0.0f)));
+
+	StandardRenderer *carRenderer = new StandardRenderer(carM, car.getModelMatrix(), car.getShaderProgram());
+	car.addRenderComponent(carRenderer);
+
 	scene.shadowCasters.push_back(&car);
+
 
 	Mesh* worldM = ResourceManager::loadAndFetchMesh("../scenes/world.obj");
 	world = GameObject(worldM);
 	world.move(make_translation(make_vector(0.0f, 0.0f, 0.0f)));
+
+	StandardRenderer *worldRenderer = new StandardRenderer(worldM, world.getModelMatrix(), world.getShaderProgram());
+	world.addRenderComponent(worldRenderer);
+
 	scene.shadowCasters.push_back(&world);
 
-	Mesh* factoryM = ResourceManager::loadAndFetchMesh("../scenes/test.obj");
+	/*Mesh* factoryM = ResourceManager::loadAndFetchMesh("../scenes/test.obj");
 	factory = GameObject(factoryM);
     factory.move(make_translation(make_vector(-15.0f, 6.0f, 0.0f)) * make_rotation_y<float4x4>(
 			(float) (M_PI / 180 * 90)) * make_scale<float4x4>(make_vector(2.0f, 2.0f, 2.0f)));
@@ -635,7 +646,7 @@ void createMeshes() {
 	normalTestWithout = GameObject(normalTestWithoutM);
     normalTestWithout.move(make_translation(make_vector(5.0f, 10.0f, 0.0f)) * make_rotation_x<float4x4>(
 			(float) (M_PI / 180 * 30)));
-	scene.shadowCasters.push_back(&normalTestWithout);
+	scene.shadowCasters.push_back(&normalTestWithout);*/
 	
 
 	Logger::logInfo("Finished loading meshes.");
@@ -653,10 +664,10 @@ void createMeshes() {
 	octTree = new Octree(origin, halfVector, 0);
 
 	collider = new Collider(octTree);
-	collider->addMesh(&world);
+	/*collider->addMesh(&world);
 	collider->addMesh(&water);
 	collider->addMesh(&factory);
-    collider->addMesh(&spider);
+    collider->addMesh(&spider);*/
   
 	collider->insertAll(); //TODO enlargen octrees afterhand instead
 	Logger::logInfo("Finished loading octree");
