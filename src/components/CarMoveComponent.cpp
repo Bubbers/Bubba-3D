@@ -15,9 +15,8 @@ CarMoveComponent::CarMoveComponent(){
 
 }
 
-CarMoveComponent::CarMoveComponent(bool keysDown[], bool* hasChangedLocation, Car* car, float* cameraThetaLocation, GameObject* carObject, Collider* collisionHandler) {
+CarMoveComponent::CarMoveComponent(bool keysDown[], Car* car, float* cameraThetaLocation, GameObject* carObject, Collider* collisionHandler) {
     this->keysDown = keysDown;
-    this->hasChangedLocation = hasChangedLocation;
     this->car = car;
     this->cameraThetaLocation = cameraThetaLocation;
     this->carObject = carObject;
@@ -26,8 +25,11 @@ CarMoveComponent::CarMoveComponent(bool keysDown[], bool* hasChangedLocation, Ca
 
 void CarMoveComponent::update(float dt) {
     checkKeyPresses();
-    updateCarObject();
-    checkIntersection();
+    if(hasChanged) {
+        updateCarObject();
+        alignCarTowardsSurface();
+        hasChanged = false;
+    }
 }
 
 void CarMoveComponent::onCollision() {
@@ -39,27 +41,27 @@ void CarMoveComponent::checkKeyPresses() {
     if (keysDown[(int) 'w']) {
         float3 term = car->frontDir * car->moveSpeed;
         car->location += term;
-        *hasChangedLocation = true;
+        hasChanged = true;
 
     }
     if (keysDown[(int) 's']) {
         float3 term = car->frontDir * car->moveSpeed;
         car->location -= term;
-        *hasChangedLocation = true;
+        hasChanged = true;
 
     }
     if (keysDown[(int) 'a'] && (keysDown[(int) 'w'] || keysDown[(int) 's'])) {
         car->angley += car->rotationSpeed;
         car->frontDir = make_rotation_y<float3x3>(car->rotationSpeed) * car->frontDir;
         *cameraThetaLocation += car->rotationSpeed;
-        *hasChangedLocation = true;
+        hasChanged = true;
 
     }
     if (keysDown[(int) 'd'] && (keysDown[(int) 'w'] || keysDown[(int) 's'])) {
         car->angley -= car->rotationSpeed;
         car->frontDir = make_rotation_y<float3x3>(-car->rotationSpeed) * car->frontDir;
         *cameraThetaLocation -= car->rotationSpeed;
-        *hasChangedLocation = true;
+        hasChanged = true;
     }
 }
 
@@ -84,7 +86,7 @@ void CarMoveComponent::updateCarObject(){
     carObject->update(makematrix(qatZ));
 }
 
-void CarMoveComponent::checkIntersection() {
+void CarMoveComponent::alignCarTowardsSurface() {
     float3 upVec = make_vector(0.0f, 1.0f, 0.0f);
 
     //Calculate intersections

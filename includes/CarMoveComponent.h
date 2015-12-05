@@ -15,20 +15,20 @@ using namespace chag;
 class CarMoveComponent : public IComponent {
 public:
     CarMoveComponent();
-    CarMoveComponent(bool keysDown[],bool* hasChangedLocation, Car* car, float* cameraThetaLocation, GameObject* carObject, Collider* collisionHandler);
+    CarMoveComponent(bool keysDown[], Car* car, float* cameraThetaLocation, GameObject* carObject, Collider* collisionHandler);
     void update(float dt);
     void onCollision();
 private:
     bool *keysDown;
-    bool *hasChangedLocation;
     float* cameraThetaLocation;
     Car* car;
     GameObject* carObject;
     Collider* collisionHandler;
+    bool hasChanged = true;
 
     void checkKeyPresses();
     void updateCarObject();
-    void checkIntersection();
+    void alignCarTowardsSurface();
 };
 
 

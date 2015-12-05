@@ -12,7 +12,6 @@
 #include <Texture.h>
 #include <StandardRenderer.h>
 #include <CarMoveComponent.h>
-#include "Collider.h"
 
 #include "Renderer.h"
 #include "timer.h"
@@ -107,8 +106,6 @@ Renderer *renderer;
 //*****************************************************************************
 Collider *collider;
 Octree *octTree;
-bool hasChanged = true;
-
 
 //*****************************************************************************
 //	Function declarations
@@ -498,7 +495,7 @@ void createMeshes() {
 	StandardRenderer *carRenderer = new StandardRenderer(carM, car.getModelMatrix(), standardShader);
 	car.addRenderComponent(carRenderer);
 
-	CarMoveComponent *carMoveComponent = new CarMoveComponent(keysDown, &hasChanged, &carLoc, &camera_theta, &car, collider);
+	CarMoveComponent *carMoveComponent = new CarMoveComponent(keysDown, &carLoc, &camera_theta, &car, collider);
 	car.addComponent(carMoveComponent);
 	scene.shadowCasters.push_back(&car);
 
