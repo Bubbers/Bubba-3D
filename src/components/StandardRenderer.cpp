@@ -8,9 +8,9 @@ StandardRenderer::StandardRenderer(){
 }
 
 StandardRenderer::StandardRenderer(Mesh* mesh, float4x4* modelMatrix, Shader* shaderProgram):
-        mesh(mesh), modelMatrix(modelMatrix), shaderProgram(shaderProgram)
+        mesh(mesh), modelMatrix(modelMatrix)
 {
-
+    this->shaderProgram = shaderProgram;
 }
 
 

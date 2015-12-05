@@ -7,7 +7,9 @@ class IRenderComponent : public IComponent {
 public:
     virtual void render() = 0;
     virtual void renderShadow(Shader *shaderProgram) = 0;
-private:
+
+protected:
+    Shader *shaderProgram;
 
 };
 

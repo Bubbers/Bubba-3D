@@ -27,7 +27,7 @@ add_executable(${EXECUTABLE_NAME} main.cpp ${files_SOURCE})
 #########################################################
 source_group(Logging	FILES logging/Logger.cpp)
 source_group(Cameras	FILES cameras/Camera.cpp cameras/PerspectiveCamera.cpp)
-source_group(Objects	FILES objects/Mesh.cpp objects/Scene.cpp objects/Skybox.cpp objects/Triangle.cpp)
+source_group(Objects	FILES objects/Mesh.cpp objects/Scene.cpp objects/SkyBoxRenderer.cpp objects/Triangle.cpp)
 source_group(Collision	FILES collision/Collider.cpp collision/Octree.cpp)
 source_group(Core		FILES core/Renderer.cpp)
 source_group(Misc		FILES Misc/CubeMapTexture.cpp ${PROJECT_SOURCE_DIR}/includes/glutil/glutil.cpp)

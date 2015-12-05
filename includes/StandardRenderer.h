@@ -19,7 +19,6 @@ public:
 private:
     Mesh* mesh;
     float4x4* modelMatrix;
-    Shader* shaderProgram;
 };
 
 

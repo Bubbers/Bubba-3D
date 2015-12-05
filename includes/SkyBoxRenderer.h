@@ -1,5 +1,5 @@
-#ifndef __SKYBOX_H__
-#define __SKYBOX_H__
+#ifndef __SKYBOXRENDERER_H__
+#define __SKYBOXRENDERER_H__
 
 
 #include <string>
@@ -11,22 +11,23 @@
 
 using namespace std;
 
-class Skybox : public IDrawable
+class SkyBoxRenderer : public IRenderComponent
 {
 public:
-	Skybox(Camera* camera);
-	~Skybox();
+	SkyBoxRenderer(Camera* camera, Mesh* skyMesh, float4x4* modelMatrix);
+	~SkyBoxRenderer();
 
 	bool init(const string& posXFilename, const string& negXFilename, const string& posYFilename, const string& negYFilename, const string& posZFilename, const string& negZFilename);
 
 	void renderShadow(Shader* shaderProgram) {};
-	virtual void render();
+	void render();
+	void update(float dt);
 private:
 	Camera* m_camera;
 	CubeMapTexture* m_pCubemap;
 	Mesh *m_skyMesh;
-	Shader* shaderProgram;
+	float4x4* modelMatrix;
 };
 
 
-#endif // !__SKYBOX_H__
+#endif // !__SKYBOXRENDERER_H__

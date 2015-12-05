@@ -57,6 +57,8 @@ GameObject lamp3;
 GameObject normalTest;
 GameObject normalTestWithout;
 ParticleGenerator* gen;
+GameObject skyBox;
+
 
 Scene scene;
 
@@ -65,7 +67,7 @@ Scene scene;
 //	Cube Maps
 //*****************************************************************************
 CubeMapTexture* reflectionCubeMap;
-Skybox* skybox;
+
 Fbo cMapAll;
 
 
@@ -521,9 +523,13 @@ void createMeshes() {
 	gen = new ParticleGenerator(particleTexture, 200, playerCamera, make_vector(0.0f, 15.0f, 0.0f), fireConf);
 	//scene.transparentObjects.push_back(gen);
 
-    skybox = new Skybox(playerCamera);
-    skybox->init("../scenes/posx.jpg", "../scenes/negx.jpg", "../scenes/posy.jpg", "../scenes/posy.jpg", "../scenes/negz.jpg", "../scenes/posz.jpg");
-    //scene.transparentObjects.push_back(skybox);
+	Mesh *skyBoxM = ResourceManager::loadAndFetchMesh("../scenes/sphere.obj");
+	skyBox = GameObject(skyBoxM);
+
+    SkyBoxRenderer *skyboxRenderer = new SkyBoxRenderer(playerCamera, skyBoxM, skyBox.getModelMatrix());
+    skyboxRenderer->init("../scenes/posx.jpg", "../scenes/negx.jpg", "../scenes/posy.jpg", "../scenes/posy.jpg", "../scenes/negz.jpg", "../scenes/posz.jpg");
+    skyBox.addRenderComponent(skyboxRenderer);
+    scene.shadowCasters.push_back(&skyBox);
 
 	//*************************************************************************
 	// Load the models from disk
