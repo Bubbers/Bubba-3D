@@ -6,6 +6,8 @@
 #include <Triangle.h>
 #include "IRenderComponent.h"
 
+enum EventType {OnCollision, AfterCollision};
+
 class GameObject : public IDrawable {
 public:
     GameObject();
@@ -15,7 +17,6 @@ public:
     ~GameObject();
 
     virtual void render();
-
     virtual void renderShadow(Shader* shaderProgram);
 
     void move(float4x4 model_matrix);
@@ -28,6 +29,7 @@ public:
     void addComponent(IComponent*);
 
     void update(float dt);
+    void callEvent(EventType);
 
 
 private:

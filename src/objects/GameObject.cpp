@@ -87,3 +87,13 @@ void GameObject::update(float dt) {
         component->update(dt);
     }
 }
+
+void GameObject::callEvent(EventType type){
+    switch(type) {
+    case EventType::OnCollision:
+        for (auto &component : components) {
+            component->onCollision();
+        }
+        break;
+    }
+}

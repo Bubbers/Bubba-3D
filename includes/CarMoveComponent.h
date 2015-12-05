@@ -5,6 +5,7 @@
 #include "float3.h"
 #include "Car.h"
 #include "GameObject.h"
+#include "Collider.h"
 
 using namespace chag;
 
@@ -14,17 +15,20 @@ using namespace chag;
 class CarMoveComponent : public IComponent {
 public:
     CarMoveComponent();
-    CarMoveComponent(bool keysDown[],bool* hasChangedLocation, Car* car, float* cameraThetaLocation, GameObject* carObject);
+    CarMoveComponent(bool keysDown[],bool* hasChangedLocation, Car* car, float* cameraThetaLocation, GameObject* carObject, Collider* collisionHandler);
     void update(float dt);
+    void onCollision();
 private:
     bool *keysDown;
     bool *hasChangedLocation;
     float* cameraThetaLocation;
     Car* car;
     GameObject* carObject;
+    Collider* collisionHandler;
 
     void checkKeyPresses();
     void updateCarObject();
+    void checkIntersection();
 };
 
 

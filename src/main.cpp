@@ -12,7 +12,7 @@
 #include <Texture.h>
 #include <StandardRenderer.h>
 #include <CarMoveComponent.h>
-#include "collision/Collider.h"
+#include "Collider.h"
 
 #include "Renderer.h"
 #include "timer.h"
@@ -126,62 +126,7 @@ float3 sphericalToCartesian(float theta, float phi, float r);
 //*****************************************************************************
 //	Function implementation
 //****************************************************************************
-void checkIntersection() {
-	float3 upVec = make_vector(0.0f, 1.0f, 0.0f);
 
-	//Calculate intersections
-	float3x3 rot = make_rotation_y<float3x3>(carLoc.angley);
-	utils::Timer timer;
-	timer.start();
-	float a = collider->rayIntersection(carLoc.location + rot * carLoc.wheel1, -upVec);
-	float b = collider->rayIntersection(carLoc.location + rot * carLoc.wheel2, -upVec);
-	float c = collider->rayIntersection(carLoc.location + rot * carLoc.wheel3, -upVec);
-	float d = collider->rayIntersection(carLoc.location + rot * carLoc.wheel4, -upVec);
-	timer.stop();
-
-	stringstream timeMessage;
-	timeMessage << "Tested 4 ray/aabb intersections in " << timer.getElapsedTime() << " ms";
-	Logger::logDebug(timeMessage.str());
-	if (a == 0 && b == 0 && c == 0 && d == 0) {
-		return;
-	}
-	//Calculate 3d points of intersection
-	float3 af = carLoc.wheel1 - (upVec * a);
-	float3 bf = carLoc.wheel2 - (upVec * b);
-	float3 cf = carLoc.wheel3 - (upVec * c);
-	float3 df = carLoc.wheel4 - (upVec * d);
-
-	//Calculate new up vector
-	float3 vABa = af - bf;
-	float3 vCBa = cf - bf;
-	float3 newUpa = cross(vABa, vCBa);
-
-	float3 vABb = bf - cf;
-	float3 vCBb = df - cf;
-	float3 newUpb = cross(vABb, vCBb);
-
-	float3 halfVector = normalize(newUpa - newUpb);
-	carLoc.upDir = -(rot * halfVector);
-
-	//Change wheel locations 
-	carLoc.wheel1 += upVec * a;
-	carLoc.wheel2 += upVec * b;
-	carLoc.wheel3 += upVec * c;
-	carLoc.wheel4 += upVec * d;
-
-	float3 frontDir = normalize(carLoc.frontDir);
-	float3 rightDir = normalize(cross(frontDir, vUp));
-
-	float anglex = -(degreeToRad(90.0f) - acosf(dot(normalize(carLoc.upDir), frontDir)));
-	float anglez = (degreeToRad(90.0f) - acosf(dot(normalize(carLoc.upDir), rightDir)));
-	
-	Quaternion qatX = make_quaternion_axis_angle(rightDir, anglex);
-	Quaternion qatZ = make_quaternion_axis_angle(make_rotation_y<float3x3>(-carLoc.angley) * frontDir, anglez);
-
-	float4 newLoc = makematrix(qatX) * makematrix(qatZ) * make_vector4(carLoc.wheel1, 1.0f);
-
-	carLoc.location += make_vector(0.0f, carLoc.wheel1.y + (carLoc.wheel1.y - newLoc.y), 0.0f);
-}
 
 void display(void)
 {
@@ -228,6 +173,9 @@ void handleKeys(unsigned char key, int x, int y)
 	case 'D':
 		keysDown[(int)'d'] = true;
 		break;
+    case 'p':
+        car.callEvent(EventType::OnCollision);
+        break;
 	}
 }
 
@@ -354,10 +302,6 @@ void idle( int v )
 
         scene.update(elapsedTime);
 
-		if (hasChanged){
-			checkIntersection();
-			hasChanged = false;
-		}
 
 		glutPostRedisplay();
 	}
@@ -518,6 +462,11 @@ void createCubeMaps() {
 
 void createMeshes() {
 	Logger::logInfo("Started loading meshes");
+    float3 origin = make_vector(0.0f, 0.0f, 0.0f);
+    float3 halfVector = make_vector(200.0f, 200.0f, 200.0f); //TODO
+    octTree = new Octree(origin, halfVector, 0);
+
+    collider = new Collider(octTree);
 
 	Texture *particleTexture = ResourceManager::loadAndFetchTexture("../scenes/engineflare1.jpg");
 
@@ -549,7 +498,7 @@ void createMeshes() {
 	StandardRenderer *carRenderer = new StandardRenderer(carM, car.getModelMatrix(), standardShader);
 	car.addRenderComponent(carRenderer);
 
-	CarMoveComponent *carMoveComponent = new CarMoveComponent(keysDown, &hasChanged, &carLoc, &camera_theta, &car);
+	CarMoveComponent *carMoveComponent = new CarMoveComponent(keysDown, &hasChanged, &carLoc, &camera_theta, &car, collider);
 	car.addComponent(carMoveComponent);
 	scene.shadowCasters.push_back(&car);
 
@@ -628,16 +577,13 @@ void createMeshes() {
 	
 	utils::Timer timer;
 	timer.start();
-	float3 origin = make_vector(0.0f, 0.0f, 0.0f);
-	float3 halfVector = make_vector(200.0f, 200.0f, 200.0f); //TODO
 
-	octTree = new Octree(origin, halfVector, 0);
 
-	collider = new Collider(octTree);
+
 	collider->addMesh(&world);
-	/*collider->addMesh(&water);
+	collider->addMesh(&water);
 	collider->addMesh(&factory);
-    collider->addMesh(&spider);*/
+    collider->addMesh(&spider);
   
 	collider->insertAll(); //TODO enlargen octrees afterhand instead
 	Logger::logInfo("Finished loading octree");
