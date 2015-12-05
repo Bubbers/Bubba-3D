@@ -549,7 +549,6 @@ void createMeshes() {
 	car.addComponent(carMoveComponent);
 	scene.shadowCasters.push_back(&car);
 
-
 	Mesh* worldM = ResourceManager::loadAndFetchMesh("../scenes/world.obj");
 	world = GameObject(worldM);
 	world.move(make_translation(make_vector(0.0f, 0.0f, 0.0f)));
@@ -557,50 +556,64 @@ void createMeshes() {
 	world.addRenderComponent(worldRenderer);
 	scene.shadowCasters.push_back(&world);
 
-	/*Mesh* factoryM = ResourceManager::loadAndFetchMesh("../scenes/test.obj");
+	Mesh* factoryM = ResourceManager::loadAndFetchMesh("../scenes/test.obj");
 	factory = GameObject(factoryM);
     factory.move(make_translation(make_vector(-15.0f, 6.0f, 0.0f)) * make_rotation_y<float4x4>(
 			(float) (M_PI / 180 * 90)) * make_scale<float4x4>(make_vector(2.0f, 2.0f, 2.0f)));
+    StandardRenderer *factoryRender = new StandardRenderer(factoryM, factory.getModelMatrix(), standardShader);
+    factory.addRenderComponent(factoryRender);
 	scene.shadowCasters.push_back(&factory);
 	
 	Mesh* spiderM = ResourceManager::loadAndFetchMesh("../scenes/spider.obj");
 	spider = GameObject(spiderM);
     spider.move(make_translation(make_vector(40.0f, 2.0f, 0.0f)) * make_rotation_x<float4x4>((float) (M_PI / 180 * 0)) * make_scale<float4x4>(0.1f));
+    StandardRenderer *spiderRenderer = new StandardRenderer(spiderM, spider.getModelMatrix(), standardShader);
+    spider.addRenderComponent(spiderRenderer);
 	scene.shadowCasters.push_back(&spider);
 
 	Mesh* waterM = ResourceManager::loadAndFetchMesh("../scenes/water.obj");
 	water = GameObject(waterM);
     water.move(make_translation(make_vector(0.0f, -6.0f, 0.0f)));
+    StandardRenderer *waterRenderer = new StandardRenderer(waterM, water.getModelMatrix(), standardShader);
+    water.addRenderComponent(waterRenderer);
 	scene.shadowCasters.push_back(&water);
 	
 	Mesh* lampM = ResourceManager::loadAndFetchMesh("../scenes/sphere.obj");
-
 	lamp = GameObject(lampM);
     lamp.move(make_translation(make_vector(10.0f, 10.0f, 10.0f)));
+    StandardRenderer *lamp1Renderer = new StandardRenderer(lampM, lamp.getModelMatrix(), standardShader);
+    lamp.addRenderComponent(lamp1Renderer);
 	scene.shadowCasters.push_back(&lamp);
 
 	Mesh* lamp2M = ResourceManager::loadAndFetchMesh("../scenes/sphere.obj");
 	lamp2 = GameObject(lamp2M);
     lamp2.move(make_translation(make_vector(30.0f, 10.0f, 30.0f)));
-	scene.shadowCasters.push_back(&lamp2);
+    StandardRenderer *lamp2Renderer = new StandardRenderer(lamp2M, lamp2.getModelMatrix(), standardShader);
+    lamp2.addRenderComponent(lamp2Renderer);
+    scene.shadowCasters.push_back(&lamp2);
 	
 	Mesh* lamp3M = ResourceManager::loadAndFetchMesh("../scenes/sphere.obj");
 	lamp3 = GameObject(lamp3M);
     lamp3.move(make_translation(make_vector(0.0f, 10.0f, -10.0f)));
-	scene.shadowCasters.push_back(&lamp3);
+    StandardRenderer *lamp3Renderer = new StandardRenderer(lamp3M, lamp3.getModelMatrix(), standardShader);
+    lamp3.addRenderComponent(lamp3Renderer);
+    scene.shadowCasters.push_back(&lamp3);
 
 	Mesh* normalTestM = ResourceManager::loadAndFetchMesh("../scenes/boxwNormals.obj");
 	normalTest = GameObject(normalTestM);
     normalTest.move(make_translation(make_vector(0.0f, 10.0f, 0.0f)) * make_rotation_x<float4x4>(
 			(float) (M_PI / 180 * 30)));
+    StandardRenderer *normalTestRenderer = new StandardRenderer(normalTestM, normalTest.getModelMatrix(), standardShader);
+    normalTest.addRenderComponent(normalTestRenderer);
 	scene.shadowCasters.push_back(&normalTest);
 
 	Mesh* normalTestWithoutM = ResourceManager::loadAndFetchMesh("../scenes/boxwoNormals.obj");
 	normalTestWithout = GameObject(normalTestWithoutM);
     normalTestWithout.move(make_translation(make_vector(5.0f, 10.0f, 0.0f)) * make_rotation_x<float4x4>(
 			(float) (M_PI / 180 * 30)));
-	scene.shadowCasters.push_back(&normalTestWithout);*/
-	
+    StandardRenderer *normalTestWithoutRenderer = new StandardRenderer(normalTestWithoutM, normalTestWithout.getModelMatrix(), standardShader);
+    normalTestWithout.addRenderComponent(normalTestWithoutRenderer);
+	scene.shadowCasters.push_back(&normalTestWithout);
 
 	Logger::logInfo("Finished loading meshes.");
 
