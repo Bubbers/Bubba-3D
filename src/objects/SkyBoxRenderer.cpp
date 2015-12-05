@@ -55,5 +55,5 @@ void SkyBoxRenderer::render() {
 
 
 SkyBoxRenderer::~SkyBoxRenderer(){
-    
+
 }
