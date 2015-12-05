@@ -1,5 +1,6 @@
 #include <GameObject.h>
-#include "Collider.h"
+#include <Collider.h>
+#include "Octree.h"
 
 bool rayTriangle(float3 r_o, float3 r_d, float3 v1, float3 v2, float3 v3, float *ins);
 
@@ -47,7 +48,7 @@ void Collider::insertAll() {
 }
 
 
-void Collider::addMesh(GameObject*gameObject) {
+void Collider::addGameObject(GameObject*gameObject) {
 	std::vector<Triangle*> gobTs = gameObject->getTriangles();
 	ts.insert(ts.end(), gobTs.begin(), gobTs.end());
 }

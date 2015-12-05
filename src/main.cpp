@@ -577,10 +577,10 @@ void createMeshes() {
 
 
 
-	collider->addMesh(&world);
-	collider->addMesh(&water);
-	collider->addMesh(&factory);
-    collider->addMesh(&spider);
+	collider->addGameObject(&world);
+	collider->addGameObject(&water);
+	collider->addGameObject(&factory);
+    collider->addGameObject(&spider);
   
 	collider->insertAll(); //TODO enlargen octrees afterhand instead
 	Logger::logInfo("Finished loading octree");

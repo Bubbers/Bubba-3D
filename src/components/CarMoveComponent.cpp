@@ -65,8 +65,6 @@ void CarMoveComponent::checkKeyPresses() {
     }
 }
 
-
-
 void CarMoveComponent::updateCarObject(){
     float3 vUp = make_vector(0.0f, 1.0f, 0.0f);
 

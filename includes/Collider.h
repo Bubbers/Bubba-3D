@@ -14,7 +14,7 @@ class Collider
 public:
 	Collider(Octree* tree);
 	~Collider();
-	void addMesh(GameObject*gameObject);
+	void addGameObject(GameObject*gameObject);
 	void insertAll();
 	float rayIntersection(float3 rayOrigin, float3 rayVec);
 
