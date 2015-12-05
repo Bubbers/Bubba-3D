@@ -56,7 +56,9 @@ GameObject lamp2;
 GameObject lamp3;
 GameObject normalTest;
 GameObject normalTestWithout;
-ParticleGenerator* gen;
+GameObject particleGenerator;
+ParticleGenerator *gen;
+
 GameObject skyBox;
 
 
@@ -521,7 +523,9 @@ void createMeshes() {
 
 	FireParticle *fireConf = new FireParticle();
 	gen = new ParticleGenerator(particleTexture, 200, playerCamera, make_vector(0.0f, 15.0f, 0.0f), fireConf);
-	//scene.transparentObjects.push_back(gen);
+    particleGenerator = GameObject();
+    particleGenerator.addRenderComponent(gen);
+	scene.transparentObjects.push_back(&particleGenerator);
 
 	Mesh *skyBoxM = ResourceManager::loadAndFetchMesh("../scenes/sphere.obj");
 	skyBox = GameObject(skyBoxM);
