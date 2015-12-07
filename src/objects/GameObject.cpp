@@ -103,8 +103,14 @@ AABB* GameObject::getAABB(){
     float4 maxV = this->m_modelMatrix * make_vector(meshAabb->maxV.x,meshAabb->maxV.y,meshAabb->maxV.z, 1.0f);
     float4 minV = this->m_modelMatrix * make_vector(meshAabb->minV.x,meshAabb->minV.y,meshAabb->minV.z, 1.0f);
 
-    aabb.maxV = make_vector(maxV.x, maxV.y, maxV.z);
-    aabb.minV = make_vector(minV.x, minV.y, minV.z);
+    aabb.maxV.x = maxV.x > minV.x ? maxV.x : minV.x;
+    aabb.maxV.y = maxV.y > minV.y ? maxV.y : minV.y;
+    aabb.maxV.z = maxV.z > minV.z ? maxV.z : minV.z;
+
+    aabb.minV.x = minV.x < maxV.x ? minV.x : maxV.x;
+    aabb.minV.y = minV.y < maxV.y ? minV.y : maxV.y;
+    aabb.minV.z = minV.z < maxV.z ? minV.z : maxV.z;
+
 
     return &aabb;
 }
