@@ -97,3 +97,14 @@ void GameObject::callEvent(EventType type){
         break;
     }
 }
+
+AABB* GameObject::getAABB(){
+    AABB* meshAabb = this->mesh->getAABB();
+    float4 maxV = this->m_modelMatrix * make_vector(meshAabb->maxV.x,meshAabb->maxV.y,meshAabb->maxV.z, 1.0f);
+    float4 minV = this->m_modelMatrix * make_vector(meshAabb->minV.x,meshAabb->minV.y,meshAabb->minV.z, 1.0f);
+
+    aabb.maxV = make_vector(maxV.x, maxV.y, maxV.z);
+    aabb.minV = make_vector(minV.x, minV.y, minV.z);
+
+    return &aabb;
+}

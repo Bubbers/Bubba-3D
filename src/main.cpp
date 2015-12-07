@@ -19,6 +19,7 @@
 #include "ResourceManager.h"
 #include "FireParticle.h"
 #include "constants.h"
+#include "BFBroadPhase.h"
 
 using namespace std;
 using namespace chag;
@@ -37,8 +38,9 @@ bool paused = false;				// Tells us wether sun animation is paused
 float currentTime = 0.0f;			// Tells us the current time
 float timeSinceDraw = 0.0f;
 
-const float3 vUp = make_vector(0.0f, 1.0f, 0.0f);
 float3 startPosSun = make_vector(30.1f, 450.0f, 0.1f);
+
+
 
 
 //*****************************************************************************
@@ -57,12 +59,11 @@ GameObject normalTest;
 GameObject normalTestWithout;
 GameObject particleGenerator;
 ParticleGenerator *gen;
-
 GameObject skyBox;
-
 
 Scene scene;
 
+BFBroadPhase broadPhaseCollider;
 
 //*****************************************************************************
 //	Cube Maps
@@ -300,6 +301,16 @@ void idle( int v )
         scene.update(elapsedTime);
 
 
+        utils::Timer timer;
+        timer.start();
+
+		printf("Found %i collisions.\n", broadPhaseCollider.computeCollisionPairs().size());
+        timer.stop();
+
+        stringstream timeMessage;
+        timeMessage << "Tested collision in : " << timer.getElapsedTime() << " ms";
+        Logger::logDebug(timeMessage.str());
+
 		glutPostRedisplay();
 	}
 	else {
@@ -458,6 +469,8 @@ void createCubeMaps() {
 
 
 void createMeshes() {
+
+
 	Logger::logInfo("Started loading meshes");
     float3 origin = make_vector(0.0f, 0.0f, 0.0f);
     float3 halfVector = make_vector(200.0f, 200.0f, 200.0f); //TODO
@@ -498,6 +511,8 @@ void createMeshes() {
 	CarMoveComponent *carMoveComponent = new CarMoveComponent(keysDown, &carLoc, &camera_theta, &car, collider);
 	car.addComponent(carMoveComponent);
 	scene.shadowCasters.push_back(&car);
+	broadPhaseCollider.add(&car);
+
 
 	Mesh* worldM = ResourceManager::loadAndFetchMesh("../scenes/world.obj");
 	world = GameObject(worldM);
@@ -505,6 +520,7 @@ void createMeshes() {
 	StandardRenderer *worldRenderer = new StandardRenderer(worldM, world.getModelMatrix(), standardShader);
 	world.addRenderComponent(worldRenderer);
 	scene.shadowCasters.push_back(&world);
+	broadPhaseCollider.add(&world);
 
 	Mesh* factoryM = ResourceManager::loadAndFetchMesh("../scenes/test.obj");
 	factory = GameObject(factoryM);
@@ -513,6 +529,7 @@ void createMeshes() {
     StandardRenderer *factoryRender = new StandardRenderer(factoryM, factory.getModelMatrix(), standardShader);
     factory.addRenderComponent(factoryRender);
 	scene.shadowCasters.push_back(&factory);
+	broadPhaseCollider.add(&factory);
 	
 	Mesh* spiderM = ResourceManager::loadAndFetchMesh("../scenes/spider.obj");
 	spider = GameObject(spiderM);
@@ -520,6 +537,7 @@ void createMeshes() {
     StandardRenderer *spiderRenderer = new StandardRenderer(spiderM, spider.getModelMatrix(), standardShader);
     spider.addRenderComponent(spiderRenderer);
 	scene.shadowCasters.push_back(&spider);
+	broadPhaseCollider.add(&spider);
 
 	Mesh* waterM = ResourceManager::loadAndFetchMesh("../scenes/water.obj");
 	water = GameObject(waterM);
@@ -527,6 +545,7 @@ void createMeshes() {
     StandardRenderer *waterRenderer = new StandardRenderer(waterM, water.getModelMatrix(), standardShader);
     water.addRenderComponent(waterRenderer);
 	scene.shadowCasters.push_back(&water);
+	broadPhaseCollider.add(&water);
 	
 	Mesh* lampM = ResourceManager::loadAndFetchMesh("../scenes/sphere.obj");
 	lamp = GameObject(lampM);
@@ -534,6 +553,7 @@ void createMeshes() {
     StandardRenderer *lamp1Renderer = new StandardRenderer(lampM, lamp.getModelMatrix(), standardShader);
     lamp.addRenderComponent(lamp1Renderer);
 	scene.shadowCasters.push_back(&lamp);
+	broadPhaseCollider.add(&lamp);
 
 	Mesh* lamp2M = ResourceManager::loadAndFetchMesh("../scenes/sphere.obj");
 	lamp2 = GameObject(lamp2M);
@@ -541,13 +561,15 @@ void createMeshes() {
     StandardRenderer *lamp2Renderer = new StandardRenderer(lamp2M, lamp2.getModelMatrix(), standardShader);
     lamp2.addRenderComponent(lamp2Renderer);
     scene.shadowCasters.push_back(&lamp2);
-	
+	broadPhaseCollider.add(&lamp2);
+
 	Mesh* lamp3M = ResourceManager::loadAndFetchMesh("../scenes/sphere.obj");
 	lamp3 = GameObject(lamp3M);
     lamp3.move(make_translation(make_vector(0.0f, 10.0f, -10.0f)));
     StandardRenderer *lamp3Renderer = new StandardRenderer(lamp3M, lamp3.getModelMatrix(), standardShader);
     lamp3.addRenderComponent(lamp3Renderer);
     scene.shadowCasters.push_back(&lamp3);
+	broadPhaseCollider.add(&lamp3);
 
 	Mesh* normalTestM = ResourceManager::loadAndFetchMesh("../scenes/boxwNormals.obj");
 	normalTest = GameObject(normalTestM);
@@ -556,6 +578,7 @@ void createMeshes() {
     StandardRenderer *normalTestRenderer = new StandardRenderer(normalTestM, normalTest.getModelMatrix(), standardShader);
     normalTest.addRenderComponent(normalTestRenderer);
 	scene.shadowCasters.push_back(&normalTest);
+	broadPhaseCollider.add(&normalTest);
 
 	Mesh* normalTestWithoutM = ResourceManager::loadAndFetchMesh("../scenes/boxwoNormals.obj");
 	normalTestWithout = GameObject(normalTestWithoutM);
@@ -564,6 +587,7 @@ void createMeshes() {
     StandardRenderer *normalTestWithoutRenderer = new StandardRenderer(normalTestWithoutM, normalTestWithout.getModelMatrix(), standardShader);
     normalTestWithout.addRenderComponent(normalTestWithoutRenderer);
 	scene.shadowCasters.push_back(&normalTestWithout);
+	broadPhaseCollider.add(&normalTestWithout);
 
 	Logger::logInfo("Finished loading meshes.");
 

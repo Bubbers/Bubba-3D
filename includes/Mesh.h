@@ -70,6 +70,7 @@ public:
     ~Mesh();
 
     void loadMesh(const std::string &fileName);
+    AABB* getAABB();
 
 private:
 

@@ -31,6 +31,7 @@ public:
     void update(float dt);
     void callEvent(EventType);
 
+    AABB* getAABB();
 
 private:
     Mesh *mesh;
@@ -39,6 +40,8 @@ private:
     /* COMPONENTS */
     IRenderComponent* renderComponent;
     std::vector<IComponent*> components;
+
+    AABB aabb;
 
 };
 

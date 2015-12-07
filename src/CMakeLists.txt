@@ -4,21 +4,7 @@ set(EXECUTABLE_NAME Bubba3D)
 #########################################################
 # ADD SOURCE FILES TO EXECUTABLE
 #########################################################
-file(GLOB files_SOURCE
-        "*.cpp"
-        "${PROJECT_SOURCE_DIR}/includes/linmath/*.cpp"
-        "${PROJECT_SOURCE_DIR}/includes/glutil/*.cpp"
-        "logging/*.cpp"
-        "util/*.cpp"
-        "Misc/*.cpp"
-        "effects/*.cpp"
-        "cameras/*.cpp"
-        "core/*.cpp"
-        "objects/*.cpp"
-        "collision/*.cpp"
-        "particle/*.cpp"
-        "components/*.cpp"
-        "${PROJECT_SOURCE_DIR}/shaders/*")
+
 add_executable(${EXECUTABLE_NAME} main.cpp ${files_SOURCE})
 
 
@@ -121,9 +107,7 @@ endif(NOT ASSIMP_FOUND)
 # Include Files
 #########################################################
 
-include_directories("${PROJECT_SOURCE_DIR}/includes")
-include_directories("${PROJECT_SOURCE_DIR}/src/util")
-include_directories("${PROJECT_SOURCE_DIR}/includes/linmath")
+
 
 ########################################################
 # Linking & stuff
