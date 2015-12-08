@@ -26,8 +26,8 @@ TEST_CASE("AABB intersects", "BruteForceBroadPhase.intersect(a1,a2)") {
 
     a2.maxV = make_vector(-0.5f, -0.5f, -0.5f);
     a2.minV = make_vector(-1.0f, -1.0f, -1.0f);
-    REQUIRE(AabbAabbintersection(&a1, &a2));
-    REQUIRE(AabbAabbintersection(&a2, &a1));
+    REQUIRE(!AabbAabbintersection(&a1, &a2));
+    REQUIRE(!AabbAabbintersection(&a2, &a1));
 }
 
 TEST_CASE("","") {
