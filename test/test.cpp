@@ -12,22 +12,22 @@ using namespace chag;
 
 
 TEST_CASE("AABB intersects", "BruteForceBroadPhase.intersect(a1,a2)") {
-    BFBroadPhase br;
 
-    AABB a1;
+
+        AABB a1;
     a1.maxV = make_vector(1.0f, 1.0f, 1.0f);
     a1.minV = make_vector(0.0f, 0.0f, 0.0f);
 
     AABB a2;
     a2.maxV = make_vector(0.5f, 0.5f, 0.5f);
     a2.minV = make_vector(0.0f, 0.0f, 0.0f);
-    REQUIRE(br.intersects(&a1, &a2));
-    REQUIRE(br.intersects(&a2, &a1));
+    REQUIRE(AabbAabbintersection(&a1, &a2));
+    REQUIRE(AabbAabbintersection(&a2, &a1));
 
     a2.maxV = make_vector(-0.5f, -0.5f, -0.5f);
     a2.minV = make_vector(-1.0f, -1.0f, -1.0f);
-    REQUIRE(!br.intersects(&a1, &a2));
-    REQUIRE(!br.intersects(&a2, &a1));
+    REQUIRE(AabbAabbintersection(&a1, &a2));
+    REQUIRE(AabbAabbintersection(&a2, &a1));
 }
 
 TEST_CASE("","") {
