@@ -304,7 +304,27 @@ void idle( int v )
         utils::Timer timer;
         timer.start();
 
-		printf("Found %i collisions.\n", broadPhaseCollider.computeCollisionPairs().size());
+        int counter = 0;
+		CollisionPairList possibleCollision = broadPhaseCollider.computeCollisionPairs();
+		for(auto i = possibleCollision.begin(); i != possibleCollision.end(); i++ ) {
+        	CollisionPair pair = *i;
+
+			GameObject *object1 = pair.first;
+			GameObject *object2 = pair.second;
+
+            Octree *object1Octree = object1->getOctree();
+            Octree *object2Octree = object2->getOctree();
+
+            float4x4 *object1ModelMatrix = object1->getModelMatrix();
+            float4x4 *object2ModelMatrix = object2->getModelMatrix();
+
+            if(octreeOctreeIntersection(object1Octree, object1ModelMatrix, object2Octree, object2ModelMatrix)) {
+                counter++;
+            }
+
+		}
+
+		//printf("Found %i collisions with counter %d.\n", possibleCollision.size(), counter );
         timer.stop();
 
         stringstream timeMessage;
@@ -320,7 +340,7 @@ void idle( int v )
 
 int main(int argc, char *argv[])
 {
-	Logger::debug = false;
+	Logger::debug = true;
 	int w = SCREEN_WIDTH;
 	int h = SCREEN_HEIGHT;
 
@@ -502,7 +522,7 @@ void createMeshes() {
 	standardShader->setUniformBufferObjectBinding(UNIFORM_BUFFER_OBJECT_MATRICES_NAME, UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
 
 	//Load shadow casters
-	Mesh* carM = ResourceManager::loadAndFetchMesh("../scenes/untitled.dae");
+	Mesh* carM = ResourceManager::loadAndFetchMesh("../scenes/test.obj"); //untitled.dae");
 	car = GameObject(carM);
 	car.move(make_translation(make_vector(0.0f, 0.0f, 0.0f)));
 
@@ -532,14 +552,6 @@ void createMeshes() {
     factory.addRenderComponent(factoryRender);
 	scene.shadowCasters.push_back(&factory);
 	broadPhaseCollider.add(&factory);
-	
-	Mesh* spiderM = ResourceManager::loadAndFetchMesh("../scenes/spider.obj");
-	spider = GameObject(spiderM);
-    spider.move(make_translation(make_vector(40.0f, 2.0f, 0.0f)) * make_rotation_x<float4x4>((float) (M_PI / 180 * 0)) * make_scale<float4x4>(0.1f));
-    StandardRenderer *spiderRenderer = new StandardRenderer(spiderM, spider.getModelMatrix(), standardShader);
-    spider.addRenderComponent(spiderRenderer);
-	scene.shadowCasters.push_back(&spider);
-	broadPhaseCollider.add(&spider);
 
 	Mesh* waterM = ResourceManager::loadAndFetchMesh("../scenes/water.obj");
 	water = GameObject(waterM);
@@ -601,12 +613,13 @@ void createMeshes() {
 	utils::Timer timer;
 	timer.start();
 
-
+    /*
 
 	collider->addGameObject(&world);
 	collider->addGameObject(&water);
 	collider->addGameObject(&factory);
     collider->addGameObject(&spider);
+     */
   
 	collider->insertAll(); //TODO enlargen octrees afterhand instead
 	Logger::logInfo("Finished loading octree");

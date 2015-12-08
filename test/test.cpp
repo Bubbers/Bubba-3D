@@ -6,6 +6,7 @@
 #include "../lib/catch.hpp"
 #include "BFBroadPhase.h"
 #include "float3.h"
+#include "Collider.h"
 
 using namespace chag;
 
@@ -29,19 +30,22 @@ TEST_CASE("AABB intersects", "BruteForceBroadPhase.intersect(a1,a2)") {
     REQUIRE(!br.intersects(&a2, &a1));
 }
 
-unsigned int Factorial( unsigned int number ) {
-    return number <= 1 ? number : Factorial(number-1)*number;
+TEST_CASE("","") {
+    Triangle t1(make_vector(0.0f, 0.0f, 0.0f), make_vector(1.0f, 1.0f, 0.0f), make_vector(2.0f, 0.0f, 0.0f));
+    Triangle t2(make_vector(5.0f, 5.0f, 5.0f), make_vector(6.0f, 6.0f, 5.0f), make_vector(7.0f, 5.0f, 5.0f));
+    Triangle t3(make_vector(0.0f, 0.0f, 1.0f), make_vector(1.0f, 1.0f, 0.0f), make_vector(2.0f, 0.0f, -1.0f));
+    Triangle t4(make_vector(0.0f, -1.0f, 1.0f), make_vector(1.0f, 1.0f, 0.0f), make_vector(2.0f, 1.0f, -1.0f));
+    Triangle t5(make_vector(4.0f, 0.0f, 1.0f), make_vector(5.0f, 1.0f, 0.0f), make_vector(6.0f, 0.0f, -1.0f));
+    Triangle t6(make_vector(0.5f, 0.0f, 1.0f), make_vector(1.1f, 1.0f, 0.0f), make_vector(2.1f, 0.0f, -1.0f));
+    REQUIRE(!triangleTriangleIntersection(&t1, &t2));
+    REQUIRE(!triangleTriangleIntersection(&t2, &t1));
+    REQUIRE(triangleTriangleIntersection(&t1, &t3));
+    REQUIRE(triangleTriangleIntersection(&t3, &t1));
+    REQUIRE(triangleTriangleIntersection(&t4, &t1));
+    REQUIRE(!triangleTriangleIntersection(&t1, &t5));
+    REQUIRE(triangleTriangleIntersection(&t1, &t6));
+
 }
-
-
-    TEST_CASE("Factorials are computed", "lol") {
-        REQUIRE(1== 1);
-    }
-
-    TEST_CASE("Factorials are compuated", "lol2") {
-        REQUIRE(12 == 12);
-    }
-
 
 
 #endif //BUBBA_3D_TEST_H

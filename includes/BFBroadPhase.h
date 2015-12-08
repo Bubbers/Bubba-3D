@@ -15,7 +15,6 @@ public:
     virtual void add(GameObject* GameObject) ;
     virtual void update() ;
     virtual CollisionPairList computeCollisionPairs() ;
-    bool intersects(AABB*, AABB*);
 
 private:
     std::vector<GameObject*> GameObjectList;

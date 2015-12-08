@@ -17,10 +17,45 @@ GameObject::GameObject(Mesh *mesh) {
     GameObject();
     this->mesh = mesh;
     shininess = 0.0f;
+
+    AABB* aabb = this->mesh->getAABB();
+    std::vector<Triangle *> triangles;
+
+    for (int i = 0; i < mesh->m_chunks.size(); i++) {
+
+        for (int j = 0; j < mesh->m_chunks[i].m_positions.size(); j += 3) {
+
+            float4 p1 = m_modelMatrix * make_vector(mesh->m_chunks[i].m_positions[j + 0].x,
+                                                    mesh->m_chunks[i].m_positions[j + 0].y,
+                                                    mesh->m_chunks[i].m_positions[j + 0].z, 1.0f);
+
+            float4 p2 = m_modelMatrix * make_vector(mesh->m_chunks[i].m_positions[j + 1].x,
+                                                    mesh->m_chunks[i].m_positions[j + 1].y,
+                                                    mesh->m_chunks[i].m_positions[j + 1].z, 1.0f);
+
+            float4 p3 = m_modelMatrix * make_vector(mesh->m_chunks[i].m_positions[j + 2].x,
+                                                    mesh->m_chunks[i].m_positions[j + 2].y,
+                                                    mesh->m_chunks[i].m_positions[j + 2].z, 1.0f);
+
+            Triangle *t = new Triangle(make_vector(p1.x, p1.y, p1.z), make_vector(p2.x, p2.y, p2.z),
+                                       make_vector(p3.x, p3.y, p3.z));
+
+            triangles.push_back(t);
+        }
+    }
+
+
+
+    float3 halfVector = (aabb->maxV - aabb->minV) / 2;
+    float3 origin = aabb->maxV - halfVector;
+    octree = new Octree(origin, halfVector, 0);
+    octree->insertAll(triangles);
+
 };
 
 GameObject::~GameObject() {
     mesh = nullptr;
+
 }
 
 void GameObject::move(float4x4 model_matrix) {
@@ -121,4 +156,8 @@ bool GameObject::isDynamicObject(){
 
 void GameObject::setDynamic(bool isDynamic) {
     dynamicObject = isDynamic;
+}
+
+Octree* GameObject::getOctree(){
+    return octree;
 }

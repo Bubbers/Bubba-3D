@@ -5,6 +5,7 @@
 #include "IDrawable.h"
 #include <Triangle.h>
 #include "IRenderComponent.h"
+#include "Octree.h"
 
 enum EventType {OnCollision, AfterCollision};
 
@@ -35,6 +36,7 @@ public:
     AABB* getAABB();
     bool isDynamicObject();
     void setDynamic(bool);
+    Octree* getOctree();
 
 private:
     Mesh *mesh;
@@ -46,7 +48,7 @@ private:
 
     AABB aabb;
     bool dynamicObject = false;
-
+    Octree *octree;
 
 };
 

@@ -3,6 +3,7 @@
 //
 
 #include <GameObject.h>
+#include <Collider.h>
 #include "BFBroadPhase.h"
 
 BFBroadPhase::BFBroadPhase() {
@@ -29,7 +30,7 @@ CollisionPairList BFBroadPhase::computeCollisionPairs() {
                 continue;
             }
 
-            if(gameObject1 != gameObject2 && intersects(gameObject1->getAABB(), gameObject2->getAABB())) {
+            if(gameObject1 != gameObject2 && AabbAabbintersection(gameObject1->getAABB(), gameObject2->getAABB())) {
                 collisionPairs.push_back(std::pair<GameObject*,GameObject*>(gameObject1, gameObject2));
             }
         }
@@ -38,14 +39,3 @@ CollisionPairList BFBroadPhase::computeCollisionPairs() {
 }
 
 
-bool BFBroadPhase::intersects(AABB* aabb1, AABB* aabb2) {
-    if(aabb1->maxV.x < aabb2->minV.x) {return false;}
-    if(aabb1->maxV.y < aabb2->minV.y) {return false;}
-    if(aabb1->maxV.z < aabb2->minV.z) {return false;}
-
-    if(aabb2->maxV.x < aabb1->minV.x) {return false;}
-    if(aabb2->maxV.y < aabb1->minV.y) {return false;}
-    if(aabb2->maxV.z < aabb1->minV.z) {return false;}
-
-    return true;
-}
