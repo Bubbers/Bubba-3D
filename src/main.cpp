@@ -484,6 +484,7 @@ void createMeshes() {
 	gen = new ParticleGenerator(particleTexture, 200, playerCamera, make_vector(0.0f, 15.0f, 0.0f), fireConf);
     particleGenerator = GameObject();
     particleGenerator.addRenderComponent(gen);
+	particleGenerator.setDynamic(true);
 	scene.transparentObjects.push_back(&particleGenerator);
 
 	Mesh *skyBoxM = ResourceManager::loadAndFetchMesh("../scenes/sphere.obj");
@@ -510,6 +511,7 @@ void createMeshes() {
 
 	CarMoveComponent *carMoveComponent = new CarMoveComponent(keysDown, &carLoc, &camera_theta, &car, collider);
 	car.addComponent(carMoveComponent);
+	car.setDynamic(true);
 	scene.shadowCasters.push_back(&car);
 	broadPhaseCollider.add(&car);
 

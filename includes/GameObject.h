@@ -8,6 +8,7 @@
 
 enum EventType {OnCollision, AfterCollision};
 
+
 class GameObject : public IDrawable {
 public:
     GameObject();
@@ -32,6 +33,8 @@ public:
     void callEvent(EventType);
 
     AABB* getAABB();
+    bool isDynamicObject();
+    void setDynamic(bool);
 
 private:
     Mesh *mesh;
@@ -42,6 +45,8 @@ private:
     std::vector<IComponent*> components;
 
     AABB aabb;
+    bool dynamicObject = false;
+
 
 };
 

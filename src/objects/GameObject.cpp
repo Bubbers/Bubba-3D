@@ -114,3 +114,11 @@ AABB* GameObject::getAABB(){
 
     return &aabb;
 }
+
+bool GameObject::isDynamicObject(){
+    return dynamicObject;
+}
+
+void GameObject::setDynamic(bool isDynamic) {
+    dynamicObject = isDynamic;
+}

@@ -20,11 +20,14 @@ void BFBroadPhase::update() {
 CollisionPairList BFBroadPhase::computeCollisionPairs() {
     CollisionPairList collisionPairs;
 
-    for (auto i = GameObjectList.begin(); i != GameObjectList.end(); ++i) {
-        for (auto j = ++i; j != GameObjectList.end(); j++) {
+    for (auto i = GameObjectList.begin(); i != GameObjectList.end(); i++) {
+        for (auto j = i + 1; j != GameObjectList.end(); j++) {
             GameObject* gameObject1 = *i;
             GameObject* gameObject2 = *j;
 
+            if(!gameObject1->isDynamicObject() && !gameObject2->isDynamicObject()) {
+                continue;
+            }
 
             if(gameObject1 != gameObject2 && intersects(gameObject1->getAABB(), gameObject2->getAABB())) {
                 collisionPairs.push_back(std::pair<GameObject*,GameObject*>(gameObject1, gameObject2));

@@ -93,3 +93,74 @@ bool rayTriangle(float3 r_o, float3 r_d, float3 v1, float3 v2, float3 v3, float 
 
 	return true;
 }
+
+float getPointDistanceToPlane(float3 point, float3 normalVector, float d) {
+    return normalVector.x * point.x + normalVector.y * point.y + normalVector.z * point.z + d;
+}
+
+
+bool TriangleTriangleIntersection(Triangle* t1, Triangle* t2) {
+
+    //T1
+    float3 normalVectorT1 = cross(t1->p2 - t1->p1, t1->p3 - t1->p1);
+    float d1 = normalVectorT1.x * t1->p1.x + normalVectorT1.y * t1->p1.y + normalVectorT1.z * t1->p1.z;
+
+    float t2DistToT1V1 = getPointDistanceToPlane(t1->p1, normalVectorT1, d1);
+    float t2DistToT1V2 = getPointDistanceToPlane(t1->p2, normalVectorT1, d1);
+    float t2DistToT1V3 = getPointDistanceToPlane(t1->p3, normalVectorT1, d1);
+
+    if(t2DistToT1V1 != 0 && t2DistToT1V2 != 0 && t2DistToT1V3 != 0){
+        if(t2DistToT1V1 > 0 && t2DistToT1V2 > 0 && t2DistToT1V3 > 0) { return false;}
+        if(t2DistToT1V1 < 0 && t2DistToT1V2 < 0 && t2DistToT1V3 < 0) { return false;}
+    }
+
+    //T2
+    float3 normalVectorT2 = cross(t2->p2 - t2->p1, t2->p3 - t2->p1);
+    float d2 = normalVectorT2.x * t2->p1.x + normalVectorT2.y * t2->p1.y + normalVectorT2.z * t2->p1.z;
+
+    float t1DistToT1V1 = getPointDistanceToPlane(t2->p1, normalVectorT2, d2);
+    float t1DistToT1V2 = getPointDistanceToPlane(t2->p2, normalVectorT2, d2);
+    float t1DistToT1V3 = getPointDistanceToPlane(t2->p3, normalVectorT2, d2);
+
+    if(t1DistToT1V1 != 0 && t1DistToT1V2 != 0 && t1DistToT1V3 != 0){
+        if(t1DistToT1V1 > 0 && t1DistToT1V2 > 0 && t1DistToT1V3 > 0) { return false;}
+        if(t1DistToT1V1 < 0 && t1DistToT1V2 < 0 && t1DistToT1V3 < 0) { return false;}
+    }
+
+
+    return true;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
