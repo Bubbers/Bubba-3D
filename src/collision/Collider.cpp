@@ -287,7 +287,10 @@ bool octreeOctreeIntersection(Octree *object1Octree, float4x4 *object1ModelMatri
                 object2Octree->getChildren(&object2Children);
 
                 for (auto it = object2Children.begin(); it != object2Children.end(); it++) {
-                    octreeOctreeIntersection(object1Octree, object1ModelMatrix, *it, object2ModelMatrix);
+                    if(octreeOctreeIntersection(object1Octree, object1ModelMatrix, *it, object2ModelMatrix)) {
+                        return true;
+                    }
+
                 }
 
         } else {
@@ -296,7 +299,9 @@ bool octreeOctreeIntersection(Octree *object1Octree, float4x4 *object1ModelMatri
                 object1Octree->getChildren(&object1Children);
 
                 for (auto it = object1Children.begin(); it != object1Children.end(); it++) {
-                    octreeOctreeIntersection(*it, object1ModelMatrix, object2Octree, object2ModelMatrix);
+                    if(octreeOctreeIntersection(*it, object1ModelMatrix, object2Octree, object2ModelMatrix)) {
+                        return true;
+                    }
                 }
 
         }

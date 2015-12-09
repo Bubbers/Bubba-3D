@@ -300,7 +300,6 @@ void idle( int v )
 
         scene.update(elapsedTime);
 
-
         utils::Timer timer;
         timer.start();
 
@@ -321,10 +320,9 @@ void idle( int v )
             if(octreeOctreeIntersection(object1Octree, object1ModelMatrix, object2Octree, object2ModelMatrix)) {
                 counter++;
             }
-
 		}
 
-		//printf("Found %i collisions with counter %d.\n", possibleCollision.size(), counter );
+		printf("Found %i collisions with %d true collisions \n", possibleCollision.size() , counter);
         timer.stop();
 
         stringstream timeMessage;
@@ -522,7 +520,7 @@ void createMeshes() {
 	standardShader->setUniformBufferObjectBinding(UNIFORM_BUFFER_OBJECT_MATRICES_NAME, UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
 
 	//Load shadow casters
-	Mesh* carM = ResourceManager::loadAndFetchMesh("../scenes/test.obj"); //untitled.dae");
+	Mesh* carM = ResourceManager::loadAndFetchMesh("../scenes/sphere.obj"); //untitled.dae");
 	car = GameObject(carM);
 	car.move(make_translation(make_vector(0.0f, 0.0f, 0.0f)));
 
