@@ -7,6 +7,7 @@
 #include "BFBroadPhase.h"
 #include "float3.h"
 #include "Collider.h"
+#include "Utils.h"
 
 using namespace chag;
 
@@ -44,6 +45,24 @@ TEST_CASE("","") {
     REQUIRE(triangleTriangleIntersection(&t4, &t1));
     REQUIRE(!triangleTriangleIntersection(&t1, &t5));
     REQUIRE(triangleTriangleIntersection(&t1, &t6));
+}
+
+TEST_CASE("",""){
+    /*Octree tree1 = Octree(make_vector(0.0f, 0.0f, 0.0f), make_vector(1.0f, 1.0f, 1.0f) , 0);
+    Triangle t1(make_vector(0.0f, 0.0f, 0.0f), make_vector(1.0f, 1.0f, 0.0f), make_vector(2.0f, 0.0f, 0.0f));
+    tree1.insert(&t1);
+
+    Octree tree2 = Octree(make_vector(0.0f, 0.0f, 0.0f),make_vector(1.0f, 1.0f, 1.0f), 0);
+    Triangle t2(make_vector(0.0f, 0.0f, 0.0f), make_vector(1.0f, 1.0f, 0.0f), make_vector(2.0f, 0.0f, 0.0f));
+    tree2.insert(&t2);
+
+    float4x4 model1 = make_identity<float4x4>();
+    float4x4 model2 = make_identity<float4x4>();
+
+    REQUIRE(octreeOctreeIntersection(&tree1, &model1, &tree2, &model2) == true);
+
+    model2 = make_rotation_y<float4x4>(degreeToRad(90)) * make_identity<float4x4>();
+    REQUIRE(octreeOctreeIntersection(&tree1, &model1, &tree2, &model2) == true);*/
 
 }
 

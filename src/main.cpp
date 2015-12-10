@@ -322,12 +322,14 @@ void idle( int v )
             }
 		}
 
-		printf("Found %i collisions with %d true collisions \n", possibleCollision.size() , counter);
-        timer.stop();
 
-        stringstream timeMessage;
-        timeMessage << "Tested collision in : " << timer.getElapsedTime() << " ms";
-        Logger::logDebug(timeMessage.str());
+			printf("Found %i collisions with %d true collisions \n", possibleCollision.size(), counter);
+			timer.stop();
+
+			stringstream timeMessage;
+			timeMessage << "Tested collision in : " << timer.getElapsedTime() << " ms";
+			Logger::logDebug(timeMessage.str());
+
 
 		glutPostRedisplay();
 	}
@@ -541,6 +543,7 @@ void createMeshes() {
 	world.addRenderComponent(worldRenderer);
 	scene.shadowCasters.push_back(&world);
 	broadPhaseCollider.add(&world);
+	renderer->setOctree(*world.getOctree());
 
 	Mesh* factoryM = ResourceManager::loadAndFetchMesh("../scenes/test.obj");
 	factory = GameObject(factoryM);

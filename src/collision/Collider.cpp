@@ -2,6 +2,7 @@
 #include <Collider.h>
 #include "Octree.h"
 
+#define EPSILON 0.00001f
 bool rayTriangle(float3 r_o, float3 r_d, float3 v1, float3 v2, float3 v3, float *ins);
 
 Collider::Collider(Octree *tree) : tree(tree) {
@@ -93,83 +94,263 @@ bool rayTriangle(float3 r_o, float3 r_d, float3 v1, float3 v2, float3 v3, float 
 float getPointDistanceToPlane(float3 point, float3 normalVector, float d) {
     return normalVector.x * point.x + normalVector.y * point.y + normalVector.z * point.z + d;
 }
+#define ISECT(VV0,VV1,VV2,D0,D1,D2,isect0,isect1) \
+              isect0=VV0+(VV1-VV0)*D0/(D0-D1);    \
+              isect1=VV0+(VV2-VV0)*D0/(D0-D2);
 
 
-bool triangleTriangleIntersection(Triangle *t1, Triangle *t2) {
-
-    //T1
-    float3 normalVectorT1 = cross(t1->p2 - t1->p1, t1->p3 - t1->p1);
-    float d1 = -normalVectorT1.x * t1->p1.x + -normalVectorT1.y * t1->p1.y + -normalVectorT1.z * t1->p1.z;
-
-    float3 normalVectorT2 = cross(t2->p2 - t2->p1, t2->p3 - t2->p1);
-    float d2 = -normalVectorT2.x * t2->p1.x + -normalVectorT2.y * t2->p1.y + -normalVectorT2.z * t2->p1.z;
-
-    float t2DistToT1V1 = getPointDistanceToPlane(t1->p1, normalVectorT2, d2);
-    float t2DistToT1V2 = getPointDistanceToPlane(t1->p2, normalVectorT2, d2);
-    float t2DistToT1V3 = getPointDistanceToPlane(t1->p3, normalVectorT2, d2);
-
-    if (t2DistToT1V1 != 0 && t2DistToT1V2 != 0 && t2DistToT1V3 != 0) {
-        if (t2DistToT1V1 > 0 && t2DistToT1V2 > 0 && t2DistToT1V3 > 0) { return false; }
-        if (t2DistToT1V1 < 0 && t2DistToT1V2 < 0 && t2DistToT1V3 < 0) { return false; }
-    }
-
-    //T2
-    float t1DistToT1V1 = getPointDistanceToPlane(t2->p1, normalVectorT1, d1);
-    float t1DistToT1V2 = getPointDistanceToPlane(t2->p2, normalVectorT1, d1);
-    float t1DistToT1V3 = getPointDistanceToPlane(t2->p3, normalVectorT1, d1);
-
-    if (t1DistToT1V1 != 0 && t1DistToT1V2 != 0 && t1DistToT1V3 != 0) {
-        if (t1DistToT1V1 > 0 && t1DistToT1V2 > 0 && t1DistToT1V3 > 0) { return false; }
-        if (t1DistToT1V1 < 0 && t1DistToT1V2 < 0 && t1DistToT1V3 < 0) { return false; }
-    }
-
-    if (t2DistToT1V1 != 0 && t2DistToT1V2 != 0 && t2DistToT1V3 != 0) {
-        if (t2DistToT1V1 > 0 && t2DistToT1V2 > 0 && t2DistToT1V3 > 0) { return false; }
-        if (t2DistToT1V1 < 0 && t2DistToT1V2 < 0 && t2DistToT1V3 < 0) { return false; }
-    }
+#define EDGE_EDGE_TEST(V0,U0,U1)                      \
+  Bx=U0[i0]-U1[i0];                                   \
+  By=U0[i1]-U1[i1];                                   \
+  Cx=V0[i0]-U0[i0];                                   \
+  Cy=V0[i1]-U0[i1];                                   \
+  f=Ay*Bx-Ax*By;                                      \
+  d=By*Cx-Bx*Cy;                                      \
+  if((f>0 && d>=0 && d<=f) || (f<0 && d<=0 && d>=f))  \
+  {                                                   \
+    e=Ax*Cy-Ay*Cx;                                    \
+    if(f>0)                                           \
+    {                                                 \
+      if(e>=0 && e<=f) return 1;                      \
+    }                                                 \
+    else                                              \
+    {                                                 \
+      if(e<=0 && e>=f) return 1;                      \
+    }                                                 \
+  }
 
 
-    float3 lineDirection = cross(normalVectorT1, normalVectorT2);
-    float3 projectionT1V1 = lineDirection * t1->p1;
-    float3 projectionT1V2 = lineDirection * t1->p2;
-    float3 projectionT1V3 = lineDirection * t1->p3;
-    float3 projectedLinePoint1T1 =
-            projectionT1V1 + (projectionT1V2 - projectionT1V1) * (t1DistToT1V1 / (t1DistToT1V1 - t1DistToT1V2));
-    float3 projectedLinePoint2T1 =
-            projectionT1V2 + (projectionT1V3 - projectionT1V2) * (t1DistToT1V2 / (t1DistToT1V2 - t1DistToT1V3));
-    float3 t1Interval = projectedLinePoint1T1 - projectedLinePoint2T1;
+#define EDGE_AGAINST_TRI_EDGES(V0,V1,U0,U1,U2) \
+{                                              \
+  float Ax,Ay,Bx,By,Cx,Cy,e,d,f;               \
+  Ax=V1[i0]-V0[i0];                            \
+  Ay=V1[i1]-V0[i1];                            \
+  /* test edge U0,U1 against V0,V1 */          \
+  EDGE_EDGE_TEST(V0,U0,U1);                    \
+  /* test edge U1,U2 against V0,V1 */          \
+  EDGE_EDGE_TEST(V0,U1,U2);                    \
+  /* test edge U2,U1 against V0,V1 */          \
+  EDGE_EDGE_TEST(V0,U2,U0);                    \
+}
 
-    float3 projectionT2V1 = lineDirection * t2->p1;
-    float3 projectionT2V2 = lineDirection * t2->p2;
-    float3 projectionT2V3 = lineDirection * t2->p3;
-    float3 projectedLinePoint1T2 =
-            projectionT2V1 + (projectionT2V2 - projectionT2V1) * (t2DistToT1V1 / (t2DistToT1V1 - t2DistToT1V2));
-    float3 projectedLinePoint2T2 =
-            projectionT2V2 + (projectionT2V3 - projectionT2V2) * (t2DistToT1V2 / (t2DistToT1V2 - t2DistToT1V3));
-    float3 t2Interval = projectedLinePoint1T2 - projectedLinePoint2T2;
+#define POINT_IN_TRI(V0,U0,U1,U2)           \
+{                                           \
+  float a,b,c,d0,d1,d2;                     \
+  /* is T1 completly inside T2? */          \
+  /* check if V0 is inside tri(U0,U1,U2) */ \
+  a=U1[i1]-U0[i1];                          \
+  b=-(U1[i0]-U0[i0]);                       \
+  c=-a*U0[i0]-b*U0[i1];                     \
+  d0=a*V0[i0]+b*V0[i1]+c;                   \
+                                            \
+  a=U2[i1]-U1[i1];                          \
+  b=-(U2[i0]-U1[i0]);                       \
+  c=-a*U1[i0]-b*U1[i1];                     \
+  d1=a*V0[i0]+b*V0[i1]+c;                   \
+                                            \
+  a=U0[i1]-U2[i1];                          \
+  b=-(U0[i0]-U2[i0]);                       \
+  c=-a*U2[i0]-b*U2[i1];                     \
+  d2=a*V0[i0]+b*V0[i1]+c;                   \
+  if(d0*d1>0.0)                             \
+  {                                         \
+    if(d0*d2>0.0) return 1;                 \
+  }                                         \
+}
 
-    float3 perpendicularLine = cross(t1Interval, t2Interval);
-
-    if (t2DistToT1V1 == 0 && t2DistToT1V2 == 0 && t2DistToT1V3 == 0) {
-        float3 lineSegment = projectedLinePoint2T2 - projectedLinePoint2T1;
-
-        if (fabs(dot(lineSegment, perpendicularLine)) > 0.01) { //Lines are not coplanar
-            return false;
+int coplanar_tri_tri(float3 N,float3 V0,float3 V1,float3 V2,
+                     float3 U0,float3 U1,float3 U2)
+{
+    float A[3];
+    short i0,i1;
+    /* first project onto an axis-aligned plane, that maximizes the area */
+    /* of the triangles, compute indices: i0,i1. */
+    A[0]=fabs(N[0]);
+    A[1]=fabs(N[1]);
+    A[2]=fabs(N[2]);
+    if(A[0]>A[1])
+    {
+        if(A[0]>A[2])
+        {
+            i0=1;      /* A[0] is greatest */
+            i1=2;
         }
-
-        //TOFDO
+        else
+        {
+            i0=0;      /* A[2] is greatest */
+            i1=1;
+        }
+    }
+    else   /* A[0]<=A[1] */
+    {
+        if(A[2]>A[1])
+        {
+            i0=0;      /* A[2] is greatest */
+            i1=1;
+        }
+        else
+        {
+            i0=0;      /* A[1] is greatest */
+            i1=2;
+        }
     }
 
+    /* test all edges of triangle 1 against the edges of triangle 2 */
+    EDGE_AGAINST_TRI_EDGES(V0,V1,U0,U1,U2);
+    EDGE_AGAINST_TRI_EDGES(V1,V2,U0,U1,U2);
+    EDGE_AGAINST_TRI_EDGES(V2,V0,U0,U1,U2);
 
-    if (t1Interval.x * perpendicularLine.x + t1Interval.y * perpendicularLine.y +
-        t1Interval.z * perpendicularLine.z ==
-        t2Interval.x * perpendicularLine.x + t2Interval.y * perpendicularLine.y +
-        t2Interval.z * perpendicularLine.z) {
-        return true;
-    }
+    /* finally, test if tri1 is totally contained in tri2 or vice versa */
+    POINT_IN_TRI(V0,U0,U1,U2);
+    POINT_IN_TRI(U0,V0,V1,V2);
 
-    return false;
+    return 0;
+}
 
+#define COMPUTE_INTERVALS(VV0,VV1,VV2,D0,D1,D2,D0D1,D0D2,isect0,isect1) \
+  if(D0D1>0.0f)                                         \
+  {                                                     \
+    /* here we know that D0D2<=0.0 */                   \
+    /* that is D0, D1 are on the same side, D2 on the other or on the plane */ \
+    ISECT(VV2,VV0,VV1,D2,D0,D1,isect0,isect1);          \
+  }                                                     \
+  else if(D0D2>0.0f)                                    \
+  {                                                     \
+    /* here we know that d0d1<=0.0 */                   \
+    ISECT(VV1,VV0,VV2,D1,D0,D2,isect0,isect1);          \
+  }                                                     \
+  else if(D1*D2>0.0f || D0!=0.0f)                       \
+  {                                                     \
+    /* here we know that d0d1<=0.0 or that D0!=0.0 */   \
+    ISECT(VV0,VV1,VV2,D0,D1,D2,isect0,isect1);          \
+  }                                                     \
+  else if(D1!=0.0f)                                     \
+  {                                                     \
+    ISECT(VV1,VV0,VV2,D1,D0,D2,isect0,isect1);          \
+  }                                                     \
+  else if(D2!=0.0f)                                     \
+  {                                                     \
+    ISECT(VV2,VV0,VV1,D2,D0,D1,isect0,isect1);          \
+  }                                                     \
+  else                                                  \
+  {                                                     \
+    /* triangles are coplanar */                        \
+    return coplanar_tri_tri(N1,V0,V1,V2,U0,U1,U2);      \
+  }
+
+
+/* sort so that a<=b */
+#define SORT(a,b)       \
+             if(a>b)    \
+             {          \
+               float c; \
+               c=a;     \
+               a=b;     \
+               b=c;     \
+             }
+
+
+bool triangleTriangleIntersection(Triangle *t1, Triangle *t2)
+{
+    float3 V0 = t1->p1;
+    float3 V1 = t1->p2;
+    float3 V2 = t1->p3;
+    float3 U0 = t2->p1;
+    float3 U1 = t2->p2;
+    float3 U2 = t2->p3;
+
+
+    float3 E1,E2;
+    float3 N1,N2;
+    float d1,d2;
+    float du0,du1,du2,dv0,dv1,dv2;
+    float3 D;
+    float isect1[2], isect2[2];
+    float du0du1,du0du2,dv0dv1,dv0dv2;
+    short index;
+    float vp0,vp1,vp2;
+    float up0,up1,up2;
+    float b,c,max;
+
+    /* compute plane equation of triangle(V0,V1,V2) */
+    E1 = V1-V0;
+    E2 = V2-V0;
+    N1 = cross(E1,E2);
+    d1 = -dot(N1,V0);
+    /* plane equation 1: N1.X+d1=0 */
+
+    /* put U0,U1,U2 into plane equation 1 to compute signed distances to the plane*/
+    du0=dot(N1,U0)+d1;
+    du1=dot(N1,U1)+d1;
+    du2=dot(N1,U2)+d1;
+
+    /* coplanarity robustness check */
+#if USE_EPSILON_TEST==TRUE
+    if(fabs(du0)<EPSILON) du0=0.0;
+    if(fabs(du1)<EPSILON) du1=0.0;
+    if(fabs(du2)<EPSILON) du2=0.0;
+#endif
+    du0du1=du0*du1;
+    du0du2=du0*du2;
+
+    if(du0du1>0.0f && du0du2>0.0f) /* same sign on all of them + not equal 0 ? */
+        return 0;                    /* no intersection occurs */
+
+    /* compute plane of triangle (U0,U1,U2) */
+    E1 = U1 - U0;
+    E2 = U2 - U0;
+    N2 = cross(E1, E2);
+    d2 = -dot(N2,U0);
+    /* plane equation 2: N2.X+d2=0 */
+
+    /* put V0,V1,V2 into plane equation 2 */
+    dv0=dot(N2,V0)+d2;
+    dv1=dot(N2,V1)+d2;
+    dv2=dot(N2,V2)+d2;
+
+#if USE_EPSILON_TEST==TRUE
+    if(fabs(dv0)<EPSILON) dv0=0.0;
+    if(fabs(dv1)<EPSILON) dv1=0.0;
+    if(fabs(dv2)<EPSILON) dv2=0.0;
+#endif
+
+    dv0dv1=dv0*dv1;
+    dv0dv2=dv0*dv2;
+
+    if(dv0dv1>0.0f && dv0dv2>0.0f) /* same sign on all of them + not equal 0 ? */
+        return 0;                    /* no intersection occurs */
+
+    /* compute direction of intersection line */
+    D = cross(N1,N2);
+
+    /* compute and index to the largest component of D */
+    max=fabs(D[0]);
+    index=0;
+    b=fabs(D[1]);
+    c=fabs(D[2]);
+    if(b>max) max=b,index=1;
+    if(c>max) max=c,index=2;
+
+    /* this is the simplified projection onto L*/
+    vp0=V0[index];
+    vp1=V1[index];
+    vp2=V2[index];
+
+    up0=U0[index];
+    up1=U1[index];
+    up2=U2[index];
+
+    /* compute interval for triangle 1 */
+    COMPUTE_INTERVALS(vp0,vp1,vp2,dv0,dv1,dv2,dv0dv1,dv0dv2,isect1[0],isect1[1]);
+
+    /* compute interval for triangle 2 */
+    COMPUTE_INTERVALS(up0,up1,up2,du0,du1,du2,du0du1,du0du2,isect2[0],isect2[1]);
+
+    SORT(isect1[0],isect1[1]);
+    SORT(isect2[0],isect2[1]);
+
+    if(isect1[1]<isect2[0] || isect2[1]<isect1[0]) return 0;
+    return 1;
 }
 
 bool AabbAabbintersection(AABB *aabb1, AABB *aabb2) {
@@ -194,7 +375,7 @@ bool triangleAabbIntersection(AABB *aabb, Triangle *triangle) {
            lineSegmentAabbIntersection(aabb, triangle->p3 - triangle->p1);
 }
 
-Triangle *multiplyTriangleWithModelMatrix(Triangle *triangle, float4x4 *modelMatrix) {
+Triangle multiplyTriangleWithModelMatrix(Triangle *triangle, float4x4 *modelMatrix) {
     float4 p1 = make_vector(triangle->p1.x, triangle->p1.y, triangle->p1.z, 1.0f);
     float4 p2 = make_vector(triangle->p2.x, triangle->p2.y, triangle->p2.z, 1.0f);
     float4 p3 = make_vector(triangle->p3.x, triangle->p3.y, triangle->p3.z, 1.0f);
@@ -207,12 +388,24 @@ Triangle *multiplyTriangleWithModelMatrix(Triangle *triangle, float4x4 *modelMat
     float3 p2f3 = make_vector(convertedP2.x, convertedP2.y, convertedP2.z);
     float3 p3f3 = make_vector(convertedP3.x, convertedP3.y, convertedP3.z);
 
-    return new Triangle(p1f3, p2f3, p3f3);
+    return Triangle(p1f3, p2f3, p3f3);
 }
 
-AABB *multiplyAABBWithModelMatrix(AABB *aabb, float4x4 *modelMatrix) {
+AABB multiplyAABBWithModelMatrix(AABB *aabb, float4x4 *modelMatrix) {
+
+    //float3 origin = (aabb->maxV - aabb->minV) / 2;
+
+
+    float3 p1 = aabb->maxV;
+    float3 p2 = aabb->minV;
+   // float
+
     float4 maxVB4 = make_vector(aabb->maxV.x, aabb->maxV.y, aabb->maxV.z, 1.0f);
     float4 minVB4 = make_vector(aabb->minV.x, aabb->minV.y, aabb->minV.z, 1.0f);
+
+
+
+
 
     float4 convertedP1 = *modelMatrix * maxVB4;
     float4 convertedP2 = *modelMatrix * minVB4;
@@ -228,9 +421,9 @@ AABB *multiplyAABBWithModelMatrix(AABB *aabb, float4x4 *modelMatrix) {
     minV.y = minV.y < maxV.y ? minV.y : maxV.y;
     minV.z = minV.z < maxV.z ? minV.z : maxV.z;
 
-    AABB *convertedAabb = new AABB();
-    convertedAabb->maxV = maxV;
-    convertedAabb->minV = minV;
+    AABB convertedAabb = AABB();
+    convertedAabb.maxV = maxV;
+    convertedAabb.minV = minV;
     return convertedAabb;
 
 }
@@ -238,10 +431,10 @@ AABB *multiplyAABBWithModelMatrix(AABB *aabb, float4x4 *modelMatrix) {
 bool octreeOctreeIntersection(Octree *object1Octree, float4x4 *object1ModelMatrix, Octree *object2Octree,
                               float4x4 *object2ModelMatrix) {
 
-    AABB *object1Aabb = multiplyAABBWithModelMatrix(object1Octree->getAABB(), object1ModelMatrix);
-    AABB *object2Aabb = multiplyAABBWithModelMatrix(object2Octree->getAABB(), object2ModelMatrix);
+    AABB object1Aabb = multiplyAABBWithModelMatrix(object1Octree->getAABB(), object1ModelMatrix);
+    AABB object2Aabb = multiplyAABBWithModelMatrix(object2Octree->getAABB(), object2ModelMatrix);
 
-    if (!AabbAabbintersection(object1Aabb, object2Aabb)) {
+    if (!AabbAabbintersection(&object1Aabb, &object2Aabb)) {
         return false;
     }
 
@@ -250,18 +443,18 @@ bool octreeOctreeIntersection(Octree *object1Octree, float4x4 *object1ModelMatri
         std::vector<Triangle *> *triangles2 = object2Octree->getTriangles();
 
         for (auto t1 = triangles1->begin(); t1 != triangles1->end(); t1++) {
-            Triangle *triangle1 = multiplyTriangleWithModelMatrix(*t1, object1ModelMatrix);
+            Triangle triangle1 = multiplyTriangleWithModelMatrix(*t1, object1ModelMatrix);
             for (auto t2 = triangles2->begin(); t2 != triangles2->end(); t2++) {
-                Triangle *triangle2 = multiplyTriangleWithModelMatrix(*t2, object2ModelMatrix);
+                Triangle triangle2 = multiplyTriangleWithModelMatrix(*t2, object2ModelMatrix);
 
-                if (triangleTriangleIntersection(triangle1, triangle2)) {
+                if (triangleTriangleIntersection(&triangle1, &triangle2)) {
                     return true;
                 }
 
             }
         }
     } else if (object1Octree->hasChildren() && object2Octree->hasChildren()) {
-                if (object1Aabb->getSize() > object2Aabb->getSize()) {
+                if (object1Aabb.getSize() > object2Aabb.getSize()) {
                     std::vector<Octree *> object1Children;
 
                     object1Octree->getChildren(&object1Children);
