@@ -7,3 +7,6 @@ Thumbs.db
 .idea
 *.swo
 *.swp
+
+*.blender
+*.blender1
