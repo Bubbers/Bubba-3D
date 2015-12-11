@@ -19,7 +19,6 @@ float Collider::rayIntersection(float3 rayOrigin, float3 rayVec) {
     if (rayVec.y < 0.001f) rayVecInv.y = 0.0f;
     if (rayVec.z < 0.001f) rayVecInv.z = 0.0f;
 
-
     tree->getGeometry(rayOrigin, rayVecInv, &geometry);
 
     float minIns = NULL;
@@ -257,7 +256,6 @@ bool triangleTriangleIntersection(Triangle *t1, Triangle *t2)
     float3 U1 = t2->p2;
     float3 U2 = t2->p3;
 
-
     float3 E1,E2;
     float3 N1,N2;
     float d1,d2;
@@ -283,11 +281,9 @@ bool triangleTriangleIntersection(Triangle *t1, Triangle *t2)
     du2=dot(N1,U2)+d1;
 
     /* coplanarity robustness check */
-#if USE_EPSILON_TEST==TRUE
     if(fabs(du0)<EPSILON) du0=0.0;
     if(fabs(du1)<EPSILON) du1=0.0;
     if(fabs(du2)<EPSILON) du2=0.0;
-#endif
     du0du1=du0*du1;
     du0du2=du0*du2;
 
@@ -306,11 +302,9 @@ bool triangleTriangleIntersection(Triangle *t1, Triangle *t2)
     dv1=dot(N2,V1)+d2;
     dv2=dot(N2,V2)+d2;
 
-#if USE_EPSILON_TEST==TRUE
     if(fabs(dv0)<EPSILON) dv0=0.0;
     if(fabs(dv1)<EPSILON) dv1=0.0;
     if(fabs(dv2)<EPSILON) dv2=0.0;
-#endif
 
     dv0dv1=dv0*dv1;
     dv0dv2=dv0*dv2;
@@ -347,7 +341,7 @@ bool triangleTriangleIntersection(Triangle *t1, Triangle *t2)
     SORT(isect1[0],isect1[1]);
     SORT(isect2[0],isect2[1]);
 
-    if(isect1[1]<isect2[0] || isect2[1]<isect1[0]) return false;
+    if(isect1[1]<isect2[0] || isect2[1]<isect1[0]) {return false;}
     return true;
 }
 

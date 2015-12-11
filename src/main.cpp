@@ -300,36 +300,7 @@ void idle( int v )
 
         scene.update(elapsedTime);
 
-        utils::Timer timer;
-        timer.start();
-
-        int counter = 0;
-		CollisionPairList possibleCollision = broadPhaseCollider.computeCollisionPairs();
-
-		for(auto i = possibleCollision.begin(); i != possibleCollision.end(); i++ ) {
-        	CollisionPair pair = *i;
-
-			GameObject *object1 = pair.first;
-			GameObject *object2 = pair.second;
-
-            float4x4 *object1ModelMatrix = object1->getModelMatrix();
-            float4x4 *object2ModelMatrix = object2->getModelMatrix();
-
-            Octree* object1Oct = object1->getOctree();
-            Octree* object2Oct = object2->getOctree();
-
-            if(octreeOctreeIntersection(object1Oct,object1ModelMatrix,object2Oct, object2ModelMatrix)) {
-                counter++;
-            }
-		}
-
-			printf("Found %i collisions with %d true collisions \n", possibleCollision.size(), counter);
-			timer.stop();
-
-			stringstream timeMessage;
-			timeMessage << "Tested collision in : " << timer.getElapsedTime() << " ms";
-			Logger::logDebug(timeMessage.str());
-
+        broadPhaseCollider.updateCollision();
 
 		glutPostRedisplay();
 	}
@@ -340,7 +311,7 @@ void idle( int v )
 
 int main(int argc, char *argv[])
 {
-	Logger::debug = true;
+	Logger::debug = false;
 	int w = SCREEN_WIDTH;
 	int h = SCREEN_HEIGHT;
 
@@ -522,7 +493,7 @@ void createMeshes() {
 	standardShader->setUniformBufferObjectBinding(UNIFORM_BUFFER_OBJECT_MATRICES_NAME, UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
 
 	//Load shadow casters
-	Mesh* carM = ResourceManager::loadAndFetchMesh("../scenes/sphere.obj"); //untitled.dae");
+	Mesh* carM = ResourceManager::loadAndFetchMesh("../scenes/boxwoNormals.obj"); //untitled.dae");
 	car = GameObject(carM);
 	car.move(make_translation(make_vector(0.0f, 0.0f, 0.0f)));
 
@@ -533,7 +504,7 @@ void createMeshes() {
 	car.addComponent(carMoveComponent);
 	car.setDynamic(true);
 	scene.shadowCasters.push_back(&car);
-	broadPhaseCollider.add(&car);
+	broadPhaseCollider.addGameObject(&car);
 
 
 	Mesh* worldM = ResourceManager::loadAndFetchMesh("../scenes/world.obj");
@@ -542,17 +513,17 @@ void createMeshes() {
 	StandardRenderer *worldRenderer = new StandardRenderer(worldM, world.getModelMatrix(), standardShader);
 	world.addRenderComponent(worldRenderer);
 	scene.shadowCasters.push_back(&world);
-	broadPhaseCollider.add(&world);
+	broadPhaseCollider.addGameObject(&world);
 	renderer->setOctree(*world.getOctree());
 
 	Mesh* factoryM = ResourceManager::loadAndFetchMesh("../scenes/test.obj");
 	factory = GameObject(factoryM);
     factory.move(make_translation(make_vector(-15.0f, 6.0f, 0.0f)) * make_rotation_y<float4x4>(
-			(float) (M_PI / 180 * 90)) * make_scale<float4x4>(make_vector(2.0f, 2.0f, 2.0f)));
+                 (float) (M_PI / 180 * 90)) * make_scale<float4x4>(make_vector(2.0f, 2.0f, 2.0f)));
     StandardRenderer *factoryRender = new StandardRenderer(factoryM, factory.getModelMatrix(), standardShader);
     factory.addRenderComponent(factoryRender);
 	scene.shadowCasters.push_back(&factory);
-	broadPhaseCollider.add(&factory);
+	broadPhaseCollider.addGameObject(&factory);
 
 	Mesh* waterM = ResourceManager::loadAndFetchMesh("../scenes/water.obj");
 	water = GameObject(waterM);
@@ -560,15 +531,15 @@ void createMeshes() {
     StandardRenderer *waterRenderer = new StandardRenderer(waterM, water.getModelMatrix(), standardShader);
     water.addRenderComponent(waterRenderer);
 	scene.shadowCasters.push_back(&water);
-	broadPhaseCollider.add(&water);
+	broadPhaseCollider.addGameObject(&water);
 	
-	Mesh* lampM = ResourceManager::loadAndFetchMesh("../scenes/sphere.obj");
+	Mesh* lampM = ResourceManager::loadAndFetchMesh("../scenes/boxwoNormals.obj");
 	lamp = GameObject(lampM);
-    lamp.move(make_translation(make_vector(10.0f, 10.0f, 10.0f)));
+    lamp.move(make_translation(make_vector(0.0f, 10.0f, 0.0f)));
     StandardRenderer *lamp1Renderer = new StandardRenderer(lampM, lamp.getModelMatrix(), standardShader);
     lamp.addRenderComponent(lamp1Renderer);
 	scene.shadowCasters.push_back(&lamp);
-	broadPhaseCollider.add(&lamp);
+	broadPhaseCollider.addGameObject(&lamp);
 
 	Mesh* lamp2M = ResourceManager::loadAndFetchMesh("../scenes/sphere.obj");
 	lamp2 = GameObject(lamp2M);
@@ -576,7 +547,7 @@ void createMeshes() {
     StandardRenderer *lamp2Renderer = new StandardRenderer(lamp2M, lamp2.getModelMatrix(), standardShader);
     lamp2.addRenderComponent(lamp2Renderer);
     scene.shadowCasters.push_back(&lamp2);
-	broadPhaseCollider.add(&lamp2);
+	broadPhaseCollider.addGameObject(&lamp2);
 
 	Mesh* lamp3M = ResourceManager::loadAndFetchMesh("../scenes/sphere.obj");
 	lamp3 = GameObject(lamp3M);
@@ -584,7 +555,7 @@ void createMeshes() {
     StandardRenderer *lamp3Renderer = new StandardRenderer(lamp3M, lamp3.getModelMatrix(), standardShader);
     lamp3.addRenderComponent(lamp3Renderer);
     scene.shadowCasters.push_back(&lamp3);
-	broadPhaseCollider.add(&lamp3);
+	broadPhaseCollider.addGameObject(&lamp3);
 
 	Mesh* normalTestM = ResourceManager::loadAndFetchMesh("../scenes/boxwNormals.obj");
 	normalTest = GameObject(normalTestM);
@@ -593,7 +564,7 @@ void createMeshes() {
     StandardRenderer *normalTestRenderer = new StandardRenderer(normalTestM, normalTest.getModelMatrix(), standardShader);
     normalTest.addRenderComponent(normalTestRenderer);
 	scene.shadowCasters.push_back(&normalTest);
-	broadPhaseCollider.add(&normalTest);
+	broadPhaseCollider.addGameObject(&normalTest);
 
 	Mesh* normalTestWithoutM = ResourceManager::loadAndFetchMesh("../scenes/boxwoNormals.obj");
 	normalTestWithout = GameObject(normalTestWithoutM);
@@ -602,7 +573,7 @@ void createMeshes() {
     StandardRenderer *normalTestWithoutRenderer = new StandardRenderer(normalTestWithoutM, normalTestWithout.getModelMatrix(), standardShader);
     normalTestWithout.addRenderComponent(normalTestWithoutRenderer);
 	scene.shadowCasters.push_back(&normalTestWithout);
-	broadPhaseCollider.add(&normalTestWithout);
+	broadPhaseCollider.addGameObject(&normalTestWithout);
 
 	Logger::logInfo("Finished loading meshes.");
 

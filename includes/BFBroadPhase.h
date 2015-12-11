@@ -12,12 +12,12 @@ class BFBroadPhase : BroadPhase
 public:
     BFBroadPhase();
 
-    virtual void add(GameObject* GameObject) ;
-    virtual void update() ;
+    virtual void addGameObject(GameObject* GameObject) ;
     virtual CollisionPairList computeCollisionPairs() ;
-
+    virtual void updateCollision();
 private:
     std::vector<GameObject*> GameObjectList;
+    std::vector<std::pair<GameObject*, GameObject*>> collidingList;
 
 
 };
