@@ -9,9 +9,6 @@
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 
-#include <IL/il.h>
-#include <IL/ilut.h>
-
 #include <glutil/glutil.h>
 #include <float4x4.h>
 #include <float3x3.h>
