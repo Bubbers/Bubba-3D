@@ -13,11 +13,13 @@ using namespace std;
 using namespace chag;
 
 const int MAX_DEPTH = 8;
-const int MAX_CHILDREN = 32;
+const int MAX_CHILDREN = 16;
+
+
 
 class Octree {
 public:
-  Octree();
+	Octree();
 	Octree(float3 origin, float3 halfVector, int depth);
 	~Octree(void);
 

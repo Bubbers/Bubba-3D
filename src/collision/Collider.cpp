@@ -318,7 +318,7 @@ bool triangleTriangleIntersection(Triangle *t1, Triangle *t2)
     dv0dv2=dv0*dv2;
 
     if(dv0dv1>0.0f && dv0dv2>0.0f) /* same sign on all of them + not equal 0 ? */
-        return 0;                    /* no intersection occurs */
+        return false;                    /* no intersection occurs */
 
     /* compute direction of intersection line */
     D = cross(N1,N2);
@@ -349,8 +349,8 @@ bool triangleTriangleIntersection(Triangle *t1, Triangle *t2)
     SORT(isect1[0],isect1[1]);
     SORT(isect2[0],isect2[1]);
 
-    if(isect1[1]<isect2[0] || isect2[1]<isect1[0]) return 0;
-    return 1;
+    if(isect1[1]<isect2[0] || isect2[1]<isect1[0]) return false;
+    return true;
 }
 
 bool AabbAabbintersection(AABB *aabb1, AABB *aabb2) {
@@ -363,16 +363,6 @@ bool AabbAabbintersection(AABB *aabb1, AABB *aabb2) {
     if (aabb2->maxV.z < aabb1->minV.z) { return false; }
 
     return true;
-}
-
-bool lineSegmentAabbIntersection(AABB *aabb, float3 linesegment) {
-    return true; //TODO
-}
-
-bool triangleAabbIntersection(AABB *aabb, Triangle *triangle) {
-    return lineSegmentAabbIntersection(aabb, triangle->p2 - triangle->p1) ||
-           lineSegmentAabbIntersection(aabb, triangle->p2 - triangle->p3) ||
-           lineSegmentAabbIntersection(aabb, triangle->p3 - triangle->p1);
 }
 
 Triangle multiplyTriangleWithModelMatrix(Triangle *triangle, float4x4 *modelMatrix) {
@@ -391,46 +381,41 @@ Triangle multiplyTriangleWithModelMatrix(Triangle *triangle, float4x4 *modelMatr
     return Triangle(p1f3, p2f3, p3f3);
 }
 
+void calculateAndUpdateMinMax(float3 point, float4x4* modelMatrix, float3 *minV, float3 *maxV) {
+
+    float4 convertedValue = *modelMatrix * make_vector(point.x, point.y, point.z, 1.0f);
+
+    if( maxV->x < convertedValue.x) { maxV->x = convertedValue.x;}
+    if( maxV->y < convertedValue.y) { maxV->y = convertedValue.y;}
+    if( maxV->z < convertedValue.z) { maxV->z = convertedValue.z;}
+
+    if( minV->x > convertedValue.x) { minV->x = convertedValue.x;}
+    if( minV->y > convertedValue.y) { minV->y = convertedValue.y;}
+    if( minV->z > convertedValue.z) { minV->z = convertedValue.z;}
+
+}
+
+
 AABB multiplyAABBWithModelMatrix(AABB *aabb, float4x4 *modelMatrix) {
 
-    //float3 origin = (aabb->maxV - aabb->minV) / 2;
-
-
-    float3 p1 = aabb->maxV;
-    float3 p2 = aabb->minV;
-   // float
-
-    float4 maxVB4 = make_vector(aabb->maxV.x, aabb->maxV.y, aabb->maxV.z, 1.0f);
-    float4 minVB4 = make_vector(aabb->minV.x, aabb->minV.y, aabb->minV.z, 1.0f);
-
-
-
-
-
-    float4 convertedP1 = *modelMatrix * maxVB4;
-    float4 convertedP2 = *modelMatrix * minVB4;
-
-    float3 maxV = make_vector(convertedP1.x, convertedP1.y, convertedP1.z);
-    float3 minV = make_vector(convertedP2.x, convertedP2.y, convertedP2.z);
-
-    maxV.x = maxV.x > minV.x ? maxV.x : minV.x;
-    maxV.y = maxV.y > minV.y ? maxV.y : minV.y;
-    maxV.z = maxV.z > minV.z ? maxV.z : minV.z;
-
-    minV.x = minV.x < maxV.x ? minV.x : maxV.x;
-    minV.y = minV.y < maxV.y ? minV.y : maxV.y;
-    minV.z = minV.z < maxV.z ? minV.z : maxV.z;
-
     AABB convertedAabb = AABB();
-    convertedAabb.maxV = maxV;
-    convertedAabb.minV = minV;
+
+    calculateAndUpdateMinMax(make_vector(aabb->maxV.x,aabb->maxV.y,aabb->maxV.z), modelMatrix, &convertedAabb.minV, &convertedAabb.maxV);
+    calculateAndUpdateMinMax(make_vector(aabb->maxV.x,aabb->maxV.y,aabb->minV.z), modelMatrix, &convertedAabb.minV, &convertedAabb.maxV);
+    calculateAndUpdateMinMax(make_vector(aabb->maxV.x,aabb->minV.y,aabb->maxV.z), modelMatrix, &convertedAabb.minV, &convertedAabb.maxV);
+    calculateAndUpdateMinMax(make_vector(aabb->maxV.x,aabb->minV.y,aabb->minV.z), modelMatrix, &convertedAabb.minV, &convertedAabb.maxV);
+
+    calculateAndUpdateMinMax(make_vector(aabb->minV.x,aabb->maxV.y,aabb->maxV.z), modelMatrix, &convertedAabb.minV, &convertedAabb.maxV);
+    calculateAndUpdateMinMax(make_vector(aabb->minV.x,aabb->maxV.y,aabb->minV.z), modelMatrix, &convertedAabb.minV, &convertedAabb.maxV);
+    calculateAndUpdateMinMax(make_vector(aabb->minV.x,aabb->minV.y,aabb->maxV.z), modelMatrix, &convertedAabb.minV, &convertedAabb.maxV);
+    calculateAndUpdateMinMax(make_vector(aabb->minV.x,aabb->minV.y,aabb->minV.z), modelMatrix, &convertedAabb.minV, &convertedAabb.maxV);
+
     return convertedAabb;
 
 }
 
 bool octreeOctreeIntersection(Octree *object1Octree, float4x4 *object1ModelMatrix, Octree *object2Octree,
                               float4x4 *object2ModelMatrix) {
-
     AABB object1Aabb = multiplyAABBWithModelMatrix(object1Octree->getAABB(), object1ModelMatrix);
     AABB object2Aabb = multiplyAABBWithModelMatrix(object2Octree->getAABB(), object2ModelMatrix);
 
@@ -503,23 +488,20 @@ bool octreeOctreeIntersection(Octree *object1Octree, float4x4 *object1ModelMatri
 }
 
 
+bool trianglesTrianglesIntersection(std::vector<Triangle*> *triangles1, std::vector<Triangle*> *triangles2, float4x4 *object1ModelMatrix, float4x4 *object2ModelMatrix) {
+    for (auto t1 = triangles1->begin(); t1 != triangles1->end(); t1++) {
+        Triangle triangle1 = multiplyTriangleWithModelMatrix(*t1, object1ModelMatrix);
+        for (auto t2 = triangles2->begin(); t2 != triangles2->end(); t2++) {
+            Triangle triangle2 = multiplyTriangleWithModelMatrix(*t2, object2ModelMatrix);
 
+            if (triangleTriangleIntersection(&triangle1, &triangle2)) {
+                return true;
+            }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        }
+    }
+    return false;
+}
 
 
 

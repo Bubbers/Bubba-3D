@@ -274,7 +274,7 @@ void motion(int x, int y)
 void idle( int v )
 {
 	float elapsedTime = glutGet(GLUT_ELAPSED_TIME) - timeSinceDraw;
-	float time = (1000 / TICK_PER_SECOND) - elapsedTime;
+	float time = (1000 / TICK_PER_SECOND) - elapsedTime;playerCamera->setLookAt(carLoc.location + make_vector(0.0f, camera_target_altitude, 0.0f));
 	if (time < 0) {
 		glutTimerFunc(1000 / TICK_PER_SECOND, idle, 0);
 		timeSinceDraw = float(glutGet(GLUT_ELAPSED_TIME));
@@ -305,21 +305,26 @@ void idle( int v )
 
         int counter = 0;
 		CollisionPairList possibleCollision = broadPhaseCollider.computeCollisionPairs();
+
 		for(auto i = possibleCollision.begin(); i != possibleCollision.end(); i++ ) {
         	CollisionPair pair = *i;
 
 			GameObject *object1 = pair.first;
 			GameObject *object2 = pair.second;
 
-            Octree *object1Octree = object1->getOctree();
-            Octree *object2Octree = object2->getOctree();
-
             float4x4 *object1ModelMatrix = object1->getModelMatrix();
             float4x4 *object2ModelMatrix = object2->getModelMatrix();
 
-            if(octreeOctreeIntersection(object1Octree, object1ModelMatrix, object2Octree, object2ModelMatrix)) {
+            Octree* object1Oct = object1->getOctree();
+            Octree* object2Oct = object2->getOctree();
+
+            if(octreeOctreeIntersection(object1Oct,object1ModelMatrix,object2Oct, object2ModelMatrix)) {
                 counter++;
             }
+
+			/*if(trianglesTrianglesIntersection(&triangles1,&triangles2,object1ModelMatrix,object2ModelMatrix)) {
+                counter++;
+            }*/
 		}
 
 

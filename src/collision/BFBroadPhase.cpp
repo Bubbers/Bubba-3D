@@ -38,4 +38,3 @@ CollisionPairList BFBroadPhase::computeCollisionPairs() {
     return collisionPairs;
 }
 
-

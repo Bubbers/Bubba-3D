@@ -4,6 +4,7 @@
 #include "float3x3.h"
 #include "ResourceManager.h"
 #include "constants.h"
+#include "Collider.h"
 
 #define NORMAL_TEXTURE_LOCATION 3
 #define DIFFUSE_TEXTURE_LOCATION 0
@@ -135,17 +136,7 @@ void GameObject::callEvent(EventType type){
 
 AABB* GameObject::getAABB(){
     AABB* meshAabb = this->mesh->getAABB();
-    float4 maxV = this->m_modelMatrix * make_vector(meshAabb->maxV.x,meshAabb->maxV.y,meshAabb->maxV.z, 1.0f);
-    float4 minV = this->m_modelMatrix * make_vector(meshAabb->minV.x,meshAabb->minV.y,meshAabb->minV.z, 1.0f);
-
-    aabb.maxV.x = maxV.x > minV.x ? maxV.x : minV.x;
-    aabb.maxV.y = maxV.y > minV.y ? maxV.y : minV.y;
-    aabb.maxV.z = maxV.z > minV.z ? maxV.z : minV.z;
-
-    aabb.minV.x = minV.x < maxV.x ? minV.x : maxV.x;
-    aabb.minV.y = minV.y < maxV.y ? minV.y : maxV.y;
-    aabb.minV.z = minV.z < maxV.z ? minV.z : maxV.z;
-
+    aabb = multiplyAABBWithModelMatrix(meshAabb, &this->m_modelMatrix);
 
     return &aabb;
 }

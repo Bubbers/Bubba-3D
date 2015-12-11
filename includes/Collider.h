@@ -15,6 +15,9 @@ bool octreeOctreeIntersection(Octree *object1Octree, float4x4 *object1ModelMatri
 bool AabbAabbintersection(AABB* aabb1, AABB* aabb2);
 bool triangleAabbIntersection(AABB* aabb, Triangle* triangle);
 bool lineSegmentAabbIntersection(AABB* aabb, float3 linesegment);
+AABB multiplyAABBWithModelMatrix(AABB *aabb, float4x4 *modelMatrix);
+Triangle multiplyTriangleWithModelMatrix(Triangle *triangle, float4x4 *modelMatrix);
+bool trianglesTrianglesIntersection(std::vector<Triangle*> *triangles1, std::vector<Triangle*> *triangles2, float4x4 *object1ModelMatrix, float4x4 *object2ModelMatrix);
 
 class Collider
 {
