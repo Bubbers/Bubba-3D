@@ -91,9 +91,7 @@ bool rayTriangle(float3 r_o, float3 r_d, float3 v1, float3 v2, float3 v3, float 
     return true;
 }
 
-float getPointDistanceToPlane(float3 point, float3 normalVector, float d) {
-    return normalVector.x * point.x + normalVector.y * point.y + normalVector.z * point.z + d;
-}
+
 #define ISECT(VV0,VV1,VV2,D0,D1,D2,isect0,isect1) \
               isect0=VV0+(VV1-VV0)*D0/(D0-D1);    \
               isect1=VV0+(VV2-VV0)*D0/(D0-D2);
@@ -382,7 +380,6 @@ Triangle multiplyTriangleWithModelMatrix(Triangle *triangle, float4x4 *modelMatr
 }
 
 void calculateAndUpdateMinMax(float3 point, float4x4* modelMatrix, float3 *minV, float3 *maxV) {
-
     float4 convertedValue = *modelMatrix * make_vector(point.x, point.y, point.z, 1.0f);
 
     if( maxV->x < convertedValue.x) { maxV->x = convertedValue.x;}
@@ -392,12 +389,10 @@ void calculateAndUpdateMinMax(float3 point, float4x4* modelMatrix, float3 *minV,
     if( minV->x > convertedValue.x) { minV->x = convertedValue.x;}
     if( minV->y > convertedValue.y) { minV->y = convertedValue.y;}
     if( minV->z > convertedValue.z) { minV->z = convertedValue.z;}
-
 }
 
 
 AABB multiplyAABBWithModelMatrix(AABB *aabb, float4x4 *modelMatrix) {
-
     AABB convertedAabb = AABB();
 
     calculateAndUpdateMinMax(make_vector(aabb->maxV.x,aabb->maxV.y,aabb->maxV.z), modelMatrix, &convertedAabb.minV, &convertedAabb.maxV);
@@ -411,7 +406,6 @@ AABB multiplyAABBWithModelMatrix(AABB *aabb, float4x4 *modelMatrix) {
     calculateAndUpdateMinMax(make_vector(aabb->minV.x,aabb->minV.y,aabb->minV.z), modelMatrix, &convertedAabb.minV, &convertedAabb.maxV);
 
     return convertedAabb;
-
 }
 
 bool octreeOctreeIntersection(Octree *object1Octree, float4x4 *object1ModelMatrix, Octree *object2Octree,
@@ -484,22 +478,6 @@ bool octreeOctreeIntersection(Octree *object1Octree, float4x4 *object1ModelMatri
 
         }
 
-    return false;
-}
-
-
-bool trianglesTrianglesIntersection(std::vector<Triangle*> *triangles1, std::vector<Triangle*> *triangles2, float4x4 *object1ModelMatrix, float4x4 *object2ModelMatrix) {
-    for (auto t1 = triangles1->begin(); t1 != triangles1->end(); t1++) {
-        Triangle triangle1 = multiplyTriangleWithModelMatrix(*t1, object1ModelMatrix);
-        for (auto t2 = triangles2->begin(); t2 != triangles2->end(); t2++) {
-            Triangle triangle2 = multiplyTriangleWithModelMatrix(*t2, object2ModelMatrix);
-
-            if (triangleTriangleIntersection(&triangle1, &triangle2)) {
-                return true;
-            }
-
-        }
-    }
     return false;
 }
 

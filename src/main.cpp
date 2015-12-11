@@ -321,12 +321,7 @@ void idle( int v )
             if(octreeOctreeIntersection(object1Oct,object1ModelMatrix,object2Oct, object2ModelMatrix)) {
                 counter++;
             }
-
-			/*if(trianglesTrianglesIntersection(&triangles1,&triangles2,object1ModelMatrix,object2ModelMatrix)) {
-                counter++;
-            }*/
 		}
-
 
 			printf("Found %i collisions with %d true collisions \n", possibleCollision.size(), counter);
 			timer.stop();
