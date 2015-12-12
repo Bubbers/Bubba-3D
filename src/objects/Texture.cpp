@@ -67,7 +67,7 @@ FIBITMAP* Texture::LoadImageIntoMemory(std::string fileName) {
 
     if(imageFormat == FIF_JPEG || imageFormat == FIF_PNG) {
         FreeImage_FlipVertical(image);
-        //FreeImage_FlipHorizontal(image);
+        FreeImage_FlipHorizontal(image);
     }
 
     FIBITMAP *image32Bit;

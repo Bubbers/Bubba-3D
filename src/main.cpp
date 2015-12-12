@@ -20,6 +20,7 @@
 #include "FireParticle.h"
 #include "constants.h"
 #include "BFBroadPhase.h"
+#include "HudRenderer.h"
 
 using namespace std;
 using namespace chag;
@@ -141,6 +142,7 @@ void display(void)
 	
 	renderer->swapBuffer();
 }
+
 
 void handleKeys(unsigned char key, int x, int y)
 {
@@ -327,6 +329,7 @@ int main(int argc, char *argv[])
 	createMeshes();
 	createLights();
 	createEffects();
+	HudRenderer rend;
 
 	renderer->start();
 	
@@ -453,9 +456,13 @@ void createCubeMaps() {
 	cMapAll.shaderProgram = ResourceManager::getShader(CUBE_MAP_SHADER);
 }
 
-
+GameObject *test;
 void createMeshes() {
 
+	test = new GameObject();
+	HudRenderer *hudRenderer = new HudRenderer();
+	test->addRenderComponent(hudRenderer);
+	scene.transparentObjects.push_back(test);
 
 	Logger::logInfo("Started loading meshes");
 
@@ -474,7 +481,7 @@ void createMeshes() {
     SkyBoxRenderer *skyboxRenderer = new SkyBoxRenderer(playerCamera, skyBoxM, skyBox.getModelMatrix());
     skyboxRenderer->init("../scenes/posx.jpg", "../scenes/negx.jpg", "../scenes/sky_box.jpg", "../scenes/posy.jpg", "../scenes/negz.jpg", "../scenes/posz.jpg");
     skyBox.addRenderComponent(skyboxRenderer);
-    scene.transparentObjects.push_back(&skyBox);
+    scene.shadowCasters.push_back(&skyBox);
 
 	//*************************************************************************
 	// Load the models from disk
@@ -495,7 +502,6 @@ void createMeshes() {
 	car.setDynamic(true);
 	scene.shadowCasters.push_back(&car);
 	broadPhaseCollider.addGameObject(&car);
-
 
 	Mesh* worldM = ResourceManager::loadAndFetchMesh("../scenes/world.obj");
 	world = GameObject(worldM);
@@ -564,6 +570,9 @@ void createMeshes() {
     normalTestWithout.addRenderComponent(normalTestWithoutRenderer);
 	scene.shadowCasters.push_back(&normalTestWithout);
 	broadPhaseCollider.addGameObject(&normalTestWithout);
+
+
+
 
 	Logger::logInfo("Finished loading meshes.");
 

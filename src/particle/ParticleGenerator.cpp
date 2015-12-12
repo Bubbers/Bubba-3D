@@ -21,7 +21,6 @@ ParticleGenerator::ParticleGenerator(Texture *texture, int amount, Camera *camer
 		0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
 		1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
 		1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
-
 	};
 
 	glGenVertexArrays(1, &m_vaob);
