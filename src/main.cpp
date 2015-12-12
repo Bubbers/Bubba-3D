@@ -21,6 +21,7 @@
 #include "constants.h"
 #include "BFBroadPhase.h"
 #include "HudRenderer.h"
+#include "SoundManager.h"
 
 using namespace std;
 using namespace chag;
@@ -322,6 +323,8 @@ int main(int argc, char *argv[])
 	glutMouseFunc(mouse); 
 	glutMotionFunc(motion);
 
+    SoundManager sm;
+
 	renderer->initGL();
 
 	createCubeMaps();
@@ -329,7 +332,6 @@ int main(int argc, char *argv[])
 	createMeshes();
 	createLights();
 	createEffects();
-	HudRenderer rend;
 
 	renderer->start();
 	
@@ -570,9 +572,6 @@ void createMeshes() {
     normalTestWithout.addRenderComponent(normalTestWithoutRenderer);
 	scene.shadowCasters.push_back(&normalTestWithout);
 	broadPhaseCollider.addGameObject(&normalTestWithout);
-
-
-
 
 	Logger::logInfo("Finished loading meshes.");
 

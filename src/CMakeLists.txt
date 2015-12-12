@@ -76,6 +76,18 @@ endif(NOT GLEW_FOUND)
 
 
 #########################################################
+# FIND OPENAL
+#########################################################
+find_package(OPENAL REQUIRED)
+include_directories(${OPENAL_INCLUDE_DIR})
+target_link_libraries(${EXECUTABLE_NAME}  ${OPENAL_LIBRARY})
+
+if(NOT OPENAL_FOUND)
+    message(ERROR " OPENAL not found!")
+endif(NOT OPENAL_FOUND)
+
+
+#########################################################
 # FIND FREEIMAGE
 #########################################################
 find_package(FREEIMAGE REQUIRED)
