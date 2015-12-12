@@ -23,6 +23,8 @@ addons:
         - libglew-dev
         - libxmu-dev
         - libxi-dev
+        - libopenal1
+        - libopenal-dev
 
 before_script:
         - mkdir -p build
