@@ -7,6 +7,7 @@
 #include <Logger.h>
 #include <timer.h>
 #include <sstream>
+#include <InputManager.h>
 #include "CarMoveComponent.h"
 #include "float3x3.h"
 #include "Utils.h"
@@ -15,8 +16,7 @@ CarMoveComponent::CarMoveComponent(){
 
 }
 
-CarMoveComponent::CarMoveComponent(bool keysDown[], Car* car, float* cameraThetaLocation, GameObject* carObject) {
-    this->keysDown = keysDown;
+CarMoveComponent::CarMoveComponent(Car* car, float* cameraThetaLocation, GameObject* carObject) {
     this->car = car;
     this->cameraThetaLocation = cameraThetaLocation;
     this->carObject = carObject;
@@ -45,26 +45,28 @@ void CarMoveComponent::beforeCollision() {
 
 
 void CarMoveComponent::checkKeyPresses() {
-    if (keysDown[(int) 'w']) {
+
+    InputManager* im = InputManager::getInstance();
+    if (im->isKeyDown('w',false)) {
         float3 term = car->frontDir * car->moveSpeed;
         car->location += term;
         hasChanged = true;
 
     }
-    if (keysDown[(int) 's']) {
+    if (im->isKeyDown('s',false)) {
         float3 term = car->frontDir * car->moveSpeed;
         car->location -= term;
         hasChanged = true;
 
     }
-    if (keysDown[(int) 'a'] && (keysDown[(int) 'w'] || keysDown[(int) 's'])) {
+    if (im->isKeyDown('a',false) && (im->isKeyDown('w',false) || im->isKeyDown('s',false))) {
         car->angley += car->rotationSpeed;
         car->frontDir = make_rotation_y<float3x3>(car->rotationSpeed) * car->frontDir;
         *cameraThetaLocation += car->rotationSpeed;
         hasChanged = true;
 
     }
-    if (keysDown[(int) 'd'] && (keysDown[(int) 'w'] || keysDown[(int) 's'])) {
+    if (im->isKeyDown('d',false) && (im->isKeyDown('w',false) || im->isKeyDown('s',false))) {
         car->angley -= car->rotationSpeed;
         car->frontDir = make_rotation_y<float3x3>(-car->rotationSpeed) * car->frontDir;
         *cameraThetaLocation -= car->rotationSpeed;
