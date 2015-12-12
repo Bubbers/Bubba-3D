@@ -6,6 +6,9 @@
 #include <stdio.h>
 #include "InputManager.h"
 
+/**
+ * Gets the singleton instance of the input manager
+ */
 InputManager* InputManager::getInstance() {
 
     static InputManager instance; // Guaranteed to be destroyed.
@@ -14,6 +17,11 @@ InputManager* InputManager::getInstance() {
 
 }
 
+/**
+ * Takes a callback function which is called when a special key is pressed.
+ * The special keys are the keys in InputManager::keyCodes. This will only
+ * be called if one of those keys are pressed.
+ */
 void InputManager::addSpecialKeyListener(specialKeyListener skl) {
     specKeyListeners.push_back(skl);
 }
@@ -74,6 +82,11 @@ InputManager::InputManager() {
 
 }
 
+/**
+ * Checks if the key keyCode is pressed. If caseSensitive is set to false
+ * the function will look for both tolower(keyCode) and toupper(keyCode).
+ * This function does not work with special keys in the enum InputManager::keyCodes.
+ */
 bool InputManager::isKeyDown(unsigned char keyCode, bool caseSensitive){
     if(caseSensitive)
         return keysDown[(int)keyCode];
@@ -83,6 +96,9 @@ bool InputManager::isKeyDown(unsigned char keyCode, bool caseSensitive){
     }
 }
 
+/**
+ * Checks if a mouse button is pressed.
+ */
 bool InputManager::isMouseButtonDown(mouseButton which) {
     switch(which){
     case MOUSE_LEFT:
@@ -94,6 +110,11 @@ bool InputManager::isMouseButtonDown(mouseButton which) {
     }
 }
 
+/**
+ * Adds a callback which is called when the mouse is moved. The callback
+ * receives x,y,delta_x and delta_y. The delta variable is the difference in the
+ * coordinates since the last time the function was called.
+ */
 void InputManager::addMouseMoveListener(mouseMoveCallback callback) {
     mouseMove.push_back(callback);
 }

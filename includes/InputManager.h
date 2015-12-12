@@ -28,7 +28,12 @@ public:
     static InputManager* getInstance();
     enum mouseButton { MOUSE_LEFT = GLUT_LEFT_BUTTON, MOUSE_RIGHT = GLUT_RIGHT_BUTTON, MOUSE_MIDDLE = GLUT_MIDDLE_BUTTON};
     enum keyCodes {UP_ARROW = GLUT_KEY_UP, DOWN_ARROW = GLUT_KEY_DOWN,
-                   LEFT_ARROW = GLUT_KEY_LEFT, RIGHT_ARROW = GLUT_KEY_RIGHT};
+                   LEFT_ARROW = GLUT_KEY_LEFT, RIGHT_ARROW = GLUT_KEY_RIGHT,
+                   KEY_F1 = GLUT_KEY_F1, KEY_F2 = GLUT_KEY_F2, KEY_F3 = GLUT_KEY_F3, KEY_F4 = GLUT_KEY_F4,
+                   KEY_F5 = GLUT_KEY_F5, KEY_F6 = GLUT_KEY_F6, KEY_F7 = GLUT_KEY_F7, KEY_F8 = GLUT_KEY_F8,
+                   KEY_F9 = GLUT_KEY_F9, KEY_F10 = GLUT_KEY_F10, KEY_F11 = GLUT_KEY_F11, KEY_F12 = GLUT_KEY_F12,
+                   KEY_INSERT = GLUT_KEY_INSERT, KEY_PAGE_UP = GLUT_KEY_PAGE_UP, KEY_PAGE_DOWN = GLUT_KEY_PAGE_DOWN,
+                   KEY_HOME = GLUT_KEY_HOME, KEY_END = GLUT_KEY_END};
     bool isKeyDown(unsigned char keyCode, bool caseSensitive);
     void addSpecialKeyListener(specialKeyListener skl);
     bool isMouseButtonDown(mouseButton which);
