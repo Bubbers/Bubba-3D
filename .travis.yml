@@ -27,6 +27,7 @@ addons:
         - libopenal-dev
         - libalut0
         - libalut-dev
+        - libvorbis-dev
 
 before_script:
         - mkdir -p build
