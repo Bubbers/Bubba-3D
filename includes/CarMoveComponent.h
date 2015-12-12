@@ -14,13 +14,12 @@ using namespace chag;
 class CarMoveComponent : public IComponent {
 public:
     CarMoveComponent();
-    CarMoveComponent(bool keysDown[], Car* car, float* cameraThetaLocation, GameObject* carObject);
+    CarMoveComponent(Car* car, float* cameraThetaLocation, GameObject* carObject);
     void update(float dt);
     void afterCollision();
     void duringCollision();
     void beforeCollision();
 private:
-    bool *keysDown;
     float* cameraThetaLocation;
     Car* car;
     GameObject* carObject;

@@ -12,6 +12,7 @@
 #include <Texture.h>
 #include <StandardRenderer.h>
 #include <CarMoveComponent.h>
+#include <InputManager.h>
 
 #include "Renderer.h"
 #include "timer.h"
@@ -81,18 +82,7 @@ Fbo cMapAll;
 float camera_theta = (float) (M_PI / 1.0f);
 float camera_phi = (float) (M_PI / 4.0f);
 float camera_r = 30.0f; 
-float camera_target_altitude = 5.2f; 
-
-//****************************************************************************
-//	Input state variables
-//*****************************************************************************
-bool leftDown = false;
-bool middleDown = false;
-bool rightDown = false;
-int prev_x = 0;
-int prev_y = 0;
-bool keysDown[256];
-
+float camera_target_altitude = 5.2f;
 
 //*****************************************************************************
 //	Camera
@@ -145,132 +135,61 @@ void display(void)
 }
 
 
-void handleKeys(unsigned char key, int x, int y)
+void checkKeys()
 {
-	switch(key)
-	{
-	case 27:   
+	InputManager* im = InputManager::getInstance();
+	if(im->isKeyDown(27,true))
 		exit(0);
-	case 32:
-		paused = !paused;
-		break;
-	case 'w':
-	case 'W':
-		keysDown[(int)'w'] = true;
-		break;
-	case 'a':
-	case 'A': 
-		keysDown[(int)'a'] = true;
-		break;
-	case 's':   
-	case 'S':
-		keysDown[(int)'s'] = true;
-		break;
-	case 'd':   
-	case 'D':
-		keysDown[(int)'d'] = true;
-		break;
-	}
 }
 
-void handleKeysRelease(unsigned char key, int x, int y)
+void specialKey(int key, int x, int y)
 {
-	switch (key)
-	{
-	case 27:   
-		exit(0);
-	case 32:
-		paused = !paused;
-		break;
-	case 'w':
-	case 'W':
-		keysDown[(int)'w'] = false;
-		break;
-	case 'a':
-	case 'A':
-		keysDown[(int)'a'] = false;
-		break;
-	case 's':
-	case 'S':
-		keysDown[(int)'s'] = false;
-		break;
-	case 'd':
-	case 'D':
-		keysDown[(int)'d'] = false;
-		break;
-	}
-}
-void handleSpecialKeys(int key, int x, int y)
-{
+
 	switch(key)
 	{
-	case GLUT_KEY_LEFT:
+	case InputManager::LEFT_ARROW:
 		printf("Left arrow\n");
 		camera = (camera + 1) % 8;
 		break;
-	case GLUT_KEY_RIGHT:
+	case InputManager::RIGHT_ARROW:
 		camera = (camera - 1);
 		camera = camera == -1 ? 7 : camera;
 		break;
-	case GLUT_KEY_UP:
+	case InputManager::UP_ARROW:
 		break;
-	case GLUT_KEY_DOWN:
-		break;
-	}
-}
-void mouse(int button, int state, int x, int y)
-{
-	// reset the previous position, such that we only get movement performed after the button
-	// was pressed.
-	prev_x = x;
-	prev_y = y;
-
-	bool buttonDown = state == GLUT_DOWN;
-
-	switch(button)
-	{
-	case GLUT_LEFT_BUTTON:
-		leftDown = buttonDown;
-		break;
-	case GLUT_MIDDLE_BUTTON:
-		middleDown = buttonDown;
-		break;
-	case GLUT_RIGHT_BUTTON: 
-		rightDown = buttonDown;
-	default:
+	case InputManager::DOWN_ARROW:
 		break;
 	}
 }
-void motion(int x, int y)
+void motion(int x, int y, int delta_x, int delta_y)
 {
-	int delta_x = x - prev_x;
-	int delta_y = y - prev_y;
 
-	if(middleDown)
+	InputManager* im = InputManager::getInstance();
+
+	if(im->isMouseButtonDown(InputManager::MOUSE_MIDDLE))
 	{
 		camera_r -= float(delta_y) * 0.3f;
 		// make sure cameraDistance does not become too small
 		camera_r = max(0.1f, camera_r);
 	}
-	if(leftDown)
+	if(im->isMouseButtonDown(InputManager::MOUSE_LEFT))
 	{
 		camera_phi	-= float(delta_y) * 0.3f * float(M_PI) / 180.0f;
 		camera_phi = min(max(0.01f, camera_phi), float(M_PI) - 0.01f);
 		camera_theta -= float(delta_x) * 0.3f * float(M_PI) / 180.0f;
 	}
 
-	if(rightDown)
+	if(im->isMouseButtonDown(InputManager::MOUSE_RIGHT))
 	{
 		camera_target_altitude += float(delta_y) * 0.1f; 
 	}
-	prev_x = x;
-	prev_y = y;
 }
 
 void idle( int v )
 {
 	float elapsedTime = glutGet(GLUT_ELAPSED_TIME) - timeSinceDraw;
 	float time = (1000 / TICK_PER_SECOND) - elapsedTime;playerCamera->setLookAt(carLoc.location + make_vector(0.0f, camera_target_altitude, 0.0f));
+	checkKeys();
 	if (time < 0) {
 		glutTimerFunc(1000 / TICK_PER_SECOND, idle, 0);
 		timeSinceDraw = float(glutGet(GLUT_ELAPSED_TIME));
@@ -317,11 +236,9 @@ int main(int argc, char *argv[])
 	glutTimerFunc(50, idle, 0);
 	glutDisplayFunc(display);
 
-	glutKeyboardFunc(handleKeys); 
-	glutKeyboardUpFunc(handleKeysRelease);
-	glutSpecialFunc(handleSpecialKeys); 
-	glutMouseFunc(mouse); 
-	glutMotionFunc(motion);
+	InputManager* im = InputManager::getInstance();
+	im->addMouseMoveListener(motion);
+	im->addSpecialKeyListener(specialKey);
 
     SoundManager sm;
 
@@ -499,7 +416,7 @@ void createMeshes() {
 	StandardRenderer *carRenderer = new StandardRenderer(carM, car.getModelMatrix(), standardShader);
 	car.addRenderComponent(carRenderer);
 
-	CarMoveComponent *carMoveComponent = new CarMoveComponent(keysDown, &carLoc, &camera_theta, &car);
+	CarMoveComponent *carMoveComponent = new CarMoveComponent(&carLoc, &camera_theta, &car);
 	car.addComponent(carMoveComponent);
 	car.setDynamic(true);
 	scene.shadowCasters.push_back(&car);
