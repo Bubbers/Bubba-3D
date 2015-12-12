@@ -678,12 +678,12 @@ void Renderer::debugDrawOctree(const float4x4 &viewMatrix, const float4x4 &proje
 	glUseProgram(temp);
 
 
-	std::vector<Octree> children;
+	std::vector<Octree*> children;
 	tree.getChildren(&children);
 
 	if (children.size() != 0) {
 		for (int i = 0; i < 8; i++) {
-			debugDrawOctree(viewMatrix, projectionMatrix, children[i]);
+			debugDrawOctree(viewMatrix, projectionMatrix, *children[i]);
 		}
 	}
 }

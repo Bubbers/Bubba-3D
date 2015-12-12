@@ -99,7 +99,7 @@ void CarMoveComponent::alignCarTowardsSurface() {
 
     stringstream timeMessage;
     timeMessage << "Tested 4 ray/aabb intersections in " << timer.getElapsedTime() << " ms";
-    Logger::logDebug(timeMessage.str());
+    //Logger::logDebug(timeMessage.str());
     if (a == 0 && b == 0 && c == 0 && d == 0) {
         return;
     }

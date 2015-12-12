@@ -1,5 +1,6 @@
 #include "Octree.h"
 #include <cfloat>
+#include <AABB2.h>
 
 Octree::Octree() {
 
@@ -10,10 +11,25 @@ Octree::Octree(float3 origin, float3 halfVector, int depth)
     for (int i = 0; i < 8; i++) {
         children[i] = NULL;
     }
+
+    float3 maxV = origin + halfVector;
+    float3 minV = origin - halfVector;
+
+    aabb.maxV.x = maxV.x > minV.x ? maxV.x : minV.x;
+    aabb.maxV.y = maxV.y > minV.y ? maxV.y : minV.y;
+    aabb.maxV.z = maxV.z > minV.z ? maxV.z : minV.z;
+
+    aabb.minV.x = minV.x < maxV.x ? minV.x : maxV.x;
+    aabb.minV.y = minV.y < maxV.y ? minV.y : maxV.y;
+    aabb.minV.z = minV.z < maxV.z ? minV.z : maxV.z;
 }
 
 Octree::~Octree() {
 
+}
+
+std::vector<Triangle*> *Octree::getTriangles() {
+    return &ts;
 }
 
 
@@ -95,16 +111,17 @@ bool Octree::hasChildren() {
     return *children != NULL;
 }
 
-void Octree::getChildren(std::vector<Octree> *octs) {
+void Octree::getChildren(std::vector<Octree*> *octs) {
     if (hasChildren()) {
         for (int i = 0; i < 8; i++) {
-            octs->push_back(*children[i]);
+            octs->push_back(children[i]);
         }
     }
 }
 
+
 void Octree::addTriangle(Triangle *t) {
-    BoundingBox *b = t->getBoundingBox();
+    BoundingBox *b = t->getBoundingBox(); //TODO USE LINE SEGMENT/AABB TEST
     std::set<int> octs;
     for (int i = 0; i < 8; i++) {
         octs.insert(getOctantContainingPoint(b->points[i]));
@@ -127,6 +144,10 @@ int Octree::getOctantContainingPoint(const float3 &point) {
 
 int Octree::getChildCount() {
     return ts.size();
+}
+
+AABB* Octree::getAABB() {
+    return &aabb;
 }
 
 int Octree::getCount() {

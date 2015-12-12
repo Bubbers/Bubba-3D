@@ -219,3 +219,7 @@ void Mesh::initMesh(unsigned int index, const aiMesh *paiMesh) {
 
     m_chunks.push_back(c);
 }
+
+AABB* Mesh::getAABB() {
+    return &m_aabb;
+}

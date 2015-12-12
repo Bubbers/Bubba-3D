@@ -19,6 +19,7 @@
 #include "ResourceManager.h"
 #include "FireParticle.h"
 #include "constants.h"
+#include "BFBroadPhase.h"
 
 using namespace std;
 using namespace chag;
@@ -37,8 +38,9 @@ bool paused = false;				// Tells us wether sun animation is paused
 float currentTime = 0.0f;			// Tells us the current time
 float timeSinceDraw = 0.0f;
 
-const float3 vUp = make_vector(0.0f, 1.0f, 0.0f);
 float3 startPosSun = make_vector(30.1f, 450.0f, 0.1f);
+
+
 
 
 //*****************************************************************************
@@ -57,12 +59,11 @@ GameObject normalTest;
 GameObject normalTestWithout;
 GameObject particleGenerator;
 ParticleGenerator *gen;
-
 GameObject skyBox;
-
 
 Scene scene;
 
+BFBroadPhase broadPhaseCollider;
 
 //*****************************************************************************
 //	Cube Maps
@@ -273,7 +274,7 @@ void motion(int x, int y)
 void idle( int v )
 {
 	float elapsedTime = glutGet(GLUT_ELAPSED_TIME) - timeSinceDraw;
-	float time = (1000 / TICK_PER_SECOND) - elapsedTime;
+	float time = (1000 / TICK_PER_SECOND) - elapsedTime;playerCamera->setLookAt(carLoc.location + make_vector(0.0f, camera_target_altitude, 0.0f));
 	if (time < 0) {
 		glutTimerFunc(1000 / TICK_PER_SECOND, idle, 0);
 		timeSinceDraw = float(glutGet(GLUT_ELAPSED_TIME));
@@ -297,8 +298,11 @@ void idle( int v )
 		gen->update(elapsedTime);
 		gen->m_position = make_vector(3 * sin(currentTime) * sin(currentTime)* sin(currentTime), 3 * sin(currentTime), 5 * sin(currentTime) * cos(currentTime)) + make_vector(0.0f, 15.0f, 0.0f);
 
+		lamp.move(make_translation(make_vector(0.0f, sin(currentTime) * 10, 0.0f)));
+
         scene.update(elapsedTime);
 
+        broadPhaseCollider.updateCollision();
 
 		glutPostRedisplay();
 	}
@@ -458,6 +462,8 @@ void createCubeMaps() {
 
 
 void createMeshes() {
+
+
 	Logger::logInfo("Started loading meshes");
     float3 origin = make_vector(0.0f, 0.0f, 0.0f);
     float3 halfVector = make_vector(200.0f, 200.0f, 200.0f); //TODO
@@ -471,6 +477,7 @@ void createMeshes() {
 	gen = new ParticleGenerator(particleTexture, 200, playerCamera, make_vector(0.0f, 15.0f, 0.0f), fireConf);
     particleGenerator = GameObject();
     particleGenerator.addRenderComponent(gen);
+	particleGenerator.setDynamic(true);
 	scene.transparentObjects.push_back(&particleGenerator);
 
 	Mesh *skyBoxM = ResourceManager::loadAndFetchMesh("../scenes/sphere.obj");
@@ -488,7 +495,7 @@ void createMeshes() {
 	standardShader->setUniformBufferObjectBinding(UNIFORM_BUFFER_OBJECT_MATRICES_NAME, UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
 
 	//Load shadow casters
-	Mesh* carM = ResourceManager::loadAndFetchMesh("../scenes/untitled.dae");
+	Mesh* carM = ResourceManager::loadAndFetchMesh("../scenes/boxwoNormals.obj"); //untitled.dae");
 	car = GameObject(carM);
 	car.move(make_translation(make_vector(0.0f, 0.0f, 0.0f)));
 
@@ -497,7 +504,10 @@ void createMeshes() {
 
 	CarMoveComponent *carMoveComponent = new CarMoveComponent(keysDown, &carLoc, &camera_theta, &car, collider);
 	car.addComponent(carMoveComponent);
+	car.setDynamic(true);
 	scene.shadowCasters.push_back(&car);
+	broadPhaseCollider.addGameObject(&car);
+
 
 	Mesh* worldM = ResourceManager::loadAndFetchMesh("../scenes/world.obj");
 	world = GameObject(worldM);
@@ -505,21 +515,17 @@ void createMeshes() {
 	StandardRenderer *worldRenderer = new StandardRenderer(worldM, world.getModelMatrix(), standardShader);
 	world.addRenderComponent(worldRenderer);
 	scene.shadowCasters.push_back(&world);
+	broadPhaseCollider.addGameObject(&world);
+	renderer->setOctree(*world.getOctree());
 
 	Mesh* factoryM = ResourceManager::loadAndFetchMesh("../scenes/test.obj");
 	factory = GameObject(factoryM);
     factory.move(make_translation(make_vector(-15.0f, 6.0f, 0.0f)) * make_rotation_y<float4x4>(
-			(float) (M_PI / 180 * 90)) * make_scale<float4x4>(make_vector(2.0f, 2.0f, 2.0f)));
+                 (float) (M_PI / 180 * 90)) * make_scale<float4x4>(make_vector(2.0f, 2.0f, 2.0f)));
     StandardRenderer *factoryRender = new StandardRenderer(factoryM, factory.getModelMatrix(), standardShader);
     factory.addRenderComponent(factoryRender);
 	scene.shadowCasters.push_back(&factory);
-	
-	Mesh* spiderM = ResourceManager::loadAndFetchMesh("../scenes/spider.obj");
-	spider = GameObject(spiderM);
-    spider.move(make_translation(make_vector(40.0f, 2.0f, 0.0f)) * make_rotation_x<float4x4>((float) (M_PI / 180 * 0)) * make_scale<float4x4>(0.1f));
-    StandardRenderer *spiderRenderer = new StandardRenderer(spiderM, spider.getModelMatrix(), standardShader);
-    spider.addRenderComponent(spiderRenderer);
-	scene.shadowCasters.push_back(&spider);
+	broadPhaseCollider.addGameObject(&factory);
 
 	Mesh* waterM = ResourceManager::loadAndFetchMesh("../scenes/water.obj");
 	water = GameObject(waterM);
@@ -527,13 +533,15 @@ void createMeshes() {
     StandardRenderer *waterRenderer = new StandardRenderer(waterM, water.getModelMatrix(), standardShader);
     water.addRenderComponent(waterRenderer);
 	scene.shadowCasters.push_back(&water);
+	broadPhaseCollider.addGameObject(&water);
 	
-	Mesh* lampM = ResourceManager::loadAndFetchMesh("../scenes/sphere.obj");
+	Mesh* lampM = ResourceManager::loadAndFetchMesh("../scenes/boxwoNormals.obj");
 	lamp = GameObject(lampM);
-    lamp.move(make_translation(make_vector(10.0f, 10.0f, 10.0f)));
+    lamp.move(make_translation(make_vector(0.0f, 10.0f, 0.0f)));
     StandardRenderer *lamp1Renderer = new StandardRenderer(lampM, lamp.getModelMatrix(), standardShader);
     lamp.addRenderComponent(lamp1Renderer);
 	scene.shadowCasters.push_back(&lamp);
+	broadPhaseCollider.addGameObject(&lamp);
 
 	Mesh* lamp2M = ResourceManager::loadAndFetchMesh("../scenes/sphere.obj");
 	lamp2 = GameObject(lamp2M);
@@ -541,21 +549,24 @@ void createMeshes() {
     StandardRenderer *lamp2Renderer = new StandardRenderer(lamp2M, lamp2.getModelMatrix(), standardShader);
     lamp2.addRenderComponent(lamp2Renderer);
     scene.shadowCasters.push_back(&lamp2);
-	
+	broadPhaseCollider.addGameObject(&lamp2);
+
 	Mesh* lamp3M = ResourceManager::loadAndFetchMesh("../scenes/sphere.obj");
 	lamp3 = GameObject(lamp3M);
     lamp3.move(make_translation(make_vector(0.0f, 10.0f, -10.0f)));
     StandardRenderer *lamp3Renderer = new StandardRenderer(lamp3M, lamp3.getModelMatrix(), standardShader);
     lamp3.addRenderComponent(lamp3Renderer);
     scene.shadowCasters.push_back(&lamp3);
+	broadPhaseCollider.addGameObject(&lamp3);
 
-	Mesh* normalTestM = ResourceManager::loadAndFetchMesh("../scenes/boxwNormals.obj");
+	/*Mesh* normalTestM = ResourceManager::loadAndFetchMesh("../scenes/boxwNormals.obj");
 	normalTest = GameObject(normalTestM);
     normalTest.move(make_translation(make_vector(0.0f, 10.0f, 0.0f)) * make_rotation_x<float4x4>(
 			(float) (M_PI / 180 * 30)));
     StandardRenderer *normalTestRenderer = new StandardRenderer(normalTestM, normalTest.getModelMatrix(), standardShader);
     normalTest.addRenderComponent(normalTestRenderer);
 	scene.shadowCasters.push_back(&normalTest);
+	broadPhaseCollider.addGameObject(&normalTest);*/
 
 	Mesh* normalTestWithoutM = ResourceManager::loadAndFetchMesh("../scenes/boxwoNormals.obj");
 	normalTestWithout = GameObject(normalTestWithoutM);
@@ -564,6 +575,7 @@ void createMeshes() {
     StandardRenderer *normalTestWithoutRenderer = new StandardRenderer(normalTestWithoutM, normalTestWithout.getModelMatrix(), standardShader);
     normalTestWithout.addRenderComponent(normalTestWithoutRenderer);
 	scene.shadowCasters.push_back(&normalTestWithout);
+	broadPhaseCollider.addGameObject(&normalTestWithout);
 
 	Logger::logInfo("Finished loading meshes.");
 
@@ -575,12 +587,13 @@ void createMeshes() {
 	utils::Timer timer;
 	timer.start();
 
-
+    /*
 
 	collider->addGameObject(&world);
 	collider->addGameObject(&water);
 	collider->addGameObject(&factory);
     collider->addGameObject(&spider);
+     */
   
 	collider->insertAll(); //TODO enlargen octrees afterhand instead
 	Logger::logInfo("Finished loading octree");

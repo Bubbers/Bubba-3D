@@ -5,8 +5,10 @@
 #include "IDrawable.h"
 #include <Triangle.h>
 #include "IRenderComponent.h"
+#include "Octree.h"
 
 enum EventType {OnCollision, AfterCollision};
+
 
 class GameObject : public IDrawable {
 public:
@@ -31,6 +33,10 @@ public:
     void update(float dt);
     void callEvent(EventType);
 
+    AABB* getAABB();
+    bool isDynamicObject();
+    void setDynamic(bool);
+    Octree* getOctree();
 
 private:
     Mesh *mesh;
@@ -39,6 +45,10 @@ private:
     /* COMPONENTS */
     IRenderComponent* renderComponent;
     std::vector<IComponent*> components;
+
+    AABB aabb;
+    bool dynamicObject = false;
+    Octree *octree;
 
 };
 

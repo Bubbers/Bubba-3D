@@ -15,6 +15,25 @@ if (CMAKE_COMPILER_IS_GNUCXX)
 endif()
 
 
+include_directories("${PROJECT_SOURCE_DIR}/includes")
+include_directories("${PROJECT_SOURCE_DIR}/src/util")
+include_directories("${PROJECT_SOURCE_DIR}/includes/linmath")
+
+file(GLOB files_SOURCE
+        "${PROJECT_SOURCE_DIR}/includes/linmath/*.cpp"
+        "${PROJECT_SOURCE_DIR}/includes/glutil/*.cpp"
+        "${PROJECT_SOURCE_DIR}/src/logging/*.cpp"
+        "${PROJECT_SOURCE_DIR}/src/util/*.cpp"
+        "${PROJECT_SOURCE_DIR}/src/Misc/*.cpp"
+        "${PROJECT_SOURCE_DIR}/src/effects/*.cpp"
+        "${PROJECT_SOURCE_DIR}/src/cameras/*.cpp"
+        "${PROJECT_SOURCE_DIR}/src/core/*.cpp"
+        "${PROJECT_SOURCE_DIR}/src/objects/*.cpp"
+        "${PROJECT_SOURCE_DIR}/src/collision/*.cpp"
+        "${PROJECT_SOURCE_DIR}/src/particle/*.cpp"
+        "${PROJECT_SOURCE_DIR}/src/components/*.cpp"
+        "${PROJECT_SOURCE_DIR}/shaders/*")
+
 #########################################################
 # Testing
 #########################################################
