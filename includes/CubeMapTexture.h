@@ -6,8 +6,6 @@
 #include <string>
 #include <GL/glew.h>
 #include <GL/freeglut.h>
-#include <IL/il.h>
-#include <IL/ilut.h>
 #include "Logger.h"
 
 using namespace std;
