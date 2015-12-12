@@ -11,6 +11,7 @@ public:
     ParticleConf() { }
     virtual ~ParticleConf() { }
 
+    virtual float3 calcPosition(float3 genPos) = 0;
     virtual float3 getVelocity() = 0;
     virtual float3 accelerate(float3 velocity) = 0;
     virtual float getLife() = 0;

@@ -6,7 +6,7 @@ Particle::Particle(float3* pos, ParticleConf *conf) {
 };
 
 void Particle::reset(ParticleConf *conf) {
-    position = *generatorPos;
+    position = conf->calcPosition(*generatorPos);
     velocity = conf->getVelocity();
     life     = conf->getLife();
 }

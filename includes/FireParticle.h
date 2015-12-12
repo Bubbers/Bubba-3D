@@ -8,6 +8,7 @@ public:
     FireParticle() {}
     ~FireParticle() {}
 
+    float3 calcPosition(float3 genPos);
     float3 getVelocity();
     float3 accelerate(float3 velocity);
     float getLife();
