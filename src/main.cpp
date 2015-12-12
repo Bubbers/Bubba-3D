@@ -14,6 +14,7 @@
 #include <CarMoveComponent.h>
 #include <InputManager.h>
 
+#include "float3.h"
 #include "Renderer.h"
 #include "timer.h"
 #include "ParticleGenerator.h"
@@ -51,7 +52,6 @@ float3 startPosSun = make_vector(30.1f, 450.0f, 0.1f);
 //*****************************************************************************
 GameObject world;
 GameObject car;
-Car carLoc;
 GameObject factory;
 GameObject water;
 GameObject spider;
@@ -188,7 +188,11 @@ void motion(int x, int y, int delta_x, int delta_y)
 void idle( int v )
 {
 	float elapsedTime = glutGet(GLUT_ELAPSED_TIME) - timeSinceDraw;
-	float time = (1000 / TICK_PER_SECOND) - elapsedTime;playerCamera->setLookAt(carLoc.location + make_vector(0.0f, camera_target_altitude, 0.0f));
+	float4 ps = car.getModelMatrix()->c4;
+	float3 location = make_vector(ps.x, ps.y, ps.z);
+
+	float time = (1000 / TICK_PER_SECOND) - elapsedTime;
+	playerCamera->setLookAt(location + make_vector(0.0f, camera_target_altitude, 0.0f));
 	checkKeys();
 	if (time < 0) {
 		glutTimerFunc(1000 / TICK_PER_SECOND, idle, 0);
@@ -207,8 +211,8 @@ void idle( int v )
 		sunCamera->setPosition(pos);
 
 		//Calculate camera matrix
-		playerCamera->setLookAt(carLoc.location + make_vector(0.0f, camera_target_altitude, 0.0f));
-		playerCamera->setPosition(carLoc.location + sphericalToCartesian(camera_theta, camera_phi, camera_r));
+		playerCamera->setLookAt(location + make_vector(0.0f, camera_target_altitude, 0.0f));
+		playerCamera->setPosition(location + sphericalToCartesian(camera_theta, camera_phi, camera_r));
 
 		gen->update(elapsedTime);
 		gen->m_position = make_vector(3 * sin(currentTime) * sin(currentTime)* sin(currentTime), 3 * sin(currentTime), 5 * sin(currentTime) * cos(currentTime)) + make_vector(0.0f, 15.0f, 0.0f);
@@ -327,16 +331,16 @@ void createCubeMaps() {
 	reflectionCubeMap = new CubeMapTexture("../scenes/posx.jpg", "../scenes/negx.jpg", "../scenes/posy.jpg", "../scenes/posy.jpg", "../scenes/negz.jpg", "../scenes/posz.jpg");
 	scene.cubeMap = reflectionCubeMap;
 	//X
-	cubeMapCameras[0] = new PerspectiveCamera(carLoc.location + make_vector(0.0f, 3.0f, 0.0f), make_vector(100.0f, 3.0f, 0.0f), make_vector(0.0f, -1.0f, 0.0f), 90, 1, 0.1f, 1000.0f);
-	cubeMapCameras[1] = new PerspectiveCamera(carLoc.location + make_vector(0.0f, 3.0f, 0.0f), make_vector(-100.0f, 3.0f, 0.0f), make_vector(0.0f, -1.0f, 0.0f), 90, 1, 0.1f, 1000.0f);
+	cubeMapCameras[0] = new PerspectiveCamera(make_vector(0.0f, 3.0f, 0.0f), make_vector(100.0f, 3.0f, 0.0f), make_vector(0.0f, -1.0f, 0.0f), 90, 1, 0.1f, 1000.0f);
+	cubeMapCameras[1] = new PerspectiveCamera(make_vector(0.0f, 3.0f, 0.0f), make_vector(-100.0f, 3.0f, 0.0f), make_vector(0.0f, -1.0f, 0.0f), 90, 1, 0.1f, 1000.0f);
 
 	//Y
-	cubeMapCameras[2] = new PerspectiveCamera(carLoc.location + make_vector(0.0f, 3.0f, 0.0f), make_vector(0.1f, 100.1f, 0.0f), make_vector(0.0f, -1.0f, 0.0f), 90, 1, 0.1f, 1000.0f);
-	cubeMapCameras[3] = new PerspectiveCamera(carLoc.location + make_vector(0.0f, 3.0f, 0.0f), make_vector(0.1f, -100.0f, 0.0f), make_vector(0.0f, -1.0f, 0.0f), 90, 1, 0.1f, 1000.0f);
+	cubeMapCameras[2] = new PerspectiveCamera(make_vector(0.0f, 3.0f, 0.0f), make_vector(0.1f, 100.1f, 0.0f), make_vector(0.0f, -1.0f, 0.0f), 90, 1, 0.1f, 1000.0f);
+	cubeMapCameras[3] = new PerspectiveCamera(make_vector(0.0f, 3.0f, 0.0f), make_vector(0.1f, -100.0f, 0.0f), make_vector(0.0f, -1.0f, 0.0f), 90, 1, 0.1f, 1000.0f);
 
 	//Z
-	cubeMapCameras[4] = new PerspectiveCamera(carLoc.location + make_vector(0.0f, 3.0f, 0.0f), make_vector(0.1f, 3.0f, 100.0f), make_vector(0.0f, -1.0f, 0.0f), 90, 1, 0.1f, 1000.0f);
-	cubeMapCameras[5] = new PerspectiveCamera(carLoc.location + make_vector(0.0f, 3.0f, 0.0f), make_vector(0.1f, 3.0f, -100.0f), make_vector(0.0f, -1.0f, 0.0f), 90, 1, 0.1f, 1000.0f);
+	cubeMapCameras[4] = new PerspectiveCamera(make_vector(0.0f, 3.0f, 0.0f), make_vector(0.1f, 3.0f, 100.0f), make_vector(0.0f, -1.0f, 0.0f), 90, 1, 0.1f, 1000.0f);
+	cubeMapCameras[5] = new PerspectiveCamera(make_vector(0.0f, 3.0f, 0.0f), make_vector(0.1f, 3.0f, -100.0f), make_vector(0.0f, -1.0f, 0.0f), 90, 1, 0.1f, 1000.0f);
 
 	cMapAll.width = w;
 	cMapAll.height = h;
@@ -409,14 +413,14 @@ void createMeshes() {
 	standardShader->setUniformBufferObjectBinding(UNIFORM_BUFFER_OBJECT_MATRICES_NAME, UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
 
 	//Load shadow casters
-	Mesh* carM = ResourceManager::loadAndFetchMesh("../scenes/sphere.obj"); //untitled.dae");
+	Mesh* carM = ResourceManager::loadAndFetchMesh("../scenes/R_wing.obj"); //untitled.dae");
 	car = GameObject(carM);
 	car.move(make_translation(make_vector(0.0f, 0.0f, 0.0f)));
 
 	StandardRenderer *carRenderer = new StandardRenderer(carM, car.getModelMatrix(), standardShader);
 	car.addRenderComponent(carRenderer);
 
-	CarMoveComponent *carMoveComponent = new CarMoveComponent(&carLoc, &camera_theta, &car);
+	CarMoveComponent *carMoveComponent = new CarMoveComponent(&camera_theta, &car);
 	car.addComponent(carMoveComponent);
 	car.setDynamic(true);
 	scene.shadowCasters.push_back(&car);
@@ -502,8 +506,8 @@ void createCameras() {
 	scene.shadowMapCamera = sunCamera;
 
 	playerCamera = new PerspectiveCamera(
-		carLoc.location + sphericalToCartesian(camera_theta, camera_phi, camera_r),
-		carLoc.location + make_vector(0.0f, camera_target_altitude, 0.0f),
+		sphericalToCartesian(camera_theta, camera_phi, camera_r),
+		make_vector(0.0f, camera_target_altitude, 0.0f),
 		make_vector(0.0f, 1.0f, 0.0f),
 		45, float(w) / float(h), 0.1f, 1000.0f
 		);
