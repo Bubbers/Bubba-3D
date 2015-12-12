@@ -9,13 +9,16 @@
 #define NORMAL_TEXTURE_LOCATION 3
 #define DIFFUSE_TEXTURE_LOCATION 0
 
+int GameObject::uniqueId = 0;
 
 GameObject::GameObject() {
     m_modelMatrix = make_identity<float4x4>();
+    id = ++uniqueId;
 }
 
 GameObject::GameObject(Mesh *mesh) {
     GameObject();
+    id = ++uniqueId;
     this->mesh = mesh;
     shininess = 0.0f;
 
@@ -120,9 +123,19 @@ void GameObject::update(float dt) {
 
 void GameObject::callEvent(EventType type){
     switch(type) {
-    case EventType::OnCollision:
+    case EventType::BeforeCollision:
         for (auto &component : components) {
-            component->onCollision();
+            component->beforeCollision();
+        }
+        break;
+    case EventType::DuringCollision:
+        for (auto &component : components) {
+            component->duringCollision();
+        }
+        break;
+    case EventType::AfterCollision:
+        for (auto &component : components) {
+            component->afterCollision();
         }
         break;
     }
@@ -145,4 +158,8 @@ void GameObject::setDynamic(bool isDynamic) {
 
 Octree* GameObject::getOctree(){
     return octree;
+}
+
+int GameObject::getId() {
+    return id;
 }

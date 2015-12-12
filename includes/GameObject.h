@@ -7,7 +7,7 @@
 #include "IRenderComponent.h"
 #include "Octree.h"
 
-enum EventType {OnCollision, AfterCollision};
+enum EventType {BeforeCollision, DuringCollision, AfterCollision};
 
 
 class GameObject : public IDrawable {
@@ -38,7 +38,10 @@ public:
     void setDynamic(bool);
     Octree* getOctree();
 
+    static int uniqueId;
+    int getId();
 private:
+    int id;
     Mesh *mesh;
     chag::float4x4 m_modelMatrix;
 

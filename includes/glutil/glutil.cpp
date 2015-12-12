@@ -28,6 +28,7 @@
 #include <sstream>
 #include <iostream>
 #include <algorithm>
+#include <Logger.h>
 
 using std::vector; 
 using namespace chag; 
@@ -170,7 +171,8 @@ namespace
 				<< "\n"
 				;
 
-			fprintf(stderr, "%s", szs.str().c_str());
+			//fprintf(stderr, "%s", szs.str().c_str());
+			Logger::logDebug(szs.str().c_str());
 			fflush(stderr);
 		}
 

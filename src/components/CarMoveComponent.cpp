@@ -15,26 +15,33 @@ CarMoveComponent::CarMoveComponent(){
 
 }
 
-CarMoveComponent::CarMoveComponent(bool keysDown[], Car* car, float* cameraThetaLocation, GameObject* carObject, Collider* collisionHandler) {
+CarMoveComponent::CarMoveComponent(bool keysDown[], Car* car, float* cameraThetaLocation, GameObject* carObject) {
     this->keysDown = keysDown;
     this->car = car;
     this->cameraThetaLocation = cameraThetaLocation;
     this->carObject = carObject;
-    this->collisionHandler = collisionHandler;
 }
 
 void CarMoveComponent::update(float dt) {
     checkKeyPresses();
     if(hasChanged) {
         updateCarObject();
-        alignCarTowardsSurface();
         hasChanged = false;
     }
 }
 
-void CarMoveComponent::onCollision() {
-    Logger::logInfo("Collision");
+void CarMoveComponent::afterCollision() {
+    Logger::logInfo("AfterCollision");
 }
+
+void CarMoveComponent::duringCollision() {
+    Logger::logInfo("DuringCollision");
+}
+
+void CarMoveComponent::beforeCollision() {
+    Logger::logInfo("BeforeCollision");
+}
+
 
 
 void CarMoveComponent::checkKeyPresses() {
@@ -84,7 +91,7 @@ void CarMoveComponent::updateCarObject(){
     carObject->update(makematrix(qatZ));
 }
 
-void CarMoveComponent::alignCarTowardsSurface() {
+/*void CarMoveComponent::alignCarTowardsSurface() {
     float3 upVec = make_vector(0.0f, 1.0f, 0.0f);
 
     //Calculate intersections
@@ -139,4 +146,4 @@ void CarMoveComponent::alignCarTowardsSurface() {
     float4 newLoc = makematrix(qatX) * makematrix(qatZ) * make_vector4(car->wheel1, 1.0f);
 
     car->location += make_vector(0.0f, car->wheel1.y + (car->wheel1.y - newLoc.y), 0.0f);
-}
+}*/

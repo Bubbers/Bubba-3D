@@ -11,7 +11,8 @@ class IComponent {
 public:
     virtual void update(float dt) = 0;
 
-    virtual void onCollision() {};
+    virtual void beforeCollision() {};
+    virtual void duringCollision() {};
     virtual void afterCollision() {};
 private:
 };

@@ -102,11 +102,7 @@ int camera = 6;
 
 
 Renderer *renderer;
-//*****************************************************************************
-//	Collision objects
-//*****************************************************************************
-Collider *collider;
-Octree *octTree;
+
 
 //*****************************************************************************
 //	Function declarations
@@ -171,9 +167,6 @@ void handleKeys(unsigned char key, int x, int y)
 	case 'D':
 		keysDown[(int)'d'] = true;
 		break;
-    case 'p':
-        car.callEvent(EventType::OnCollision);
-        break;
 	}
 }
 
@@ -465,11 +458,6 @@ void createMeshes() {
 
 
 	Logger::logInfo("Started loading meshes");
-    float3 origin = make_vector(0.0f, 0.0f, 0.0f);
-    float3 halfVector = make_vector(200.0f, 200.0f, 200.0f); //TODO
-    octTree = new Octree(origin, halfVector, 0);
-
-    collider = new Collider(octTree);
 
 	Texture *particleTexture = ResourceManager::loadAndFetchTexture("../scenes/engineflare1.jpg");
 
@@ -495,14 +483,14 @@ void createMeshes() {
 	standardShader->setUniformBufferObjectBinding(UNIFORM_BUFFER_OBJECT_MATRICES_NAME, UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
 
 	//Load shadow casters
-	Mesh* carM = ResourceManager::loadAndFetchMesh("../scenes/boxwoNormals.obj"); //untitled.dae");
+	Mesh* carM = ResourceManager::loadAndFetchMesh("../scenes/sphere.obj"); //untitled.dae");
 	car = GameObject(carM);
 	car.move(make_translation(make_vector(0.0f, 0.0f, 0.0f)));
 
 	StandardRenderer *carRenderer = new StandardRenderer(carM, car.getModelMatrix(), standardShader);
 	car.addRenderComponent(carRenderer);
 
-	CarMoveComponent *carMoveComponent = new CarMoveComponent(keysDown, &carLoc, &camera_theta, &car, collider);
+	CarMoveComponent *carMoveComponent = new CarMoveComponent(keysDown, &carLoc, &camera_theta, &car);
 	car.addComponent(carMoveComponent);
 	car.setDynamic(true);
 	scene.shadowCasters.push_back(&car);
@@ -579,31 +567,6 @@ void createMeshes() {
 
 	Logger::logInfo("Finished loading meshes.");
 
-	//*************************************************************************
-	// Generate Octtree from meshes
-	//*************************************************************************
-	Logger::logInfo("Started creating octree");
-	
-	utils::Timer timer;
-	timer.start();
-
-    /*
-
-	collider->addGameObject(&world);
-	collider->addGameObject(&water);
-	collider->addGameObject(&factory);
-    collider->addGameObject(&spider);
-     */
-  
-	collider->insertAll(); //TODO enlargen octrees afterhand instead
-	Logger::logInfo("Finished loading octree");
-	renderer->setOctree(*octTree);
-	
-	timer.stop();
-	
-	stringstream timeMessage;
-	timeMessage << "Created octree in : " << timer.getElapsedTime() << " ms";
-	Logger::logInfo(timeMessage.str());
 }
 
 void createCameras() {
