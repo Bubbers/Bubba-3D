@@ -108,7 +108,7 @@ SoundManager::SoundManager() {
 
 
     // Load the OGG file into memory
-    LoadOGG("../scenes/tommy-korberg-stad-i-ljus.ogg", bufferData, format, freq);
+    LoadOGG("../scenes/ambient.ogg", bufferData, format, freq);
 
     // Upload sound data to buffer
     alBufferData(bufferID, format, &bufferData[0], static_cast<ALsizei>(bufferData.size()), freq);
