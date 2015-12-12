@@ -42,14 +42,18 @@ HudRenderer::~HudRenderer(){
 
 }
 
-void HudRenderer::render() {
-    float4x4 modelMat = make_identity<float4x4>();
-    Texture* texture1 = ResourceManager::loadAndFetchTexture("../scenes/negx.jpg");
-    //render2DHud(texture1, &modelMat);
+float timeLOL = 0.0f;
 
-    modelMat = make_translation(make_vector(-1.0f, -1.0f, -0.5f)) * make_scale<float4x4>(make_vector(1.0f, 1.0f, 1.0f));
-    Texture* texture = ResourceManager::loadAndFetchTexture("../scenes/blending_transparent_window.png");
+void HudRenderer::render() {
+    float4x4 modelMat;
+
+    modelMat = make_translation(make_vector(0.9f, -0.4f, 0.0f)) * make_rotation_z<float4x4>((float) (M_PI / 180 * 180))  * make_scale<float4x4>(make_vector(0.4f, 0.4f, 0.5f));
+    Texture* texture = ResourceManager::loadAndFetchTexture("../scenes/HUD/meter2.0.png");
     render2DHud(texture, &modelMat);
+
+    modelMat = make_translation(make_vector(0.70f, -0.60f, 0.0f)) * make_rotation_z<float4x4>((float) (M_PI / 180 * (timeLOL / 10.0))) * make_translation(make_vector(-0.012f, -0.04f, 1.0f)) * make_scale<float4x4>(make_vector(0.02f, 0.2f, 1.0f));
+    Texture* texture1 = ResourceManager::loadAndFetchTexture("../scenes/HUD/arrow.png");
+    render2DHud(texture1, &modelMat);
 }
 
 void HudRenderer::render2DHud(Texture* texture, float4x4 *modelMatrix) {
@@ -83,5 +87,5 @@ void HudRenderer::render2DHud(Texture* texture, float4x4 *modelMatrix) {
 void HudRenderer::renderShadow(Shader *shaderProgram) {}
 
 void HudRenderer::update(float dt){
-
+    timeLOL += dt;
 }

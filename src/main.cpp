@@ -261,7 +261,7 @@ void createEffects(){
 	renderer->effects.fog = f;
 
 	Blur b;
-	b.cutOff = 0.9f;
+	b.cutOff = 1.0f;
 	b.active = true;
 	renderer->effects.blur = b;
 }

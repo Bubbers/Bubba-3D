@@ -58,6 +58,37 @@ if(NOT OPENAL_FOUND)
     message(ERROR " OPENAL not found!")
 endif(NOT OPENAL_FOUND)
 
+#########################################################
+# FIND ALUT
+#########################################################
+find_package(ALUT REQUIRED)
+include_directories(${ALUT_INCLUDE_DIR})
+include_directories(${ALUT_WORKAROUND_INCLUDE_DIRS})
+target_link_libraries(${TEST_NAME}  ${ALUT_LIBRARY})
+
+
+if(NOT ALUT_FOUND)
+    message(ERROR " ALUT not found!")
+endif(NOT ALUT_FOUND)
+
+
+#########################################################
+# FIND OGGVORBIS
+#########################################################
+find_package(OGGVORBIS REQUIRED)
+include_directories(${VORBIS_INCLUDE_DIR})
+include_directories(${OGG_INCLUDE_DIR})
+target_link_libraries(${TEST_NAME}  ${OGG_LIBRARY})
+target_link_libraries(${TEST_NAME}  ${VORBIS_LIBRARY})
+target_link_libraries(${TEST_NAME}  ${VORBISFILE_LIBRARY})
+target_link_libraries(${TEST_NAME}  ${ALUT_LIBRARY})
+
+
+
+if(NOT OGGVORBIS_FOUND)
+    message(ERROR " OGGVORBIS not found!")
+endif(NOT OGGVORBIS_FOUND)
+
 
 
 #########################################################

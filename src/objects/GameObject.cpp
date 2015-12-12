@@ -45,8 +45,6 @@ GameObject::GameObject(Mesh *mesh) {
         }
     }
 
-
-
     float3 halfVector = (aabb->maxV - aabb->minV) / 2;
     float3 origin = aabb->maxV - halfVector;
     octree = new Octree(origin, halfVector, 0);
