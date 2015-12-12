@@ -130,6 +130,7 @@ void Shader::initUniformBufferObject(std::string bufferName, int size, int index
 
 void Shader::setUniformBufferSubData(std::string bufferName, int offset, int size, const GLvoid *data) {
     glBindBuffer(GL_UNIFORM_BUFFER, getUniformLocation(bufferName));
+    glFinish();
     glBufferSubData(GL_UNIFORM_BUFFER, offset, size, data);
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
 

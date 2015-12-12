@@ -477,7 +477,7 @@ void createMeshes() {
 	skyBox = GameObject(skyBoxM);
 
     SkyBoxRenderer *skyboxRenderer = new SkyBoxRenderer(playerCamera, skyBoxM, skyBox.getModelMatrix());
-    skyboxRenderer->init("../scenes/posx.jpg", "../scenes/negx.jpg", "../scenes/posy.jpg", "../scenes/posy.jpg", "../scenes/negz.jpg", "../scenes/posz.jpg");
+    skyboxRenderer->init("../scenes/posx.jpg", "../scenes/negx.jpg", "../scenes/sky_box.jpg", "../scenes/posy.jpg", "../scenes/negz.jpg", "../scenes/posz.jpg");
     skyBox.addRenderComponent(skyboxRenderer);
     scene.transparentObjects.push_back(&skyBox);
 
