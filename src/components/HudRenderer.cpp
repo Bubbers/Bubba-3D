@@ -45,7 +45,7 @@ HudRenderer::~HudRenderer(){
 void HudRenderer::render() {
     float4x4 modelMat = make_identity<float4x4>();
     Texture* texture1 = ResourceManager::loadAndFetchTexture("../scenes/negx.jpg");
-    render2DHud(texture1, &modelMat);
+    //render2DHud(texture1, &modelMat);
 
     modelMat = make_translation(make_vector(-1.0f, -1.0f, -0.5f)) * make_scale<float4x4>(make_vector(1.0f, 1.0f, 1.0f));
     Texture* texture = ResourceManager::loadAndFetchTexture("../scenes/blending_transparent_window.png");

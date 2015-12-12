@@ -22,6 +22,7 @@
 #include "constants.h"
 #include "BFBroadPhase.h"
 #include "HudRenderer.h"
+#include "SoundManager.h"
 
 using namespace std;
 using namespace chag;
@@ -238,6 +239,8 @@ int main(int argc, char *argv[])
 	InputManager* im = InputManager::getInstance();
 	im->addMouseMoveListener(motion);
 	im->addSpecialKeyListener(specialKey);
+
+    SoundManager sm;
 
 	renderer->initGL();
 
@@ -486,9 +489,6 @@ void createMeshes() {
     normalTestWithout.addRenderComponent(normalTestWithoutRenderer);
 	scene.shadowCasters.push_back(&normalTestWithout);
 	broadPhaseCollider.addGameObject(&normalTestWithout);
-
-
-
 
 	Logger::logInfo("Finished loading meshes.");
 

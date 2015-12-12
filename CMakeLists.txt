@@ -32,6 +32,7 @@ file(GLOB files_SOURCE
         "${PROJECT_SOURCE_DIR}/src/collision/*.cpp"
         "${PROJECT_SOURCE_DIR}/src/particle/*.cpp"
         "${PROJECT_SOURCE_DIR}/src/components/*.cpp"
+        "${PROJECT_SOURCE_DIR}/src/sound/*.cpp"
         "${PROJECT_SOURCE_DIR}/shaders/*")
 
 #########################################################
