@@ -25,6 +25,8 @@ addons:
         - libxi-dev
         - libopenal1
         - libopenal-dev
+        - libalut0
+        - libalut-dev
 
 before_script:
         - mkdir -p build
