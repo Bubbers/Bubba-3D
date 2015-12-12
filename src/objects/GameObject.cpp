@@ -26,18 +26,6 @@ GameObject::GameObject(Mesh *mesh) {
 
         for (int j = 0; j < mesh->m_chunks[i].m_positions.size(); j += 3) {
 
-            float4 p1 = m_modelMatrix * make_vector(mesh->m_chunks[i].m_positions[j + 0].x,
-                                                    mesh->m_chunks[i].m_positions[j + 0].y,
-                                                    mesh->m_chunks[i].m_positions[j + 0].z, 1.0f);
-
-            float4 p2 = m_modelMatrix * make_vector(mesh->m_chunks[i].m_positions[j + 1].x,
-                                                    mesh->m_chunks[i].m_positions[j + 1].y,
-                                                    mesh->m_chunks[i].m_positions[j + 1].z, 1.0f);
-
-            float4 p3 = m_modelMatrix * make_vector(mesh->m_chunks[i].m_positions[j + 2].x,
-                                                    mesh->m_chunks[i].m_positions[j + 2].y,
-                                                    mesh->m_chunks[i].m_positions[j + 2].z, 1.0f);
-
 
             Triangle *t = new Triangle(make_vector(mesh->m_chunks[i].m_positions[j + 0].x,
                                                    mesh->m_chunks[i].m_positions[j + 0].y,
@@ -48,8 +36,7 @@ GameObject::GameObject(Mesh *mesh) {
                                        make_vector(mesh->m_chunks[i].m_positions[j + 2].x,
                                                    mesh->m_chunks[i].m_positions[j + 2].y,
                                                    mesh->m_chunks[i].m_positions[j + 2].z));
-            /*Triangle *t = new Triangle(make_vector(p1.x, p1.y, p1.z), make_vector(p2.x, p2.y, p2.z),
-                                       make_vector(p3.x, p3.y, p3.z));*/
+
 
             triangles.push_back(t);
         }
@@ -88,21 +75,18 @@ std::vector<Triangle *> GameObject::getTriangles() {
 
         for (int j = 0; j < mesh->m_chunks[i].m_positions.size(); j += 3) {
 
-            float4 p1 = m_modelMatrix * make_vector(mesh->m_chunks[i].m_positions[j + 0].x,
-                                                    mesh->m_chunks[i].m_positions[j + 0].y,
-                                                    mesh->m_chunks[i].m_positions[j + 0].z, 1.0f);
 
-            float4 p2 = m_modelMatrix * make_vector(mesh->m_chunks[i].m_positions[j + 1].x,
-                                                    mesh->m_chunks[i].m_positions[j + 1].y,
-                                                    mesh->m_chunks[i].m_positions[j + 1].z, 1.0f);
+            Triangle *t = new Triangle(make_vector(mesh->m_chunks[i].m_positions[j + 0].x,
+                                                   mesh->m_chunks[i].m_positions[j + 0].y,
+                                                   mesh->m_chunks[i].m_positions[j + 0].z),
 
-            float4 p3 = m_modelMatrix * make_vector(mesh->m_chunks[i].m_positions[j + 2].x,
-                                                    mesh->m_chunks[i].m_positions[j + 2].y,
-                                                    mesh->m_chunks[i].m_positions[j + 2].z, 1.0f);
+                                       make_vector(mesh->m_chunks[i].m_positions[j + 1].x,
+                                                   mesh->m_chunks[i].m_positions[j + 1].y,
+                                                   mesh->m_chunks[i].m_positions[j + 1].z),
 
-            Triangle *t = new Triangle(make_vector(p1.x, p1.y, p1.z), make_vector(p2.x, p2.y, p2.z),
-                                       make_vector(p3.x, p3.y, p3.z));
-
+                                       make_vector(mesh->m_chunks[i].m_positions[j + 2].x,
+                                                   mesh->m_chunks[i].m_positions[j + 2].y,
+                                                   mesh->m_chunks[i].m_positions[j + 2].z));
             ts.push_back(t);
         }
     }

@@ -298,6 +298,8 @@ void idle( int v )
 		gen->update(elapsedTime);
 		gen->m_position = make_vector(3 * sin(currentTime) * sin(currentTime)* sin(currentTime), 3 * sin(currentTime), 5 * sin(currentTime) * cos(currentTime)) + make_vector(0.0f, 15.0f, 0.0f);
 
+		lamp.move(make_translation(make_vector(0.0f, sin(currentTime) * 10, 0.0f)));
+
         scene.update(elapsedTime);
 
         broadPhaseCollider.updateCollision();
@@ -557,14 +559,14 @@ void createMeshes() {
     scene.shadowCasters.push_back(&lamp3);
 	broadPhaseCollider.addGameObject(&lamp3);
 
-	Mesh* normalTestM = ResourceManager::loadAndFetchMesh("../scenes/boxwNormals.obj");
+	/*Mesh* normalTestM = ResourceManager::loadAndFetchMesh("../scenes/boxwNormals.obj");
 	normalTest = GameObject(normalTestM);
     normalTest.move(make_translation(make_vector(0.0f, 10.0f, 0.0f)) * make_rotation_x<float4x4>(
 			(float) (M_PI / 180 * 30)));
     StandardRenderer *normalTestRenderer = new StandardRenderer(normalTestM, normalTest.getModelMatrix(), standardShader);
     normalTest.addRenderComponent(normalTestRenderer);
 	scene.shadowCasters.push_back(&normalTest);
-	broadPhaseCollider.addGameObject(&normalTest);
+	broadPhaseCollider.addGameObject(&normalTest);*/
 
 	Mesh* normalTestWithoutM = ResourceManager::loadAndFetchMesh("../scenes/boxwoNormals.obj");
 	normalTestWithout = GameObject(normalTestWithoutM);
