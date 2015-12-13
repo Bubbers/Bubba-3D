@@ -1,6 +1,7 @@
 #ifndef BUBBA_3D_PARTICLECONF_H
 #define BUBBA_3D_PARTICLECONF_H
 
+#include <GL/glew.h>
 #include "float3.h"
 
 using namespace chag;
@@ -15,6 +16,10 @@ public:
     virtual float3 getVelocity() = 0;
     virtual float3 accelerate(float3 velocity) = 0;
     virtual float getLife() = 0;
+    virtual float3 getScale() = 0;
+    virtual bool loop(float dt) = 0;
+
+    GLuint blendFunc = GL_ONE_MINUS_SRC_ALPHA;
 
 protected:
     float getRand(float min, float max) {

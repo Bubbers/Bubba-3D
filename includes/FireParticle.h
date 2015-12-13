@@ -3,6 +3,8 @@
 
 #include "ParticleConf.h"
 
+using namespace chag;
+
 class FireParticle : public ParticleConf {
 public:
     FireParticle() {}
@@ -12,6 +14,10 @@ public:
     float3 getVelocity();
     float3 accelerate(float3 velocity);
     float getLife();
+    float3 getScale();
+    bool loop(float dt);
+
+    GLuint blendFunc = GL_ONE;
 };
 
 

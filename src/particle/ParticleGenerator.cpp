@@ -56,7 +56,7 @@ ParticleGenerator::~ParticleGenerator()
 void ParticleGenerator::render() {
 	glDisable(GL_CULL_FACE);
 	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+	glBlendFunc(GL_SRC_ALPHA, conf->blendFunc);
 
 	shaderProgram->backupCurrentShaderProgram();
 	shaderProgram->use();
@@ -87,7 +87,7 @@ void ParticleGenerator::render() {
 		iterations++;
 
 		if (particle->isAlive()) {
-			float3 scale = make_vector(0.1f, 0.1f, 0.1f) * (1.0 + distance / LINEAR_SCALE_FACTOR);
+			float3 scale = conf->getScale() * (1.0 + distance / LINEAR_SCALE_FACTOR);
 			float4x4 modelMatrix4x4 = make_matrix(modelMatrix3x3, particle->getPosition()) * make_scale<float4x4>(scale);
 
 			shaderProgram->setUniformMatrix4fv("modelMatrix", modelMatrix4x4);
@@ -112,7 +112,7 @@ void ParticleGenerator::update(float dt) {
 		if (particle->isAlive()){
 			particle->update(dt, distance, conf);
 		}
-		else {
+		else if(conf->loop(dt)){
 			particle->reset(conf);
 		}
 	}

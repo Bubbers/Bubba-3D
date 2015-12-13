@@ -17,3 +17,11 @@ float3 FireParticle::accelerate(float3 velocity) {
 float FireParticle::getLife() {
     return getRand(0.0f, 2000.0f);
 }
+
+float3 FireParticle::getScale() {
+    return make_vector(.1f, .1f, .1f);
+}
+
+bool FireParticle::loop(float dt) {
+    return true;
+}
