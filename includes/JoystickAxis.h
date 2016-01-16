@@ -8,6 +8,7 @@
 #include <SFML/Window.hpp>
 #include <ControlStatus.h>
 #include <Input.h>
+#include <IJoystickTranslation.h>
 
 /**
  * An input class that uses the axes of joysticks. This class is quite versatile and
@@ -25,13 +26,13 @@ public:
      * triggers. Triggers are seen as axes and has the interval [-100,100] but
      * you often want a trigger to be seen as one button and not a dual.
      */
-    JoystickAxis(sf::Joystick::Axis axis, bool dual);
+    JoystickAxis(IJoystickTranslation::Axis axis, bool dual);
 
     /**
      * Enables you to use only the positive or negative portion
      * of an axis.
      */
-    JoystickAxis(sf::Joystick::Axis axis, Separation separation);
+    JoystickAxis(IJoystickTranslation::Axis axis, Separation separation);
 
     /**
      * Allows you to combine two axes into one dual interval. The interval of
@@ -39,7 +40,7 @@ public:
      * of \axisNeg will be transformed from [-100,100] to [-100,0]. Together
      * they form the dual interval [-100,100]
      */
-    JoystickAxis(sf::Joystick::Axis axisPos, sf::Joystick::Axis axisNeg);
+    JoystickAxis(IJoystickTranslation::Axis axisPos, IJoystickTranslation::Axis axisNeg);
     ControlStatus getStatus();
 
     /**
@@ -57,7 +58,7 @@ public:
     static float removeDeadZone(float val);
 
 private:
-    sf::Joystick::Axis axisPos, axisNeg;
+    IJoystickTranslation::Axis axisPos, axisNeg;
     bool separated = false, doubleAxed = false;
     Separation separation;
 

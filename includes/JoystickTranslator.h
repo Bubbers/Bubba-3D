@@ -1,0 +1,42 @@
+//
+// Created by simon on 2016-01-14.
+//
+
+#ifndef BUBBA_3D_JOYSTICKTRANSLATOR_H
+#define BUBBA_3D_JOYSTICKTRANSLATOR_H
+
+#include <IJoystickTranslation.h>
+#include <JoystickTranslation.h>
+#include <document.h>
+
+using namespace rapidjson;
+
+class ControlStatus;
+
+class JoystickTranslator {
+
+public:
+
+    IJoystickTranslation* getTranslation(unsigned int joystickID);
+    static JoystickTranslator* getInstance();
+    void cacheControlsMappings();
+    ~JoystickTranslator();
+
+private:
+    JoystickTranslator();
+    std::vector<JoystickTranslation> translations;
+    void readDocument(Document *doc);
+    void check(bool,std::string);
+    int getJoystick(int devId,int vendId, unsigned int startAt);
+    void readMappings(Value* mappings,unsigned int joystickID, bool defaultMapping);
+    JoystickTranslation::valueRetriever decideOnButtonRetriever(Value* mapData);
+    JoystickTranslation::valueRetriever decideOnAxisRetriever(Value* mapData);
+
+    static IJoystickTranslation::Button buttonFromString(std::string name);
+    static IJoystickTranslation::Axis axisFromString(std::string name);
+    static sf::Joystick::Axis SFMLAxisFromString(std::string name);
+
+};
+
+
+#endif //BUBBA_3D_JOYSTICKTRANSLATOR_H

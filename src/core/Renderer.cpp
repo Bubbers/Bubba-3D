@@ -2,6 +2,7 @@
 #include <sstream>
 #include <SFML/Window.hpp>
 #include <Globals.h>
+#include <JoystickTranslator.h>
 #include "ResourceManager.h"
 #include "constants.h"
 #include "GameObject.h"
@@ -38,6 +39,7 @@ Renderer::Renderer(int width, int height)
 	window = new sf::Window(sf::VideoMode(width,height),"Super-Bubba-Awesome-Space",sf::Style::Default,settings);
 	glEnable(GL_FRAMEBUFFER_SRGB);
 	window->setFramerateLimit(60);
+	JoystickTranslator::getInstance()->cacheControlsMappings();
     initGL();
 	resize(width, height);
 }
@@ -53,16 +55,17 @@ void Renderer::start() {
 	{
 		// handle events
 		sf::Event event;
-		while (window->pollEvent(event))
-		{
-			if (event.type == sf::Event::Closed)
-			{
+		while (window->pollEvent(event)) {
+			if (event.type == sf::Event::Closed) {
 				// end the program
 				running = false;
 			}
-			else if(event.type == sf::Event::MouseMoved){
-				Globals::set(Globals::Key::MOUSE_WINDOW_X,event.mouseMove.x);
-				Globals::set(Globals::Key::MOUSE_WINDOW_Y,event.mouseMove.y);
+			else if (event.type == sf::Event::MouseMoved) {
+				Globals::set(Globals::Key::MOUSE_WINDOW_X, event.mouseMove.x);
+				Globals::set(Globals::Key::MOUSE_WINDOW_Y, event.mouseMove.y);
+			}
+			else if (event.type == sf::Event::JoystickDisconnected || event.type == sf::Event::JoystickConnected) {
+				JoystickTranslator::getInstance()->cacheControlsMappings();
 			}
 			else if (event.type == sf::Event::Resized)
 			{
