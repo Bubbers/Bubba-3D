@@ -39,7 +39,6 @@ Renderer::Renderer(int width, int height)
 	window = new sf::Window(sf::VideoMode(width,height),"Super-Bubba-Awesome-Space",sf::Style::Default,settings);
 	glEnable(GL_FRAMEBUFFER_SRGB);
 	window->setFramerateLimit(60);
-	JoystickTranslator::getInstance()->cacheControlsMappings();
     initGL();
 	resize(width, height);
 }
@@ -65,7 +64,7 @@ void Renderer::start() {
 				Globals::set(Globals::Key::MOUSE_WINDOW_Y, event.mouseMove.y);
 			}
 			else if (event.type == sf::Event::JoystickDisconnected || event.type == sf::Event::JoystickConnected) {
-				JoystickTranslator::getInstance()->cacheControlsMappings();
+				JoystickTranslator::getInstance()->updateMapping();
 			}
 			else if (event.type == sf::Event::Resized)
 			{

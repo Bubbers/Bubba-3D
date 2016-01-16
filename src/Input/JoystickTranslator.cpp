@@ -25,20 +25,28 @@ JoystickTranslator* JoystickTranslator::getInstance() {
     return &jt;
 }
 
-void JoystickTranslator::cacheControlsMappings() {
+void JoystickTranslator::init(string filePath) {
 
     struct stat filestatus;
-    stat("../config/controls.json",&filestatus);
+    stat(filePath.c_str(), &filestatus);
     const unsigned long long size = filestatus.st_size;
 
-    std::FILE* file = fopen("../config/controls.json","r");
+    std::FILE* file = fopen(filePath.c_str(), "r");
     char readBuffer[size];
     FileReadStream rs(file,readBuffer,size);
 
-    Document* doc = new Document();
-    doc->ParseStream<kParseCommentsFlag>(rs);
+    jsonConfig = new Document();
+    jsonConfig->ParseStream<kParseCommentsFlag>(rs);
     try{
-        readDocument(doc);
+        readDocument(jsonConfig);
+    }catch(std::string error){
+        Logger::logSevere("Failed reading controls: " + error);
+    }
+}
+
+void JoystickTranslator::updateMapping(){
+    try{
+        readDocument(jsonConfig);
     }catch(std::string error){
         Logger::logSevere("Failed reading controls: " + error);
     }

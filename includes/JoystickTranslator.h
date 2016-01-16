@@ -10,6 +10,7 @@
 #include <document.h>
 
 using namespace rapidjson;
+using namespace std;
 
 class ControlStatus;
 
@@ -19,10 +20,12 @@ public:
 
     IJoystickTranslation* getTranslation(unsigned int joystickID);
     static JoystickTranslator* getInstance();
-    void cacheControlsMappings();
+    void init(string filePath);
+    void updateMapping();
     ~JoystickTranslator();
 
 private:
+    Document *jsonConfig;
     JoystickTranslator();
     std::vector<JoystickTranslation> translations;
     void readDocument(Document *doc);
