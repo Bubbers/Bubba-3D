@@ -32,6 +32,78 @@ file(GLOB BUBBA3D_FILES_SOURCE
         "${PROJECT_SOURCE_DIR}/src/Input/*.cpp"
         "${PROJECT_SOURCE_DIR}/shaders/*")
 
+
+#########################################################
+# FIND GLUT
+#########################################################
+find_package(GLUT REQUIRED)
+include_directories(${GLUT_INCLUDE_DIR})
+link_directories(${GLUT_LIBRARY_DIRS})
+add_definitions(${GLUT_DEFINITIONS})
+if(NOT GLUT_FOUND)
+    message(ERROR " GLUT not found!")
+endif(NOT GLUT_FOUND)
+
+
+#########################################################
+# FIND OPENGL
+#########################################################
+find_package(OpenGL REQUIRED)
+include_directories(${OpenGL_INCLUDE_DIRS})
+link_directories(${OpenGL_LIBRARY_DIRS})
+add_definitions(${OpenGL_DEFINITIONS})
+if(NOT OPENGL_FOUND)
+    message(ERROR " OPENGL not found!")
+endif(NOT OPENGL_FOUND)
+
+#########################################################
+# FIND GLEW
+#########################################################
+find_package(GLEW REQUIRED)
+include_directories(${GLEW_INCLUDE_DIR})
+link_directories(${GLEW_LIBRARY})
+add_definitions(${GLEW_DEFINITIONS})
+if(NOT GLEW_FOUND)
+    message(ERROR " GLEW not found!")
+endif(NOT GLEW_FOUND)
+
+
+#########################################################
+# FIND FREEIMAGE
+#########################################################
+find_package(FREEIMAGE REQUIRED)
+include_directories(${FREEIMAGE_INCLUDE_PATH})
+
+if(NOT FREEIMAGE_FOUND)
+    message(ERROR " FreeImage not found!")
+endif(NOT FREEIMAGE_FOUND)
+
+#########################################################
+# FIND ASSIMP
+#########################################################
+find_package(ASSIMP REQUIRED)
+if(ASSIMP_INCLUDE_DIR)
+    include_directories(${ASSIMP_INCLUDE_DIR})
+endif()
+add_definitions(${ASSIMP_DEFINITIONS})
+
+
+if(NOT ASSIMP_FOUND)
+    message(ERROR " ASSIMP not found!")
+endif(NOT ASSIMP_FOUND)
+
+
+#########################################################
+# FIND SFML AUDIO
+#########################################################
+find_package(SFML 2 COMPONENTS audio window system REQUIRED)
+include_directories(${SFML_INCLUDE_DIR})
+
+
+if(NOT SFML_FOUND)
+    message(ERROR " SFML not found!")
+endif(NOT SFML_FOUND)
+
 #########################################################
 # Testing
 #########################################################
