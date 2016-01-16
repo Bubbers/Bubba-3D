@@ -27,7 +27,7 @@ Originally implemented as a school project, now extended for fun!
 
 ***
 ###Example
-Code example is outdated, new coming soon!
+Code example is outdated, new coming soon!.
 
 ###Installation
 Requirements:
