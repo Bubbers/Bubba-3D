@@ -42,7 +42,7 @@ void Shader::logCompileError(GLuint shader, std::string shaderType) {
     GLchar compileLog[MAX_LOG_SIZE];
 
     glGetShaderInfoLog(shader, MAX_LOG_SIZE, NULL, compileLog);
-    Logger::logSevere("Failed to compile shader of type " + shaderType + "\n" + compileLog);
+    Logger::logError("Failed to compile shader of type " + shaderType + "\n" + compileLog);
 }
 
 void Shader::createProgram(GLuint vertexShader, GLuint fragmentShader) {
@@ -68,7 +68,7 @@ void Shader::logLinkageError() {
     GLchar linkageLog[MAX_LOG_SIZE];
 
     glGetShaderInfoLog(this->shaderID, MAX_LOG_SIZE, NULL, linkageLog);
-    Logger::logSevere("Failed to compile shader of type PROGRAM\n" + *linkageLog);
+    Logger::logError("Failed to compile shader of type PROGRAM\n" + *linkageLog);
 }
 
 void Shader::use() {

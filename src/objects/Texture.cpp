@@ -54,13 +54,13 @@ FREE_IMAGE_FORMAT Texture::getImageFormat(std::string fileName) {
     FREE_IMAGE_FORMAT imageFormat = FreeImage_GetFileType(fileName.c_str(), 0 );
 
     if(imageFormat == -1) {
-        Logger::logSevere("Couldn't find texture file " + fileName);
+        Logger::logError("Couldn't find texture file " + fileName);
         exit(0);
     }
 
     if (isUnsupportedFormat(&imageFormat, fileName))
     {
-        Logger::logSevere("Couldn't load texture format " + fileName);
+        Logger::logError("Couldn't load texture format " + fileName);
         exit(0);
     }
 

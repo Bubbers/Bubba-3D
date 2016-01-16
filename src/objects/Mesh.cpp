@@ -35,7 +35,7 @@ void Mesh::loadMesh(const std::string &fileName) {
             fileName.c_str(), aiProcess_GenSmoothNormals | aiProcess_Triangulate | aiProcess_CalcTangentSpace);
 
     if (!pScene) {
-        Logger::logSevere("Error loading mesh for " + fileName);
+        Logger::logError("Error loading mesh for " + fileName);
     }
     else {
         initMeshFromScene(pScene, fileName);

@@ -57,7 +57,6 @@ Mesh* ResourceManager::getMesh(std::string fileName)
     return getItemFromMap(&meshes, fileName);
 }
 
-
 template<typename Type>
 Type* ResourceManager::getItemFromMap(std::map<std::string, Type> *map, std::string id) {
     typename std::map<std::string, Type>::iterator it = map->find(id);
