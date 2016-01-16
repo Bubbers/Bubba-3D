@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 set(TEST_NAME Bubba3DTest)
+project(Testing)
 
 if(USE_CPP11)
     ## We can't turn this on by default, since it breaks on travis
@@ -81,12 +82,13 @@ if(NOT SFML_FOUND)
     message(ERROR " SFML not found!")
 endif(NOT SFML_FOUND)
 
-target_include_directories (${TEST_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/includes")
-target_include_directories (${TEST_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/includes/linmath")
+target_include_directories (${TEST_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/../includes")
+target_include_directories (${TEST_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/../includes/linmath")
 
 # configure unit tests via CTest
 enable_testing()
 add_test(NAME trolo COMMAND ${TEST_NAME})
+
 
 target_link_libraries(${TEST_NAME}  ${SFML_LIBRARIES})
 target_link_libraries(${TEST_NAME}  ${FREEIMAGE_LIBRARY})
