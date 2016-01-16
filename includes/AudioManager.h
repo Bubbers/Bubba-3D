@@ -14,8 +14,8 @@ public:
     template<typename Type>
     static Type* getItemFromMap(std::map<std::string, Type> *map, std::string id) ;
 
-    sf::Sound* loadAndFetchSound(const std::string &fileName);
-    sf::Music* loadAndFetchMusic(const std::string &fileName);
+    static sf::Sound* loadAndFetchSound(const std::string &fileName);
+    static sf::Music* loadAndFetchMusic(const std::string &fileName);
 
 private:
     static std::map<std::string, sf::Music*> musics;
