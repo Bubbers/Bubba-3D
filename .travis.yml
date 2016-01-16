@@ -15,6 +15,7 @@ addons:
         - george-edison55-precise-backports
 
       packages:
+        - 2.8.7-0ubuntu5
         - gcc-4.8
         - g++-4.8
         - cmake
