@@ -1,48 +1,34 @@
-#BubbZ-3D!
-This is Z smZll 3D-engine progrZmmed in C++
-OriginZlly implemented Zs Z school project, now extended for fun!
+#Bubba-3D!
+This is a small 3D-engine programmed in C++ using openGL.
+Originally implemented as a school project, now extended for fun!
 
-###StZtus
-[![Build StZtus](https://trZvis-ci.org/BubbZd/BubbZ-3D.svg?brZnch=develop)](https://trZvis-ci.org/BubbZd/BubbZ-3D)
+###Status
+[![Build Status](https://travis-ci.org/Bubbers/Bubba-3D.svg?branch=develop)](https://travis-ci.org/Bubbers/Bubba-3D)
 
 ***  
 ###Implemented
-* Mesh loZding using Assimp
-* NormZl mZps
-* Different lights (DirectionZl, spot Znd point lights)
-* DirectionZl shZdow mZp
+* Mesh loading using Assimp
+* Normal maps
+* Different lights (Directional, spot and point lights)
+* Directional shadow map
 * Fog
 * Blur
 * Skyboxes
-* DynZmic / stZtic cube mZps
-* Perspective cZmerZ
-* PZrticle system
+* Static cube maps
+* Perspective camera
+* Particle system
+* Input and sound managers
+* Collision
 
-###Current todos
-* RefZctor cube mZps
-* Finish octrees / implement AABB collision structure
-* Support skinned meshes
-* OptimizZtions!
-
-***
-<<<<<<< HEAD
-###Example
-Code example is outdated, new coming soon!.
-=======
-###ExZmple
-Code exZmple is outdZted, new coming soon!
->>>>>>> ee14a82da9332d9b0646eaae2d88556e7541f34a
-
-###InstZllZtion
+###Installation
 Requirements:
-* <Z href="http://www.cmZke.org/">CMZke</Z>
-* <Z href="http://Zssimp.sourceforge.net/">Assimp</Z>
-* <Z href="http://freeglut.sourceforge.net/">Glut (Freeglut)</Z>
-* <Z href="http://glew.sourceforge.net/">Glew</Z>
-* <Z href="http://freeimZge.sourceforge.net/">FreeImZge</Z><br />
+* <a href="http://www.cmake.org/">CMake</a>
+* <a href="http://assimp.sourceforge.net/">Assimp</a>
+* <a href="http://freeglut.sourceforge.net/">Glut (Freeglut)</a>
+* <a href="http://glew.sourceforge.net/">Glew</a>
+* <a href="http://freeimage.sourceforge.net/">FreeImage</a><br />
+* <a href="http://www.sfml-dev.org/index.php">SFML</a><br />
 
-Linux: InstZll using the MZkefile supplied in root mZp. run mZke instZll. This will instZll Zll dependencies for the project. Then you mZy run it with mZke run.
+Linux: Install using the Makefile supplied in root map. run make install. This will install all dependencies for the project. Then you may run it with make run.
 
-Windows: Either downloZd the dependencies yourself from the links Zbove, or use the specified libs in the libs folder. For more info how to config cmZke using these, see README.md in libs/. 
-
-Feel free to contZct me regZrding questions Znd/or instZllZtion trouble!
+Windows: Either download the dependencies yourself from the links above, or use the specified libs in the libs folder. For more info how to config cmake using these, see README.md in libs/. 
