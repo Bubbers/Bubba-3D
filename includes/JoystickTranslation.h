@@ -7,6 +7,7 @@
 
 #include <SFML/Window.hpp>
 #include <map>
+#include <functional>
 #include <IJoystickTranslation.h>
 
 class JoystickTranslation : public IJoystickTranslation{

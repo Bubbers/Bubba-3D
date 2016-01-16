@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.0)
 PROJECT(Bubba-3D)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/build/")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/build/")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/Modules/")
 
 if(UNIX)
@@ -30,6 +31,7 @@ file(GLOB BUBBA3D_FILES_SOURCE
         "${PROJECT_SOURCE_DIR}/src/particle/*.cpp"
         "${PROJECT_SOURCE_DIR}/src/components/*.cpp"
         "${PROJECT_SOURCE_DIR}/src/Input/*.cpp"
+        "${PROJECT_SOURCE_DIR}/src/sound/*.cpp"
         "${PROJECT_SOURCE_DIR}/shaders/*")
 
 

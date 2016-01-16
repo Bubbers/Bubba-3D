@@ -4,8 +4,9 @@ compiler:
 
 sudo: false
 
+
 install:
-  - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
+  - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
 
 addons:
   apt:
@@ -15,8 +16,8 @@ addons:
 
       packages:
         - cmake-data
-        - gcc-4.8
-        - g++-4.8
+        - gcc-4.9
+        - g++-4.9
         - cmake
         - freeglut3-dev
         - libfreeimage3
@@ -37,6 +38,14 @@ addons:
         - libglew-dev
         - libsndfile1-dev
         - libudev-dev
+        - libxcb-image0
+        - libudev0
+        - libudev1
+        - libxcb-randr0
+        - libudev-dev
+        - libcgmanager
+        - build-essential
+
 
 
 
@@ -46,4 +55,4 @@ before_script:
         - cmake -DCMAKE_BUILD_TYPE:STRING=Debug ..
 
 
-script: make && make test
+script: make -j8  && make test

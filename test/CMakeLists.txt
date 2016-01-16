@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 set(TEST_NAME Bubba3DTest)
-project(Testing)
+
 
 if(USE_CPP11)
     ## We can't turn this on by default, since it breaks on travis
@@ -9,8 +9,25 @@ if(USE_CPP11)
 endif()
 
 # configure the executable
+file(GLOB BUBBA3D_FILES_SOURCE_TEST
+        "${PROJECT_SOURCE_DIR}/includes/linmath/*.cpp"
+        "${PROJECT_SOURCE_DIR}/src/objects/Triangle.cpp"
+        "${PROJECT_SOURCE_DIR}/src/objects/*.cpp"
+        "${PROJECT_SOURCE_DIR}/includes/glutil/*.cpp"
+        "${PROJECT_SOURCE_DIR}/src/logging/*.cpp"
+        "${PROJECT_SOURCE_DIR}/src/Misc/*.cpp"
+        "${PROJECT_SOURCE_DIR}/src/cameras/*.cpp"
+        #"${PROJECT_SOURCE_DIR}/src/core/*.cpp"
+        "${PROJECT_SOURCE_DIR}/src/objects/*.cpp"
+        "${PROJECT_SOURCE_DIR}/src/collision/*.cpp"
+        "${PROJECT_SOURCE_DIR}/src/particle/*.cpp"
+        #"${PROJECT_SOURCE_DIR}/src/components/*.cpp"
+        #"${PROJECT_SOURCE_DIR}/src/Input/*.cpp"
+        "${PROJECT_SOURCE_DIR}/shaders/*"
+        )
 
-add_executable(${TEST_NAME} test.cpp ${BUBBA3D_FILES_SOURCE})
+
+add_executable(${TEST_NAME} test.cpp ${BUBBA3D_FILES_SOURCE_TEST})
 
 #########################################################
 # FIND GLUT
@@ -71,26 +88,16 @@ if(NOT ASSIMP_FOUND)
 endif(NOT ASSIMP_FOUND)
 
 
-#########################################################
-# FIND SFML AUDIO
-#########################################################
-find_package(SFML 2 COMPONENTS audio window system REQUIRED)
-include_directories(${SFML_INCLUDE_DIR})
-
-
-if(NOT SFML_FOUND)
-    message(ERROR " SFML not found!")
-endif(NOT SFML_FOUND)
-
-target_include_directories (${TEST_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/../includes")
-target_include_directories (${TEST_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/../includes/linmath")
+target_include_directories (${TEST_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/includes")
+target_include_directories (${TEST_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/includes/linmath")
+target_include_directories (${TEST_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/includes/rapidjson")
 
 # configure unit tests via CTest
 enable_testing()
 add_test(NAME trolo COMMAND ${TEST_NAME})
 
 
-target_link_libraries(${TEST_NAME}  ${SFML_LIBRARIES})
+
 target_link_libraries(${TEST_NAME}  ${FREEIMAGE_LIBRARY})
 target_link_libraries(${TEST_NAME}  ${FREEIMAGE_LIBRARIES})
 target_link_libraries(${TEST_NAME}  ${ASSIMP_LIBRARY})
