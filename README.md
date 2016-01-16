@@ -1,6 +1,5 @@
 #Bubba-3D!
 This is a small 3D-engine programmed in C++
-using Glut and Glew.  Managed by cmake.
 Originally implemented as a school project, now extended for fun!
 
 ###Status
