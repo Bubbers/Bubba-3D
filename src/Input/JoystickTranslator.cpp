@@ -40,7 +40,7 @@ void JoystickTranslator::init(string filePath) {
     try{
         readDocument(jsonConfig);
     }catch(std::string error){
-        Logger::logSevere("Failed reading controls: " + error);
+        Logger::logError("Failed reading controls: " + error);
     }
 }
 
@@ -48,7 +48,7 @@ void JoystickTranslator::updateMapping(){
     try{
         readDocument(jsonConfig);
     }catch(std::string error){
-        Logger::logSevere("Failed reading controls: " + error);
+        Logger::logError("Failed reading controls: " + error);
     }
 }
 
