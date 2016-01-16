@@ -3,7 +3,7 @@
 
 #include <float4x4.h>
 #include <float3.h>
-#include <glutil/glutil.h>
+
 
 using namespace chag;
 
@@ -12,8 +12,8 @@ public:
 	Camera(float3 position, float3 lookAt, float3 up, float fov, float ratio, float nearPlane, float farPlane);
 	~Camera();
 
-	virtual float4x4 getViewMatrix();
-	virtual float4x4 getProjectionMatrix();
+	virtual float4x4 getViewMatrix() = 0;
+	virtual float4x4 getProjectionMatrix() = 0;
 
 	virtual void setPosition(float3 position);
 	virtual void setLookAt(float3 lookAt);

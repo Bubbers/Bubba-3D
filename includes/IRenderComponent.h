@@ -3,6 +3,8 @@
 
 #include "IComponent.h"
 
+class Shader;
+
 class IRenderComponent : public IComponent {
 public:
     virtual void render() = 0;

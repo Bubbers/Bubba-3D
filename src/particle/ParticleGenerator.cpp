@@ -2,7 +2,9 @@
 #include "ParticleGenerator.h"
 #include "constants.h"
 #include "float3x3.h"
-
+#include "Camera.h"
+#include "Particle.h"
+#include "ParticleConf.h"
 
 
 using namespace chag;
@@ -52,6 +54,11 @@ ParticleGenerator::~ParticleGenerator()
 
 }
 
+void ParticleGenerator::setScaleLod(bool value) {
+	doScale = value;
+}
+
+
 
 void ParticleGenerator::render() {
 	glDisable(GL_CULL_FACE);
@@ -70,7 +77,7 @@ void ParticleGenerator::render() {
 
 
 	float distance = length(this->m_camera->getPosition() - this->m_position);
-	int maxParticles = (m_amount * LOD_FACTOR / distance );
+	int maxParticles = (int)(m_amount * LOD_FACTOR / distance );
 	glBindVertexArray(m_vaob);
 	
 	std::vector<Particle*> particles = this->m_particles;
@@ -86,8 +93,13 @@ void ParticleGenerator::render() {
 		if (iterations > maxParticles) { break; }
 		iterations++;
 
+		float3 scale;
 		if (particle->isAlive()) {
-			float3 scale = conf->getScale() * (1.0 + distance / LINEAR_SCALE_FACTOR);
+			if(doScale) {
+				scale = conf->getScale() * (1.0 + distance / LINEAR_SCALE_FACTOR);
+			} else {
+				scale = make_vector(1.0f, 1.0f, 1.0f);
+			}
 			float4x4 modelMatrix4x4 = make_matrix(modelMatrix3x3, particle->getPosition()) * make_scale<float4x4>(scale);
 
 			shaderProgram->setUniformMatrix4fv("modelMatrix", modelMatrix4x4);
@@ -126,4 +138,9 @@ float3x3 ParticleGenerator::getModelMatrix3x3() {
 	float3 uprim = cross(n, r);
 	
 	return make_matrix(r,uprim,n);
+}
+
+
+void ParticleGenerator::setLooping(bool value) {
+	conf->setLooping(value);
 }

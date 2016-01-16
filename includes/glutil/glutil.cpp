@@ -359,28 +359,6 @@ GLuint createAddAttribBuffer(GLuint vertexArrayObject, const void *data, const s
 	return buffer;
 }
 
-void debugDrawLight(const float4x4 &viewMatrix, 
-					const float4x4 &projectionMatrix, 
-					const float3 &worldSpaceLightPos)
-{
-	GLint temp; 
-	glColor3f(1.0, 1.0, 0.0); 
-	glGetIntegerv(GL_CURRENT_PROGRAM, &temp);
-	glUseProgram(0);
-	glMatrixMode(GL_PROJECTION);
-	glLoadMatrixf(&projectionMatrix.c1.x);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(&viewMatrix.c1.x);
-	glEnable(GL_LINE_STIPPLE); 
-	glLineStipple(1, 52428);
-	glBegin(GL_LINES);
-	glVertex3fv(&worldSpaceLightPos.x);
-	glVertex3f(0.0f, 0.0f, 0.0f);
-	glEnd(); 
-	glTranslatef(worldSpaceLightPos.x, worldSpaceLightPos.y, worldSpaceLightPos.z);
-	glutSolidSphere(1.0, 20, 20);
-	glUseProgram(temp);
-}
 
 #if defined(__linux__)
 void linux_initialize_cwd()

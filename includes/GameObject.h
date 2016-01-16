@@ -1,21 +1,27 @@
 #ifndef __GAMEOBJECT_H__
 #define __GAMEOBJECT_H__
 
-#include "Mesh.h"
+
 #include "IDrawable.h"
-#include <Triangle.h>
-#include "IRenderComponent.h"
-#include "Octree.h"
+#include "GameObjectType.h"
+#include "AABB2.h"
+#include "float4x4.h"
+#include <vector>
+
+using namespace chag;
 
 enum EventType {BeforeCollision, DuringCollision, AfterCollision};
 
+class Mesh;
+class Triangle;
+class IRenderComponent;
+class IComponent;
+class Octree;
 
 class GameObject : public IDrawable {
 public:
     GameObject();
-
-    GameObject(Mesh *mesh);
-
+    GameObject(Mesh *mesh, GameObjectType type);
     ~GameObject();
 
     virtual void render();
@@ -23,36 +29,48 @@ public:
 
     void move(float4x4 model_matrix);
     void update(float4x4 update_matrix);
-    std::vector<Triangle*> getTriangles();
-
-    float4x4* getModelMatrix();
 
     void addRenderComponent(IRenderComponent*);
     void addComponent(IComponent*);
 
     void update(float dt);
-    void callEvent(EventType);
+    void callEvent(EventType, GameObjectType data);
 
-    AABB* getAABB();
     bool isDynamicObject();
     void setDynamic(bool);
+
     Octree* getOctree();
+    std::vector<Triangle*> getTriangles();
+    float4x4 getModelMatrix();
+    AABB getAABB();
+
+    int getId();
+
+    void makeDirty();
+    bool isDirty();
+
+    GameObjectType getType() { return type; };
+    void setType(GameObjectType t) { type = t; };
+
+private:
+    Octree* createOctree(Mesh* mesh);
 
     static int uniqueId;
-    int getId();
-private:
     int id;
     Mesh *mesh;
     chag::float4x4 m_modelMatrix;
 
-    /* COMPONENTS */
+    GameObjectType type = SpaceEntity;
+
     IRenderComponent* renderComponent;
     std::vector<IComponent*> components;
 
     AABB aabb;
-    bool dynamicObject = false;
     Octree *octree;
 
+    bool dynamicObject = false;
+
+    bool dirty = false;
 };
 
 

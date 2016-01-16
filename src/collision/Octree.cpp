@@ -1,32 +1,55 @@
+#include <Triangle.h>
 #include "Octree.h"
-#include <cfloat>
-#include <AABB2.h>
 
 Octree::Octree() {
-
-}
-
-Octree::Octree(float3 origin, float3 halfVector, int depth)
-        : origin(origin), halfVector(halfVector), depth(depth) {
-    for (int i = 0; i < 8; i++) {
-        children[i] = NULL;
-    }
-
-    float3 maxV = origin + halfVector;
-    float3 minV = origin - halfVector;
-
-    aabb.maxV.x = maxV.x > minV.x ? maxV.x : minV.x;
-    aabb.maxV.y = maxV.y > minV.y ? maxV.y : minV.y;
-    aabb.maxV.z = maxV.z > minV.z ? maxV.z : minV.z;
-
-    aabb.minV.x = minV.x < maxV.x ? minV.x : maxV.x;
-    aabb.minV.y = minV.y < maxV.y ? minV.y : maxV.y;
-    aabb.minV.z = minV.z < maxV.z ? minV.z : maxV.z;
+    clearChildren();
 }
 
 Octree::~Octree() {
 
 }
+
+Octree::Octree(float3 origin, float3 halfVector, int depth)
+        : origin(origin), halfVector(halfVector), depth(depth) {
+    clearChildren();
+    setupAABB();
+}
+
+void Octree::clearChildren() {
+    for (int i = 0; i < 8; i++) {
+        children[i] = NULL;
+    }
+}
+
+void Octree::setupAABB() {
+    float3 p1 = origin + halfVector;
+    float3 p2 = origin - halfVector;
+
+    aabb.maxV = getMaxXYZFromTwoPoints(p1,p2);
+    aabb.minV = getMinXYZFromTwoPoints(p1,p2);
+}
+
+float3 Octree::getMaxXYZFromTwoPoints(float3 p1, float3 p2) {
+    float3 maxPoint;
+
+    maxPoint.x = p1.x > p2.x ? p1.x : p2.x;
+    maxPoint.y = p1.y > p2.y ? p1.y : p2.y;
+    maxPoint.z = p1.z > p2.z ? p1.z : p2.z;
+
+    return maxPoint;
+}
+
+float3 Octree::getMinXYZFromTwoPoints(float3 p1, float3 p2) {
+    float3 minPoint;
+
+    minPoint.x = p1.x < p2.x ? p1.x : p2.x;
+    minPoint.y = p1.y < p2.y ? p1.y : p2.y;
+    minPoint.z = p1.z < p2.z ? p1.z : p2.z;
+
+    return minPoint;
+}
+
+
 
 std::vector<Triangle*> *Octree::getTriangles() {
     return &ts;
@@ -34,77 +57,40 @@ std::vector<Triangle*> *Octree::getTriangles() {
 
 
 void Octree::insertAll(std::vector<Triangle *> &triangles) {
-    if (hasChildren() || (triangles.size() + ts.size() > MAX_CHILDREN && depth < MAX_DEPTH)) {
-        if (!hasChildren()) {
-            for (int i = 0; i < 8; ++i) {
-                // Compute new bounding box for this child
-                float3 newOrigin = origin;
-                newOrigin.x += halfVector.x * (i & 4 ? .5f : -.5f);
-                newOrigin.y += halfVector.y * (i & 2 ? .5f : -.5f);
-                newOrigin.z += halfVector.z * (i & 1 ? .5f : -.5f);
-                children[i] = new Octree(newOrigin, halfVector * .5f, depth + 1);
-            }
-        }
-
-        std::vector<Triangle *> newTris[8];
-
-        for (unsigned int i = 0; i < triangles.size(); i++) {
-            BoundingBox *b = triangles[i]->getBoundingBox();
-            std::set<int> octs;
-            for (int j = 0; j < 8; j++) {
-                octs.insert(getOctantContainingPoint(b->points[j]));
-            }
-
-            for (std::set<int>::iterator it = octs.begin(); it != octs.end(); ++it) {
-                newTris[*it].push_back(triangles[i]);
-            }
-        }
-
-        for (int i = 0; i < 8; i++) {
-            children[i]->insertAll(newTris[i]);
-        }
-
-        ts.clear();
-
-    }
-    else {
-        for (unsigned int i = 0; i < triangles.size(); i++) {
-            ts.push_back(triangles[i]);
-        }
+    for (unsigned int i = 0; i < triangles.size(); i++) {
+        insertTriangle(triangles[i]);
     }
 }
 
-
-void Octree::insert(Triangle *t) {
-    if (isFull() && depth < MAX_DEPTH) {
-
-        for (int i = 0; i < 8; ++i) {
-            // Compute new bounding box for this child
-            float3 newOrigin = origin;
-            newOrigin.x += halfVector.x * (i & 4 ? .5f : -.5f);
-            newOrigin.y += halfVector.y * (i & 2 ? .5f : -.5f);
-            newOrigin.z += halfVector.z * (i & 1 ? .5f : -.5f);
-            children[i] = new Octree(newOrigin, halfVector * .5f, depth + 1);
-        }
-
-        addTriangle(t);
-        for (unsigned int i = 0; i < ts.size(); i++) {
-            addTriangle(ts[i]);
-        }
-
-        ts.clear();
-
+void Octree::insertTriangle(Triangle *t) {
+    BoundingBox *boundingBox = t->getBoundingBox(); //TODO USE Triangle/AABB TEST
+    std::set<int> octs;
+    for (int i = 0; i < 8; i++) {
+        octs.insert(getOctantContainingPoint(boundingBox->points[i]));
     }
-    else if (hasChildren()) {
-        addTriangle(t);
-    }
-    else {
+
+    if(octs.size() > 1 || depth == MAX_DEPTH) {
         ts.push_back(t);
+    } else {
+        if(!hasChildren()) {
+            createChildren();
+        }
+
+        for (std::set<int>::iterator it = octs.begin(); it != octs.end(); it++) {
+            children[*it]->insertTriangle(t);
+        }
     }
 }
 
-bool Octree::isFull() {
-    return ts.size() >= MAX_CHILDREN;
+
+void Octree::createChildren() {
+    for (int i = 0; i < 8; ++i) {
+        float3 newOrigin = origin;
+        newOrigin.x += halfVector.x * (i & 4 ? .5f : -.5f);
+        newOrigin.y += halfVector.y * (i & 2 ? .5f : -.5f);
+        newOrigin.z += halfVector.z * (i & 1 ? .5f : -.5f);
+        children[i] = new Octree(newOrigin, halfVector * .5f, depth + 1);
+    }
 }
 
 bool Octree::hasChildren() {
@@ -120,20 +106,6 @@ void Octree::getChildren(std::vector<Octree*> *octs) {
 }
 
 
-void Octree::addTriangle(Triangle *t) {
-    BoundingBox *b = t->getBoundingBox(); //TODO USE LINE SEGMENT/AABB TEST
-    std::set<int> octs;
-    for (int i = 0; i < 8; i++) {
-        octs.insert(getOctantContainingPoint(b->points[i]));
-    }
-
-    for (std::set<int>::iterator it = octs.begin(); it != octs.end(); ++it) {
-        children[*it]->insert(t);
-    }
-
-
-}
-
 int Octree::getOctantContainingPoint(const float3 &point) {
     int oct = 0;
     if (point.x >= origin.x) oct |= 4;
@@ -142,7 +114,7 @@ int Octree::getOctantContainingPoint(const float3 &point) {
     return oct;
 }
 
-int Octree::getChildCount() {
+int Octree::getTriangleCount() {
     return ts.size();
 }
 
@@ -150,13 +122,12 @@ AABB* Octree::getAABB() {
     return &aabb;
 }
 
-int Octree::getCount() {
-    std::vector<Octree> octs;
-    int c = getChildCount();
+int Octree::getTriangleCountRecursively() {
+    int c = getTriangleCount();
 
     if (hasChildren()) {
         for (int i = 0; i < 8; i++) {
-            c += children[i]->getCount();
+            c += children[i]->getTriangleCountRecursively();
         }
     }
 
@@ -197,7 +168,7 @@ bool testSlab(float rayO, float rayD, float minV, float maxV, float *tNear, floa
 }
 
 
-bool Octree::intersect(float3 rayOrigin, float3 rayVector) {
+bool Octree::rayCastIntersectsAABB(float3 rayOrigin, float3 rayVector) {
     float3 maxCorner = make_vector(origin.x + halfVector.x, origin.y + halfVector.y, origin.z + halfVector.z);
     float3 minCorner = make_vector(origin.x - halfVector.x, origin.y - halfVector.y, origin.z - halfVector.z);
 
@@ -208,17 +179,21 @@ bool Octree::intersect(float3 rayOrigin, float3 rayVector) {
            || (testSlab(rayOrigin.z, rayVector.z, minCorner.z, maxCorner.z, &tNear, &tFar));
 }
 
-void Octree::getGeometry(float3 rayOrigin, float3 rayVector, std::vector<Triangle *> *tsp) {
-    if (intersect(rayOrigin, rayVector)) {
-        if (hasChildren()) {
-            for (int i = 0; i < 8; i++) {
-                children[i]->getGeometry(rayOrigin, rayVector, tsp);
-            }
+void Octree::getTrianglesInsersectedByRayCast(float3 rayOrigin, float3 rayVector, std::vector<Triangle *> *triangleList) {
+    if (!rayCastIntersectsAABB(rayOrigin, rayVector)) {
+        return;
+    }
+
+    putTrianglesToList(triangleList);
+    if (hasChildren()) {
+        for (int i = 0; i < 8; i++) {
+            children[i]->getTrianglesInsersectedByRayCast(rayOrigin, rayVector, triangleList);
         }
-        else {
-            for (unsigned int i = 0; i < ts.size(); i++) {
-                tsp->push_back(ts[i]);
-            }
-        }
+    }
+}
+
+void Octree::putTrianglesToList(std::vector<Triangle *> *triangleList) {
+    for (unsigned int i = 0; i < ts.size(); i++) {
+        triangleList->push_back(ts[i]);
     }
 }

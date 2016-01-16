@@ -19,14 +19,16 @@ public:
     virtual float3 getScale() = 0;
     virtual bool loop(float dt) = 0;
 
-    GLuint blendFunc = GL_ONE_MINUS_SRC_ALPHA;
+    GLuint blendFunc = GL_ONE;
+
+    void setLooping(bool value){
+        looping = value;
+    }
+
 
 protected:
-    float getRand(float min, float max) {
-        int decimals = 100000;
-        float range = max - min;
-        return (((rand() % decimals) / ((float)decimals)) * range) + min;
-    }
+    bool looping = true;
+
 };
 
 

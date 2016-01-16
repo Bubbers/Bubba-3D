@@ -6,7 +6,8 @@
 #define BUBBA_3D_BROADPHASE_H
 
 #include <vector>
-#include "GameObject.h"
+
+class GameObject;
 
 typedef std::pair<GameObject*, GameObject*> CollisionPair;
 typedef std::vector<CollisionPair> CollisionPairList;

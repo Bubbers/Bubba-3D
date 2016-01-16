@@ -7,20 +7,35 @@
 
 #include "IRenderComponent.h"
 #include "GL/glew.h"
+#include "Utils.h"
+
+class Texture;
 
 class HudRenderer : public IRenderComponent
 {
 public:
-    HudRenderer();
+    HudRenderer(int *scoreBoard, State* state);
     ~HudRenderer();
+    struct HudConfig{
+        //percentage (0-100)
+        float speed = 0.0f;
+    };
 
     virtual void render();
     virtual void renderShadow(Shader *shaderProgram);
     virtual void update(float dt);
     void render2DHud(Texture* texture, float4x4 *modelMatrix);
+    struct HudConfig* getConfig();
 
 private:
+    void renderNum(int, float4x4 *modelMatrix);
+
+    bool start = true;
+
+    int *scoreBoard;
     GLuint m_vaob;
+    struct HudConfig* conf;
+    State *state;
 
 };
 

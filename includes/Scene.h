@@ -4,11 +4,13 @@
 #define MAX_POINT_LIGHTS 2
 
 #include "Mesh.h"
-#include "SkyBoxRenderer.h"
-#include "CubeMapTexture.h"
 #include "Utils.h"
 #include "Lights.h"
 #include "IDrawable.h"
+
+class CubeMapTexture;
+class Camera;
+class GameObject;
 
 class Scene
 {
@@ -26,7 +28,10 @@ public:
 	std::vector<GameObject*> shadowCasters;
 	std::vector<GameObject*> transparentObjects;
 
-	void update(float dt);
+	void update(float dt, std::vector<GameObject*> *toDelete);
+
+private:
+	void removeDirty(std::vector<GameObject*> *v, std::vector<GameObject*> *toDelete);
 };
 
 #endif // __SCENE_H__

@@ -3,7 +3,8 @@
 
 #ifdef _WIN32
 #include <chrono>
-using namespace chrono;
+
+using namespace std::chrono;
 #endif
 
 using namespace std;

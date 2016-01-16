@@ -24,6 +24,7 @@ class Shader {
     void setUniformBufferObjectBinding(std::string bufferName, int index);
     void initUniformBufferObject(std::string bufferName, int size, int index);
     void setUniformBufferSubData(std::string bufferName, int offset, int size, const GLvoid *data);
+
  private:
     std::map<std::string, GLint> uniformLocations;
     GLint previousShaderProgram;

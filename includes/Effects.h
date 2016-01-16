@@ -31,7 +31,7 @@ struct Blur {
 
   Blur() {
     cutOff = 1.0f;
-    active = false;
+    active = true;
   }
 };
 

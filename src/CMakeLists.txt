@@ -1,12 +1,7 @@
-set(EXECUTABLE_NAME Bubba3D)
+set(LIBRARY_NAME Bubba3D)
 
 
-#########################################################
-# ADD SOURCE FILES TO EXECUTABLE
-#########################################################
-
-add_executable(${EXECUTABLE_NAME} main.cpp ${files_SOURCE})
-
+add_library(${LIBRARY_NAME} SHARED ${BUBBA3D_FILES_SOURCE})
 
 #########################################################
 # STRUCTURE MSVS
@@ -52,6 +47,8 @@ add_definitions(${GLUT_DEFINITIONS})
 if(NOT GLUT_FOUND)
     message(ERROR " GLUT not found!")
 endif(NOT GLUT_FOUND)
+
+
 #########################################################
 # FIND OPENGL
 #########################################################
@@ -76,56 +73,10 @@ endif(NOT GLEW_FOUND)
 
 
 #########################################################
-# FIND OPENAL
-#########################################################
-find_package(OPENAL REQUIRED)
-include_directories(${OPENAL_INCLUDE_DIR})
-target_link_libraries(${EXECUTABLE_NAME}  ${OPENAL_LIBRARY})
-
-if(NOT OPENAL_FOUND)
-    message(ERROR " OPENAL not found!")
-endif(NOT OPENAL_FOUND)
-
-
-#########################################################
-# FIND ALUT
-#########################################################
-find_package(ALUT REQUIRED)
-include_directories(${ALUT_INCLUDE_DIR})
-include_directories(${ALUT_WORKAROUND_INCLUDE_DIRS})
-target_link_libraries(${EXECUTABLE_NAME}  ${ALUT_LIBRARY})
-
-
-if(NOT ALUT_FOUND)
-    message(ERROR " ALUT not found!")
-endif(NOT ALUT_FOUND)
-
-
-#########################################################
-# FIND OGGVORBIS
-#########################################################
-find_package(OGGVORBIS REQUIRED)
-include_directories(${VORBIS_INCLUDE_DIR})
-include_directories(${OGG_INCLUDE_DIR})
-target_link_libraries(${EXECUTABLE_NAME}  ${OGG_LIBRARY})
-target_link_libraries(${EXECUTABLE_NAME}  ${VORBIS_LIBRARY})
-target_link_libraries(${EXECUTABLE_NAME}  ${VORBISFILE_LIBRARY})
-target_link_libraries(${EXECUTABLE_NAME}  ${ALUT_LIBRARY})
-
-
-
-if(NOT OGGVORBIS_FOUND)
-    message(ERROR " OGGVORBIS not found!")
-endif(NOT OGGVORBIS_FOUND)
-
-
-#########################################################
 # FIND FREEIMAGE
 #########################################################
 find_package(FREEIMAGE REQUIRED)
 include_directories(${FREEIMAGE_INCLUDE_PATH})
-target_link_libraries(${EXECUTABLE_NAME}  ${FREEIMAGE_LIBRARY})
-target_link_libraries(${EXECUTABLE_NAME}  ${FREEIMAGE_LIBRARIES})
 
 if(NOT FREEIMAGE_FOUND)
     message(ERROR " FreeImage not found!")
@@ -138,8 +89,6 @@ find_package(ASSIMP REQUIRED)
 if(ASSIMP_INCLUDE_DIR)
     include_directories(${ASSIMP_INCLUDE_DIR})
 endif()
-target_link_libraries(${EXECUTABLE_NAME}  ${ASSIMP_LIBRARY})
-target_link_libraries(${EXECUTABLE_NAME}  ${ASSIMP_LIBRARIES})
 add_definitions(${ASSIMP_DEFINITIONS})
 
 
@@ -147,14 +96,26 @@ if(NOT ASSIMP_FOUND)
     message(ERROR " ASSIMP not found!")
 endif(NOT ASSIMP_FOUND)
 
+
 #########################################################
-# Include Files
+# FIND SFML AUDIO
 #########################################################
+find_package(SFML 2 COMPONENTS audio window system REQUIRED)
+include_directories(${SFML_INCLUDE_DIR})
+target_link_libraries(${LIBRARY_NAME}  ${SFML_LIBRARIES})
+
+if(NOT SFML_FOUND)
+    message(ERROR " SFML not found!")
+endif(NOT SFML_FOUND)
 
 
+target_include_directories (${LIBRARY_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/includes")
+target_include_directories (${LIBRARY_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/includes/linmath")
 
-########################################################
-# Linking & stuff
-###################################################### ###
+target_link_libraries(${LIBRARY_NAME}  ${FREEIMAGE_LIBRARY})
+target_link_libraries(${LIBRARY_NAME}  ${FREEIMAGE_LIBRARIES})
 
-target_link_libraries(${EXECUTABLE_NAME}  ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${GLEW_LIBRARIES} ${IL_LIBRARIES} ${ILU_LIBRARIES} ${ILUT_LIBRARIES} ${ASSIMP_LIBRARY})
+target_link_libraries(${LIBRARY_NAME}  ${ASSIMP_LIBRARY})
+target_link_libraries(${LIBRARY_NAME}  ${ASSIMP_LIBRARIES})
+
+target_link_libraries(${LIBRARY_NAME}  ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${GLEW_LIBRARIES} ${IL_LIBRARIES} ${ILU_LIBRARIES} ${ILUT_LIBRARIES} ${ASSIMP_LIBRARY} ${SFML_LIBRARIES})

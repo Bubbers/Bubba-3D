@@ -1,7 +1,6 @@
 #include <glutil/glutil.h>
 #include <Logger.h>
 #include "Texture.h"
-#include "FreeImage.h"
 
 void Texture::bind(GLenum textureUnit){
     glActiveTexture(textureUnit);
@@ -12,7 +11,7 @@ void Texture::bind(GLenum textureUnit){
 void Texture::loadTexture(std::string fileName)
 {
     int width, height;
-    FIBITMAP *image32Bit = Texture::LoadImageIntoMemory(fileName);
+    FIBITMAP *image32Bit = Texture::loadImage(fileName);
     width = FreeImage_GetWidth(image32Bit);
     height = FreeImage_GetHeight(image32Bit);
     GLubyte *textureData = FreeImage_GetBits(image32Bit);
@@ -42,34 +41,60 @@ void Texture::loadTexture(std::string fileName)
     FreeImage_Unload(image32Bit);
 }
 
-FIBITMAP* Texture::LoadImageIntoMemory(std::string fileName) {
+FIBITMAP* Texture::loadImage(std::string fileName) {
     Logger::logInfo("Loading texture: " + fileName);
 
+    FREE_IMAGE_FORMAT imageFormat = getImageFormat(fileName);
+    FIBITMAP *image = loadImage32Bit(imageFormat,fileName);
 
+    return image;
+}
+
+FREE_IMAGE_FORMAT Texture::getImageFormat(std::string fileName) {
     FREE_IMAGE_FORMAT imageFormat = FreeImage_GetFileType(fileName.c_str(), 0 );
+
     if(imageFormat == -1) {
         Logger::logSevere("Couldn't find texture file " + fileName);
         exit(0);
     }
 
-    if (imageFormat == FIF_UNKNOWN)
+    if (isUnsupportedFormat(&imageFormat, fileName))
     {
-        imageFormat = FreeImage_GetFIFFromFilename(fileName.c_str());
+        Logger::logSevere("Couldn't load texture format " + fileName);
+        exit(0);
+    }
 
-        if ( !FreeImage_FIFSupportsReading(imageFormat) )
-        {
-            Logger::logSevere("Couldn't load texture format " + fileName);
-            exit(-1);
+    return imageFormat;
+}
+
+bool Texture::isUnsupportedFormat(FREE_IMAGE_FORMAT *imageFormat, std::string fileName) {
+    if(*imageFormat == FIF_UNKNOWN) {
+        *imageFormat = FreeImage_GetFIFFromFilename(fileName.c_str());
+
+        if (!FreeImage_FIFSupportsReading(*imageFormat)) {
+            return true;
         }
     }
 
+    return false;
+}
+
+FIBITMAP* Texture::loadImage32Bit(FREE_IMAGE_FORMAT imageFormat, std::string fileName) {
     FIBITMAP *image = FreeImage_Load(imageFormat, fileName.c_str());
 
-    if(imageFormat == FIF_JPEG || imageFormat == FIF_PNG) {
+    if(shouldFlip(imageFormat)) {
         FreeImage_FlipVertical(image);
         FreeImage_FlipHorizontal(image);
     }
 
+    return convertImageTo32Bit(image);
+}
+
+bool Texture::shouldFlip(FREE_IMAGE_FORMAT imageFormat) {
+    return imageFormat == FIF_JPEG;
+}
+
+FIBITMAP* Texture::convertImageTo32Bit(FIBITMAP* image) {
     FIBITMAP *image32Bit;
     if(FreeImage_GetBPP(image) == 32) {
         image32Bit = image;

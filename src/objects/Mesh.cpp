@@ -1,7 +1,11 @@
 #include "Mesh.h"
 #include <ResourceManager.h>
 #include "Logger.h"
-#include "DestructorUtils.h"
+#include "Triangle.h"
+
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
 
 using namespace chag;
 
@@ -9,10 +13,6 @@ Mesh::Mesh() {
 };
 
 Mesh::~Mesh() {
-
-    //deleteLoop(&m_chunks);
-    //deleteLoop(&materials);
-    //delete m_aabb;
 };
 
 Chunk::Chunk(std::vector<chag::float3> &positions,
@@ -49,6 +49,7 @@ void Mesh::initMeshFromScene(const aiScene *pScene, const std::string &fileName)
     }
 
     initMaterials(pScene, fileName);
+    createTriangles();
 }
 
 void Mesh::initMaterials(const aiScene *pScene, const std::string &fileName) {
@@ -214,7 +215,6 @@ void Mesh::initMesh(unsigned int index, const aiMesh *paiMesh) {
                      GL_STATIC_DRAW);
         glVertexAttribPointer(5, 3, GL_FLOAT, false, 0, 0);
         glEnableVertexAttribArray(5);
-
     }
 
     m_chunks.push_back(c);
@@ -222,4 +222,30 @@ void Mesh::initMesh(unsigned int index, const aiMesh *paiMesh) {
 
 AABB* Mesh::getAABB() {
     return &m_aabb;
+}
+
+void Mesh::createTriangles() {
+    for (unsigned int i = 0; i < m_chunks.size(); i++) {
+
+        for (unsigned int j = 0; j + 2 < m_chunks[i].m_positions.size(); j += 3) {
+
+
+            Triangle *t = new Triangle(make_vector(m_chunks[i].m_positions[j + 0].x,
+                                                   m_chunks[i].m_positions[j + 0].y,
+                                                   m_chunks[i].m_positions[j + 0].z),
+                                       make_vector(m_chunks[i].m_positions[j + 1].x,
+                                                   m_chunks[i].m_positions[j + 1].y,
+                                                   m_chunks[i].m_positions[j + 1].z),
+                                       make_vector(m_chunks[i].m_positions[j + 2].x,
+                                                   m_chunks[i].m_positions[j + 2].y,
+                                                   m_chunks[i].m_positions[j + 2].z));
+
+
+            triangles.push_back(t);
+        }
+    }
+}
+
+std::vector<Triangle*> Mesh::getTriangles() {
+    return triangles;
 }

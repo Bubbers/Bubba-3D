@@ -3,11 +3,18 @@
 //
 
 #include <ResourceManager.h>
+#include <Utils.h>
+#include <ControlsManager.h>
+#include <Controls.h>
 #include "HudRenderer.h"
 
-HudRenderer::HudRenderer(){
+HudRenderer::HudRenderer(int *scoreBoard, State *state){
+    this->state = state;
+    this->scoreBoard = scoreBoard;
+
     ResourceManager::loadShader("../shaders/hud.vert", "../shaders/hud.frag", "hudShader");
     shaderProgram = ResourceManager::getShader("hudShader");
+    conf = new HudConfig;
 
     GLfloat quad[] = { //POSITION3 TEXCOORD2
             0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
@@ -39,21 +46,87 @@ HudRenderer::HudRenderer(){
 }
 
 HudRenderer::~HudRenderer(){
-
+    delete conf;
 }
 
-float timeLOL = 0.0f;
+void HudRenderer::renderNum(int n, float4x4 *modelMatrix) {
+
+    std::string texturePath = "../scenes/HUD/num";
+    texturePath.append(std::to_string(n));
+    texturePath.append(".png");
+
+    Texture* texture = ResourceManager::loadAndFetchTexture(texturePath);
+    render2DHud(texture, modelMatrix);
+}
+
+struct HudRenderer::HudConfig* HudRenderer::getConfig() {
+    return conf;
+}
 
 void HudRenderer::render() {
     float4x4 modelMat;
 
-    modelMat = make_translation(make_vector(0.9f, -0.4f, 0.0f)) * make_rotation_z<float4x4>((float) (M_PI / 180 * 180))  * make_scale<float4x4>(make_vector(0.4f, 0.4f, 0.5f));
+    ControlsManager *cm = ControlsManager::getInstance();
+
+    if (*state == Start) {
+        modelMat = make_translation(make_vector(-.5f, -.5f, 0.0f));
+        Texture *texture = ResourceManager::loadAndFetchTexture("../scenes/HUD/mission_box.png");
+        render2DHud(texture, &modelMat);
+
+        if (cm->getStatus(CONTINUE).isActive()) {
+            *state = Playing;
+        }
+    }
+
+
+    int score = *scoreBoard;
+
+
+    if (score >= 50 && *state != Credits) {
+        modelMat = make_translation(make_vector(-.5f, -.5f, 0.0f));
+        Texture *texture = ResourceManager::loadAndFetchTexture("../scenes/HUD/win_box.png");
+        render2DHud(texture, &modelMat);
+
+        if (cm->getStatus(CONTINUE).isActive()) {
+            *state = Credits;
+        }
+
+    } else if(*state == Credits) {
+        modelMat = make_translation(make_vector(-.5f, -.5f, 0.0f));
+        Texture *texture = ResourceManager::loadAndFetchTexture("../scenes/HUD/credit_box.png");
+        render2DHud(texture, &modelMat);
+    }else if(*state == Died) {
+        modelMat = make_translation(make_vector(-.5f, -.5f, 0.0f));
+        Texture *texture = ResourceManager::loadAndFetchTexture("../scenes/HUD/fail_box.png");
+        render2DHud(texture, &modelMat);
+    }
+
+
+    modelMat = make_translation(make_vector(-.5f, -.9f, 0.0f)) * make_scale<float4x4>(make_vector(0.2f, 0.2f, 0.5f));
+
+
+    if (score == 0) {
+       renderNum(0, &modelMat);
+    } else {
+        while (score > 0) {
+            int n = score % 10;
+            renderNum(n, &modelMat);
+            modelMat = make_translation(make_vector(-0.1f, 0.0f, 0.0f)) * modelMat;
+            score /= 10;
+        }
+    }
+
+
+    modelMat = make_translation(make_vector(0.5f, -0.9f, 0.0f)) * make_scale<float4x4>(make_vector(0.4f, 0.4f, 0.5f));
     Texture* texture = ResourceManager::loadAndFetchTexture("../scenes/HUD/meter2.0.png");
     render2DHud(texture, &modelMat);
 
-    modelMat = make_translation(make_vector(0.70f, -0.60f, 0.0f)) * make_rotation_z<float4x4>((float) (M_PI / 180 * (timeLOL / 10.0))) * make_translation(make_vector(-0.012f, -0.04f, 1.0f)) * make_scale<float4x4>(make_vector(0.02f, 0.2f, 1.0f));
+    int degrees = ((int)round(conf->speed*(220.0f/100.0f)))+80;
+    modelMat = make_translation(make_vector(0.70f, -0.71f, 0.0f)) * make_rotation_z<float4x4>((float) (M_PI / 180 * degrees)) * make_translation(make_vector(-0.01f, -0.18f, 1.0f)) * make_scale<float4x4>(make_vector(0.02f, 0.2f, 1.0f));
+
     Texture* texture1 = ResourceManager::loadAndFetchTexture("../scenes/HUD/arrow.png");
     render2DHud(texture1, &modelMat);
+
 }
 
 void HudRenderer::render2DHud(Texture* texture, float4x4 *modelMatrix) {
@@ -87,5 +160,5 @@ void HudRenderer::render2DHud(Texture* texture, float4x4 *modelMatrix) {
 void HudRenderer::renderShadow(Shader *shaderProgram) {}
 
 void HudRenderer::update(float dt){
-    timeLOL += dt;
+
 }

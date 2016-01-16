@@ -1,4 +1,5 @@
 #include "Particle.h"
+#include "ParticleConf.h"
 
 Particle::Particle(float3* pos, ParticleConf *conf) {
     generatorPos = pos;

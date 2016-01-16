@@ -28,13 +28,19 @@ CubeMapTexture::CubeMapTexture(const string& posXFilename, const string& negXFil
 	//			Set filtering parameters
 	//************************************************
 
-	//glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+	glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 
 	// Sets the type of mipmap interpolation to be used on magnifying and 
 	// minifying the active texture. 
 	// For cube maps, filtering across faces causes artifacts - so disable filtering
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	//glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	//glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_REPEAT);
 
 	// In case you want filtering anyway, try this below instead
 	//glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -51,7 +57,7 @@ CubeMapTexture::CubeMapTexture(const string& posXFilename, const string& negXFil
 
 void CubeMapTexture::loadCubeMapFace(std::string filename, GLenum face)
 {
-	FIBITMAP *image32Bit = Texture::LoadImageIntoMemory(filename);
+	FIBITMAP *image32Bit = Texture::loadImage(filename);
 	int width, height;
 	width = FreeImage_GetWidth(image32Bit);
 	height = FreeImage_GetHeight(image32Bit);

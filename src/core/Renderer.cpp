@@ -1,7 +1,14 @@
 #include "Renderer.h"
 #include <sstream>
+#include <SFML/Window.hpp>
+#include <Globals.h>
 #include "ResourceManager.h"
 #include "constants.h"
+#include "GameObject.h"
+#include "CubeMapTexture.h"
+#include "Logger.h"
+#include "Camera.h"
+#include "Scene.h"
 
 
 
@@ -17,37 +24,20 @@ namespace patch
 }
 
 
-Renderer::Renderer(int argc, char *argv[], int width, int height) : width(width), height(height)
+Renderer::Renderer(int width, int height) : width(width), height(height)
 {
 #	if defined(__linux__)
   	linux_initialize_cwd();
 #	endif // ! __linux__
 
+	sf::ContextSettings settings = sf::ContextSettings(32, 8, 0, 3, 3);
+	settings.majorVersion = 3;
+	settings.minorVersion = 3;
+	settings.attributeFlags = sf::ContextSettings::Debug | sf::ContextSettings::Core;
+	window = new sf::Window(sf::VideoMode(width,height),"Super-Bubba-Awesome-Space",sf::Style::Default,settings);
+	glEnable(GL_FRAMEBUFFER_SRGB);
+	window->setFramerateLimit(60);
 
-        glutInit(&argc, argv);
-
-        
-#	if defined(GLUT_SRGB)
-        //glutInitDisplayMode(GLUT_DOUBLE | GLUT_SRGB | GLUT_DEPTH);
-        glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH );
-#	else // !GLUT_SRGB
-       	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-	printf("--\n");
-	printf("-- WARNING: your GLUT doesn't support sRGB / GLUT_SRGB\n");
-#	endif // ~ GLUT_SRGB
-        glutInitWindowSize(width, height);
-
-	glutInitContextVersion(3, 1);
-	glutInitContextProfile(GLUT_CORE_PROFILE);
-	glutInitContextFlags(GLUT_DEBUG);
-        
-	glutCreateWindow("Bubba-3D");
-	/* If sRGB is available, enable rendering in sRGB. Note: we should do
-	* this *after* initGL(), since initGL() initializes GLEW.
-	*/
-#	if defined(GLUT_SRGB)
-	     glEnable(GL_FRAMEBUFFER_SRGB_EXT); //TODO CHECK SRGB
-#endif
 }
 
 
@@ -56,19 +46,55 @@ Renderer::~Renderer()
 }
 
 void Renderer::start() {
-	glutMainLoop();
+	bool running = true;
+	while (running)
+	{
+		// handle events
+		sf::Event event;
+		while (window->pollEvent(event))
+		{
+			if (event.type == sf::Event::Closed)
+			{
+				// end the program
+				running = false;
+			}
+			else if(event.type == sf::Event::MouseMoved){
+				Globals::set(Globals::Key::MOUSE_WINDOW_X,event.mouseMove.x);
+				Globals::set(Globals::Key::MOUSE_WINDOW_Y,event.mouseMove.y);
+			}/*
+			else if (event.type == sf::Event::Resized)
+			{
+				// adjust the viewport when the window is resized
+				glViewport(0, 0, event.size.width, event.size.height);
+			}
+			*/
+		}
+
+		// clear the buffers
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		idleMethod(0);
+		displayMethod();
+
+		// end the current frame (internally swaps the front and back buffers)
+		window->display();
+	}
 }
 
 void Renderer::render() {
-	glutPostRedisplay();
 }
 
 void Renderer::setDisplayMethod(void(*display)(void)) {
-	glutDisplayFunc(display);
+	displayMethod = display;
 }
 
-void Renderer::setIdleMethod(void(*idle)(int), float delay) {
-	glutTimerFunc(delay, idle, 0);
+void Renderer::setIdleMethod(void(*idle)(int), int maxFps) {
+	idleMethod = idle;
+	this->maxFps = maxFps;
+}
+
+sf::Window* Renderer::getWindow() {
+	return window;
 }
 
 void Renderer::drawModel(IDrawable &model, Shader* shaderProgram)
@@ -77,12 +103,12 @@ void Renderer::drawModel(IDrawable &model, Shader* shaderProgram)
 	model.render();
 }
 
-void Renderer::drawScene(Camera camera, Scene scene, float currentTime)
+void Renderer::drawScene(Camera *camera, Scene *scene, float currentTime)
 {
 	Renderer::currentTime = currentTime;
 
-	float4x4 viewMatrix = camera.getViewMatrix();
-	float4x4 projectionMatrix = camera.getProjectionMatrix();
+	float4x4 viewMatrix = camera->getViewMatrix();
+	float4x4 projectionMatrix = camera->getProjectionMatrix();
 	float4x4 viewProjectionMatrix = projectionMatrix * viewMatrix;
 
 
@@ -95,9 +121,9 @@ void Renderer::drawScene(Camera camera, Scene scene, float currentTime)
 	//*************************************************************************
 	float4x4 lightMatrix = make_identity<float4x4>();
 
-	if (scene.shadowMapCamera != NULL) {
-		float4x4 lightViewMatrix = scene.shadowMapCamera->getViewMatrix();
-		float4x4 lightProjectionMatrix = scene.shadowMapCamera->getProjectionMatrix();
+	if (scene->shadowMapCamera != NULL) {
+		float4x4 lightViewMatrix = scene->shadowMapCamera->getViewMatrix();
+		float4x4 lightProjectionMatrix = scene->shadowMapCamera->getProjectionMatrix();
 		float4x4 lightViewProjectionMatrix = lightProjectionMatrix * lightViewMatrix;
 
 		lightMatrix = make_translation(make_vector( 0.5f, 0.5f, 0.5f )) * make_scale<float4x4>(make_vector(0.5f, 0.5f, 0.5f)) * lightViewProjectionMatrix * inverse(viewMatrix);
@@ -109,11 +135,11 @@ void Renderer::drawScene(Camera camera, Scene scene, float currentTime)
 	// Render the scene from the cameras viewpoint, to the default framebuffer
 	//*************************************************************************
 	glBindFramebuffer(GL_FRAMEBUFFER, postProcessFbo.id);
-	glClearColor(0.2, 0.2, 0.8, 1.0);
-	glClearDepth(1.0);
+	glClearColor(0.2f, 0.2f, 0.8f, 1.0f);
+	glClearDepth(1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	int w = glutGet((GLenum)GLUT_WINDOW_WIDTH);
-	int h = glutGet((GLenum)GLUT_WINDOW_HEIGHT);
+	int w = Globals::get(Globals::Key::WINDOW_WIDTH);
+	int h = Globals::get(Globals::Key::WINDOW_HEIGHT);
 	glViewport(0, 0, w, h);
 	// Use shader and set up uniforms
 	shaderProgram->use();
@@ -125,7 +151,7 @@ void Renderer::drawScene(Camera camera, Scene scene, float currentTime)
 	//Sets matrices
 	shaderProgram->setUniformMatrix4fv("lightMatrix", lightMatrix);
 	shaderProgram->setUniformMatrix4fv("inverseViewNormalMatrix", transpose(viewMatrix));
-	shaderProgram->setUniform3f("viewPosition", camera.getPosition());
+	shaderProgram->setUniform3f("viewPosition", camera->getPosition());
 	shaderProgram->setUniformMatrix4fv("viewMatrix", viewMatrix);
 
 	setLights(shaderProgram, scene);
@@ -133,21 +159,20 @@ void Renderer::drawScene(Camera camera, Scene scene, float currentTime)
 	setFog(shaderProgram);
 
 	//Set shadowmap
-	if (scene.shadowMapCamera != NULL) {
+	if (scene->shadowMapCamera != NULL) {
 		shaderProgram->setUniform1i("shadowMap", 1);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, sbo.texture);
 	}
 
 	//Set cube map
-	if (scene.cubeMap != NULL) {
+	if (scene->cubeMap != NULL) {
 		shaderProgram->setUniform1i("cubeMap", 2);
-		scene.cubeMap->bind(GL_TEXTURE2);
+		scene->cubeMap->bind(GL_TEXTURE2);
 	}
 
 	drawShadowCasters(shaderProgram, scene);
 	drawTransparent(shaderProgram, scene);
-	drawDebug(viewMatrix, projectionMatrix, scene);
 
 	renderPostProcess();
 
@@ -156,41 +181,41 @@ void Renderer::drawScene(Camera camera, Scene scene, float currentTime)
 
 }
 
-void Renderer::setLights(Shader* shaderProgram, Scene scene) {
+void Renderer::setLights(Shader* shaderProgram, Scene *scene) {
 	//set dirlights
-	shaderProgram->setUniform3f("directionalLight.colors.ambientColor", scene.directionalLight.ambientColor);
-	shaderProgram->setUniform3f("directionalLight.colors.diffuseColor", scene.directionalLight.diffuseColor);
-	shaderProgram->setUniform3f("directionalLight.colors.specularColor", scene.directionalLight.specularColor);
-	shaderProgram->setUniform3f("directionalLight.direction", scene.directionalLight.direction);
+	shaderProgram->setUniform3f("directionalLight.colors.ambientColor", scene->directionalLight.ambientColor);
+	shaderProgram->setUniform3f("directionalLight.colors.diffuseColor", scene->directionalLight.diffuseColor);
+	shaderProgram->setUniform3f("directionalLight.colors.specularColor", scene->directionalLight.specularColor);
+	shaderProgram->setUniform3f("directionalLight.direction", scene->directionalLight.direction);
 
 	//set pointLights
 
-	shaderProgram->setUniform1i("nrPointLights", (int)scene.pointLights.size());
-	for (int i = 0; i < (int)scene.pointLights.size(); i++) {
+	shaderProgram->setUniform1i("nrPointLights", (int)scene->pointLights.size());
+	for (int i = 0; i < (int)scene->pointLights.size(); i++) {
 		string name = std::string("pointLights[") + patch::to_string(i).c_str() + "]";
-		shaderProgram->setUniform3f((name + ".position").c_str(), scene.pointLights[i].position);
-		shaderProgram->setUniform3f((name + ".colors.ambientColor").c_str(), scene.pointLights[i].ambientColor);
-		shaderProgram->setUniform3f((name + ".colors.diffuseColor").c_str(), scene.pointLights[i].diffuseColor);
-		shaderProgram->setUniform3f((name + ".colors.specularColor").c_str(), scene.pointLights[i].specularColor);
-		shaderProgram->setUniform1f((name + ".attenuation.constant").c_str(), scene.pointLights[i].attenuation.constant);
-		shaderProgram->setUniform1f((name + ".attenuation.linear").c_str(), scene.pointLights[i].attenuation.linear);
-		shaderProgram->setUniform1f((name + ".attenuation.exp").c_str(), scene.pointLights[i].attenuation.exp);
+		shaderProgram->setUniform3f((name + ".position").c_str(), scene->pointLights[i].position);
+		shaderProgram->setUniform3f((name + ".colors.ambientColor").c_str(), scene->pointLights[i].ambientColor);
+		shaderProgram->setUniform3f((name + ".colors.diffuseColor").c_str(), scene->pointLights[i].diffuseColor);
+		shaderProgram->setUniform3f((name + ".colors.specularColor").c_str(), scene->pointLights[i].specularColor);
+		shaderProgram->setUniform1f((name + ".attenuation.constant").c_str(), scene->pointLights[i].attenuation.constant);
+		shaderProgram->setUniform1f((name + ".attenuation.linear").c_str(), scene->pointLights[i].attenuation.linear);
+		shaderProgram->setUniform1f((name + ".attenuation.exp").c_str(), scene->pointLights[i].attenuation.exp);
 	}
 
 	//set spotLights
-	shaderProgram->setUniform1i("nrSpotLights", (int)scene.spotLights.size());
-	for (int i = 0; i < (int)scene.spotLights.size(); i++) {
+	shaderProgram->setUniform1i("nrSpotLights", (int)scene->spotLights.size());
+	for (int i = 0; i < (int)scene->spotLights.size(); i++) {
 		string name = std::string("spotLights[") + patch::to_string(i).c_str() + "]";
-		shaderProgram->setUniform3f((name + ".position").c_str(), scene.spotLights[i].position);
-		shaderProgram->setUniform3f((name + ".colors.ambientColor").c_str(), scene.spotLights[i].ambientColor);
-		shaderProgram->setUniform3f((name + ".colors.diffuseColor").c_str(), scene.spotLights[i].diffuseColor);
-		shaderProgram->setUniform3f((name + ".colors.specularColor").c_str(), scene.spotLights[i].specularColor);
-		shaderProgram->setUniform1f((name + ".attenuation.constant").c_str(), scene.spotLights[i].attenuation.constant);
-		shaderProgram->setUniform1f((name + ".attenuation.linear").c_str(), scene.spotLights[i].attenuation.linear);
-		shaderProgram->setUniform1f((name + ".attenuation.exp").c_str(), scene.spotLights[i].attenuation.exp);
-		shaderProgram->setUniform3f((name + ".direction").c_str(), scene.spotLights[i].direction);
-		shaderProgram->setUniform1f((name + ".cutoff").c_str(), scene.spotLights[i].cutOff);
-		shaderProgram->setUniform1f((name + ".cutoffOuter").c_str(), scene.spotLights[i].outerCutOff);
+		shaderProgram->setUniform3f((name + ".position").c_str(), scene->spotLights[i].position);
+		shaderProgram->setUniform3f((name + ".colors.ambientColor").c_str(), scene->spotLights[i].ambientColor);
+		shaderProgram->setUniform3f((name + ".colors.diffuseColor").c_str(), scene->spotLights[i].diffuseColor);
+		shaderProgram->setUniform3f((name + ".colors.specularColor").c_str(), scene->spotLights[i].specularColor);
+		shaderProgram->setUniform1f((name + ".attenuation.constant").c_str(), scene->spotLights[i].attenuation.constant);
+		shaderProgram->setUniform1f((name + ".attenuation.linear").c_str(), scene->spotLights[i].attenuation.linear);
+		shaderProgram->setUniform1f((name + ".attenuation.exp").c_str(), scene->spotLights[i].attenuation.exp);
+		shaderProgram->setUniform3f((name + ".direction").c_str(), scene->spotLights[i].direction);
+		shaderProgram->setUniform1f((name + ".cutoff").c_str(), scene->spotLights[i].cutOff);
+		shaderProgram->setUniform1f((name + ".cutoffOuter").c_str(), scene->spotLights[i].outerCutOff);
 	}
 }
 
@@ -198,23 +223,23 @@ void Renderer::setLights(Shader* shaderProgram, Scene scene) {
 * In this function, add all scene elements that should cast shadow, that way
 * there is only one draw call to each of these, as this function is called twice.
 */
-void Renderer::drawShadowCasters(Shader* shaderProgram, Scene scene)
+void Renderer::drawShadowCasters(Shader* shaderProgram, Scene *scene)
 {
-	for (int i = 0; i < scene.shadowCasters.size(); i++) {
-		shaderProgram->setUniform1f("object_reflectiveness", (*scene.shadowCasters[i]).shininess);
-		drawModel(*scene.shadowCasters[i], shaderProgram);
+	for (unsigned int i = 0; i < scene->shadowCasters.size(); i++) {
+		shaderProgram->setUniform1f("object_reflectiveness", (*scene->shadowCasters[i]).shininess);
+		drawModel(*scene->shadowCasters[i], shaderProgram);
 	}
 }
 
-void Renderer::drawTransparent(Shader* shaderProgram, Scene scene)
+void Renderer::drawTransparent(Shader* shaderProgram, Scene *scene)
 {
-	for (int i = 0; i < scene.transparentObjects.size(); i++) {
-		shaderProgram->setUniform1f("object_reflectiveness", (*scene.transparentObjects[i]).shininess);
-		drawModel(*scene.transparentObjects[i], shaderProgram);
+	for (unsigned int i = 0; i < scene->transparentObjects.size(); i++) {
+		shaderProgram->setUniform1f("object_reflectiveness", (*scene->transparentObjects[i]).shininess);
+		drawModel(*scene->transparentObjects[i], shaderProgram);
 	}
 }
 
-void Renderer::drawShadowMap(Fbo sbo, float4x4 viewProjectionMatrix, Scene scene) {
+void Renderer::drawShadowMap(Fbo sbo, float4x4 viewProjectionMatrix, Scene *scene) {
 	glBindFramebuffer(GL_FRAMEBUFFER, sbo.id);
 	glViewport(0, 0, SHADOW_MAP_RESOLUTION, SHADOW_MAP_RESOLUTION);
 
@@ -230,10 +255,9 @@ void Renderer::drawShadowMap(Fbo sbo, float4x4 viewProjectionMatrix, Scene scene
 	sbo.shaderProgram->use();
 	sbo.shaderProgram->setUniformMatrix4fv("viewProjectionMatrix", viewProjectionMatrix);
 
-	//TODO
-	for (int i = 0; i < scene.shadowCasters.size(); i++) {
-		sbo.shaderProgram->setUniform1f("object_reflectiveness", (*scene.shadowCasters[i]).shininess);
-        (*scene.shadowCasters[i]).renderShadow(sbo.shaderProgram);
+	for (unsigned int i = 0; i < scene->shadowCasters.size(); i++) {
+		sbo.shaderProgram->setUniform1f("object_reflectiveness", (*scene->shadowCasters[i]).shininess);
+        (*scene->shadowCasters[i]).renderShadow(sbo.shaderProgram);
    	}
 
 	//CLEANUP
@@ -389,14 +413,14 @@ Fbo Renderer::createPostProcessFbo(int width, int height) {
 }
 
 void Renderer::renderPostProcess() {
-	int w = glutGet((GLenum)GLUT_WINDOW_WIDTH);
-	int h = glutGet((GLenum)GLUT_WINDOW_HEIGHT);
+	int w = window->getSize().x;
+	int h = window->getSize().y;
 
 	blurImage();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, w, h);
-	glClearColor(0.6, 0.0, 0.0, 1.0);
+	glClearColor(0.6f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	postFxShader->use();
@@ -455,24 +479,19 @@ void Renderer::blurImage() {
 void Renderer::drawFullScreenQuad()
 {
 	static GLuint vertexArrayObject = 0;
-	static int nofVertices = 4;
 
 	// do this initialization first time the function is called... somewhat dodgy, but works for demonstration purposes
 	if (vertexArrayObject == 0)
 	{
 		glGenVertexArrays(1, &vertexArrayObject);
 		static const float2 positions[] = {
-		/*		{ -1.0f, -1.0f },
-				{ 1.0f, -1.0f },
-				{ 1.0f, 1.0f },
-				{ -1.0f, 1.0f },*/
 				-1.0f, -1.0f,
-				1.0f, 1.0f,
-				-1.0f, 1.0f,
+				 1.0f,  1.0f,
+				-1.0f,  1.0f,
 
 				-1.0f, -1.0f,
-				1.0f, -1.0f,
-				1.0f, 1.0f
+				 1.0f, -1.0f,
+				 1.0f,  1.0f
 		};
 		createAddAttribBuffer(vertexArrayObject, positions, sizeof(positions), 0, 2, GL_FLOAT);
 		GLuint pos_vbo;
@@ -488,202 +507,5 @@ void Renderer::drawFullScreenQuad()
 
 	glBindVertexArray(vertexArrayObject);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
-	//glDrawArrays(GL_QUADS, 0, nofVertices);
 }
 
-void Renderer::drawDebug(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, Scene scene) {
-  //debugDrawOctree(viewMatrix, projectionMatrix, octree);
-	if (scene.shadowMapCamera != NULL) {
-		//debugDrawLight(viewMatrix, projectionMatrix, scene.shadowMapCamera->getPosition());
-	}
-	/*debugDrawQuad(viewMatrix, projectionMatrix, carLoc.location + make_vector(0.2f, 1.2f, 0.0f), make_vector(1.0f, 1.0f, 1.5f));
-	float3x3 rot = make_rotation_y<float3x3>(carLoc.angley);
-	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location + rot * carLoc.wheel1, -carLoc.upDir);
-	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location + rot * carLoc.wheel2, -carLoc.upDir);
-	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location + rot * carLoc.wheel3, -carLoc.upDir);
-	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location + rot * carLoc.wheel4, -carLoc.upDir);
-	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location, carLoc.upDir);
-	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location, carLoc.frontDir);
-	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location, normalize(cross(carLoc.frontDir, make_vector(0.0f, 1.0f, 0.0f))));
-	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location, vUp);*/
-}
-
-void Renderer::debugDrawLine(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, float3 origin, float3 rayVector) {
-	GLint temp;
-	glColor3f(1.0, 1.0, 0.0);
-	glGetIntegerv(GL_CURRENT_PROGRAM, &temp);
-	glUseProgram(0);
-	glMatrixMode(GL_PROJECTION);
-	glLoadMatrixf(&projectionMatrix.c1.x);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(&viewMatrix.c1.x);
-
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-	float3 p[8];
-	p[0] = origin;
-	p[1] = origin + (normalize(rayVector) * 5);
-
-	glBegin(GL_LINES);
-
-	glVertex3f(p[0].x, p[0].y, p[0].z);
-	glVertex3f(p[1].x, p[1].y, p[1].z);
-
-	glEnd();
-	glUseProgram(temp);
-}
-
-void Renderer::debugDrawQuad(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, float3 origin, float3 halfVector) {
-	GLint temp;
-	glColor3f(1.0, 1.0, 0.0);
-	glGetIntegerv(GL_CURRENT_PROGRAM, &temp);
-	glUseProgram(0);
-	glMatrixMode(GL_PROJECTION);
-	glLoadMatrixf(&projectionMatrix.c1.x);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(&viewMatrix.c1.x);
-
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-	float3 p[8];
-	p[0] = origin + (halfVector * make_vector(1.0f, 1.0f, 1.0f));
-	p[1] = origin + (halfVector * make_vector(-1.0f, 1.0f, 1.0f));
-
-	p[2] = origin + (halfVector * make_vector(1.0f, -1.0f, 1.0f));
-	p[3] = origin + (halfVector * make_vector(-1.0f, -1.0f, 1.0f));
-
-	p[4] = origin + (halfVector * make_vector(1.0f, 1.0f, -1.0f));
-	p[5] = origin + (halfVector * make_vector(-1.0f, 1.0f, -1.0f));
-
-	p[6] = origin + (halfVector * make_vector(1.0f, -1.0f, -1.0f));
-	p[7] = origin + (halfVector * make_vector(-1.0f, -1.0f, -1.0f));
-
-
-	glBegin(GL_LINES);
-
-	glVertex3f(p[0].x, p[0].y, p[0].z);
-	glVertex3f(p[1].x, p[1].y, p[1].z);
-
-	glVertex3f(p[0].x, p[0].y, p[0].z);
-	glVertex3f(p[2].x, p[2].y, p[2].z);
-
-	glVertex3f(p[0].x, p[0].y, p[0].z);
-	glVertex3f(p[4].x, p[4].y, p[4].z);
-
-	///////
-	glVertex3f(p[7].x, p[7].y, p[7].z);
-	glVertex3f(p[6].x, p[6].y, p[6].z);
-
-	glVertex3f(p[7].x, p[7].y, p[7].z);
-	glVertex3f(p[5].x, p[5].y, p[5].z);
-
-	glVertex3f(p[7].x, p[7].y, p[7].z);
-	glVertex3f(p[3].x, p[3].y, p[3].z);
-
-	///////
-	glVertex3f(p[5].x, p[5].y, p[5].z);
-	glVertex3f(p[1].x, p[1].y, p[1].z);
-
-	glVertex3f(p[5].x, p[5].y, p[5].z);
-	glVertex3f(p[4].x, p[4].y, p[4].z);
-
-	///////
-	glVertex3f(p[3].x, p[3].y, p[3].z);
-	glVertex3f(p[1].x, p[1].y, p[1].z);
-
-	glVertex3f(p[3].x, p[3].y, p[3].z);
-	glVertex3f(p[2].x, p[2].y, p[2].z);
-
-	///////
-	glVertex3f(p[6].x, p[6].y, p[6].z);
-	glVertex3f(p[4].x, p[4].y, p[4].z);
-
-	glVertex3f(p[6].x, p[6].y, p[6].z);
-	glVertex3f(p[2].x, p[2].y, p[2].z);
-
-	glEnd();
-	glUseProgram(temp);
-}
-
-void Renderer::debugDrawOctree(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, Octree tree)
-{
-	GLint temp;
-	glColor3f(1.0, 1.0, 0.0);
-	glGetIntegerv(GL_CURRENT_PROGRAM, &temp);
-	glUseProgram(0);
-	glMatrixMode(GL_PROJECTION);
-	glLoadMatrixf(&projectionMatrix.c1.x);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(&viewMatrix.c1.x);
-
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-	float3 p[8];
-	p[0] = tree.origin + (tree.halfVector * make_vector(1.0f, 1.0f, 1.0f));
-	p[1] = tree.origin + (tree.halfVector * make_vector(-1.0f, 1.0f, 1.0f));
-
-	p[2] = tree.origin + (tree.halfVector * make_vector(1.0f, -1.0f, 1.0f));
-	p[3] = tree.origin + (tree.halfVector * make_vector(-1.0f, -1.0f, 1.0f));
-
-	p[4] = tree.origin + (tree.halfVector * make_vector(1.0f, 1.0f, -1.0f));
-	p[5] = tree.origin + (tree.halfVector * make_vector(-1.0f, 1.0f, -1.0f));
-
-	p[6] = tree.origin + (tree.halfVector * make_vector(1.0f, -1.0f, -1.0f));
-	p[7] = tree.origin + (tree.halfVector * make_vector(-1.0f, -1.0f, -1.0f));
-
-
-	glBegin(GL_LINES);
-
-	glVertex3f(p[0].x, p[0].y, p[0].z);
-	glVertex3f(p[1].x, p[1].y, p[1].z);
-
-	glVertex3f(p[0].x, p[0].y, p[0].z);
-	glVertex3f(p[2].x, p[2].y, p[2].z);
-
-	glVertex3f(p[0].x, p[0].y, p[0].z);
-	glVertex3f(p[4].x, p[4].y, p[4].z);
-
-	///////
-	glVertex3f(p[7].x, p[7].y, p[7].z);
-	glVertex3f(p[6].x, p[6].y, p[6].z);
-
-	glVertex3f(p[7].x, p[7].y, p[7].z);
-	glVertex3f(p[5].x, p[5].y, p[5].z);
-
-	glVertex3f(p[7].x, p[7].y, p[7].z);
-	glVertex3f(p[3].x, p[3].y, p[3].z);
-
-	///////
-	glVertex3f(p[5].x, p[5].y, p[5].z);
-	glVertex3f(p[1].x, p[1].y, p[1].z);
-
-	glVertex3f(p[5].x, p[5].y, p[5].z);
-	glVertex3f(p[4].x, p[4].y, p[4].z);
-
-	///////
-	glVertex3f(p[3].x, p[3].y, p[3].z);
-	glVertex3f(p[1].x, p[1].y, p[1].z);
-
-	glVertex3f(p[3].x, p[3].y, p[3].z);
-	glVertex3f(p[2].x, p[2].y, p[2].z);
-
-	///////
-	glVertex3f(p[6].x, p[6].y, p[6].z);
-	glVertex3f(p[4].x, p[4].y, p[4].z);
-
-	glVertex3f(p[6].x, p[6].y, p[6].z);
-	glVertex3f(p[2].x, p[2].y, p[2].z);
-
-	glEnd();
-	glUseProgram(temp);
-
-
-	std::vector<Octree*> children;
-	tree.getChildren(&children);
-
-	if (children.size() != 0) {
-		for (int i = 0; i < 8; i++) {
-			debugDrawOctree(viewMatrix, projectionMatrix, *children[i]);
-		}
-	}
-}
