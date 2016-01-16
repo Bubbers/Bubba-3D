@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 set(TEST_NAME Bubba3DTest)
 
-project(Testing)
-
 if(USE_CPP11)
     ## We can't turn this on by default, since it breaks on travis
     message(STATUS "Enabling C++11")
@@ -14,20 +12,11 @@ endif()
 add_executable(${TEST_NAME} test.cpp ${BUBBA3D_FILES_SOURCE})
 
 
+message("HAHAHHAHAHAHAHAHAHAHHAHAHAHHAHHAAHA")
+message("${PROJECT_SOURCE_DIR}includes")
 
-target_link_libraries(${TEST_NAME}  ${FREEIMAGE_LIBRARY})
-target_link_libraries(${TEST_NAME}  ${FREEIMAGE_LIBRARIES})
-target_link_libraries(${TEST_NAME}  ${ASSIMP_LIBRARY})
-target_link_libraries(${TEST_NAME}  ${ASSIMP_LIBRARIES})
-target_link_libraries(${TEST_NAME}  ${SFML_LIBRARIES})
-
-if(NOT SFML_FOUND)
-    message(ERROR " SFML not found!")
-endif(NOT SFML_FOUND)
-
-
-target_include_directories (${TEST_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/../includes")
-target_include_directories (${TEST_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/../includes/linmath")
+target_include_directories (${TEST_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/includes")
+target_include_directories (${TEST_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/includes/linmath")
 
 # configure unit tests via CTest
 enable_testing()
@@ -39,5 +28,5 @@ target_link_libraries(${TEST_NAME}  ${FREEIMAGE_LIBRARIES})
 target_link_libraries(${TEST_NAME}  ${ASSIMP_LIBRARY})
 target_link_libraries(${TEST_NAME}  ${ASSIMP_LIBRARIES})
 
-target_link_libraries(${TEST_NAME}  ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${GLEW_LIBRARIES} ${IL_LIBRARIES} ${ILU_LIBRARIES} ${ILUT_LIBRARIES} ${ASSIMP_LIBRARY} ${SFML_LIBRARIES})
+target_link_libraries(${TEST_NAME}  ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${GLEW_LIBRARIES} ${IL_LIBRARIES} ${ILU_LIBRARIES} ${ILUT_LIBRARIES} ${ASSIMP_LIBRARY})
 

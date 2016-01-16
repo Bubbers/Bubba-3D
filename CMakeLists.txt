@@ -87,7 +87,6 @@ if(ASSIMP_INCLUDE_DIR)
 endif()
 add_definitions(${ASSIMP_DEFINITIONS})
 
-
 if(NOT ASSIMP_FOUND)
     message(ERROR " ASSIMP not found!")
 endif(NOT ASSIMP_FOUND)
