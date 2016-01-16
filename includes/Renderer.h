@@ -36,10 +36,10 @@ public:
 	void swapBuffer();
 	sf::Window* getWindow();
 
+	void resize(unsigned int width, unsigned int height);
 
 	Effects effects;
 private:
-	int width, height;
 	float currentTime;
 	sf::Window* window;
 	void(*idleMethod)(int);

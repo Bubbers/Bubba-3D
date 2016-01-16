@@ -24,20 +24,22 @@ namespace patch
 }
 
 
-Renderer::Renderer(int width, int height) : width(width), height(height)
+Renderer::Renderer(int width, int height)
 {
 #	if defined(__linux__)
   	linux_initialize_cwd();
 #	endif // ! __linux__
 
 	sf::ContextSettings settings = sf::ContextSettings(32, 8, 0, 3, 3);
+
 	settings.majorVersion = 3;
 	settings.minorVersion = 3;
 	settings.attributeFlags = sf::ContextSettings::Debug | sf::ContextSettings::Core;
 	window = new sf::Window(sf::VideoMode(width,height),"Super-Bubba-Awesome-Space",sf::Style::Default,settings);
 	glEnable(GL_FRAMEBUFFER_SRGB);
 	window->setFramerateLimit(60);
-
+    initGL();
+	resize(width, height);
 }
 
 
@@ -61,13 +63,12 @@ void Renderer::start() {
 			else if(event.type == sf::Event::MouseMoved){
 				Globals::set(Globals::Key::MOUSE_WINDOW_X,event.mouseMove.x);
 				Globals::set(Globals::Key::MOUSE_WINDOW_Y,event.mouseMove.y);
-			}/*
+			}
 			else if (event.type == sf::Event::Resized)
 			{
-				// adjust the viewport when the window is resized
-				glViewport(0, 0, event.size.width, event.size.height);
+				resize(event.size.width, event.size.height);
 			}
-			*/
+
 		}
 
 		// clear the buffers
@@ -79,6 +80,19 @@ void Renderer::start() {
 		// end the current frame (internally swaps the front and back buffers)
 		window->display();
 	}
+}
+
+void Renderer::resize(unsigned int width, unsigned int height) {
+	Globals::set(Globals::Key::WINDOW_HEIGHT, height);
+	Globals::set(Globals::Key::WINDOW_WIDTH, width);
+
+	// adjust the viewport when the window is resized
+	glViewport(0, 0, width, height);
+
+	postProcessFbo = createPostProcessFbo(width, height);
+	verticalBlurFbo = createPostProcessFbo(width, height);
+	horizontalBlurFbo = createPostProcessFbo(width, height);
+	cutOffFbo = createPostProcessFbo(width, height);
 }
 
 void Renderer::render() {
@@ -275,7 +289,7 @@ void Renderer::setFog(Shader* shaderProgram) {
 	shaderProgram->setUniform3f("fog.vColor",	effects.fog.vColor);
 }
 
-void Renderer::initGL() 
+void Renderer::initGL()
 {
 	glewExperimental = GL_TRUE;
 	glewInit();
@@ -369,12 +383,7 @@ void Renderer::initGL()
 	horizontalBlurShader = ResourceManager::getShader(hor_blur);
 	cutoffShader = ResourceManager::getShader(cutoff);
 
-	postProcessFbo = createPostProcessFbo(width, height);
-	verticalBlurFbo = createPostProcessFbo(width, height);
-	horizontalBlurFbo = createPostProcessFbo(width, height);
-	cutOffFbo = createPostProcessFbo(width, height);
 
-		
 	//Cleanup
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -413,8 +422,9 @@ Fbo Renderer::createPostProcessFbo(int width, int height) {
 }
 
 void Renderer::renderPostProcess() {
-	int w = window->getSize().x;
-	int h = window->getSize().y;
+
+	int w = Globals::get(Globals::WINDOW_WIDTH);
+	int h = Globals::get(Globals::WINDOW_HEIGHT);
 
 	blurImage();
 
@@ -441,6 +451,9 @@ void Renderer::renderPostProcess() {
 void Renderer::blurImage() { 
 	if (!effects.blur.active) { return; }
 	//CUTOFF
+
+	int width = Globals::get(Globals::WINDOW_WIDTH);
+	int height = Globals::get(Globals::WINDOW_HEIGHT);
 	cutoffShader->use();
 	glBindFramebuffer(GL_FRAMEBUFFER, cutOffFbo.id);
 	glViewport(0, 0, width, height);
