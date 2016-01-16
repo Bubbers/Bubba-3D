@@ -74,6 +74,8 @@ bool BFBroadPhase::isPossiblyColliding(GameObject* gameObject1, GameObject* game
     if(gameObject1 != gameObject2 && AabbAabbintersection(&aabb1, &aabb2)) {
         return true;
     }
+
+    return false;
 }
 
 void BFBroadPhase::computeExactCollision(CollisionPairList possibleCollision) {

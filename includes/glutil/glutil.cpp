@@ -1,6 +1,7 @@
-#define GLEW_STATIC
+
 
 #ifdef WIN32
+  #define GLEW_STATIC
   #define WIN32_LEAN_AND_MEAN
   #define VC_EXTRALEAN
   #define NOMINMAX //          - Macros min(a,b) and max(a,b)

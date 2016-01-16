@@ -22,19 +22,21 @@ float Collider::rayIntersection(float3 rayOrigin, float3 rayVec) {
 
     tree->getTrianglesInsersectedByRayCast(rayOrigin, rayVecInv, &geometry);
 
-    float minIns = NULL;
+    bool prevSet = false;
+    float minIns = 0.0f;
     for (unsigned int i = 0; i < geometry.size(); i++) {
         Triangle t = *geometry[i];
         float ins;
 
         if (rayTriangle(rayOrigin, rayVec, t.p1, t.p2, t.p3, &ins)) {
-            if ((minIns) > (ins) || minIns == NULL) {
+            if ((minIns) > (ins) || !prevSet) {
+                prevSet = true;
                 minIns = ins;
             }
         }
     }
 
-    if (minIns == NULL || geometry.size() == 0) {
+    if (!prevSet || geometry.size() == 0) {
         return 0;
     }
 
@@ -493,6 +495,8 @@ bool isTrianglesIntersecting(Octree *object1Octree, float4x4 *object1ModelMatrix
 
         }
     }
+
+    return false;
 }
 
 
