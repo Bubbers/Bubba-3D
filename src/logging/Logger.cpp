@@ -26,7 +26,7 @@ void Logger::log(unsigned int level, string msg) {
 	if (level >= currentLogLevel) {
 		for (auto logHandler : logHandlers) {
 			std::stringstream ss;
-			ss << levelToString(level) << getTime().c_str() << msg.c_str();
+			ss << levelToString(level) << "\t" << getTime().c_str() << "\t" << msg.c_str() << "\n";
 			logHandler->log(ss.str());
 		}
 	}
