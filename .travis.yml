@@ -31,6 +31,15 @@ addons:
         - libalut-dev
         - libvorbis-dev
 
+        - libjpeg-dev
+        - libfreetype6-dev
+        - libxrandr-dev
+        - libglew-dev
+        - libsndfile1-dev
+        - libudev-dev
+
+
+
 before_script:
         - mkdir -p build
         - cd build
