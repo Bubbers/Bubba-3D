@@ -36,3 +36,5 @@ file(GLOB BUBBA3D_FILES_SOURCE
 # Testing
 #########################################################
 add_subdirectory (src)
+include(CTest)
+add_subdirectory(test)

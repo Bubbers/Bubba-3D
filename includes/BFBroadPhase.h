@@ -6,6 +6,8 @@
 #define BUBBA_3D_BRUTEFORCEBROADPHASE_H
 
 #include "BroadPhase.h"
+#include "GameObject.h"
+
 
 class BFBroadPhase : BroadPhase
 {
