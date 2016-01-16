@@ -111,6 +111,7 @@ endif(NOT SFML_FOUND)
 
 target_include_directories (${LIBRARY_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/includes")
 target_include_directories (${LIBRARY_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/includes/linmath")
+target_include_directories (${LIBRARY_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/includes/rapidjson")
 
 target_link_libraries(${LIBRARY_NAME}  ${SFML_LIBRARIES})
 
