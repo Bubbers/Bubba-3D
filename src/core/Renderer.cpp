@@ -50,6 +50,9 @@ Renderer::~Renderer()
 
 void Renderer::start() {
 	bool running = true;
+	sf::Vector2i pos = sf::Mouse::getPosition(*window);
+	Globals::set(Globals::Key::MOUSE_WINDOW_X, pos.x);
+	Globals::set(Globals::Key::MOUSE_WINDOW_Y, pos.y);
 	while (running)
 	{
 		// handle events
