@@ -29,17 +29,18 @@ void BFBroadPhase::removeDirty(){
 }
 
 void BFBroadPhase::updateCollision() {
-    utils::Timer timer;
-    timer.start();
+
 
     removeDirty();
 
+    utils::Timer timer;
+    timer.start();
     CollisionPairList possibleCollision = computeCollisionPairs();
     computeExactCollision(possibleCollision);
 
     timer.stop();
     stringstream timeMessage;
-    timeMessage << "Tested collision in : " << timer.getElapsedTime() << " ms";
+    timeMessage << "Tested " << possibleCollision.size() <<" possible collision in : " << timer.getElapsedTime() << " ms";
     Logger::logDebug(timeMessage.str());
 }
 

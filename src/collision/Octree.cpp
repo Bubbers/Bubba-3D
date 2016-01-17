@@ -1,8 +1,14 @@
 #include <Triangle.h>
 #include "Octree.h"
 
+#define DEFAULT_ORIGIN make_vector(0.0f, 0.0f, 0.0f)
+#define DEFAULT_HALFVECTOR make_vector(1.0f, 1.0f, 1.0f)
+
 Octree::Octree() {
     clearChildren();
+    origin = DEFAULT_ORIGIN;
+    halfVector = DEFAULT_HALFVECTOR;
+    setupAABB(DEFAULT_ORIGIN, DEFAULT_HALFVECTOR);
 }
 
 Octree::~Octree() {
@@ -12,7 +18,7 @@ Octree::~Octree() {
 Octree::Octree(float3 origin, float3 halfVector, int depth)
         : origin(origin), halfVector(halfVector), depth(depth) {
     clearChildren();
-    setupAABB();
+    setupAABB(origin, halfVector);
 }
 
 void Octree::clearChildren() {
@@ -21,7 +27,7 @@ void Octree::clearChildren() {
     }
 }
 
-void Octree::setupAABB() {
+void Octree::setupAABB(float3 origin, float3 halfVector) {
     float3 p1 = origin + halfVector;
     float3 p2 = origin - halfVector;
 
@@ -132,6 +138,17 @@ int Octree::getTriangleCountRecursively() {
     }
 
     return c;
+}
+
+int Octree::getNumberOfSubTrees() {
+    int count = 1;
+    if(hasChildren()) {
+        for (int i = 0; i < 8; i++) {
+            count += children[i]->getNumberOfSubTrees();
+        }
+    }
+
+    return count;
 }
 
 bool testSlab(float rayO, float rayD, float minV, float maxV, float *tNear, float *tFar) {

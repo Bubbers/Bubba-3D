@@ -34,13 +34,17 @@ public:
 	int getTriangleCountRecursively();
 	std::vector<Triangle*> *getTriangles();
 
+	int getNumberOfSubTrees();
+
 	bool rayCastIntersectsAABB(float3 rayOrigin, float3 rayVector);
 	void getTrianglesInsersectedByRayCast(float3 rayOrigin, float3 rayVector, std::vector<Triangle*> *tsp);
 
     AABB* getAABB();
-	void setupAABB();
+
 
 private:
+	void setupAABB(float3 origin, float3 halfVector);
+
 	float3 getMaxXYZFromTwoPoints(float3 p1, float3 p2);
 	float3 getMinXYZFromTwoPoints(float3 p1, float3 p2);
 
