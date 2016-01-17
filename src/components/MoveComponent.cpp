@@ -3,6 +3,7 @@
 //
 
 #include <GameObject.h>
+#include <Logger.h>
 #include "MoveComponent.h"
 #include "float3x3.h"
 
@@ -63,7 +64,13 @@ float3 MoveComponent::getScaleSpeed(){ return scaleSpeed; }
 
 void MoveComponent::setVelocity(float3 v){velocity = v;}
 void MoveComponent::setAcceleration(float3 a){acceleration = a;}
-void MoveComponent::setRotation(Quaternion r){rotation = r; hasRotation = true;}
+void MoveComponent::setRotation(Quaternion r){
+    rotation = r;
+    hasRotation = true;
+    if(rotation.w == 0.0f)
+        Logger::logWarning(string("MoveComponent::setRotation: The rotation angle was zero. This means that ") +
+                         "the axis information will disappear so rotationSpeed won't work.");
+}
 void MoveComponent::setLocation(float3 l){location = l;}
 void MoveComponent::setRotationSpeed(float rs){rotationSpeed = rs;}
 void MoveComponent::setScale(float3 s){scale = s;}
