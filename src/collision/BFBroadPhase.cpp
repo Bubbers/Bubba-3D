@@ -65,15 +65,18 @@ CollisionPairList BFBroadPhase::computeCollisionPairs() {
 
 bool BFBroadPhase::isPossiblyColliding(GameObject* gameObject1, GameObject* gameObject2) {
     if(!gameObject1->isDynamicObject() && !gameObject2->isDynamicObject()
-       || gameObject1->isDirty() || gameObject2->isDirty()) {
+       || gameObject1->isDirty() || gameObject2->isDirty() || gameObject1 == gameObject2) {
         return false;
     }
 
-    AABB aabb1 = gameObject1->getAABB();
-    AABB aabb2 = gameObject2->getAABB();
+    if(capselIntersection(gameObject1->getLocation(),gameObject1->getRadius(),gameObject2->getLocation(),gameObject2->getRadius())) {
 
-    if(gameObject1 != gameObject2 && AabbAabbintersection(&aabb1, &aabb2)) {
-        return true;
+        AABB aabb1 = gameObject1->getAABB();
+        AABB aabb2 = gameObject2->getAABB();
+
+        if (AabbAabbintersection(&aabb1, &aabb2)) {
+            return true;
+        }
     }
 
     return false;

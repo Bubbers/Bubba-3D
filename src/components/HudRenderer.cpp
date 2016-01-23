@@ -16,7 +16,7 @@ HudRenderer::HudRenderer(int *scoreBoard, State *state){
     shaderProgram = ResourceManager::getShader("hudShader");
     conf = new HudConfig;
 
-    GLfloat quad[] = { //POSITION3 TEXCOORD2
+    GLfloat quad[] = { //POSITION3 TEXCOORD2 WTF, magic array?
             0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
             1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
             0.0f, 1.0f, 0.0f, 0.0f, 1.0f,

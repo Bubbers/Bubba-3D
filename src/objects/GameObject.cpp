@@ -26,7 +26,7 @@ GameObject::GameObject(Mesh *mesh, GameObjectType type) {
     this->m_modelMatrix = make_identity<float4x4>();
     this->shininess = 0.0f;
     this->id = ++uniqueId;
-
+    radius = mesh->getAABB()->getSize()/2.0f;
     this->octree = createOctree(this->mesh);
 };
 
@@ -47,6 +47,9 @@ Octree* GameObject::createOctree(Mesh* mesh) {
     return octree;
 }
 
+float GameObject::getRadius() {
+    return radius*length(scale);
+}
 
 void GameObject::makeDirty() {
     for(auto &component : components)

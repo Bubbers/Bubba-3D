@@ -360,6 +360,10 @@ bool AabbAabbintersection(AABB *aabb1, AABB *aabb2) {
     return true;
 }
 
+bool capselIntersection(float3 capsel1pos,float capsel1radius,float3 capsel2pos,float capsel2radius){
+    return fabsf(length(capsel1pos-capsel2pos)) < capsel1radius+capsel2radius;
+}
+
 Triangle multiplyTriangleWithModelMatrix(Triangle *triangle, float4x4 *modelMatrix) {
     float4 p1 = make_vector(triangle->p1.x, triangle->p1.y, triangle->p1.z, 1.0f);
     float4 p2 = make_vector(triangle->p2.x, triangle->p2.y, triangle->p2.z, 1.0f);

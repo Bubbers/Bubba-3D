@@ -63,6 +63,7 @@ public:
     void setScale(float3 s);
     void updateRotation(Quaternion r);
 
+    float getRadius();
 
 private:
     Octree* createOctree(Mesh* mesh);
@@ -73,6 +74,8 @@ private:
     bool hasRotation = false;
     float3 location = make_vector(0.0f,0.0f,0.0f);
     bool changed = false;
+
+    float radius = 0.0f;
 
     static int uniqueId;
     int id;
