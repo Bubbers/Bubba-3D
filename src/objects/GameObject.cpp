@@ -1,5 +1,6 @@
 
 #include <Logger.h>
+#include <linmath/Quaternion.h>
 #include "GameObject.h"
 #include "float3x3.h"
 #include "Collider.h"
@@ -95,6 +96,14 @@ void GameObject::update(float dt) {
     for(auto &component : components) {
         component->update(dt);
     }
+    if(changed){
+        changed = false;
+        float4x4 transform = make_translation(location);
+        if(hasRotation)
+            transform = transform*makematrix(rotation);
+        move(transform*make_scale<float4x4>(scale));
+
+    }
 }
 
 void GameObject::callEvent(EventType type, GameObjectType data){
@@ -140,3 +149,15 @@ Octree* GameObject::getOctree(){
 int GameObject::getId() {
     return id;
 }
+
+float3 GameObject::getScale(){ return scale; }
+Quaternion GameObject::getRotation() { return rotation; }
+float3 GameObject::getLocation(){ return location; }
+
+void GameObject::updateRotation(Quaternion r) {
+    setRotation(hasRotation ? r*getRotation() : r);
+}
+
+void GameObject::setScale(float3 s){scale = s; changed = true;}
+void GameObject::setLocation(float3 l){location = l; changed = true;}
+void GameObject::setRotation(Quaternion r){rotation = r; hasRotation = changed = true;}

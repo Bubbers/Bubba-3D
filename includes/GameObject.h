@@ -7,6 +7,7 @@
 #include "AABB2.h"
 #include "float4x4.h"
 #include <vector>
+#include <Quaternion.h>
 
 using namespace chag;
 
@@ -52,8 +53,26 @@ public:
     GameObjectType getType() { return type; };
     void setType(GameObjectType t) { type = t; };
 
+
+    float3 getScale();
+    Quaternion getRotation();
+    float3 getLocation();
+
+    void setRotation(Quaternion r);
+    void setLocation(float3 l);
+    void setScale(float3 s);
+    void updateRotation(Quaternion r);
+
+
 private:
     Octree* createOctree(Mesh* mesh);
+
+
+    float3 scale = make_vector(1.0f,1.0f,1.0f);
+    Quaternion rotation = Quaternion();
+    bool hasRotation = false;
+    float3 location = make_vector(0.0f,0.0f,0.0f);
+    bool changed = false;
 
     static int uniqueId;
     int id;
