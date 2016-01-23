@@ -107,10 +107,10 @@ JoystickTranslation::valueRetriever JoystickTranslator::decideOnButtonRetriever(
         return JoystickTranslation::buttonValueRetriever((*mapData)["buttonID"].GetUint());
     else if(type == "axis"){
         return JoystickTranslation::buttonFromAxisRetriever(
-                SFMLAxisFromString(string((*mapData)["name"].GetString())));
+                SFMLAxisFromString((*mapData)["name"].GetString()));
     } else if(type == "halfAxis") {
         return JoystickTranslation::buttonFromHalfAxisRetriever(
-                SFMLAxisFromString(string((*mapData)["name"].GetString())),
+                SFMLAxisFromString((*mapData)["name"].GetString()),
                 (*mapData)["positiveElseNegative"].GetBool());
     }else if(type == "none"){
         return JoystickTranslation::valRetriever(0.0f);

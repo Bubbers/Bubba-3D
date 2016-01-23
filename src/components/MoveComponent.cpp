@@ -15,7 +15,7 @@ MoveComponent::MoveComponent(GameObject* meshObject) {
     this->meshObject = meshObject;
 }
 
-MoveComponent::MoveComponent(GameObject* meshObject, Quaternion rotation, float rotationSpeed,
+MoveComponent::MoveComponent(GameObject* meshObject, Quaternion rotation, Quaternion rotationSpeed,
                              float3 velocity, float3 location, float3 acceleration,
                              float3 scale, float3 scaleSpeed) : MoveComponent (meshObject){
     this->velocity = velocity;
@@ -41,7 +41,7 @@ void MoveComponent::update(float dt){
 
     velocity += acceleration*dt;
     location += velocity*dt;
-    rotation.w += rotationSpeed*dt;
+    updateRotation(slerp(Quaternion(),rotationSpeed,dt));
     scale += scaleSpeed*dt;
 
     float4x4 transform = make_translation(location);
@@ -57,7 +57,7 @@ float3 MoveComponent::getVelocity(){ return velocity; }
 float3 MoveComponent::getAcceleration(){ return acceleration; }
 Quaternion MoveComponent::getRotation() { return rotation; }
 float3 MoveComponent::getLocation(){ return location; }
-float MoveComponent::getRotationSpeed(){ return rotationSpeed; }
+Quaternion MoveComponent::getRotationSpeed(){ return rotationSpeed; }
 float3 MoveComponent::getScale(){ return scale; }
 float3 MoveComponent::getScaleSpeed(){ return scaleSpeed; }
 
@@ -72,7 +72,7 @@ void MoveComponent::setRotation(Quaternion r){
                          "the axis information will disappear so rotationSpeed won't work.");
 }
 void MoveComponent::setLocation(float3 l){location = l;}
-void MoveComponent::setRotationSpeed(float rs){rotationSpeed = rs;}
+void MoveComponent::setRotationSpeed(Quaternion rs){rotationSpeed = rs; hasRotationSpeed = true;}
 void MoveComponent::setScale(float3 s){scale = s;}
 void MoveComponent::setScaleSpeed(float3 ss){scaleSpeed = ss;}
 void MoveComponent::updateRotation(Quaternion r) {
