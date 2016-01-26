@@ -23,7 +23,12 @@ class GameObject : public IDrawable {
 public:
     GameObject();
     GameObject(Mesh *mesh, GameObjectType type);
+    GameObject(Mesh *mesh, GameObjectType type, Mesh *colliderMesh);
+    void initGameObject(Mesh *mesh, Mesh *colliderMesh, GameObjectType type);
+
     ~GameObject();
+
+    int getUniqueId();
 
     virtual void render();
     virtual void renderShadow(Shader* shaderProgram);
@@ -80,6 +85,7 @@ private:
     static int uniqueId;
     int id;
     Mesh *mesh;
+    Mesh *collisionMesh;
     chag::float4x4 m_modelMatrix;
 
     GameObjectType type = SpaceEntity;

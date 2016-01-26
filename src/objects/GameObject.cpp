@@ -17,22 +17,40 @@ int GameObject::uniqueId = 0;
 
 GameObject::GameObject() {
     m_modelMatrix = make_identity<float4x4>();
-    id = ++uniqueId;
+    id = getUniqueId();
 }
 
 GameObject::GameObject(Mesh *mesh, GameObjectType type) {
+    initGameObject(mesh, mesh, type);
+};
+
+GameObject::GameObject(Mesh *mesh, GameObjectType type, Mesh *colliderMesh) {
+    initGameObject(mesh, colliderMesh, type);
+};
+
+void GameObject::initGameObject(Mesh *mesh, Mesh *colliderMesh, GameObjectType type) {
     this->type = type;
     this->mesh = mesh;
+    this->collisionMesh = colliderMesh;
     this->m_modelMatrix = make_identity<float4x4>();
     this->shininess = 0.0f;
-    this->id = ++uniqueId;
-    radius = mesh->getAABB()->getSize()/2.0f;
-    this->octree = createOctree(this->mesh);
-};
+    this->id = getUniqueId();
+
+    if(mesh != nullptr) {
+        radius = mesh->getAABB()->getSize()/2.0f;
+    }
+
+    if(colliderMesh != nullptr) {
+        this->octree = createOctree(this->collisionMesh);
+    }
+}
 
 GameObject::~GameObject() {
     mesh = nullptr;
+}
 
+int GameObject::getUniqueId() {
+    return ++uniqueId;
 }
 
 Octree* GameObject::createOctree(Mesh* mesh) {
