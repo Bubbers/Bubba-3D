@@ -361,7 +361,7 @@ bool AabbAabbintersection(AABB *aabb1, AABB *aabb2) {
 }
 
 bool capselIntersection(float3 capsel1pos,float capsel1radius,float3 capsel2pos,float capsel2radius){
-    return fabsf(length(capsel1pos-capsel2pos)) < capsel1radius+capsel2radius;
+    return length(capsel1pos-capsel2pos) < capsel1radius+capsel2radius;
 }
 
 Triangle multiplyTriangleWithModelMatrix(Triangle *triangle, float4x4 *modelMatrix) {

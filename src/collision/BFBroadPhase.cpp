@@ -7,6 +7,7 @@
 #include <timer.h>
 #include <Logger.h>
 #include <sstream>
+#include <SFML/System/Clock.hpp>
 #include "BFBroadPhase.h"
 
 BFBroadPhase::BFBroadPhase() {
@@ -47,36 +48,42 @@ void BFBroadPhase::updateCollision() {
 
 CollisionPairList BFBroadPhase::computeCollisionPairs() {
     CollisionPairList collisionPairs;
+    int timeSpentOnCapsel = 0, timeSpentOnAABB = 0;
 
     for (auto i = GameObjectList.begin(); i != GameObjectList.end(); i++) {
         for (auto j = i + 1; j != GameObjectList.end(); j++) {
             GameObject* gameObject1 = *i;
             GameObject* gameObject2 = *j;
 
-            if(isPossiblyColliding(gameObject1,gameObject2)) {
+            if(isPossiblyColliding(gameObject1,gameObject2, &timeSpentOnCapsel,&timeSpentOnAABB)) {
                 collisionPairs.push_back(std::pair<GameObject *, GameObject *>(gameObject1, gameObject2));
             }
 
         }
     }
+    Logger::logDebug("Time spent on capsel: " + to_string(timeSpentOnCapsel) + ", on aabb: " + to_string(timeSpentOnAABB));
     return collisionPairs;
 }
 
 
-bool BFBroadPhase::isPossiblyColliding(GameObject* gameObject1, GameObject* gameObject2) {
+bool BFBroadPhase::isPossiblyColliding(GameObject* gameObject1, GameObject* gameObject2, int* spentOnCapsel, int* spentOnAABB) {
     if(!gameObject1->isDynamicObject() && !gameObject2->isDynamicObject()
        || gameObject1->isDirty() || gameObject2->isDirty() || gameObject1 == gameObject2) {
         return false;
     }
-
-    if(capselIntersection(gameObject1->getLocation(),gameObject1->getRadius(),gameObject2->getLocation(),gameObject2->getRadius())) {
+    sf::Clock clock = sf::Clock();
+    bool capselInt = capselIntersection(gameObject1->getLocation(),gameObject1->getRadius(),
+                                                 gameObject2->getLocation(),gameObject2->getRadius());
+    *spentOnCapsel += clock.restart().asMicroseconds();
+    if(capselInt) {
 
         AABB aabb1 = gameObject1->getAABB();
         AABB aabb2 = gameObject2->getAABB();
 
-        if (AabbAabbintersection(&aabb1, &aabb2)) {
-            return true;
-        }
+        bool aabb = AabbAabbintersection(&aabb1, &aabb2);
+        *spentOnAABB += clock.getElapsedTime().asMicroseconds();
+        return aabb;
+
     }
 
     return false;
