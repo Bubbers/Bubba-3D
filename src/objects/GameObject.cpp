@@ -1,6 +1,7 @@
 
 #include <Logger.h>
 #include <linmath/Quaternion.h>
+#include <Sphere.h>
 #include "GameObject.h"
 #include "float3x3.h"
 #include "Collider.h"
@@ -35,11 +36,8 @@ void GameObject::initGameObject(Mesh *mesh, Mesh *colliderMesh, GameObjectType t
     this->m_modelMatrix = make_identity<float4x4>();
     this->shininess = 0.0f;
     this->id = getUniqueId();
-
-    if(mesh != nullptr) {
-        radius = mesh->getAABB()->getSize()/2.0f;
-    }
-
+    if(mesh != nullptr)
+        sphere = mesh->getSphere();
     if(colliderMesh != nullptr) {
         this->octree = createOctree(this->collisionMesh);
     }
@@ -65,8 +63,9 @@ Octree* GameObject::createOctree(Mesh* mesh) {
     return octree;
 }
 
-float GameObject::getRadius() {
-    return radius*length(scale);
+Sphere GameObject::getSphere() {
+    float scaling = max(scale.x,max(scale.y,scale.z));
+    return Sphere(sphere.getPosition()+location, scaling*sphere.getRadius());
 }
 
 void GameObject::makeDirty() {

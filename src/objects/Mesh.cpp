@@ -127,6 +127,8 @@ std::string Mesh::cleanFileName(std::string fileName) {
     }
 }
 
+Sphere Mesh::getSphere(){ return sphere; }
+
 void Mesh::initMesh(unsigned int index, const aiMesh *paiMesh) {
     std::vector<float3> positions;
     std::vector<float3> normals;
@@ -161,6 +163,13 @@ void Mesh::initMesh(unsigned int index, const aiMesh *paiMesh) {
 
     checkMinMax(minV.x, minV.y, minV.z, &m_aabb.minV, &m_aabb.maxV);
     checkMinMax(maxV.x, maxV.y, maxV.z, &m_aabb.minV, &m_aabb.maxV);
+    sphere.setPosition(m_aabb.getCenterPosition());
+    sphere.setRadius(0.0f);
+    for(float3 posIt : positions){
+        float rad = length(sphere.getPosition() - posIt);
+        if(rad > sphere.getRadius())
+            sphere.setRadius(rad);
+    }
 
     for (unsigned int i = 0; i < paiMesh->mNumFaces; i++) {
         const aiFace face = paiMesh->mFaces[i];

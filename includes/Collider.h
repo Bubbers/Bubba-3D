@@ -10,12 +10,12 @@ class Octree;
 bool octreeOctreeIntersection(Octree *object1Octree, float4x4 *object1ModelMatrix, Octree *object2Octree,
                               float4x4 *object2ModelMatrix);
 bool AabbAabbintersection(AABB *aabb1, AABB *aabb2);
-bool capselIntersection(float3 capsel1pos,float capsel1radius,float3 capsel2pos,float capsel2radius);
+bool sphereIntersection(Sphere sphere1,Sphere sphere2);
 AABB multiplyAABBWithModelMatrix(AABB *aabb, float4x4 modelMatrix);
 bool triangleTriangleIntersection(Triangle *t1, Triangle *t2);
 bool isTrianglesIntersecting(Octree *object1Octree, float4x4 *object1ModelMatrix, Octree *object2Octree,
 							 float4x4 *object2ModelMatrix);
-
+bool raySphereIntersection(Sphere sphere, float3 rayOrigin, float3 rayDirection);
 class Collider
 {
 public:

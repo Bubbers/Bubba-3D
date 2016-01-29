@@ -1,6 +1,7 @@
 #include <GameObject.h>
 #include <Collider.h>
 #include <Triangle.h>
+#include <Sphere.h>
 #include "Octree.h"
 
 #define EPSILON 0.00001f
@@ -360,8 +361,24 @@ bool AabbAabbintersection(AABB *aabb1, AABB *aabb2) {
     return true;
 }
 
-bool capselIntersection(float3 capsel1pos,float capsel1radius,float3 capsel2pos,float capsel2radius){
-    return length(capsel1pos-capsel2pos) < capsel1radius+capsel2radius;
+bool sphereIntersection(Sphere sphere1,Sphere sphere2){
+    return length(sphere1.getPosition()-sphere2.getPosition()) < sphere1.getRadius()+sphere2.getRadius();
+}
+
+//Real-time Rendering, Third edition pp. 741
+bool raySphereIntersection(Sphere sphere, float3 rayOrigin, float3 rayDirection){
+    float3 l = sphere.getPosition() - rayOrigin; //vector from ray origin to sphere pos
+    float projOflOnRayDir = dot(l,rayDirection);
+    float l2 = dot(l,l);
+    float r2 = sphere.getRadius()*sphere.getRadius();
+    if(projOflOnRayDir < 0 && l2 > r2) return false;
+    float m2 = l2 - projOflOnRayDir*projOflOnRayDir;
+    if(m2 > r2) return false;
+    return true;
+    /* The following code would calculate the collision position:
+    float q = sqrt(r2-m2);
+    float t = projOflOnRayDir + (l2 > r2 ? -q : q);
+    return rayOrigin + t*rayDirection;*/
 }
 
 Triangle multiplyTriangleWithModelMatrix(Triangle *triangle, float4x4 *modelMatrix) {

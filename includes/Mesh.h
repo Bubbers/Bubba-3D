@@ -8,7 +8,7 @@
 #include "Chunk.h"
 #include "AABB2.h"
 #include "assimp/material.h"
-
+#include <Sphere.h>
 
 
 using namespace chag;
@@ -29,6 +29,7 @@ public:
     void createTriangles();
     std::vector<Triangle *> getTriangles();
     AABB* getAABB();
+    Sphere getSphere();
 
 private:
 
@@ -44,6 +45,7 @@ private:
     Texture* getTexture(const aiMaterial *material, const std::string &fileName, aiTextureType type);
 
     std::vector<Triangle *> triangles;
+    Sphere sphere;
 
 public:
     std::vector<Material> materials;

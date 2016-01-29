@@ -8,6 +8,7 @@
 #include "float4x4.h"
 #include <vector>
 #include <Quaternion.h>
+#include <Sphere.h>
 
 using namespace chag;
 
@@ -68,7 +69,7 @@ public:
     void setScale(float3 s);
     void updateRotation(Quaternion r);
 
-    float getRadius();
+    Sphere getSphere();
 
 private:
     Octree* createOctree(Mesh* mesh);
@@ -80,7 +81,7 @@ private:
     float3 location = make_vector(0.0f,0.0f,0.0f);
     bool changed = false;
 
-    float radius = 0.0f;
+    Sphere sphere;
 
     static int uniqueId;
     int id;
