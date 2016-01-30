@@ -8,6 +8,8 @@
 
 using namespace std;
 
+enum LogLevel {DEBUG, INFO, WARNING, SEVERE};
+
 class Logger
 {
 public:
@@ -19,11 +21,6 @@ public:
 	static void logError(string msg);
 	static void logWarning(string msg);
 	static void logInfo(string msg);
-
-	static const unsigned int DEBUG = 0;
-	static const unsigned int INFO = 1;
-	static const unsigned int WARNING = 2;
-	static const unsigned int ERROR = 4;
 
 	static void setLogLevel(unsigned int level);
 	static void addLogHandler(LogHandler* logHandler);

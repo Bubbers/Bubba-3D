@@ -1,7 +1,7 @@
 set(LIBRARY_NAME Bubba3D)
 
 
-add_library(${LIBRARY_NAME} SHARED ${BUBBA3D_FILES_SOURCE})
+add_library(${LIBRARY_NAME} STATIC ${BUBBA3D_FILES_SOURCE})
 
 #########################################################
 # STRUCTURE MSVS
@@ -112,6 +112,8 @@ endif(NOT SFML_FOUND)
 target_include_directories (${LIBRARY_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/includes")
 target_include_directories (${LIBRARY_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/includes/linmath")
 target_include_directories (${LIBRARY_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/includes/rapidjson")
+target_include_directories (${LIBRARY_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/lib")
+target_include_directories (${LIBRARY_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/lib/freeimage")
 
 target_link_libraries(${LIBRARY_NAME}  ${SFML_LIBRARIES})
 

@@ -22,10 +22,12 @@ GameObject::GameObject() {
 }
 
 GameObject::GameObject(Mesh *mesh, GameObjectType type) {
+	m_modelMatrix = make_identity<float4x4>();
     initGameObject(mesh, mesh, type);
 };
 
 GameObject::GameObject(Mesh *mesh, GameObjectType type, Mesh *colliderMesh) {
+	m_modelMatrix = make_identity<float4x4>();
     initGameObject(mesh, colliderMesh, type);
 };
 

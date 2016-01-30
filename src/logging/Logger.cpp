@@ -1,5 +1,6 @@
 #include "Logger.h"
 #include "sstream"
+#include <time.h>
 
 using namespace std;
 
@@ -15,7 +16,7 @@ void Logger::logWarning(string msg) {
 }
 
 void Logger::logError(string msg) {
-	log(ERROR, msg);
+	log(SEVERE, msg);
 }
 
 void Logger::logInfo(string msg) {
@@ -42,10 +43,10 @@ void Logger::setLogLevel(unsigned int level) {
 
 string Logger::levelToString(unsigned int level) {
 	switch (level) {
-		case INFO:    return "INFO";
-		case DEBUG:   return "DEBUG";
-		case WARNING: return "WARNING";
-		case ERROR:   return "ERROR";
+		case INFO:     return "INFO";
+		case DEBUG:    return "DEBUG";
+		case WARNING:  return "WARNING";
+		case SEVERE:   return "SEVERE";
 		default: return "BAD level";
 	}
 }

@@ -32,7 +32,7 @@ void JoystickTranslator::init(string filePath) {
     const unsigned long long size = filestatus.st_size;
 
     std::FILE* file = fopen(filePath.c_str(), "r");
-    char readBuffer[size];
+	char readBuffer[100000];
     FileReadStream rs(file,readBuffer,size);
 
     jsonConfig = new Document();
