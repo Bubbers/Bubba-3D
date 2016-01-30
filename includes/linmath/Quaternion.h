@@ -14,7 +14,7 @@ public:
   float3 v;
   float w;
   // The default constructor creates an identity quaternion
-  Quaternion():v(), w(1.0) {};  
+  Quaternion():v(make_vector(0.0f, 0.0f, 0.0f)), w(1.0) {};  
   Quaternion(float3 mv, float mw):v(mv), w(mw) {};
 
   const Quaternion operator + (const Quaternion& q) const
