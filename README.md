@@ -32,5 +32,3 @@ Requirements:
 Linux: Install using the Makefile supplied in root map. run make install. This will install all dependencies for the project. Then you may run it with make run.
 
 Windows: Either download the dependencies yourself from the links above, or use the specified libs in the libs folder. For more info how to config cmake using these, see README.md in libs/. 
- 
-(Gitter)
