@@ -3,7 +3,6 @@
 
 
 #include "IDrawable.h"
-#include "GameObjectType.h"
 #include "AABB2.h"
 #include "float4x4.h"
 #include <vector>
@@ -14,6 +13,8 @@ using namespace chag;
 
 enum EventType {BeforeCollision, DuringCollision, AfterCollision};
 
+typedef int Identifier;
+
 class Mesh;
 class Triangle;
 class IRenderComponent;
@@ -23,11 +24,11 @@ class Octree;
 class GameObject : public IDrawable {
 public:
     GameObject();
-    GameObject(Mesh *mesh, GameObjectType type);
-    GameObject(Mesh *mesh, GameObjectType type, Mesh *colliderMesh);
-    void initGameObject(Mesh *mesh, Mesh *colliderMesh, GameObjectType type);
+    GameObject(Mesh *mesh);
+    GameObject(Mesh *mesh, Mesh *colliderMesh);
+    void initGameObject(Mesh *mesh, Mesh *colliderMesh);
 
-    ~GameObject();
+    virtual ~GameObject();
 
     int getUniqueId();
 
@@ -41,10 +42,13 @@ public:
     void addComponent(IComponent*);
 
     void update(float dt);
-    void callEvent(EventType, GameObjectType data);
+    void callEvent(EventType, GameObject* data);
 
     bool isDynamicObject();
     void setDynamic(bool);
+
+    Identifier getIdentifier();
+    void setIdentifier(Identifier identifier);
 
     Octree* getOctree();
     std::vector<Triangle*> getTriangles();
@@ -55,10 +59,6 @@ public:
 
     void makeDirty();
     bool isDirty();
-
-    GameObjectType getType() { return type; };
-    void setType(GameObjectType t) { type = t; };
-
 
     float3 getScale();
     Quaternion getRotation();
@@ -73,7 +73,7 @@ public:
 
 private:
     Octree* createOctree(Mesh* mesh);
-
+    Identifier identifier = -1;
 
     float3 scale = make_vector(1.0f,1.0f,1.0f);
     Quaternion rotation = Quaternion();
@@ -88,8 +88,6 @@ private:
     Mesh *mesh;
     Mesh *collisionMesh;
     chag::float4x4 m_modelMatrix;
-
-    GameObjectType type = SpaceEntity;
 
     IRenderComponent* renderComponent;
     std::vector<IComponent*> components;

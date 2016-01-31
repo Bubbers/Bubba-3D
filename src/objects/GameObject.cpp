@@ -21,18 +21,18 @@ GameObject::GameObject() {
     id = getUniqueId();
 }
 
-GameObject::GameObject(Mesh *mesh, GameObjectType type) {
+GameObject::GameObject(Mesh *mesh) {
 	m_modelMatrix = make_identity<float4x4>();
-    initGameObject(mesh, mesh, type);
+    initGameObject(mesh, mesh);
 };
 
-GameObject::GameObject(Mesh *mesh, GameObjectType type, Mesh *colliderMesh) {
-	m_modelMatrix = make_identity<float4x4>();
-    initGameObject(mesh, colliderMesh, type);
-};
+GameObject::GameObject(Mesh *mesh, Mesh *colliderMesh) {
+    m_modelMatrix = make_identity<float4x4>();
+    initGameObject(mesh, colliderMesh);
+}
 
-void GameObject::initGameObject(Mesh *mesh, Mesh *colliderMesh, GameObjectType type) {
-    this->type = type;
+
+void GameObject::initGameObject(Mesh *mesh, Mesh *colliderMesh) {
     this->mesh = mesh;
     this->collisionMesh = colliderMesh;
     this->m_modelMatrix = make_identity<float4x4>();
@@ -128,7 +128,7 @@ void GameObject::update(float dt) {
     }
 }
 
-void GameObject::callEvent(EventType type, GameObjectType data){
+void GameObject::callEvent(EventType type, GameObject* data){
 
     switch(type) {
     case EventType::BeforeCollision:
@@ -154,6 +154,14 @@ AABB GameObject::getAABB(){
     aabb = multiplyAABBWithModelMatrix(meshAabb, m_modelMatrix);
 
     return aabb;
+}
+
+Identifier GameObject::getIdentifier(){
+    return identifier;
+}
+
+void GameObject::setIdentifier(Identifier identifier) {
+    this->identifier = identifier;
 }
 
 bool GameObject::isDynamicObject(){
