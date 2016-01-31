@@ -65,8 +65,10 @@ CollisionPairList BFBroadPhase::computeCollisionPairs() {
 
 
 bool BFBroadPhase::isPossiblyColliding(GameObject* gameObject1, GameObject* gameObject2) {
-    if(!gameObject1->isDynamicObject() && !gameObject2->isDynamicObject()
-       || gameObject1->isDirty() || gameObject2->isDirty() || gameObject1 == gameObject2) {
+    bool noDynamic = !gameObject1->isDynamicObject() && !gameObject2->isDynamicObject();
+    bool neverCollides = !gameObject1->collidesWith(gameObject2->getIdentifier())
+                         && !gameObject2->collidesWith(gameObject1->getIdentifier());
+    if(noDynamic || neverCollides || gameObject1->isDirty() || gameObject2->isDirty() || gameObject1 == gameObject2) {
         return false;
     }
     bool sphereInt = sphereIntersection(gameObject1->getSphere(),gameObject2->getSphere());

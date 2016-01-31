@@ -164,6 +164,21 @@ void GameObject::setIdentifier(Identifier identifier) {
     this->identifier = identifier;
 }
 
+void GameObject::addCollidesWith(Identifier colliderID){ canCollideWith.push_back(colliderID);}
+void GameObject::addCollidesWith(initializer_list<Identifier> colliderIDs){
+    for(Identifier id : colliderIDs)
+        addCollidesWith(id);
+}
+bool GameObject::collidesWith(Identifier id){
+    for(Identifier id2 : canCollideWith)
+        if(id2 == id)
+            return true;
+    return false;
+}
+void GameObject::clearCollidesWithList() {
+    canCollideWith = vector<Identifier>();
+}
+
 bool GameObject::isDynamicObject(){
     return dynamicObject;
 }

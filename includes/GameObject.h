@@ -10,6 +10,7 @@
 #include <Sphere.h>
 
 using namespace chag;
+using namespace std;
 
 enum EventType {BeforeCollision, DuringCollision, AfterCollision};
 
@@ -49,6 +50,10 @@ public:
 
     Identifier getIdentifier();
     void setIdentifier(Identifier identifier);
+    void addCollidesWith(Identifier colliderID);
+    void addCollidesWith(initializer_list<Identifier> colliderIDs);
+    void clearCollidesWithList();
+    bool collidesWith(Identifier id);
 
     Octree* getOctree();
     std::vector<Triangle*> getTriangles();
@@ -74,6 +79,7 @@ public:
 private:
     Octree* createOctree(Mesh* mesh);
     Identifier identifier = -1;
+    std::vector<Identifier> canCollideWith;
 
     float3 scale = make_vector(1.0f,1.0f,1.0f);
     Quaternion rotation = Quaternion();
