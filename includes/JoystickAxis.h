@@ -12,7 +12,7 @@
 
 /**
  * An input class that uses the axes of joysticks. This class is quite versatile and
- * can be used to bind different types of bindings. Check the various cunstructors to see their usages.
+ * can be used to bind different types of bindings. Check the various constructors to see their usages.
  */
 class JoystickAxis : public Input {
 public:
@@ -20,7 +20,7 @@ public:
 
     /**
      * This is the most simple constructor. It takes one axis and a boolean
-     * that signifies the duality of the axis. A joystick axis has the raw intrval
+     * that signifies the duality of the axis. A joystick axis has the raw interval
      * [-100,100] which is what you will receive if \p dual is true. If \p dual
      * is false the interval is transformed to [0,100]. This can be useful for
      * triggers. Triggers are seen as axes and has the interval [-100,100] but

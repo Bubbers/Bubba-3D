@@ -33,7 +33,7 @@ private:
     int getJoystick(int devId,int vendId, unsigned int startAt);
     void readMappings(Value* mappings,unsigned int joystickID, bool defaultMapping);
     JoystickTranslation::valueRetriever decideOnButtonRetriever(Value* mapData);
-    JoystickTranslation::valueRetriever decideOnAxisRetriever(Value* mapData);
+    JoystickTranslation::valueRetriever decideOnAxisRetriever(Value* mapData, string axisName);
 
     static IJoystickTranslation::Button buttonFromString(std::string name);
     static IJoystickTranslation::Axis axisFromString(std::string name);

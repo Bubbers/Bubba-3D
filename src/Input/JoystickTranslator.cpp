@@ -93,7 +93,7 @@ void JoystickTranslator::readMappings(Value* mappings, unsigned int joystick, bo
                          decideOnButtonRetriever(&(*mappings)[i]["generic"]));
         }else if(type == "axis"){
             translations.back().addAxis(axisFromString(button),
-                         decideOnAxisRetriever(&(*mappings)[i]["generic"]));
+                         decideOnAxisRetriever(&(*mappings)[i]["generic"],button));
         }else{
             throw "Invalid type in button " + button;
         }
@@ -118,21 +118,19 @@ JoystickTranslation::valueRetriever JoystickTranslator::decideOnButtonRetriever(
         throw "Unknown type: " + type + " when deciding button retriever.";
 }
 
-JoystickTranslation::valueRetriever JoystickTranslator::decideOnAxisRetriever(Value *mapData) {
+JoystickTranslation::valueRetriever JoystickTranslator::decideOnAxisRetriever(Value *mapData, string axisName) {
     check(mapData->IsObject(), "value wasn't object when checking button generic.");
     string type = (*mapData)["type"].GetString();
     if(type == "button")
         return JoystickTranslation::axisFromButtonRetriever((*mapData)["buttonID"].GetUint());
     else if(type == "axis")
         return JoystickTranslation::axisValueRetriever(
-                SFMLAxisFromString(string((*mapData)["name"].GetString())));
+                SFMLAxisFromString(string((*mapData)["name"].GetString())),(*mapData)["inverted"].GetBool());
     else if(type == "buttons")
         return JoystickTranslation::axisFromButtonsRetriever((*mapData)["buttonNeg"].GetUint(),
                                                              (*mapData)["buttonPos"].GetUint());
-    else if(type == "noneNegative")
-        return JoystickTranslation::valRetriever(-100.0f);
     else if (type == "none")
-        return JoystickTranslation::valRetriever(0.0f);
+        return JoystickTranslation::valRetriever(axisName == "RT" || axisName == "LT" ? -100.0f : 0.0f);
     else
         throw "Unknown type: " + type + " when deciding axis retriever.";
 }

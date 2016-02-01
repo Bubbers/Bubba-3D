@@ -22,7 +22,7 @@ public:
     bool isDefaultMapping();
 
     static valueRetriever buttonValueRetriever( unsigned int button);
-    static valueRetriever axisValueRetriever( sf::Joystick::Axis axis);
+    static valueRetriever axisValueRetriever( sf::Joystick::Axis axis, bool inverted);
     static valueRetriever axisFromButtonsRetriever(unsigned int buttonPos,unsigned int buttonNeg);
     static valueRetriever axisFromButtonRetriever(unsigned int button);
     static valueRetriever buttonFromAxisRetriever(sf::Joystick::Axis axis);

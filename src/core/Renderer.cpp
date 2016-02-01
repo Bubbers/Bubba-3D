@@ -38,7 +38,6 @@ Renderer::Renderer(int width, int height)
 	settings.attributeFlags = sf::ContextSettings::Debug | sf::ContextSettings::Core;
 	window = new sf::Window(sf::VideoMode(width,height),"Super-Bubba-Awesome-Space",sf::Style::Default,settings);
 	glEnable(GL_FRAMEBUFFER_SRGB);
-	window->setFramerateLimit(60);
     initGL();
 	resize(width, height);
 }
@@ -48,11 +47,22 @@ Renderer::~Renderer()
 {
 }
 
-void Renderer::start() {
+void Renderer::start(unsigned int maxFPS) {
+	window->setFramerateLimit(maxFPS);
 	bool running = true;
 	sf::Vector2i pos = sf::Mouse::getPosition(*window);
 	Globals::set(Globals::Key::MOUSE_WINDOW_X, pos.x);
 	Globals::set(Globals::Key::MOUSE_WINDOW_Y, pos.y);
+
+	if(idleMethod == nullptr)
+		Logger::logWarning("Renderer: No idle method specified.");
+	if(displayMethod == nullptr) {
+		Logger::logError("Renderer: No display method specified.");
+		return;
+	}
+
+	sf::Clock sinceStart,sinceLastIdleMethodCall;
+
 	while (running)
 	{
 		// handle events
@@ -79,8 +89,11 @@ void Renderer::start() {
 		// clear the buffers
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		idleMethod(0);
-		displayMethod();
+		float dt = sinceLastIdleMethodCall.restart().asSeconds();
+		float totTime = sinceStart.getElapsedTime().asSeconds();
+		if(idleMethod != nullptr)
+			idleMethod(totTime,dt);
+		displayMethod(totTime,dt);
 
 		// end the current frame (internally swaps the front and back buffers)
 		window->display();
@@ -100,16 +113,12 @@ void Renderer::resize(unsigned int width, unsigned int height) {
 	cutOffFbo = createPostProcessFbo(width, height);
 }
 
-void Renderer::render() {
-}
-
-void Renderer::setDisplayMethod(void(*display)(void)) {
+void Renderer::setDisplayMethod(void(*display)(float,float)) {
 	displayMethod = display;
 }
 
-void Renderer::setIdleMethod(void(*idle)(int), int maxFps) {
+void Renderer::setIdleMethod(void(*idle)(float,float)) {
 	idleMethod = idle;
-	this->maxFps = maxFps;
 }
 
 sf::Window* Renderer::getWindow() {

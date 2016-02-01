@@ -45,8 +45,8 @@ JoystickTranslation::valueRetriever JoystickTranslation::buttonValueRetriever(un
     return [button](unsigned int id) -> float {return sf::Joystick::isButtonPressed(id,button) ? 100.0f : 0.0f;};
 }
 
-JoystickTranslation::valueRetriever JoystickTranslation::axisValueRetriever(sf::Joystick::Axis axis) {
-    return [axis](unsigned int id) -> float {return sf::Joystick::getAxisPosition(id,axis);};
+JoystickTranslation::valueRetriever JoystickTranslation::axisValueRetriever(sf::Joystick::Axis axis, bool inverted) {
+    return [axis,inverted](unsigned int id) -> float {return (inverted ? -1 : 1)*sf::Joystick::getAxisPosition(id,axis);};
 }
 
 JoystickTranslation::valueRetriever JoystickTranslation::axisFromButtonsRetriever(unsigned int buttonPos, unsigned int buttonNeg) {

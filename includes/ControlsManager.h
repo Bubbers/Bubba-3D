@@ -20,8 +20,8 @@ typedef std::map<int,std::vector<Input*>> functionCollection ;
  * and positive meaning. This is a very common concept for example turning right/left
  * or accelerating forwards/backwards. A joystick axis is naturally dual but to make
  * keyboard buttons dual you have to specify two buttons. An example of a turning function
- * (controlled with A/D or the joystick axis X) and an acceleration function (controlled
- * by W/S or the joystick axis Y) is given below. We also add a jumping button as an example
+ * (controlled with A/D or the left joystick thumb stick x-axis) and an acceleration function (controlled
+ * by W/S or the left joystick thumb stick y-axis) is given below. We also add a jumping button as an example
  * of a non-dual button.
  *
  * \code{.cpp}
@@ -29,9 +29,9 @@ typedef std::map<int,std::vector<Input*>> functionCollection ;
  * enum Controls : int {TURN,ACCELERATE,JUMP};
  *
  * ControlsManager cm = ControlsManager::getInstance();
- * cm->addBindings(ACCELERATE,{new KeyboardButton(sf::Keyboard::S,sf::Keyboard::W),new JoystickAxis(sf::Joystick::Axis::Y,true)});
- * cm->addBindings(TURN,{new KeyboardButton(sf::Keyboard::D,sf::Keyboard::A),new JoystickAxis(sf::Joystick::Axis::X,true)});
- * cm->addBindings(JUMP,{new KeyboardButton(sf::Keyboard::Space),new JoystickButton(0)});
+ * cm->addBindings(ACCELERATE,{new KeyboardButton(sf::Keyboard::S,sf::Keyboard::W),new JoystickAxis(IJoystickTranslation::LEFT_THUMBSTICK_Y,true)});
+ * cm->addBindings(TURN,{new KeyboardButton(sf::Keyboard::D,sf::Keyboard::A),new JoystickAxis(IJoystickTranslation::LEFT_THUMBSTICK_X,true)});
+ * cm->addBindings(JUMP,{new KeyboardButton(sf::Keyboard::Space),new JoystickButton(IJoystickTranslation::A)});
  * \endcode
  *
  * The boolean true in the second argument to the joystick axis says that the joystick is truly dual.
