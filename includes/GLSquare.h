@@ -1,0 +1,14 @@
+//
+// Created by simon on 2016-02-02.
+//
+
+#ifndef SUPER_BUBBA_AWESOME_SPACE_GLSQUARE_H
+#define SUPER_BUBBA_AWESOME_SPACE_GLSQUARE_H
+
+
+class GLSquare {
+
+};
+
+
+#endif //SUPER_BUBBA_AWESOME_SPACE_GLSQUARE_H

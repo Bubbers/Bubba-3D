@@ -26,6 +26,7 @@ public:
     virtual void update(float dt);
     void render2DHud(Texture* texture, float4x4 *modelMatrix);
     struct HudConfig* getConfig();
+    void renderView(View view);
 
 private:
     void renderNum(int, float4x4 *modelMatrix);
