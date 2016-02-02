@@ -6,6 +6,7 @@
 #include <Utils.h>
 #include <ControlsManager.h>
 #include <Controls.h>
+#include <View.h>
 #include "HudRenderer.h"
 
 HudRenderer::HudRenderer(int *scoreBoard, State *state){
@@ -16,7 +17,7 @@ HudRenderer::HudRenderer(int *scoreBoard, State *state){
     shaderProgram = ResourceManager::getShader("hudShader");
     conf = new HudConfig;
 
-    GLfloat quad[] = { //POSITION3 TEXCOORD2 WTF, magic array?
+    /*GLfloat quad[] = { //POSITION3 TEXCOORD2 WTF, magic array?
             0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
             1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
             0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
@@ -40,9 +41,13 @@ HudRenderer::HudRenderer(int *scoreBoard, State *state){
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
 
-    /* CLEANUP */
+    // CLEANUP
     glBindVertexArray(0);
-    CHECK_GL_ERROR();
+    CHECK_GL_ERROR();*/
+}
+
+void HudRenderer::renderView(View view){
+    GLfloat vertices[view.getSize()*5];
 }
 
 HudRenderer::~HudRenderer(){

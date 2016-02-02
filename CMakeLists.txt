@@ -30,6 +30,7 @@ file(GLOB BUBBA3D_FILES_SOURCE
         "${PROJECT_SOURCE_DIR}/src/components/*.cpp"
         "${PROJECT_SOURCE_DIR}/src/Input/*.cpp"
         "${PROJECT_SOURCE_DIR}/src/sound/*.cpp"
+        "${PROJECT_SOURCE_DIR}/src/userInterface/*.cpp"
         "${PROJECT_SOURCE_DIR}/shaders/*")
 
 
