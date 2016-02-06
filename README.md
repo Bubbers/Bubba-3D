@@ -1,14 +1,10 @@
-Bubba-3D
+Bubba-3D [![Build Status](https://travis-ci.org/Bubbers/Bubba-3D.svg?branch=develop)](https://travis-ci.org/Bubbers/Bubba-3D)
 ========
 
 About
 -----
 This is a small 3D-engine programmed in C++ using openGL.
 Originally implemented as a school project, now extended for fun!
-
-Status
-------
-[![Build Status](https://travis-ci.org/Bubbers/Bubba-3D.svg?branch=develop)](https://travis-ci.org/Bubbers/Bubba-3D)
 
 Usage
 -----
