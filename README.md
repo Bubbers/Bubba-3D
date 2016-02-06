@@ -3,7 +3,7 @@ Bubba-3D [![Build Status](https://travis-ci.org/Bubbers/Bubba-3D.svg?branch=deve
 
 About
 -----
-This is a small 3D-engine programmed in C++ using openGL.
+This is a small 3D Game-Engine programmed in C++ using openGL.
 Originally implemented as a school project, now extended for fun!
 
 Usage
