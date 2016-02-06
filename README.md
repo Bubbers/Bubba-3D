@@ -14,7 +14,6 @@ Usage
 -----
 Tutorials can be found on the [wiki](https://github.com/Bubbers/Bubba-3D/wiki)
 
-***  
 Implemented
 -----------
 * Mesh loading using Assimp
