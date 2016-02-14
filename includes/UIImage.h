@@ -6,9 +6,12 @@
 #define SUPER_BUBBA_AWESOME_SPACE_UIIMAGE_H
 
 #include <float2.h>
+#include "Texture.h"
+
+using namespace chag;
 
 class UIImage {
-
+public:
     Texture getTexture();
     float2 getTopLeftPosition();
     float2 getBottomRightPosition();
