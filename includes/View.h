@@ -6,7 +6,7 @@
 #define SUPER_BUBBA_AWESOME_SPACE_VIEW_H
 
 using namespace std;
-
+class UIImage;
 class View {
 
 public:
