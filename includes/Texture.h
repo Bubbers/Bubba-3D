@@ -2,7 +2,10 @@
 #define BUBBA_3D_TEXTURE_H
 
 #include <GL/glew.h>
+#include <FreeImage.h>
+#include <string>
 
+using namespace std;
 
 class Texture {
 public:

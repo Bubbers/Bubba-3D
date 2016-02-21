@@ -8,35 +8,31 @@
 #include "IRenderComponent.h"
 #include "GL/glew.h"
 #include "Utils.h"
+#include <map>
+
+using namespace std;
 
 class Texture;
+class Layout;
+class GLSquare;
 
 class HudRenderer : public IRenderComponent
 {
 public:
-    HudRenderer(int *scoreBoard, State* state);
+    HudRenderer();
     ~HudRenderer();
-    struct HudConfig{
-        //percentage (0-100)
-        float speed = 0.0f;
-    };
 
     virtual void render();
     virtual void renderShadow(ShaderProgram *shaderProgram);
     virtual void update(float dt);
-    void render2DHud(Texture* texture, float4x4 *modelMatrix);
-    struct HudConfig* getConfig();
-    //void renderView(View view);
 
-private:
-    void renderNum(int);
+    virtual void setLayout(Layout* layout);
 
-    bool start = true;
+    virtual GLSquare* getSquareByID(string id);
 
-    int *scoreBoard;
-    GLuint m_vaob;
-    struct HudConfig* conf;
-    State *state;
+protected:
+    float4x4 createOrthographicProjection();
+    map<string,GLSquare*> squares;
 
 };
 

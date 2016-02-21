@@ -7,11 +7,12 @@
 
 class Dimension {
 public:
-    enum DimensionUnit{PIXELS,PERCENTAGE,FILL,WRAP};
+    enum DimensionUnit{PIXELS,PERCENTAGE,FILL,WRAP,PERCENTAGE_PLUS_PIXELS};
 
-    float getSize(int room);
+    float getSize(float room);
     static Dimension fromPercentage(float percentage);
     static Dimension fromPixels(int pixels);
+    static Dimension fromPercentagePlusPixels(float percentage, int pixels);
     static Dimension fill();
     static Dimension fill(unsigned int weight);
     static Dimension wrap();
@@ -21,6 +22,7 @@ public:
     int getWeight();
     int getPixels();
     float getPercentage();
+    Dimension();
 
 private:
     Dimension(DimensionUnit unit);

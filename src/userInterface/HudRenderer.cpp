@@ -3,60 +3,61 @@
 //
 
 #include <ResourceManager.h>
-#include <Utils.h>
-#include <ControlsManager.h>
-#include <Controls.h>
-#include <View.h>
 #include <GLSquare.h>
+#include <Layout.h>
+#include <Globals.h>
 #include "HudRenderer.h"
+#include <vector>
 
-HudRenderer::HudRenderer(int *scoreBoard, State *state){
-    this->state = state;
-    this->scoreBoard = scoreBoard;
+using namespace std;
+
+HudRenderer::HudRenderer(){
 
     ResourceManager::loadShader("../shaders/hud.vert", "../shaders/hud.frag", "hudShader");
     shaderProgram = ResourceManager::getShader("hudShader");
-    conf = new HudConfig;
 
-    glGenVertexArrays(1, &m_vaob);
-
-    /*GLfloat quad[] = { //POSITION3 TEXCOORD2 WTF, magic array?
-            0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-            1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
-            0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-
-            0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-            1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-            1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
-    };
-
-    glGenVertexArrays(1, &m_vaob);
-    glBindVertexArray(m_vaob);
-
-    GLuint pos_vbo;
-    glGenBuffers(1, &pos_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, pos_vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(quad), quad, GL_STATIC_DRAW);
-
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0);
-
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
-
-    // CLEANUP
-    glBindVertexArray(0);
-    CHECK_GL_ERROR();*/
 }
+
+void HudRenderer::setLayout(Layout *layout) {
+    int w = Globals::get(Globals::WINDOW_WIDTH), h = Globals::get(Globals::WINDOW_HEIGHT);
+    squares = layout->getGLSquares(0,0,(float)w,(float)h);
+}
+
+void HudRenderer::render() {
+
+    float4x4 orthographicProjection = createOrthographicProjection();
+    for(auto child : squares)
+        child.second->render(shaderProgram,&orthographicProjection);
+
+}
+
+GLSquare* HudRenderer::getSquareByID(string id) {
+    map<string,GLSquare*>::iterator it = squares.find(id);
+    return it == squares.end() ? nullptr : it->second;
+}
+
+float4x4 HudRenderer::createOrthographicProjection() {
+    static int w = -1, h = -1;
+    static float4x4 orthoMatrix;
+    if(Globals::get(Globals::WINDOW_WIDTH) != w || Globals::get(Globals::WINDOW_HEIGHT) != h){
+        w = Globals::get(Globals::WINDOW_WIDTH);
+        h = Globals::get(Globals::WINDOW_HEIGHT);
+        float r = (float)w, l = 0.0f, b = -(float)h, t = 0.0f, f = 1.0f, n = -1.0f;
+        orthoMatrix = make_ortho(r,l,t,b,f,n);
+    }
+    return orthoMatrix;
+}
+
 /*
 void HudRenderer::renderView(View view){
     //GLfloat vertices[view.getSize()*5];
 }
 */
 HudRenderer::~HudRenderer(){
-    delete conf;
+
 }
 
+/*
 void HudRenderer::renderNum(int n) {
 
     std::string texturePath = "../scenes/HUD/num";
@@ -66,11 +67,10 @@ void HudRenderer::renderNum(int n) {
     Texture* texture = ResourceManager::loadAndFetchTexture(texturePath);
     GLSquare(-0.9f,0.7f,0.2f,0.2f,texture).render(shaderProgram,&m_vaob);
 }
-
 struct HudRenderer::HudConfig* HudRenderer::getConfig() {
     return conf;
-}
-
+}*/
+/*
 void HudRenderer::render() {
     float4x4 modelMat;
 
@@ -135,11 +135,12 @@ void HudRenderer::render() {
     Texture* texture1 = ResourceManager::loadAndFetchTexture("../scenes/HUD/arrow.png");
     GLSquare(0.89f,0.825f,0.02f,0.125f,texture1).render(shaderProgram,&m_vaob);
 }
-
+*/
+/*
 void HudRenderer::render2DHud(Texture* texture, float4x4 *modelMatrix) {
     GLSquare square = GLSquare(-1.0f,-1.0f,2.0f,2.0f,texture);
     square.render(shaderProgram,&m_vaob);
-    /*GLint currentDepthFunc;
+    GLint currentDepthFunc;
     glGetIntegerv(GL_DEPTH_FUNC, &currentDepthFunc);
 
     glDepthFunc(GL_ALWAYS);
@@ -162,9 +163,9 @@ void HudRenderer::render2DHud(Texture* texture, float4x4 *modelMatrix) {
     glDisable(GL_BLEND);
 
     glEnable(GL_CULL_FACE);
-    shaderProgram->restorePreviousShaderProgram();*/
+    shaderProgram->restorePreviousShaderProgram();
 }
-
+*/
 
 void HudRenderer::renderShadow(ShaderProgram *shaderProgram) {}
 
