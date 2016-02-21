@@ -5,21 +5,34 @@
 #ifndef SUPER_BUBBA_AWESOME_SPACE_GLSQUARE_H
 #define SUPER_BUBBA_AWESOME_SPACE_GLSQUARE_H
 
-class Texture;
+#include <GL/glew.h>
+#include <float4x4.h>
+
+using namespace chag;
+
+class Shader;
+class HUDGraphic;
 
 class GLSquare {
 public:
-    void render(Shader* shaderProgram, GLuint* vertexBuffer);
-    GLSquare(float posX, float posY, float width, float height, Texture* image);
+    virtual void render(Shader* shaderProgram, float4x4* projectionMatrix);
+    GLSquare(float posX, float posY, float width, float height, HUDGraphic* image);
+    virtual ~GLSquare();
 
-    static void initVertexBufferForGLSquare(GLuint* vertexBuffer);
+    virtual void setRelativePosition(float3 position);
+    virtual void setCenterOffset(float3 offset);
+    virtual void setRotation(float rotation);
 
-private:
-    float posX,posY,width,height;
-    Texture* texture;
+protected:
+    float posX,posY,width,height, rotation = 0.0f;
+    HUDGraphic* graphic;
+    GLuint vao;
+    float3 originalPosition,relativePosition,center;
 
-    void fillVertexBuffer(GLuint* vertexBuffer);
-    void bindTextureAndDraw(Shader* shaderProgram, GLuint* vertexBuffer);
+    void updateOriginalPosition();
+    void init(float posX, float posY, float width, float height, HUDGraphic* image);
+    void fillVertexBuffer();
+    void bindTextureAndDraw(Shader* shaderProgram, float4x4* projectionMatrix);
     float4x4 getModelMatrix();
 
 };

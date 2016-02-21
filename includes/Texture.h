@@ -3,7 +3,9 @@
 
 #include <GL/glew.h>
 #include <FreeImage.h>
+#include <string>
 
+using namespace std;
 
 class Texture {
 public:

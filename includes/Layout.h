@@ -5,30 +5,48 @@
 #ifndef SUPER_BUBBA_AWESOME_SPACE_LAYOUT_H
 #define SUPER_BUBBA_AWESOME_SPACE_LAYOUT_H
 
+#include <vector>
+#include <map>
+#include <Dimension.h>
+
 using namespace std;
+
+class GLSquare;
+class Texture;
+class HUDGraphic;
 
 class Layout {
 
-    enum Orientation {HORIZONTAL,VERTICAL};
-    enum Position {LOWER,MIDDLE,HIGHER};
+public:
 
     virtual void addChild(Layout* child);
-    virtual vector<GLSquare*> getGLSquares(unsigned int layoutXPos,unsigned int layoutYPos, unsigned int layoutWidth,
-                                   unsigned int layoutHeight,unsigned int windowWidth, unsigned int windowHeight);
+    virtual map<string,GLSquare*> getGLSquares(float layoutXPos,float layoutYPos, float layoutWidth,
+                                           float layoutHeight);
 
-    virtual Layout(Orientation orientation, Position position, Dimension width, Dimension height);
-    virtual ~Layout();
+    /**
+     * \warn Never allowed to return a wrapping dimension
+     */
+    virtual Dimension getWidth() = 0;
+    /**
+     * \warn Never allowed to return a wrapping dimension
+     */
+    virtual Dimension getHeight() = 0;
 
-private:
-    void checkChildCompatibility(Layout* child);
-    int getTotalFillWeight();
-    int wrapSize(Orientation parentOrientation);
-    Orientation orientation;
-    Position position;
-    Dimension width,height;
+    virtual ~Layout(){}
+    virtual void getGLSquares(float layoutXPos,float layoutYPos, float layoutWidth,
+                              float layoutHeight, map<string,GLSquare*>* list) = 0;
+
+    virtual void setBackground(HUDGraphic* graphic);
+
+    virtual void setId(string id);
+
+protected:
     vector<Layout*> children;
+    HUDGraphic* graphic = nullptr;
+    string id = "";
+
+    string getNextRandId();
 
 };
-
 
 #endif //SUPER_BUBBA_AWESOME_SPACE_LAYOUT_H

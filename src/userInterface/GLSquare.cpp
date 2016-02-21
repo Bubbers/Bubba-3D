@@ -7,9 +7,9 @@
 #include <Shader.h>
 #include "GLSquare.h"
 #include <Texture.h>
+#include <HUDGraphic.h>
 
-void GLSquare::render(Shader* shaderProgram, GLuint* vertexBuffer) {
-    fillVertexBuffer(vertexBuffer);
+void GLSquare::render(Shader* shaderProgram, float4x4* projectionMatrix) {
 
     GLint currentDepthFunc;
     glGetIntegerv(GL_DEPTH_FUNC, &currentDepthFunc);
@@ -20,7 +20,7 @@ void GLSquare::render(Shader* shaderProgram, GLuint* vertexBuffer) {
 
     shaderProgram->backupCurrentShaderProgram();
 
-    bindTextureAndDraw(shaderProgram,vertexBuffer);
+    bindTextureAndDraw(shaderProgram,projectionMatrix);
 
     CHECK_GL_ERROR();
 
@@ -31,44 +31,73 @@ void GLSquare::render(Shader* shaderProgram, GLuint* vertexBuffer) {
     shaderProgram->restorePreviousShaderProgram();
 }
 
-void GLSquare::bindTextureAndDraw(Shader *shaderProgram, GLuint* vertexBuffer) {
+void GLSquare::bindTextureAndDraw(Shader *shaderProgram, float4x4* projectionMatrix) {
     shaderProgram->use();
-    glBindVertexArray(*vertexBuffer);
+    glBindVertexArray(vao);
 
     shaderProgram->setUniform1i("sprite", 0);
     shaderProgram->setUniformMatrix4fv("modelMatrix", getModelMatrix());
+    shaderProgram->setUniformMatrix4fv("projectionMatrix",*projectionMatrix);
 
-    texture->bind(GL_TEXTURE0);
+    graphic->getTexture()->bind(GL_TEXTURE0);
 
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
 //TODO Add support for modifiable layouts
 float4x4 GLSquare::getModelMatrix() {
-    return make_identity<float4x4>();
+    return make_translation(originalPosition+relativePosition)*make_rotation_z<float4x4>(rotation)*make_translation(center)*make_identity<float4x4>();
 }
 
-GLSquare::GLSquare(float posX, float posY, float width, float height, Texture *image) {
+GLSquare::GLSquare(float posX, float posY, float width, float height, HUDGraphic *image) {
+    init(posX,posY,width,height,image);
+}
+
+void GLSquare::init(float posX, float posY, float width, float height, HUDGraphic *image) {
     this->posX = posX;
     this->posY = posY;
     this->width = width;
     this->height = height;
-    this->texture = image;
+    this->graphic = image;
+    relativePosition = make_vector(0.0f,0.0f,0.0f);
+    center = image->getCenterOffset(width,height);
+    updateOriginalPosition();
+    fillVertexBuffer();
 }
 
-void GLSquare::fillVertexBuffer(GLuint* vertexBuffer) {
+void GLSquare::setRotation(float rotation) {
+    this->rotation = rotation;
+}
+
+void GLSquare::updateOriginalPosition() {
+    originalPosition = make_vector(posX+width/2.0f+center.x,-posY-height/2.0f-center.y,0.0f);
+}
+
+void GLSquare::setRelativePosition(float3 position) {
+    this->relativePosition = relativePosition;
+}
+
+void GLSquare::setCenterOffset(float3 offset) {
+    center = offset;
+    updateOriginalPosition();
+}
+
+void GLSquare::fillVertexBuffer() {
+
+    float halfWidth = width/2, halfHeight = height/2;
 
     GLfloat quad[] = {
-            posX,       -posY-height, 0.0f, 0.0f, 0.0f,
-            posX+width, -posY,        0.0f, 1.0f, 1.0f,
-            posX,       -posY,        0.0f, 0.0f, 1.0f,
+            -halfWidth, -halfHeight, 0.0f, 0.0f, 0.0f,
+            halfWidth,  -halfHeight, 0.0f, 1.0f, 0.0f,
+            halfWidth, halfHeight, 0.0f, 1.0f, 1.0f,
 
-            posX,       -posY-height, 0.0f, 0.0f, 0.0f,
-            posX+width, -posY-height, 0.0f, 1.0f, 0.0f,
-            posX+width, -posY,        0.0f, 1.0f, 1.0f,
+            -halfWidth, -halfHeight,  0.0f, 0.0f, 0.0f,
+            halfWidth, halfHeight, 0.0f, 1.0f, 1.0f,
+            -halfWidth, halfHeight,  0.0f, 0.0f, 1.0f,
     };
 
-    glBindVertexArray(*vertexBuffer);
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
 
     GLuint pos_vbo;
     glGenBuffers(1, &pos_vbo);
@@ -84,4 +113,8 @@ void GLSquare::fillVertexBuffer(GLuint* vertexBuffer) {
     // CLEANUP
     glBindVertexArray(0);
     CHECK_GL_ERROR();
+}
+
+GLSquare::~GLSquare() {
+    glDeleteVertexArrays(1,&vao);
 }
