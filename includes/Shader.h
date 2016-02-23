@@ -20,6 +20,7 @@ class Shader {
     void setUniform1i(std::string name, int value);
     void setUniform1f(std::string name, float value);
     void setUniform3f(std::string name, float3 value);
+    void setUniform4f(std::string name, float4 value);
     void setUniformMatrix4fv(std::string name, float4x4 matrix);
     void setUniformBufferObjectBinding(std::string bufferName, int index);
     void initUniformBufferObject(std::string bufferName, int size, int index);

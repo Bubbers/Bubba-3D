@@ -13,17 +13,37 @@ class HUDGraphic {
 
 public:
 
+    class Color{
+    public:
+        Color(string* hexString);
+        Color(string* hexString, float opacity);
+        Color(int red, int green, int blue);
+        Color(int red, int green, int blue, float opacity);
+        Color(float4 rawColor);
+        float4 getColor();
+
+    private:
+        float4 color;
+        void hexStringToFloat(string* hexString,unsigned int pos, unsigned int len, float* target);
+    };
+
     HUDGraphic(Texture* texture);
     HUDGraphic(Texture* texture, Dimension offsetX, Dimension offsetY);
+    HUDGraphic(Color color);
 
     float3 getCenterOffset(float width, float height);
     Texture* getTexture();
+    float4 getColor();
+    bool isTextureElseColor();
 
 protected:
 
     Dimension offsetX, offsetY;
     Texture* texture;
+    float4 color;
+    bool textureElseColor;
 
+private:
 };
 
 

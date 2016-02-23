@@ -39,7 +39,13 @@ void GLSquare::bindTextureAndDraw(Shader *shaderProgram, float4x4* projectionMat
     shaderProgram->setUniformMatrix4fv("modelMatrix", getModelMatrix());
     shaderProgram->setUniformMatrix4fv("projectionMatrix",*projectionMatrix);
 
-    graphic->getTexture()->bind(GL_TEXTURE0);
+    if(graphic->isTextureElseColor()) {
+        graphic->getTexture()->bind(GL_TEXTURE0);
+        shaderProgram->setUniform1i("textureElseColor",true);
+    }else{
+        shaderProgram->setUniform1i("textureElseColor",false);
+        shaderProgram->setUniform4f("color",graphic->getColor());
+    }
 
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
