@@ -43,8 +43,8 @@ void SkyBoxRenderer::render() {
     float4x4 modelMatrix = gameObject->getModelMatrix();
     shaderProgram->setUniformMatrix4fv("modelMatrix", modelMatrix);
 
-    for (size_t i = 0; i < m_skyMesh->m_chunks.size(); i++) {
-        renderChunk(m_skyMesh->m_chunks[i]);
+    for (size_t i = 0; i < m_skyMesh->getChunks()->size(); i++) {
+        renderChunk((*m_skyMesh->getChunks())[i]);
     }
 
     glCullFace(OldCullFaceMode);

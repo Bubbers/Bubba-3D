@@ -8,6 +8,7 @@
 #include <assimp/scene.h>
 #include <vector>
 #include "Chunk.h"
+#include <string>
 
 using namespace chag;
 
@@ -57,10 +58,10 @@ void Mesh::initMaterials(const aiScene *pScene, const std::string &fileName) {
 }
 
 void Mesh::initMaterialTextures(Material *material, std::string fileName, const aiMaterial *loadedMaterial) {
-    if(loadedMaterial->GetTextureCount(aiTextureType_DIFFUSE) > 0) {
+    if (loadedMaterial->GetTextureCount(aiTextureType_DIFFUSE) > 0) {
         material->diffuseTexture = getTexture(loadedMaterial, fileName, aiTextureType_DIFFUSE);
     }
-    if(loadedMaterial->GetTextureCount(aiTextureType_HEIGHT) > 0) {
+    if (loadedMaterial->GetTextureCount(aiTextureType_HEIGHT) > 0) {
         material->bumpMapTexture = getTexture(loadedMaterial, fileName, aiTextureType_HEIGHT);
     }
 }
@@ -104,11 +105,9 @@ std::string Mesh::getDirectoryFromPath(const std::string &fileName) {
     std::string::size_type index = fileName.find_last_of("/");
     if (index == std::string::npos) {
         return ".";
-    }
-    else if (index == 0) {
+    } else if (index == 0) {
         return "/";
-    }
-    else {
+    } else {
         return fileName.substr(0, index);
     }
 }
@@ -121,7 +120,9 @@ std::string Mesh::cleanFileName(std::string fileName) {
     }
 }
 
-Sphere Mesh::getSphere(){ return sphere; }
+Sphere Mesh::getSphere() {
+    return sphere;
+}
 
 void Mesh::setupSphere(std::vector<float3> *positions) {
     sphere.setPosition(m_aabb.getCenterPosition());
@@ -142,8 +143,8 @@ void Mesh::initMesh(unsigned int index, const aiMesh *paiMesh) {
 }
 
 void Mesh::initChunkFromAiMesh(Chunk &chunk, const aiMesh *paiMesh) {
-    initVerticesFromAiMesh(paiMesh, &chunk);
-    initIndicesFromAiMesh(paiMesh, chunk.m_indices);
+    initVerticesFromAiMesh(paiMesh, chunk);
+    initIndicesFromAiMesh(paiMesh, chunk);
 
     chunk.materialIndex = paiMesh->mMaterialIndex;
 
@@ -151,7 +152,8 @@ void Mesh::initChunkFromAiMesh(Chunk &chunk, const aiMesh *paiMesh) {
     m_chunks.push_back(chunk);
 }
 
-void Mesh::initVerticesFromAiMesh(const aiMesh *paiMesh, Chunk *chunk) {
+
+void Mesh::initVerticesFromAiMesh(const aiMesh *paiMesh, Chunk &chunk) {
     const aiVector3D Zero3D(0.0f, 0.0f, 0.0f);
 
     for (unsigned int i = 0; i < paiMesh->mNumVertices; i++) {
@@ -159,37 +161,37 @@ void Mesh::initVerticesFromAiMesh(const aiMesh *paiMesh, Chunk *chunk) {
         const aiVector3D pNormal = paiMesh->mNormals[i];
         const aiVector3D pTexCoord = paiMesh->HasTextureCoords(0) ? paiMesh->mTextureCoords[0][i] : Zero3D;
 
-        chunk->m_positions.push_back(make_vector(pPos.x, pPos.y, pPos.z));
-        chunk->m_normals.push_back(make_vector(pNormal.x, pNormal.y, pNormal.z));
-        chunk->m_uvs.push_back(make_vector(pTexCoord.x, pTexCoord.y));
+        chunk.m_positions.push_back(make_vector(pPos.x, pPos.y, pPos.z));
+        chunk.m_normals.push_back(make_vector(pNormal.x, pNormal.y, pNormal.z));
+        chunk.m_uvs.push_back(make_vector(pTexCoord.x, pTexCoord.y));
         if (paiMesh->HasTangentsAndBitangents()) {
             const aiVector3D pBitTangents = paiMesh->mBitangents[i];
             const aiVector3D pTangents = paiMesh->mTangents[i];
-            chunk->m_bittangents.push_back(make_vector(pBitTangents.x, pBitTangents.y, pBitTangents.z));
-            chunk->m_tangents.push_back(make_vector(pTangents.x, pTangents.y, pTangents.z));
+            chunk.m_bittangents.push_back(make_vector(pBitTangents.x, pBitTangents.y, pBitTangents.z));
+            chunk.m_tangents.push_back(make_vector(pTangents.x, pTangents.y, pTangents.z));
         }
 
         checkMinMax(pPos.x, pPos.y, pPos.z, &m_aabb.minV, &m_aabb.maxV);
     }
 }
 
-void Mesh::initIndicesFromAiMesh(const aiMesh *paiMesh, std::vector<unsigned int> &indices) {
+void Mesh::initIndicesFromAiMesh(const aiMesh *paiMesh, Chunk &chunk) {
     for (unsigned int i = 0; i < paiMesh->mNumFaces; i++) {
         const aiFace face = paiMesh->mFaces[i];
-        indices.push_back(face.mIndices[0]);
-        indices.push_back(face.mIndices[1]);
-        indices.push_back(face.mIndices[2]);
+        chunk.m_indices.push_back(face.mIndices[0]);
+        chunk.m_indices.push_back(face.mIndices[1]);
+        chunk.m_indices.push_back(face.mIndices[2]);
     }
 }
 
 // TODO(Bubbad) Remove all GL dependencies directly in mesh
 template <typename T>
-void setupGlBuffer(std::vector<T> buffer, GLuint *bufferGLObject, int vertexAttibute, int numbersPerObject,
+void setupGlBuffer(std::vector<T> buffer, GLuint *bufferGLObject, GLuint vertexAttibute, int numbersPerObject,
                    const void* firstObject, GLenum type) {
     glGenBuffers(1, bufferGLObject);
     glBindBuffer(type, *bufferGLObject);
     glBufferData(type, buffer.size() * sizeof(buffer[0]), firstObject, GL_STATIC_DRAW);
-    glVertexAttribPointer(vertexAttibute, numbersPerObject, GL_FLOAT, false, 0, 0);
+    glVertexAttribPointer(vertexAttibute, numbersPerObject, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(vertexAttibute);
 }
 
@@ -239,4 +241,12 @@ Triangle* Mesh::createTriangleFromPositions(std::vector<chag::float3> positionBu
 
 std::vector<Triangle*> Mesh::getTriangles() {
     return triangles;
+}
+
+std::vector<Chunk>* Mesh::getChunks() {
+    return &m_chunks;
+}
+
+std::vector<Material>* Mesh::getMaterials() {
+    return &materials;
 }

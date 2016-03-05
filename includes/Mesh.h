@@ -31,6 +31,10 @@ public:
     AABB* getAABB();
     Sphere getSphere();
 
+    std::vector<Chunk>* getChunks();
+    std::vector<Material>* getMaterials();
+
+
 private:
 
     void initMeshFromScene(const aiScene *pScene, const std::string &fileName);
@@ -41,8 +45,8 @@ private:
     void initMaterialShininess(Material *material, const aiMaterial *loadedMaterial);
 
     void initChunkFromAiMesh(Chunk &chunk, const aiMesh *paiMesh);
-    void initVerticesFromAiMesh(const aiMesh *paiMesh, Chunk *chunk);
-    void initIndicesFromAiMesh(const aiMesh *paiMesh, std::vector<unsigned int> &indices);
+    void initVerticesFromAiMesh(const aiMesh *paiMesh, Chunk &chunk);
+    void initIndicesFromAiMesh(const aiMesh *paiMesh, Chunk &chunk);
 
     std::string getAbsolutePath(const std::string &fileName, std::string textureName);
     std::string getDirectoryFromPath(const std::string &fileName);
@@ -59,7 +63,6 @@ private:
     std::vector<Triangle *> triangles;
     Sphere sphere;
 
-public:
     std::vector<Material> materials;
     std::vector<Chunk> m_chunks;
     AABB m_aabb;
