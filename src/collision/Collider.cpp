@@ -442,25 +442,23 @@ bool octreeOctreeIntersection(Octree *object1Octree, float4x4 *object1ModelMatri
         if(isTrianglesIntersecting(object1Octree, object1ModelMatrix, object2Octree, object2ModelMatrix)) {
             return true;
         }
-        if (object1Aabb.getSize() > object2Aabb.getSize()) {
-            std::vector<Octree *> object1Children;
 
-            object1Octree->getChildren(&object1Children);
-            for (auto it = object1Children.begin(); it != object1Children.end(); it++) {
-                if (octreeOctreeIntersection(*it, object1ModelMatrix, object2Octree, object2ModelMatrix)) {
-                    return true;
-                }
+        std::vector<Octree *> object1Children;
+
+        object1Octree->getChildren(&object1Children);
+        for (auto it = object1Children.begin(); it != object1Children.end(); it++) {
+            if (octreeOctreeIntersection(*it, object1ModelMatrix, object2Octree, object2ModelMatrix)) {
+                return true;
             }
-        } else {
-            std::vector<Octree *> object2Children;
+        }
 
-            object2Octree->getChildren(&object2Children);
-            for (auto it = object2Children.begin(); it != object2Children.end(); it++) {
-                if (octreeOctreeIntersection(object1Octree, object1ModelMatrix, *it, object2ModelMatrix)) {
-                    return true;
-                }
+        std::vector<Octree *> object2Children;
+
+        object2Octree->getChildren(&object2Children);
+        for (auto it = object2Children.begin(); it != object2Children.end(); it++) {
+            if (octreeOctreeIntersection(object1Octree, object1ModelMatrix, *it, object2ModelMatrix)) {
+                return true;
             }
-
         }
     } else if (!object1Octree->hasChildren() && object2Octree->hasChildren()) {
         if(isTrianglesIntersecting(object1Octree, object1ModelMatrix, object2Octree, object2ModelMatrix)) {
@@ -505,10 +503,16 @@ bool isTrianglesIntersecting(Octree *object1Octree, float4x4 *object1ModelMatrix
         return false;
     }
 
+    int i = 0;
+
     for (auto t1 = triangles1->begin(); t1 != triangles1->end(); t1++) {
         Triangle triangle1 = multiplyTriangleWithModelMatrix(*t1, object1ModelMatrix);
         for (auto t2 = triangles2->begin(); t2 != triangles2->end(); t2++) {
             Triangle triangle2 = multiplyTriangleWithModelMatrix(*t2, object2ModelMatrix);
+
+            if(i++ == 11) {
+                int ix = 3;
+            }
 
             if (triangleTriangleIntersection(&triangle1, &triangle2)) {
                 return true;

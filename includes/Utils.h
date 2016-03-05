@@ -28,6 +28,7 @@ static float radToDegree(float rad) {
 }
 
 static float getRand(float min, float max) {
+	//srand(time(NULL));
 	float range = max - min;
 	return (((float) rand() / (float) RAND_MAX) * range) + min;
 }
