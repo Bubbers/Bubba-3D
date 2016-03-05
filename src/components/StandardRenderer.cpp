@@ -57,7 +57,7 @@ void StandardRenderer::render() {
         glBindVertexArray(chunk.m_vaob);
         glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, chunk.m_ind_bo);
 
-        glDrawElements(GL_TRIANGLES, mesh->m_chunks[i].m_numIndices, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, mesh->m_chunks[i].m_indices.size(), GL_UNSIGNED_INT, 0);
         CHECK_GL_ERROR();
     }
     CHECK_GL_ERROR();
@@ -76,7 +76,7 @@ void StandardRenderer::renderShadow(Shader *shaderProgram) {
         glBindVertexArray(chunk.m_vaob);
         glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, chunk.m_ind_bo);
 
-        glDrawElements(GL_TRIANGLES, mesh->m_chunks[i].m_numIndices, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, mesh->m_chunks[i].m_indices.size(), GL_UNSIGNED_INT, 0);
         CHECK_GL_ERROR();
     }
 

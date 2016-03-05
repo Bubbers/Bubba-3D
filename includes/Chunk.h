@@ -2,8 +2,13 @@
 #define BUBBA_3D_CHUNK_H
 
 #include "float2.h"
+#include "float3.h"
+#include <GL/glew.h>
 
-struct Chunk {
+class Chunk {
+public:
+    Chunk();
+
     Chunk(std::vector<chag::float3> &positions,
           std::vector<chag::float3> &normals,
           std::vector<chag::float2> &uvs,
@@ -34,8 +39,6 @@ struct Chunk {
     GLuint m_vaob;
 
     unsigned int materialIndex;
-
-    unsigned int m_numIndices;
 };
 
 

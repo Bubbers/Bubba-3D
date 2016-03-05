@@ -57,7 +57,7 @@ void SkyBoxRenderer::renderChunk(Chunk& chunk) {
     glBindVertexArray(chunk.m_vaob);
     glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, chunk.m_ind_bo);
 
-    glDrawElements(GL_TRIANGLES, chunk.m_numIndices, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, chunk.m_indices.size(), GL_UNSIGNED_INT, 0);
     CHECK_GL_ERROR();
 }
 

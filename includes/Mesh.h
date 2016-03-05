@@ -40,6 +40,10 @@ private:
     void initMaterialColors(Material *material, const aiMaterial *loadedMaterial);
     void initMaterialShininess(Material *material, const aiMaterial *loadedMaterial);
 
+    void initChunkFromAiMesh(Chunk &chunk, const aiMesh *paiMesh);
+    void initVerticesFromAiMesh(const aiMesh *paiMesh, Chunk *chunk);
+    void initIndicesFromAiMesh(const aiMesh *paiMesh, std::vector<unsigned int> &indices);
+
     std::string getAbsolutePath(const std::string &fileName, std::string textureName);
     std::string getDirectoryFromPath(const std::string &fileName);
     std::string cleanFileName(std::string filePath);
@@ -47,6 +51,10 @@ private:
     Texture* getTexture(const aiMaterial *material, const std::string &fileName, aiTextureType type);
 
     void setupChunkForRendering(Chunk &chunk);
+
+    void setupSphere(std::vector<float3> *positions);
+
+    Triangle* createTriangleFromPositions(std::vector<chag::float3> positionBuffer, unsigned int startIndex);
 
     std::vector<Triangle *> triangles;
     Sphere sphere;

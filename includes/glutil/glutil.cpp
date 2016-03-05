@@ -32,7 +32,7 @@
 #include <Logger.h>
 
 using std::vector; 
-using namespace chag; 
+using namespace chag;
 
 
 float4x4 perspectiveMatrix(float fov, float aspectRatio, float n, float f) /* field of view, aspect ratio, near clipping plane, far clipping plane */
