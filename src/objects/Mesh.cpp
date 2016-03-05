@@ -36,8 +36,7 @@ void Mesh::loadMesh(const std::string &fileName) {
 
     if (!pScene) {
         Logger::logError("Error loading mesh for " + fileName);
-    }
-    else {
+    } else {
         initMeshFromScene(pScene, fileName);
     }
 }
@@ -59,10 +58,7 @@ void Mesh::initMaterials(const aiScene *pScene, const std::string &fileName) {
 
         initMaterialTextures(&m, fileName, material);
         initMaterialColors(&m, material);
-
-        float specExp;
-        material->Get(AI_MATKEY_SHININESS, specExp);
-        m.specularExponent = specExp > 0.0f ? specExp : 0.0f;
+        initMaterialShininess(&m, material);
 
         materials.push_back(m);
     }
@@ -82,6 +78,12 @@ void Mesh::initMaterialColors(Material *material, const aiMaterial *loadedMateri
     material->diffuseColor = getColorFromMaterial(AI_MATKEY_COLOR_DIFFUSE, *loadedMaterial);
     material->specularColor = getColorFromMaterial(AI_MATKEY_COLOR_SPECULAR, *loadedMaterial);
     material->emissiveColor = getColorFromMaterial(AI_MATKEY_COLOR_EMISSIVE, *loadedMaterial);
+}
+
+void Mesh::initMaterialShininess(Material *material, const aiMaterial *loadedMaterial) {
+    float specExp;
+    loadedMaterial->Get(AI_MATKEY_SHININESS, specExp);
+    material->specularExponent = specExp > 0.0f ? specExp : 0.0f;
 }
 
 float3 Mesh::getColorFromMaterial(const char* pKey, unsigned int type, unsigned int idx, const aiMaterial &material) {
@@ -163,6 +165,8 @@ void Mesh::initMesh(unsigned int index, const aiMesh *paiMesh) {
 
     checkMinMax(minV.x, minV.y, minV.z, &m_aabb.minV, &m_aabb.maxV);
     checkMinMax(maxV.x, maxV.y, maxV.z, &m_aabb.minV, &m_aabb.maxV);
+
+
     sphere.setPosition(m_aabb.getCenterPosition());
     sphere.setRadius(0.0f);
     for(float3 posIt : positions){
@@ -180,54 +184,41 @@ void Mesh::initMesh(unsigned int index, const aiMesh *paiMesh) {
 
 
     Chunk c(positions, normals, uvs, indices, tangents, bittangents, paiMesh->mMaterialIndex);
-    glGenVertexArrays(1, &c.m_vaob);
-    glBindVertexArray(c.m_vaob);
-
-    glGenBuffers(1, &c.m_positions_bo);
-    glBindBuffer(GL_ARRAY_BUFFER_ARB, c.m_positions_bo);
-    glBufferData(GL_ARRAY_BUFFER_ARB, c.m_positions.size() * sizeof(float3), &c.m_positions[0].x, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
-    glEnableVertexAttribArray(0);
-
-    glGenBuffers(1, &c.m_normals_bo);
-    glBindBuffer(GL_ARRAY_BUFFER_ARB, c.m_normals_bo);
-    glBufferData(GL_ARRAY_BUFFER_ARB, c.m_normals.size() * sizeof(float3),
-                 &c.m_normals[0].x, GL_STATIC_DRAW);
-    glVertexAttribPointer(1, 3, GL_FLOAT, false, 0, 0);
-    glEnableVertexAttribArray(1);
-
-    if (c.m_uvs.size() > 0) {
-        glGenBuffers(1, &c.m_uvs_bo);
-        glBindBuffer(GL_ARRAY_BUFFER_ARB, c.m_uvs_bo);
-        glBufferData(GL_ARRAY_BUFFER_ARB, c.m_uvs.size() * sizeof(float2),
-                     &c.m_uvs[0].x, GL_STATIC_DRAW);
-        glVertexAttribPointer(2, 2, GL_FLOAT, false, 0, 0);
-    }
-    glEnableVertexAttribArray(2);
-
-    glGenBuffers(1, &c.m_ind_bo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER_ARB, c.m_ind_bo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER_ARB, c.m_numIndices * sizeof(unsigned int), &c.m_indices[0], GL_STATIC_DRAW);
-    glVertexAttribPointer(3, 3, GL_FLOAT, false, 0, 0);
-    glEnableVertexAttribArray(3);
-
-    if (c.m_bittangents.size() > 0) {
-        glGenBuffers(1, &c.m_tangents_bo);
-        glBindBuffer(GL_ARRAY_BUFFER_ARB, c.m_tangents_bo);
-        glBufferData(GL_ARRAY_BUFFER_ARB, c.m_tangents.size() * sizeof(float3), &c.m_tangents[0].x, GL_STATIC_DRAW);
-        glVertexAttribPointer(4, 3, GL_FLOAT, false, 0, 0);
-        glEnableVertexAttribArray(4);
-
-        glGenBuffers(1, &c.m_bittangents_bo);
-        glBindBuffer(GL_ARRAY_BUFFER_ARB, c.m_bittangents_bo);
-        glBufferData(GL_ARRAY_BUFFER_ARB, c.m_bittangents.size() * sizeof(float3), &c.m_bittangents[0].x,
-                     GL_STATIC_DRAW);
-        glVertexAttribPointer(5, 3, GL_FLOAT, false, 0, 0);
-        glEnableVertexAttribArray(5);
-    }
+    setupChunkForRendering(c);
 
     m_chunks.push_back(c);
 }
+
+template <typename T>
+void setupGlBuffer(std::vector<T> buffer, GLuint *bufferGLObject, int vertexAttibute, int numbersPerObject, const void* firstObject, GLenum type) {
+    glGenBuffers(1, bufferGLObject);
+    glBindBuffer(type, *bufferGLObject);
+    glBufferData(type, buffer.size() * sizeof(buffer[0]), firstObject, GL_STATIC_DRAW);
+    glVertexAttribPointer(vertexAttibute, numbersPerObject, GL_FLOAT, false, 0, 0);
+    glEnableVertexAttribArray(vertexAttibute);
+}
+
+void Mesh::setupChunkForRendering(Chunk &chunk) {
+    glGenVertexArrays(1, &chunk.m_vaob);
+    glBindVertexArray(chunk.m_vaob);
+
+    setupGlBuffer(chunk.m_positions, &chunk.m_positions_bo, 0, 3 ,&chunk.m_positions[0].x, GL_ARRAY_BUFFER_ARB);
+    setupGlBuffer(chunk.m_normals, &chunk.m_normals_bo, 1, 3, &chunk.m_normals[0].x, GL_ARRAY_BUFFER_ARB);
+
+    if (chunk.m_uvs.size() > 0) {
+        setupGlBuffer(chunk.m_uvs, &chunk.m_uvs_bo, 2, 2, &chunk.m_uvs[0].x, GL_ARRAY_BUFFER_ARB);
+    }
+
+    setupGlBuffer(chunk.m_indices, &chunk.m_ind_bo, 3, 3, &chunk.m_indices[0], GL_ELEMENT_ARRAY_BUFFER_ARB);
+
+    if (chunk.m_bittangents.size() > 0) {
+        setupGlBuffer(chunk.m_tangents, &chunk.m_tangents_bo, 4, 3, &chunk.m_tangents[0].x, GL_ARRAY_BUFFER_ARB);
+        setupGlBuffer(chunk.m_bittangents, &chunk.m_bittangents_bo, 5, 3, &chunk.m_bittangents[0].x, GL_ARRAY_BUFFER_ARB);
+    }
+}
+
+
+
 
 AABB* Mesh::getAABB() {
     return &m_aabb;
