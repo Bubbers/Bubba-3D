@@ -138,11 +138,11 @@ void Mesh::setupSphere(std::vector<float3> *positions) {
 void Mesh::initMesh(unsigned int index, const aiMesh *paiMesh) {
     Chunk chunk;
 
-    initChunkFromAiMesh(chunk, paiMesh);
+    initChunkFromAiMesh(paiMesh, chunk);
     setupSphere(&chunk.m_positions);
 }
 
-void Mesh::initChunkFromAiMesh(Chunk &chunk, const aiMesh *paiMesh) {
+void Mesh::initChunkFromAiMesh(const aiMesh *paiMesh, Chunk &chunk) {
     initVerticesFromAiMesh(paiMesh, chunk);
     initIndicesFromAiMesh(paiMesh, chunk);
 

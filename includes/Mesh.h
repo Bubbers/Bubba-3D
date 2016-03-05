@@ -35,7 +35,7 @@ public:
     std::vector<Material>* getMaterials();
 
 
-private:
+ private:
 
     void initMeshFromScene(const aiScene *pScene, const std::string &fileName);
     void initMesh(unsigned int index, const aiMesh *paiMesh);
@@ -44,7 +44,7 @@ private:
     void initMaterialColors(Material *material, const aiMaterial *loadedMaterial);
     void initMaterialShininess(Material *material, const aiMaterial *loadedMaterial);
 
-    void initChunkFromAiMesh(Chunk &chunk, const aiMesh *paiMesh);
+    void initChunkFromAiMesh(const aiMesh *paiMesh, Chunk &chunk);
     void initVerticesFromAiMesh(const aiMesh *paiMesh, Chunk &chunk);
     void initIndicesFromAiMesh(const aiMesh *paiMesh, Chunk &chunk);
 
@@ -61,10 +61,10 @@ private:
     Triangle* createTriangleFromPositions(std::vector<chag::float3> positionBuffer, unsigned int startIndex);
 
     std::vector<Triangle *> triangles;
-    Sphere sphere;
-
     std::vector<Material> materials;
     std::vector<Chunk> m_chunks;
+
+    Sphere sphere;
     AABB m_aabb;
 };
 
