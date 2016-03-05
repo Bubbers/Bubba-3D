@@ -1,14 +1,17 @@
 
+#include <algorithm>
+#include <vector>
 #include <Logger.h>
-#include <linmath/Quaternion.h>
-#include <Sphere.h>
+#include "linmath/Quaternion.h"
+#include "Sphere.h"
 #include "GameObject.h"
-#include "float3x3.h"
+#include "linmath/float3x3.h"
 #include "Collider.h"
 #include "Mesh.h"
 #include "IComponent.h"
 #include "IRenderComponent.h"
 #include "Octree.h"
+
 
 
 #define NORMAL_TEXTURE_LOCATION 3
@@ -22,7 +25,7 @@ GameObject::GameObject() {
 }
 
 GameObject::GameObject(Mesh *mesh) {
-	m_modelMatrix = make_identity<float4x4>();
+    m_modelMatrix = make_identity<float4x4>();
     initGameObject(mesh, mesh);
 };
 
@@ -38,11 +41,8 @@ void GameObject::initGameObject(Mesh *mesh, Mesh *colliderMesh) {
     this->m_modelMatrix = make_identity<float4x4>();
     this->shininess = 0.0f;
     this->id = getUniqueId();
-    if(mesh != nullptr)
-        sphere = mesh->getSphere();
-    if(colliderMesh != nullptr) {
-        this->octree = createOctree(this->collisionMesh);
-    }
+    this->sphere = mesh->getSphere();
+    this->octree = createOctree(colliderMesh);
 }
 
 GameObject::~GameObject() {
@@ -66,13 +66,14 @@ Octree* GameObject::createOctree(Mesh* mesh) {
 }
 
 Sphere GameObject::getSphere() {
-    float scaling = max(scale.x,max(scale.y,scale.z));
+    float scaling = max(scale.x, max(scale.y, scale.z));
     return Sphere(sphere.getPosition()+location, scaling*sphere.getRadius());
 }
 
 void GameObject::makeDirty() {
-    for(auto &component : components)
+    for (auto &component : components) {
         component->onDeath();
+    }
     dirty = true;
 }
 
@@ -96,7 +97,7 @@ std::vector<Triangle *> GameObject::getTriangles() {
     return mesh->getTriangles();
 }
 
-float4x4 GameObject::getModelMatrix(){
+float4x4 GameObject::getModelMatrix() {
     return m_modelMatrix;
 }
 
@@ -105,7 +106,7 @@ void GameObject::renderShadow(Shader *shaderProgram) {
     renderComponent->renderShadow(shaderProgram);
 }
 
-void GameObject::addRenderComponent(IRenderComponent* renderer){
+void GameObject::addRenderComponent(IRenderComponent* renderer) {
     this->renderComponent = renderer;
     components.push_back(renderer);
 }
@@ -115,22 +116,21 @@ void GameObject::addComponent(IComponent* newComponent) {
 }
 
 void GameObject::update(float dt) {
-    for(auto &component : components) {
+    for (auto &component : components) {
         component->update(dt);
     }
-    if(changed){
+    if (changed) {
         changed = false;
         float4x4 transform = make_translation(location);
-        if(hasRotation)
-            transform = transform*makematrix(rotation);
+        if (hasRotation) {
+            transform = transform * makematrix(rotation);
+        }
         move(transform*make_scale<float4x4>(scale));
-
     }
 }
 
-void GameObject::callEvent(EventType type, GameObject* data){
-
-    switch(type) {
+void GameObject::callEvent(EventType type, GameObject* data) {
+    switch (type) {
     case EventType::BeforeCollision:
         for (auto &component : components) {
             component->beforeCollision(data);
@@ -149,37 +149,43 @@ void GameObject::callEvent(EventType type, GameObject* data){
     }
 }
 
-AABB GameObject::getAABB(){
+AABB GameObject::getAABB() {
     AABB* meshAabb = this->mesh->getAABB();
     aabb = multiplyAABBWithModelMatrix(meshAabb, m_modelMatrix);
 
     return aabb;
 }
 
-Identifier GameObject::getIdentifier(){
-    return identifier;
+TypeIdentifier GameObject::getIdentifier() {
+    return typeIdentifier;
 }
 
-void GameObject::setIdentifier(Identifier identifier) {
-    this->identifier = identifier;
+void GameObject::setIdentifier(TypeIdentifier identifier) {
+    this->typeIdentifier = identifier;
 }
 
-void GameObject::addCollidesWith(Identifier colliderID){ canCollideWith.push_back(colliderID);}
-void GameObject::addCollidesWith(initializer_list<Identifier> colliderIDs){
-    for(Identifier id : colliderIDs)
+void GameObject::addCollidesWith(TypeIdentifier colliderID) {
+    canCollideWith.push_back(colliderID);
+}
+
+void GameObject::addCollidesWith(initializer_list<TypeIdentifier> colliderIDs) {
+    for (TypeIdentifier id : colliderIDs) {
         addCollidesWith(id);
+    }
 }
-bool GameObject::collidesWith(Identifier id){
-    for(Identifier id2 : canCollideWith)
-        if(id2 == id)
+bool GameObject::collidesWith(TypeIdentifier id) {
+    for (TypeIdentifier id2 : canCollideWith) {
+        if (id2 == id) {
             return true;
+        }
+    }
     return false;
 }
 void GameObject::clearCollidesWithList() {
-    canCollideWith = vector<Identifier>();
+    canCollideWith = vector<TypeIdentifier>();
 }
 
-bool GameObject::isDynamicObject(){
+bool GameObject::isDynamicObject() {
     return dynamicObject;
 }
 
@@ -187,7 +193,7 @@ void GameObject::setDynamic(bool isDynamic) {
     dynamicObject = isDynamic;
 }
 
-Octree* GameObject::getOctree(){
+Octree* GameObject::getOctree() {
     return octree;
 }
 
@@ -195,14 +201,32 @@ int GameObject::getId() {
     return id;
 }
 
-float3 GameObject::getScale(){ return scale; }
-Quaternion GameObject::getRotation() { return rotation; }
-float3 GameObject::getLocation(){ return location; }
+float3 GameObject::getScale() {
+    return scale;
+}
+
+Quaternion GameObject::getRotation() {
+    return rotation;
+}
+
+float3 GameObject::getLocation() {
+    return location;
+}
 
 void GameObject::updateRotation(Quaternion r) {
     setRotation(hasRotation ? r*getRotation() : r);
 }
 
-void GameObject::setScale(float3 s){scale = s; changed = true;}
-void GameObject::setLocation(float3 l){location = l; changed = true;}
-void GameObject::setRotation(Quaternion r){rotation = r; hasRotation = changed = true;}
+void GameObject::setScale(float3 s) {
+    scale = s; changed = true;
+}
+
+void GameObject::setLocation(float3 l) {
+    location = l;
+    changed = true;
+}
+
+void GameObject::setRotation(Quaternion r) {
+    rotation = r;
+    hasRotation = changed = true;
+}
