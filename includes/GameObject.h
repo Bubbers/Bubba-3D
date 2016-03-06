@@ -22,31 +22,88 @@ class IRenderComponent;
 class IComponent;
 class Octree;
 
+/**
+ *
+ *
+ * If the object can move, call setDynamic(true) to indicate this.
+ * The objects dynamicity can be used by collision handlers to determine
+ * if two objects can possibly collide (eg, two static objects can never collide).
+ *
+ * The dirty flag can be used to indicate that an objects should be removed when possible.
+ * This can be useful if calculations involving the object needs to be performed after it
+ * has been marked as dirty. Then you can at a later point, when calculations arent being done,
+ * safely remove the object.
+ */
 class GameObject : public IDrawable {
 public:
     GameObject();
+
+    /**
+     * Initiates the GameObject with the same mesh for rendering and collision
+     *
+     * @param mesh The mesh to render and perform collisions with
+     */
     explicit GameObject(Mesh *mesh);
+    /**
+     * Initiates the GameObject with different meshes for rendering and collisions
+     *
+     * @param mesh The mesh to use for rendering
+     * @param colliderMesh The mesh to use for collision
+     */
     GameObject(Mesh *mesh, Mesh *colliderMesh);
-    void initGameObject(Mesh *mesh, Mesh *colliderMesh);
 
     virtual ~GameObject();
 
-    int getUniqueId();
-
+    /**
+     * Renders the GameObject using the GameObjects RenderComponent, if any.
+     */
     virtual void render();
+    /**
+     * Renders the GameObject shadows using the GameObjects RenderComponent, if any.
+     */
     virtual void renderShadow(Shader* shaderProgram);
-
-    void move(float4x4 model_matrix);
-    void update(float4x4 update_matrix);
 
     void addRenderComponent(IRenderComponent* renderer);
     void addComponent(IComponent* newComponent);
-
+    /**
+     * Calls update for all components in the GameObject
+     *
+     * @param dt The time since last called
+     */
     void update(float dt);
-    void callEvent(EventType, GameObject* data);
+    /**
+     * Calls a specific component event on all components in the GameObject
+     *
+     * @param type The event to call on the components
+     * @param data // TODO(Bubbad) Do all events need to involve another gameobject?
+     */
+    void callEvent(EventType type, GameObject* data);
 
-    bool isDynamicObject();
-    void setDynamic(bool isDynamic);
+
+    float4x4 getModelMatrix();
+    /**
+     * Replaces the old model matrix completely
+     *
+     * @param modelMatrix The new model matrix
+     */
+    void move(float4x4 model_matrix);
+    /**
+     * Multiplies the old model matrix with the specified
+     *
+     * @param updateMatrix The matrix to multiply with
+     */
+    void update(float4x4 update_matrix);
+
+    float3 getScale();
+    void setScale(float3 s);
+
+    Quaternion getRotation();
+    void setRotation(Quaternion r);
+    void updateRotation(Quaternion r);
+
+    float3 getLocation();
+    void setLocation(float3 l);
+
 
     TypeIdentifier getIdentifier();
     void setIdentifier(TypeIdentifier identifier);
@@ -55,31 +112,52 @@ public:
     void clearCollidesWithList();
     bool collidesWith(TypeIdentifier id);
 
+    /**
+     * NOTE: The octree has not been transformed.
+     *
+     * @return The octree containing the GameObject
+     */
     Octree* getOctree();
+    /**
+     * NOTE: The triangles have not been transformed.
+     *
+     * @return A list of all the triangles in the GameObject
+     */
     std::vector<Triangle*> getTriangles();
-    float4x4 getModelMatrix();
-    AABB getAABB();
+
+    AABB getTransformedAABB();
+    Sphere getTransformedSphere();
+
+    bool isDynamicObject();
+    void setDynamic(bool isDynamic);
 
     int getId();
 
+    /**
+     * Marks the GameObject as dirty, indicating that
+     * it should be removed at some point.
+     */
     void makeDirty();
     bool isDirty();
 
-    float3 getScale();
-    Quaternion getRotation();
-    float3 getLocation();
-
-    void setRotation(Quaternion r);
-    void setLocation(float3 l);
-    void setScale(float3 s);
-    void updateRotation(Quaternion r);
-
-    Sphere getSphere();
 
 private:
+    void initGameObject(Mesh *mesh, Mesh *colliderMesh);
+
+    /**
+     * Returns a fresh id number.
+     */
+    int getUniqueId();
+
+    /**
+     * Creates an Octree from all the triangles of the specified mesh
+     *
+     * @param Mesh to build an octree from
+     */
     Octree* createOctree(Mesh* mesh);
 
-    TypeIdentifier typeIdentifier = -1;
+    static int uniqueId;
+    int id;
 
     Mesh *mesh;
     chag::float4x4 m_modelMatrix;
@@ -87,18 +165,15 @@ private:
     Quaternion rotation = Quaternion();
     bool hasRotation = false;
     float3 location = make_vector(0.0f, 0.0f, 0.0f);
-
     bool changed = false;
 
     Mesh *collisionMesh;
-    Sphere sphere;
-    std::vector<TypeIdentifier> canCollideWith;
     AABB aabb;
+    Sphere sphere;
     Octree *octree;
+    TypeIdentifier typeIdentifier = -1;
+    std::vector<TypeIdentifier> canCollideWith;
     bool dynamicObject = false;
-
-    static int uniqueId;
-    int id;
 
     IRenderComponent* renderComponent;
     std::vector<IComponent*> components;

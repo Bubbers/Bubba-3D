@@ -65,7 +65,7 @@ Octree* GameObject::createOctree(Mesh* mesh) {
     return octree;
 }
 
-Sphere GameObject::getSphere() {
+Sphere GameObject::getTransformedSphere() {
     float scaling = max(scale.x, max(scale.y, scale.z));
     return Sphere(sphere.getPosition()+location, scaling*sphere.getRadius());
 }
@@ -81,16 +81,18 @@ bool GameObject::isDirty() {
     return dirty;
 }
 
-void GameObject::move(float4x4 model_matrix) {
-    m_modelMatrix = model_matrix;
+void GameObject::move(float4x4 modelMatrix) {
+    m_modelMatrix = modelMatrix;
 }
 
-void GameObject::update(float4x4 update_matrix) {
-    m_modelMatrix = m_modelMatrix * update_matrix;
+void GameObject::update(float4x4 updateMatrix) {
+    m_modelMatrix = m_modelMatrix * updateMatrix;
 }
 
 void GameObject::render() {
-    renderComponent->render();
+    if(renderComponent != nullptr) {
+        renderComponent->render();
+    }
 }
 
 std::vector<Triangle *> GameObject::getTriangles() {
@@ -149,7 +151,7 @@ void GameObject::callEvent(EventType type, GameObject* data) {
     }
 }
 
-AABB GameObject::getAABB() {
+AABB GameObject::getTransformedAABB() {
     AABB* meshAabb = this->mesh->getAABB();
     aabb = multiplyAABBWithModelMatrix(meshAabb, m_modelMatrix);
 
@@ -218,7 +220,8 @@ void GameObject::updateRotation(Quaternion r) {
 }
 
 void GameObject::setScale(float3 s) {
-    scale = s; changed = true;
+    scale = s;
+    changed = true;
 }
 
 void GameObject::setLocation(float3 l) {

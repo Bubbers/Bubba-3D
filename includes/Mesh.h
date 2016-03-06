@@ -127,6 +127,10 @@ public:
      */
     Texture* getTexture(const aiMaterial *material, const std::string &fileNameOfMesh, aiTextureType type);
 
+    /**
+     * Initiates OpenGL buffers and buffers the chunk data on to the graphics memory.
+     * @param chunk The chunk to be initiated for rendering
+     */
     void setupChunkForRendering(Chunk &chunk);
 
     void setupSphere(std::vector<float3> *positions);

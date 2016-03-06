@@ -71,11 +71,11 @@ bool BFBroadPhase::isPossiblyColliding(GameObject* gameObject1, GameObject* game
     if(noDynamic || neverCollides || gameObject1->isDirty() || gameObject2->isDirty() || gameObject1 == gameObject2) {
         return false;
     }
-    bool sphereInt = sphereIntersection(gameObject1->getSphere(),gameObject2->getSphere());
+    bool sphereInt = sphereIntersection(gameObject1->getTransformedSphere(),gameObject2->getTransformedSphere());
     if(sphereInt) {
 
-        AABB aabb1 = gameObject1->getAABB();
-        AABB aabb2 = gameObject2->getAABB();
+        AABB aabb1 = gameObject1->getTransformedAABB();
+        AABB aabb2 = gameObject2->getTransformedAABB();
 
         bool aabb = AabbAabbintersection(&aabb1, &aabb2);
         return aabb;
