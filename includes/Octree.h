@@ -50,7 +50,7 @@ public:
      */
     void getChildren(std::vector<Octree*>* octs);
     /**
-     * Removes all the Octrees children and its triangles
+     * Removes all the Octrees children and their triangles
      */
     void clearChildren();
 
@@ -99,7 +99,7 @@ private:
      * Useful for eg creating a vector containing the max or min elements of two vectors.
      */
     float3 combineTwoPointsByComparator(float3 p1, float3 p2, std::function<bool(float, float)> comparator);
-    
+
     bool rayCastIntersectsAABB(float3 rayOrigin, float3 rayVector);
     void putTrianglesToList(std::vector<Triangle *> *triangleList);
 

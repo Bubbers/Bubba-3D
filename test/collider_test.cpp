@@ -130,11 +130,11 @@ TEST_CASE("TriangleTriangleShouldNotIntersect", "[Collision]") {
 
 
 TEST_CASE("OctreeOctreeShouldIntersect", "[Collision]") {
-    Octree tree1 = Octree(make_vector(0.0f, 0.0f, 0.0f), make_vector(1.0f, 1.0f, 1.0f) , 0);
+    Octree tree1 = Octree(make_vector(0.0f, 0.0f, 0.0f), make_vector(1.0f, 1.0f, 1.0f));
     Triangle t1(make_vector(0.0f, 0.0f, 0.0f), make_vector(1.0f, 1.0f, 0.0f), make_vector(2.0f, 0.0f, 0.0f));
     tree1.insertTriangle(&t1);
 
-    Octree tree2 = Octree(make_vector(0.0f, 0.0f, 0.0f), make_vector(1.0f, 1.0f, 1.0f), 0);
+    Octree tree2 = Octree(make_vector(0.0f, 0.0f, 0.0f), make_vector(1.0f, 1.0f, 1.0f));
     Triangle t2(make_vector(0.1f, 0.0f, 0.0f), make_vector(1.1f, 1.0f, 0.0f), make_vector(2.1f, 0.0f, 0.0f));
     tree2.insertTriangle(&t2);
 
@@ -146,11 +146,11 @@ TEST_CASE("OctreeOctreeShouldIntersect", "[Collision]") {
 }
 
 TEST_CASE("OctreeOctreeShouldNotIntersect", "[Collision]") {
-    Octree tree1 = Octree(make_vector(0.0f, 0.0f, 0.0f), make_vector(1.0f, 1.0f, 1.0f) , 0);
+    Octree tree1 = Octree(make_vector(0.0f, 0.0f, 0.0f), make_vector(1.0f, 1.0f, 1.0f));
     Triangle t1(make_vector(0.0f, 0.0f, 0.0f), make_vector(1.0f, 1.0f, 0.0f), make_vector(2.0f, 0.0f, 0.0f));
     tree1.insertTriangle(&t1);
 
-    Octree tree2 = Octree(make_vector(0.0f, 0.0f, 0.0f), make_vector(1.0f, 1.0f, 1.0f), 0);
+    Octree tree2 = Octree(make_vector(0.0f, 0.0f, 0.0f), make_vector(1.0f, 1.0f, 1.0f));
     Triangle t2(make_vector(0.0f, 0.0f, 1.0f), make_vector(1.0f, 1.0f, 1.0f), make_vector(2.0f, 0.0f, 1.0f));
     tree2.insertTriangle(&t2);
 
@@ -161,11 +161,11 @@ TEST_CASE("OctreeOctreeShouldNotIntersect", "[Collision]") {
 }
 
 TEST_CASE("OctreeOctreeShouldIntersectRotated", "[Collision]") {
-    Octree tree1 = Octree(make_vector(0.0f, 0.0f, 0.0f), make_vector(1.0f, 1.0f, 1.0f) , 0);
+    Octree tree1 = Octree(make_vector(0.0f, 0.0f, 0.0f), make_vector(1.0f, 1.0f, 1.0f) );
     Triangle t1(make_vector(0.0f, 0.0f, 0.0f), make_vector(1.0f, 1.0f, 0.0f), make_vector(2.0f, 0.0f, 0.0f));
     tree1.insertTriangle(&t1);
 
-    Octree tree2 = Octree(make_vector(0.0f, 0.0f, 0.0f), make_vector(1.0f, 1.0f, 1.0f), 0);
+    Octree tree2 = Octree(make_vector(0.0f, 0.0f, 0.0f), make_vector(1.0f, 1.0f, 1.0f));
     Triangle t2(make_vector(0.0f, 0.0f, 0.0f), make_vector(1.0f, 1.0f, 0.0f), make_vector(2.0f, 0.0f, 0.0f));
     tree2.insertTriangle(&t2);
 
@@ -187,7 +187,7 @@ TEST_CASE("TriangleOctreeShouldIntersect", "[Collision, Random]") {
 
     while (iteration++ < MAX_ITERATIONS) {
         std::vector<Triangle*> triangles;
-        Octree octreeAllTriangles(ORIGIN_POS, HALF_VECTOR, 0);
+        Octree octreeAllTriangles(ORIGIN_POS, HALF_VECTOR);
 
         int maxTriangles = getRand(1.0, MAX_TRIANGLES);
 
@@ -214,7 +214,7 @@ TEST_CASE("TriangleOctreeShouldIntersect", "[Collision, Random]") {
                 float3 halfVector = (maxV - minV) / 2;
                 float3 origin = maxV - halfVector;
 
-                Octree octreeSingleTriangle(origin, halfVector, 0);
+                Octree octreeSingleTriangle(origin, halfVector);
                 octreeSingleTriangle.insertTriangle(triangle1);
                 float4x4 modelMatrix = make_identity<float4x4>();
 
