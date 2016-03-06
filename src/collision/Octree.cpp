@@ -15,6 +15,13 @@ Octree::~Octree() {
 
 }
 
+Octree::Octree(float3 origin, float3 halfVector)
+        : origin(origin), halfVector(halfVector) {
+    depth = 0;
+    clearChildren();
+    setupAABB(origin, halfVector);
+}
+
 Octree::Octree(float3 origin, float3 halfVector, int depth)
         : origin(origin), halfVector(halfVector), depth(depth) {
     clearChildren();
@@ -31,31 +38,19 @@ void Octree::setupAABB(float3 origin, float3 halfVector) {
     float3 p1 = origin + halfVector;
     float3 p2 = origin - halfVector;
 
-    aabb.maxV = getMaxXYZFromTwoPoints(p1,p2);
-    aabb.minV = getMinXYZFromTwoPoints(p1,p2);
+    aabb.maxV = combineTwoPointsByComparator(p1,p2, [](float point1, float point2) { return point1 > point2; });
+    aabb.minV = combineTwoPointsByComparator(p1,p2, [](float point1, float point2) { return point1 < point2; });
 }
 
-float3 Octree::getMaxXYZFromTwoPoints(float3 p1, float3 p2) {
+float3 Octree::combineTwoPointsByComparator(float3 p1, float3 p2, std::function<bool (float ,float)> comparator) {
     float3 maxPoint;
 
-    maxPoint.x = p1.x > p2.x ? p1.x : p2.x;
-    maxPoint.y = p1.y > p2.y ? p1.y : p2.y;
-    maxPoint.z = p1.z > p2.z ? p1.z : p2.z;
+    maxPoint.x = comparator(p1.x, p2.x) ? p1.x : p2.x;
+    maxPoint.y = comparator(p1.y, p2.y) ? p1.y : p2.y;
+    maxPoint.z = comparator(p1.z, p2.z) ? p1.z : p2.z;
 
     return maxPoint;
 }
-
-float3 Octree::getMinXYZFromTwoPoints(float3 p1, float3 p2) {
-    float3 minPoint;
-
-    minPoint.x = p1.x < p2.x ? p1.x : p2.x;
-    minPoint.y = p1.y < p2.y ? p1.y : p2.y;
-    minPoint.z = p1.z < p2.z ? p1.z : p2.z;
-
-    return minPoint;
-}
-
-
 
 std::vector<Triangle*> *Octree::getTriangles() {
     return &ts;
@@ -196,6 +191,7 @@ bool Octree::rayCastIntersectsAABB(float3 rayOrigin, float3 rayVector) {
            || (testSlab(rayOrigin.z, rayVector.z, minCorner.z, maxCorner.z, &tNear, &tFar));
 }
 
+// TODO(Bubbad) Only add triangles if they are actually intersected
 void Octree::getTrianglesInsersectedByRayCast(float3 rayOrigin, float3 rayVector, std::vector<Triangle *> *triangleList) {
     if (!rayCastIntersectsAABB(rayOrigin, rayVector)) {
         return;

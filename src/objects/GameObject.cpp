@@ -57,7 +57,7 @@ Octree* GameObject::createOctree(Mesh* mesh) {
     AABB* aabb = this->mesh->getAABB();
     float3 halfVector = (aabb->maxV - aabb->minV) / 2;
     float3 origin = aabb->maxV - halfVector;
-    Octree* octree = new Octree(origin, halfVector, 0);
+    Octree* octree = new Octree(origin, halfVector);
 
     std::vector<Triangle *> triangles = mesh->getTriangles();
     octree->insertAll(triangles);
