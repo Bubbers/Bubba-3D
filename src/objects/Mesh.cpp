@@ -30,112 +30,22 @@ void Mesh::loadMesh(const std::string &fileName) {
     if (!pScene) {
         Logger::logError("Error loading mesh for " + fileName);
     } else {
-        initMeshFromScene(pScene, fileName);
+        initMesh(pScene, fileName);
     }
 }
 
-void Mesh::initMeshFromScene(const aiScene *pScene, const std::string &fileName) {
+void Mesh::initMesh(const aiScene *pScene, const std::string &fileNameOfMesh) {
     for (unsigned int i = 0; i < pScene->mNumMeshes; i++) {
         const aiMesh *paiMesh = pScene->mMeshes[i];
-        initMesh(i, paiMesh);
+        initMeshFromAiMesh(i, paiMesh);
     }
 
-    initMaterials(pScene, fileName);
+    initMaterials(pScene, fileNameOfMesh);
     createTriangles();
 }
 
-void Mesh::initMaterials(const aiScene *pScene, const std::string &fileName) {
-    for (unsigned int i = 0; i < pScene->mNumMaterials; i++) {
-        const aiMaterial *material = pScene->mMaterials[i];
-        Material m;
 
-        initMaterialTextures(&m, fileName, material);
-        initMaterialColors(&m, material);
-        initMaterialShininess(&m, material);
-
-        materials.push_back(m);
-    }
-}
-
-void Mesh::initMaterialTextures(Material *material, std::string fileName, const aiMaterial *loadedMaterial) {
-    if (loadedMaterial->GetTextureCount(aiTextureType_DIFFUSE) > 0) {
-        material->diffuseTexture = getTexture(loadedMaterial, fileName, aiTextureType_DIFFUSE);
-    }
-    if (loadedMaterial->GetTextureCount(aiTextureType_HEIGHT) > 0) {
-        material->bumpMapTexture = getTexture(loadedMaterial, fileName, aiTextureType_HEIGHT);
-    }
-}
-
-void Mesh::initMaterialColors(Material *material, const aiMaterial *loadedMaterial) {
-    material->ambientColor = getColorFromMaterial(AI_MATKEY_COLOR_AMBIENT, *loadedMaterial);
-    material->diffuseColor = getColorFromMaterial(AI_MATKEY_COLOR_DIFFUSE, *loadedMaterial);
-    material->specularColor = getColorFromMaterial(AI_MATKEY_COLOR_SPECULAR, *loadedMaterial);
-    material->emissiveColor = getColorFromMaterial(AI_MATKEY_COLOR_EMISSIVE, *loadedMaterial);
-}
-
-void Mesh::initMaterialShininess(Material *material, const aiMaterial *loadedMaterial) {
-    float specExp;
-    loadedMaterial->Get(AI_MATKEY_SHININESS, specExp);
-    material->specularExponent = specExp > 0.0f ? specExp : 0.0f;
-}
-
-float3 Mesh::getColorFromMaterial(const char* pKey, unsigned int type, unsigned int idx, const aiMaterial &material) {
-    aiColor3D color;
-    material.Get(pKey, type, idx, color);
-    return make_vector(color.r, color.g, color.b);
-}
-
-Texture *Mesh::getTexture(const aiMaterial *material, const std::string &fileName, aiTextureType type) {
-    aiString texturePath;
-    if (material->GetTexture(type, 0, &texturePath, NULL, NULL, NULL, NULL, NULL) != AI_SUCCESS) {
-        return NULL;
-    }
-
-    std::string absolutePath = getAbsolutePath(fileName, string(texturePath.data));
-    return ResourceManager::loadAndFetchTexture(absolutePath);
-}
-
-std::string Mesh::getAbsolutePath(const std::string &fileName, std::string textureName) {
-    std::string dir = getDirectoryFromPath(fileName);
-    std::string filePath = cleanFileName(textureName);
-    return dir + "/" + filePath;
-}
-
-std::string Mesh::getDirectoryFromPath(const std::string &fileName) {
-    std::string::size_type index = fileName.find_last_of("/");
-    if (index == std::string::npos) {
-        return ".";
-    } else if (index == 0) {
-        return "/";
-    } else {
-        return fileName.substr(0, index);
-    }
-}
-
-std::string Mesh::cleanFileName(std::string fileName) {
-    if (fileName.substr(0, 2) == ".\\") {
-        return fileName.substr(2, fileName.size() - 2);
-    } else {
-        return fileName;
-    }
-}
-
-Sphere Mesh::getSphere() {
-    return sphere;
-}
-
-void Mesh::setupSphere(std::vector<float3> *positions) {
-    sphere.setPosition(m_aabb.getCenterPosition());
-    sphere.setRadius(0.0f);
-    for (float3 posIt : *positions) {
-        float rad = length(sphere.getPosition() - posIt);
-        if (rad > sphere.getRadius()) {
-            sphere.setRadius(rad);
-        }
-    }
-}
-
-void Mesh::initMesh(unsigned int index, const aiMesh *paiMesh) {
+void Mesh::initMeshFromAiMesh(unsigned int index, const aiMesh *paiMesh) {
     Chunk chunk;
 
     initChunkFromAiMesh(paiMesh, chunk);
@@ -183,6 +93,99 @@ void Mesh::initIndicesFromAiMesh(const aiMesh *paiMesh, Chunk &chunk) {
         chunk.m_indices.push_back(face.mIndices[2]);
     }
 }
+
+
+void Mesh::initMaterials(const aiScene *pScene, const std::string &fileNameOfMesh) {
+    for (unsigned int i = 0; i < pScene->mNumMaterials; i++) {
+        const aiMaterial *material = pScene->mMaterials[i];
+        Material m;
+
+        initMaterialTextures(&m, fileNameOfMesh, material);
+        initMaterialColors(&m, material);
+        initMaterialShininess(&m, material);
+
+        materials.push_back(m);
+    }
+}
+
+void Mesh::initMaterialTextures(Material *material, std::string fileNameOfMesh, const aiMaterial *loadedMaterial) {
+    if (loadedMaterial->GetTextureCount(aiTextureType_DIFFUSE) > 0) {
+        material->diffuseTexture = getTexture(loadedMaterial, fileNameOfMesh, aiTextureType_DIFFUSE);
+    }
+    if (loadedMaterial->GetTextureCount(aiTextureType_HEIGHT) > 0) {
+        material->bumpMapTexture = getTexture(loadedMaterial, fileNameOfMesh, aiTextureType_HEIGHT);
+    }
+}
+
+void Mesh::initMaterialColors(Material *material, const aiMaterial *loadedMaterial) {
+    material->ambientColor = getColorFromMaterial(AI_MATKEY_COLOR_AMBIENT, *loadedMaterial);
+    material->diffuseColor = getColorFromMaterial(AI_MATKEY_COLOR_DIFFUSE, *loadedMaterial);
+    material->specularColor = getColorFromMaterial(AI_MATKEY_COLOR_SPECULAR, *loadedMaterial);
+    material->emissiveColor = getColorFromMaterial(AI_MATKEY_COLOR_EMISSIVE, *loadedMaterial);
+}
+
+void Mesh::initMaterialShininess(Material *material, const aiMaterial *loadedMaterial) {
+    float specExp;
+    loadedMaterial->Get(AI_MATKEY_SHININESS, specExp);
+    material->specularExponent = specExp > 0.0f ? specExp : 0.0f;
+}
+
+float3 Mesh::getColorFromMaterial(const char* colorTypeString, unsigned int type, unsigned int index, const aiMaterial &material) {
+    aiColor3D color;
+    material.Get(colorTypeString, type, index, color);
+    return make_vector(color.r, color.g, color.b);
+}
+
+Texture *Mesh::getTexture(const aiMaterial *material, const std::string &fileNameOfMesh, aiTextureType type) {
+    aiString texturePath;
+    if (material->GetTexture(type, 0, &texturePath, NULL, NULL, NULL, NULL, NULL) != AI_SUCCESS) {
+        return NULL;
+    }
+
+    std::string absolutePath = getPathOfTexture(fileNameOfMesh, string(texturePath.data));
+    return ResourceManager::loadAndFetchTexture(absolutePath);
+}
+
+std::string Mesh::getPathOfTexture(const std::string &fileName, std::string textureName) {
+    std::string dir = getDirectoryFromPath(fileName);
+    std::string filePath = cleanFileName(textureName);
+    return dir + "/" + filePath;
+}
+
+std::string Mesh::getDirectoryFromPath(const std::string &fileName) {
+    std::string::size_type index = fileName.find_last_of("/");
+    if (index == std::string::npos) {
+        return ".";
+    } else if (index == 0) {
+        return "/";
+    } else {
+        return fileName.substr(0, index);
+    }
+}
+
+std::string Mesh::cleanFileName(std::string fileName) {
+    if (fileName.substr(0, 2) == ".\\") {
+        return fileName.substr(2, fileName.size() - 2);
+    } else {
+        return fileName;
+    }
+}
+
+Sphere Mesh::getSphere() {
+    return sphere;
+}
+
+void Mesh::setupSphere(std::vector<float3> *positions) {
+    sphere.setPosition(m_aabb.getCenterPosition());
+    sphere.setRadius(0.0f);
+    for (float3 posIt : *positions) {
+        float rad = length(sphere.getPosition() - posIt);
+        if (rad > sphere.getRadius()) {
+            sphere.setRadius(rad);
+        }
+    }
+}
+
 
 // TODO(Bubbad) Remove all GL dependencies directly in mesh
 template <typename T>
