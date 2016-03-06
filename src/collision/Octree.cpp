@@ -1,4 +1,5 @@
-#include <Triangle.h>
+#include <functional>
+#include "Triangle.h"
 #include "Octree.h"
 
 #define DEFAULT_ORIGIN make_vector(0.0f, 0.0f, 0.0f)
