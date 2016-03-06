@@ -1,6 +1,7 @@
 #ifndef __Octree_h_
 #define __Octree_h_
 
+#include <functional>
 #include <float3.h>
 #include <vector>
 #include <set>

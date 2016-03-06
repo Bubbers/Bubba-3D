@@ -1,4 +1,4 @@
-#include <functional>
+
 #include "Triangle.h"
 #include "Octree.h"
 
