@@ -3,6 +3,9 @@
 
 #define MAX_LOG_SIZE 1024
 
+Shader::Shader() {
+
+}
 
 void Shader::loadShader(const std::string &vertexShader, const std::string &fragmentShader) {
     const char *vs = textFileRead(vertexShader.c_str());
