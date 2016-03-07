@@ -20,7 +20,12 @@ class aiMaterial;
 
 
 /**
- * A class for containing all information of a loaded mesh.
+ * A class for containing all triangle and material of a mesh.
+ *
+ * \code
+ * Mesh mesh;
+ * mesh.loadMesh("url/to/meshfile");
+ * \endcode
  */
 class Mesh {
 public:

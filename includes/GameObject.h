@@ -23,7 +23,25 @@ class IComponent;
 class Octree;
 
 /**
+ * \brief A class for containing all information about a object in the game world.
  *
+ * Contains information about the mesh; how to render it, how to manipulate it and how to collide it.
+ *
+ * Standard usage:
+ * \code
+ *
+ * //Initiation
+ * GameObject object(mesh);
+ * object.addRenderComponent(renderComp); //If the mesh should be rendered
+ * object.addComponent(comp); //All other components, such as MoveComponents
+ *
+ * //Rendering
+ * object.render();
+ *
+ * //Update all its internal components
+ * object.update(timeSinceLastUpdate);
+ *
+ * \endcode
  *
  * If the object can move, call setDynamic(true) to indicate this.
  * The objects dynamicity can be used by collision handlers to determine
@@ -159,6 +177,7 @@ private:
     static int uniqueId;
     int id;
 
+    /* Mesh */
     Mesh *mesh;
     chag::float4x4 m_modelMatrix;
     float3 scale = make_vector(1.0f, 1.0f, 1.0f);
@@ -167,6 +186,7 @@ private:
     float3 location = make_vector(0.0f, 0.0f, 0.0f);
     bool changed = false;
 
+    /* Collision */
     Mesh *collisionMesh;
     AABB aabb;
     Sphere sphere;
@@ -175,6 +195,7 @@ private:
     std::vector<TypeIdentifier> canCollideWith;
     bool dynamicObject = false;
 
+    /* Components */
     IRenderComponent* renderComponent;
     std::vector<IComponent*> components;
 

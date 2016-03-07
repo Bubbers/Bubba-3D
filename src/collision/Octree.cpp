@@ -85,6 +85,7 @@ void Octree::insertTriangle(Triangle *t) {
 }
 
 
+
 void Octree::createChildren() {
     for (int i = 0; i < 8; ++i) {
         float3 newOrigin = origin;

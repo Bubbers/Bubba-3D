@@ -7,6 +7,9 @@
 
 using namespace chag;
 
+/**
+ * Interface for manipulating a camera
+ */
 class Camera {
 public:
 	Camera(float3 position, float3 lookAt, float3 up, float fov, float ratio, float nearPlane, float farPlane);
