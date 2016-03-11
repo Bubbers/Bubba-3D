@@ -20,7 +20,7 @@ endif()
 file(GLOB BUBBA3D_FILES_SOURCE
         "${PROJECT_SOURCE_DIR}/includes/linmath/*.cpp"
         "${PROJECT_SOURCE_DIR}/includes/glutil/*.cpp"
-        "${PROJECT_SOURCE_DIR}/shaders/*")
+        )
 
 
 
