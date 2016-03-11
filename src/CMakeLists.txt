@@ -1,5 +1,15 @@
 set(LIBRARY_NAME Bubba3D)
 
+add_subdirectory(Input)
+add_subdirectory(Misc)
+add_subdirectory(cameras)
+add_subdirectory(collision)
+add_subdirectory(components)
+add_subdirectory(core)
+add_subdirectory(logging)
+add_subdirectory(objects)
+add_subdirectory(particle)
+add_subdirectory(sound)
 
 add_library(${LIBRARY_NAME} STATIC ${BUBBA3D_FILES_SOURCE})
 
@@ -35,8 +45,6 @@ source_group(Shaders    FILES
         ${PROJECT_SOURCE_DIR}/shaders/postFx.vert
         ${PROJECT_SOURCE_DIR}/shaders/shadowMap.frag
         ${PROJECT_SOURCE_DIR}/shaders/shadowMap.vert)
-
-
 
 #########################################################
 # FIND GLUT

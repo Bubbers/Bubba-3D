@@ -20,16 +20,6 @@ endif()
 file(GLOB BUBBA3D_FILES_SOURCE
         "${PROJECT_SOURCE_DIR}/includes/linmath/*.cpp"
         "${PROJECT_SOURCE_DIR}/includes/glutil/*.cpp"
-        "${PROJECT_SOURCE_DIR}/src/logging/*.cpp"
-        "${PROJECT_SOURCE_DIR}/src/Misc/*.cpp"
-        "${PROJECT_SOURCE_DIR}/src/cameras/*.cpp"
-        "${PROJECT_SOURCE_DIR}/src/core/*.cpp"
-        "${PROJECT_SOURCE_DIR}/src/objects/*.cpp"
-        "${PROJECT_SOURCE_DIR}/src/collision/*.cpp"
-        "${PROJECT_SOURCE_DIR}/src/particle/*.cpp"
-        "${PROJECT_SOURCE_DIR}/src/components/*.cpp"
-        "${PROJECT_SOURCE_DIR}/src/Input/*.cpp"
-        "${PROJECT_SOURCE_DIR}/src/sound/*.cpp"
         "${PROJECT_SOURCE_DIR}/shaders/*")
 
 
