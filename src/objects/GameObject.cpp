@@ -93,6 +93,11 @@ void GameObject::render() {
     if(renderComponent != nullptr) {
         renderComponent->render();
     }
+	if (children.size() != 0) {
+		for (auto child : children) {
+			child.first->render();
+		}
+	}
 }
 
 std::vector<Triangle *> GameObject::getTriangles() {
@@ -233,3 +238,8 @@ void GameObject::setRotation(Quaternion r) {
     rotation = r;
     hasRotation = changed = true;
 }
+
+void GameObject::addChild(std::pair<GameObject*, float4x4> child) {
+	children.push_back(child);
+}
+
