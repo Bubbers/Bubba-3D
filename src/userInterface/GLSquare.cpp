@@ -95,10 +95,10 @@ void GLSquare::fillVertexBuffer() {
     GLfloat quad[] = {
             -halfWidth, -halfHeight, 0.0f, 0.0f, 0.0f,
             halfWidth,  -halfHeight, 0.0f, 1.0f, 0.0f,
-            halfWidth, halfHeight, 0.0f, 1.0f, 1.0f,
+            halfWidth,  halfHeight, 0.0f, 1.0f, 1.0f,
 
             -halfWidth, -halfHeight,  0.0f, 0.0f, 0.0f,
-            halfWidth, halfHeight, 0.0f, 1.0f, 1.0f,
+            halfWidth,  halfHeight, 0.0f, 1.0f, 1.0f,
             -halfWidth, halfHeight,  0.0f, 0.0f, 1.0f,
     };
 
