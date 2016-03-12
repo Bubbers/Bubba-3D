@@ -1,5 +1,5 @@
 #include "CubeMapTexture.h"
-#include <glutil/glutil.h>
+#include "glutil/glutil.h"
 #include <FreeImage.h>
 #include <Texture.h>
 

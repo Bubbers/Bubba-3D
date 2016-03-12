@@ -1,7 +1,7 @@
 #ifndef __PARTICLE_GEN__
 #define __PARTICLE_GEN__
 
-#include "float3.h"
+#include "linmath/float3.h"
 #include <vector>
 #include "IRenderComponent.h"
 

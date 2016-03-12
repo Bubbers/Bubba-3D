@@ -16,18 +16,10 @@ if (CMAKE_COMPILER_IS_GNUCXX)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGLEW_STATIC")
 endif()
 
-
-file(GLOB BUBBA3D_FILES_SOURCE
-        "${PROJECT_SOURCE_DIR}/includes/linmath/*.cpp"
-        "${PROJECT_SOURCE_DIR}/includes/glutil/*.cpp"
-        )
-
-
-
-
 #########################################################
 # Testing
 #########################################################
+include_directories(src)
 add_subdirectory (src)
 include(CTest)
 add_subdirectory(test)

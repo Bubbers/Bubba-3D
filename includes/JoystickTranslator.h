@@ -7,7 +7,7 @@
 
 #include <IJoystickTranslation.h>
 #include <JoystickTranslation.h>
-#include <document.h>
+#include <rapidjson/document.h>
 
 using namespace rapidjson;
 using namespace std;

@@ -1,8 +1,8 @@
 #ifndef __CAMERA_H__
 #define __CAMERA_H__
 
-#include <float4x4.h>
-#include <float3.h>
+#include <linmath/float4x4.h>
+#include <linmath/float3.h>
 
 
 using namespace chag;

@@ -10,6 +10,8 @@ add_subdirectory(logging)
 add_subdirectory(objects)
 add_subdirectory(particle)
 add_subdirectory(sound)
+add_subdirectory(linmath)
+add_subdirectory(glutil)
 
 add_library(${LIBRARY_NAME} STATIC ${BUBBA3D_FILES_SOURCE})
 
@@ -118,8 +120,6 @@ endif(NOT SFML_FOUND)
 
 
 target_include_directories (${LIBRARY_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/includes")
-target_include_directories (${LIBRARY_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/includes/linmath")
-target_include_directories (${LIBRARY_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/includes/rapidjson")
 target_include_directories (${LIBRARY_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/lib")
 target_include_directories (${LIBRARY_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/lib/freeimage")
 

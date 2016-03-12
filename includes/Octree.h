@@ -2,7 +2,7 @@
 #define __Octree_h_
 
 #include <functional>
-#include <float3.h>
+#include <linmath/float3.h>
 #include <vector>
 #include <set>
 #include <ctime>

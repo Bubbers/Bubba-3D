@@ -1,7 +1,7 @@
 #ifndef BUBBA_3D_MATERIAL_H
 #define BUBBA_3D_MATERIAL_H
 
-#include "float3.h"
+#include "linmath/float3.h"
 #include "Texture.h"
 
 struct Material {

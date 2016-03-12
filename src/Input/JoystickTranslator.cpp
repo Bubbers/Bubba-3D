@@ -4,8 +4,8 @@
 
 #include <JoystickTranslator.h>
 #include <stdexcept>
-#include <filereadstream.h>
-#include <document.h>
+#include <rapidjson/filereadstream.h>
+#include <rapidjson/document.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <SFML/Window.hpp>

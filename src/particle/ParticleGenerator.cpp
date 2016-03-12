@@ -1,7 +1,7 @@
 #include <ResourceManager.h>
 #include "ParticleGenerator.h"
 #include "constants.h"
-#include "float3x3.h"
+#include "linmath/float3x3.h"
 #include "Camera.h"
 #include "Particle.h"
 #include "ParticleConf.h"

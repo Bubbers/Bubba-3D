@@ -2,7 +2,7 @@
 #define BUBBA_3D_PARTICLECONF_H
 
 #include <GL/glew.h>
-#include "float3.h"
+#include "linmath/float3.h"
 
 using namespace chag;
 class ParticleConf {

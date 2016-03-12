@@ -2,8 +2,8 @@
 #define BUBBA_3D_CHUNK_H
 
 #include <vector>
-#include "float2.h"
-#include "float3.h"
+#include "linmath/float2.h"
+#include "linmath/float3.h"
 #include <GL/glew.h>
 
 

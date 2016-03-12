@@ -1,7 +1,7 @@
 #ifndef _chag_float3x3_h
 #define _chag_float3x3_h
 
-#include "Common.h"
+#include "linmath/Common.h"
 #include "float3.h" 
 
 namespace chag

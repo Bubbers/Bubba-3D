@@ -5,7 +5,7 @@
 #include <GameObject.h>
 #include <Logger.h>
 #include "MoveComponent.h"
-#include "float3x3.h"
+#include "linmath/float3x3.h"
 
 MoveComponent::MoveComponent(){
 

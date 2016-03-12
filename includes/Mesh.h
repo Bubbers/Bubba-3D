@@ -3,7 +3,7 @@
 
 #include <string>
 #include <vector>
-#include "float3.h"
+#include "linmath/float3.h"
 #include "Material.h"
 #include "Chunk.h"
 #include "AABB2.h"

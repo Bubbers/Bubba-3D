@@ -1,7 +1,7 @@
 #ifndef __PARTICLE__
 #define __PARTICLE__
 
-#include "float3.h"
+#include "linmath/float3.h"
 
 
 #define PARTICLE_SPEED ((rand() % 6000) - 3000.0f) / 5000.0f

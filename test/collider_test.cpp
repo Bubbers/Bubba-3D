@@ -8,7 +8,7 @@
 #include "Triangle.h"
 #include "catch.hpp"
 #include "BFBroadPhase.h"
-#include "float3.h"
+#include "linmath/float3.h"
 #include "Collider.h"
 #include "Utils.h"
 #include "Octree.h"

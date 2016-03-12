@@ -4,7 +4,7 @@
 #include <map>
 #include <string>
 #include "glutil/glutil.h"
-#include "float3.h"
+#include "linmath/float3.h"
 
 using namespace chag;
 

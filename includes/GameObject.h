@@ -4,9 +4,9 @@
 
 #include "IDrawable.h"
 #include "AABB2.h"
-#include "float4x4.h"
+#include "linmath/float4x4.h"
 #include <vector>
-#include <Quaternion.h>
+#include <linmath/Quaternion.h>
 #include <Sphere.h>
 
 using namespace chag;

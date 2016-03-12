@@ -2,10 +2,10 @@
 #define BUBBA_3D_KEYBOARDMOVECOMPONENT_H
 
 #include "IComponent.h"
-#include "float3.h"
+#include "linmath/float3.h"
 #include "GameObject.h"
 #include "HudRenderer.h"
-#include <Quaternion.h>
+#include <linmath/Quaternion.h>
 
 using namespace chag;
 
