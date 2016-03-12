@@ -2,7 +2,8 @@
 #include <sstream>
 #include <Logger.h>
 #include <ShaderProgram.h>
-
+#include <shader/VertexShader.h>
+#include <shader/FragmentShader.h>
 
 std::map<std::string, ShaderProgram> ResourceManager::shaders;
 std::map<std::string, Texture> ResourceManager::textures;
@@ -10,7 +11,7 @@ std::map<std::string, Mesh> ResourceManager::meshes;
 
 void ResourceManager::loadShader(const std::string &vertexShader, const std::string &fragmentShader, std::string name){
     ShaderProgram shaderProgram;
-    shaderProgram.loadShader(vertexShader,fragmentShader);
+    shaderProgram.loadShader(new VertexShader(vertexShader), new FragmentShader(fragmentShader));
     shaders.insert(std::pair<std::string, ShaderProgram>(name, shaderProgram));
 }
 

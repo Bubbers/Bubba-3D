@@ -8,30 +8,12 @@ ShaderProgram::ShaderProgram() {
 
 }
 
-void ShaderProgram::loadShader(const std::string &vertexShaderFile, const std::string &fragmentShader) {
-    vertexShader = VertexShader(vertexShaderFile);
-    const char *vs = textFileRead(vertexShaderFile.c_str());
-    const char *fs = textFileRead(fragmentShader.c_str());
-    compileAndLink(vs,fs);
-}
-
-void ShaderProgram::compileAndLink(const GLchar *vertexSource, const GLchar *fragmentSource ) {
-    compileShaders(vertexSource, fragmentSource);
+void ShaderProgram::loadShader(IShader *vertexShader, IShader *fragmentShader) {
+    this->vertexShader = vertexShader;
+    this->fragmentShader = fragmentShader;
+    createProgram(vertexShader->getGLId(), fragmentShader->getGLId());
     linkProgram();
 }
-
-void ShaderProgram::compileShader(GLuint* shader, GLenum type, const GLchar *source, std::string shaderType) {
-    *shader = glCreateShader(type);
-    glShaderSource(*shader, 1, &source, NULL);
-    glCompileShader(*shader);
-}
-
-void ShaderProgram::compileShaders(const char *vertexSource, const char *fragmentSource) {
-    GLuint fragmentShader;
-    compileShader(&fragmentShader, GL_FRAGMENT_SHADER, fragmentSource, "FRAGMENT_SHADER");
-    createProgram(vertexShader.getGLId(), fragmentShader);
-}
-
 
 void ShaderProgram::createProgram(GLuint vertexShader, GLuint fragmentShader) {
     this->shaderID = glCreateProgram();

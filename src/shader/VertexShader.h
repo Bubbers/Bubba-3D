@@ -11,7 +11,7 @@
 
 #define VERTEX_SHADER_NAME_STRING "Vertex_Shader"
 
-class VertexShader : IShader {
+class VertexShader : public IShader {
 public:
     VertexShader() {};
     VertexShader(std::string shaderName);

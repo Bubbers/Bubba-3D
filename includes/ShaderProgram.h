@@ -5,9 +5,10 @@
 #include <string>
 #include "glutil/glutil.h"
 #include "linmath/float3.h"
-#include "../src/shader/VertexShader.h"
+#include "IShader.h"
 
 using namespace chag;
+
 
 /**
  * \brief Class for maintaining OpenGL shader programs.
@@ -23,7 +24,7 @@ class ShaderProgram {
     /**
      * Compiles, links and creates a program of the specified shaders.
      */
-    void loadShader(const std::string &vertexShader, const std::string &fragmentShader);
+    void loadShader(IShader *vertexShader, IShader *fragmentShader);
 
     /**
      * Activates the shader on the graphics card
@@ -52,14 +53,6 @@ class ShaderProgram {
     void setUniformBufferSubData(std::string bufferName, int offset, int size, const GLvoid *data);
 
  private:
-    void compileAndLink(const GLchar *vertexSource, const GLchar *fragmentSource);
-
-    void compileShaders(const GLchar *vertexSource, const GLchar *fragmentSource);
-    void compileShader(GLuint* shader, GLenum type, const GLchar *source, std::string shaderType);
-    void checkCompileErrors(GLuint *shader, std::string shaderType);
-    void logCompileError(GLuint shader, std::string shaderType);
-
-
 
     void linkProgram();
     void checkLinkageErrors();
@@ -69,7 +62,8 @@ class ShaderProgram {
 
     GLint getUniformLocation(std::string name);
 
-    VertexShader vertexShader;
+    IShader* vertexShader;
+    IShader* fragmentShader;
 
     GLuint shaderID;
     std::map<std::string, GLint> uniformLocations;
