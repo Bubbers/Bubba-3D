@@ -1,7 +1,11 @@
 #!/bin/bash
 
 echo "Running prepush script"
-echo $1
-echo $2
+BRANCH=`git name-rev --name-only HEAD`
+if [ "$BRANCH" == "develop" ] || [ "$BRANCH" == "master"  ]; then
+  echo $1
+  echo $2
 
-make
+  make
+fi
+
