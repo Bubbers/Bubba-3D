@@ -7,33 +7,34 @@
 
 #include <GL/glew.h>
 #include <float4x4.h>
+#include <IHudDrawable.h>
 
 using namespace chag;
 
 class Shader;
 class HUDGraphic;
 
-class GLSquare {
+class GLSquare : public IHudDrawable {
 public:
     virtual void render(Shader* shaderProgram, float4x4* projectionMatrix);
     GLSquare(float posX, float posY, float width, float height, HUDGraphic* image);
     virtual ~GLSquare();
 
-    virtual void setRelativePosition(float3 position);
-    virtual void setCenterOffset(float3 offset);
-    virtual void setRotation(float rotation);
+    void setCenterOffset(float3 offset);
 
 protected:
-    float posX,posY,width,height, rotation = 0.0f;
+    float posX,posY,width,height;
     HUDGraphic* graphic;
     GLuint vao;
-    float3 originalPosition,relativePosition,center;
+    Shader* shaderProgram;
+    float4x4* projectionMatrix;
+    float3 originalPosition;
 
-    void updateOriginalPosition();
     void init(float posX, float posY, float width, float height, HUDGraphic* image);
     void fillVertexBuffer();
     void bindTextureAndDraw(Shader* shaderProgram, float4x4* projectionMatrix);
     float4x4 getModelMatrix();
+    void updateOriginalPosition();
 
 };
 

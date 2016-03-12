@@ -7,11 +7,17 @@ in vec2 texCoord;
 out vec4 fragmentColor;
 
 uniform sampler2D sprite;
-uniform bool      textureElseColor;
-uniform vec4      color;
-
+uniform bool isTexture;
+uniform bool isColor;
+uniform bool isFont;
+uniform vec4 color;
 
 void main() {
-
-	fragmentColor = textureElseColor ? texture(sprite, texCoord) : color;
+    if(isTexture){
+	    fragmentColor = texture(sprite, texCoord);
+	}else if(isColor){
+	    fragmentColor = color;
+	}else if(isFont){
+	    fragmentColor = vec4(1,1,1,texture(sprite,texCoord).x);
+	}
 }

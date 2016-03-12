@@ -5,8 +5,8 @@
 #ifndef SUPER_BUBBA_AWESOME_SPACE_FONT_H
 #define SUPER_BUBBA_AWESOME_SPACE_FONT_H
 
-
-struct FT_GlyphSlotRec;
+#include <ft2build.h>
+#include FT_FREETYPE_H
 
 using namespace std;
 
@@ -24,14 +24,16 @@ public:
         int bitmapTop; // bitmap_top;
 
         int offsetX; // x offset of glyph in texture coordinates
-        int offsetY;
-        GlyphData(int offsetX,int offsetY, FT_GlyphSlotRec* ft_glyphSlot);
+        GlyphData(int offsetX, FT_GlyphSlot ft_glyphSlot);
+        GlyphData(){}
     };
 
     GlyphData getCharacter(char character);
-    Font(GlyphData glyphs[128-32]);
+    Font();
+    void addGlyph(FT_GlyphSlot glyph, int offsetX, char character);
 
 private:
+    void checkInvalidCharacter(char character);
     GlyphData glyphs[128-32];
 
 };

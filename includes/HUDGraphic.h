@@ -27,10 +27,20 @@ public:
         void hexStringToFloat(string* hexString,unsigned int pos, unsigned int len, float* target);
     };
 
+    template <typename T>
+    struct TexturePosition{
+        T topLeftX,topLeftY,botRightX,botRightY;
+        TexturePosition(T topLeftX, T topLeftY, T botRightX, T botRightY);
+        TexturePosition(){}
+    };
+
     HUDGraphic(Texture* texture);
-    HUDGraphic(Texture* texture, Dimension offsetX, Dimension offsetY);
     HUDGraphic(Color color);
 
+    HUDGraphic* setCenterOffset(Dimension offsetX, Dimension offsetY);
+    HUDGraphic* setTexturePosition(TexturePosition<int> texturePosition);
+
+    TexturePosition<float> getTexturePosition(float width, float height);
     float3 getCenterOffset(float width, float height);
     Texture* getTexture();
     float4 getColor();
@@ -41,6 +51,7 @@ protected:
     Dimension offsetX, offsetY;
     Texture* texture;
     float4 color;
+    TexturePosition<int> texturePosition;
     bool textureElseColor;
 
 private:

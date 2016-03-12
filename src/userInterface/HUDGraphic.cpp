@@ -12,15 +12,34 @@
 
 using namespace chag;
 
-HUDGraphic::HUDGraphic(Texture* texture) : HUDGraphic(texture,Dimension(),Dimension()) {}
-
-HUDGraphic::HUDGraphic(Texture *texture, Dimension offsetX, Dimension offsetY)
-        : texture(texture), offsetX(offsetX), offsetY(offsetY), textureElseColor(true){ }
+HUDGraphic::HUDGraphic(Texture* texture) :
+        texture(texture), textureElseColor(true) {}
 
 HUDGraphic::HUDGraphic(Color color) : color(color.getColor()) , textureElseColor(false){ }
 
 float3 HUDGraphic::getCenterOffset(float width, float height) {
     return make_vector(offsetX.getSize(width),offsetY.getSize(height),0.0f);
+}
+
+template <typename T>
+HUDGraphic::TexturePosition<T>::TexturePosition(T topLeftX, T topLeftY, T botRightX, T botRightY)
+        : topLeftX(topLeftX), topLeftY(topLeftY), botRightX(botRightX), botRightY(botRightY) {}
+
+HUDGraphic* HUDGraphic::setCenterOffset(Dimension offsetX, Dimension offsetY) {
+    this->offsetX = offsetX;
+    this->offsetY = offsetY;
+    return this;
+}
+
+HUDGraphic* HUDGraphic::setTexturePosition(HUDGraphic::TexturePosition<int> texturePosition) {
+    this->texturePosition = texturePosition;
+    return this;
+}
+
+HUDGraphic::TexturePosition<float> HUDGraphic::getTexturePosition(float width, float height) {
+    TexturePosition<int> tp = texturePosition;
+    return TexturePosition<float>((float)tp.topLeftX/width,(float)tp.topLeftY/height,
+                                  (float)tp.botRightX/width,(float)tp.botRightY/height);
 }
 
 Texture* HUDGraphic::getTexture() {

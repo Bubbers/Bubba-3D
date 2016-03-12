@@ -21,7 +21,7 @@ public:
     ListLayout(Orientation orientation, Dimension width, Dimension height);
     virtual ~ListLayout(){}
     virtual void getGLSquares(float layoutXPos,float layoutYPos, float layoutWidth,
-                              float layoutHeight, map<string,GLSquare*> *list);
+                              float layoutHeight, map<string,IHudDrawable*> *list);
 
 protected:
     Orientation orientation;

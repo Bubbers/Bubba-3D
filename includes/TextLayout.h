@@ -6,6 +6,7 @@
 #define SUPER_BUBBA_AWESOME_SPACE_TEXTLAYOUT_H
 
 #include <Layout.h>
+#include <Font.h>
 
 using namespace std;
 
@@ -23,14 +24,16 @@ public:
     virtual Dimension getHeight();
 
     virtual void getGLSquares(float layoutXPos,float layoutYPos, float layoutWidth,
-                              float layoutHeight, map<string,GLSquare*>* list);
+                              float layoutHeight, map<string,IHudDrawable*>* list);
 
-    TextLayout(string text, Font font, Dimension width, Dimension height);
+    TextLayout(string text, Font* font, Dimension width, Dimension height);
+
+    void setText(string text);
 
 private:
     Dimension width, height;
     string text;
-    Font font;
+    Font* font;
 
 };
 

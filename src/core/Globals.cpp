@@ -13,7 +13,7 @@ void Globals::set(Key key, int value) {
 }
 
 int Globals::masterFunc(Key key, int value, bool getElseSet) {
-    static int vals[] = {0,0,0,0};
+    static int vals[] = {0,0,0,0,0,0};
     if(getElseSet){
         return vals[key];
     } else {

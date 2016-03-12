@@ -9,6 +9,7 @@
 #include <map>
 #include <string>
 #include <stdexcept>
+#include <IHudDrawable.h>
 
 using namespace std;
 
@@ -17,7 +18,7 @@ ListLayout::ListLayout(Orientation orientation, Dimension width, Dimension heigh
 }
 
 void ListLayout::getGLSquares(float layoutXPos,float layoutYPos, float layoutWidth,
-                                       float layoutHeight, map<string,GLSquare*>* list){
+                                       float layoutHeight, map<string,IHudDrawable*>* list){
 
     Layout::getGLSquares(layoutXPos,layoutYPos,layoutWidth,layoutHeight,list);
 

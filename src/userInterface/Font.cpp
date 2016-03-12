@@ -8,9 +8,8 @@
 
 #include "Font.h"
 
-Font::GlyphData::GlyphData(int offsetX, int offsetY, FT_GlyphSlotRec *ft_glyphSlot) {
+Font::GlyphData::GlyphData(int offsetX, FT_GlyphSlot ft_glyphSlot) {
     this->offsetX = offsetX;
-    this->offsetY = offsetY;
     this->advanceX = ft_glyphSlot->advance.x;
     this->advanceY = ft_glyphSlot->advance.y;
     this->bitmapHeight = ft_glyphSlot->bitmap.rows;
@@ -19,11 +18,19 @@ Font::GlyphData::GlyphData(int offsetX, int offsetY, FT_GlyphSlotRec *ft_glyphSl
     this->bitmapTop = ft_glyphSlot->bitmap_top;
 }
 
-GlyphData Font::getCharacter(char character) {
-    int ch = character;
-    if(ch < 32 || ch >= 128)
-        throw invalid_argument("The font only support characters with ascii value from 32 inclusive to 128 exclusive.");
+Font::GlyphData Font::getCharacter(char character) {
+    checkInvalidCharacter(character);
     return glyphs[character-32];
 }
 
-Font::Font(GlyphData glyphs[128-32]) : glyphs(glyphs){}
+void Font::checkInvalidCharacter(char character) {
+    if(character < 32 || character >= 128)
+        throw invalid_argument("The font only support characters with ascii value from 32 inclusive to 128 exclusive.");
+}
+
+void Font::addGlyph(FT_GlyphSlot glyph, int offsetX, char character) {
+    checkInvalidCharacter(character);
+    glyphs[character-32] = GlyphData(offsetX,glyph);
+}
+
+Font::Font() {}

@@ -6,6 +6,7 @@
 #include "PositioningLayout.h"
 #include <vector>
 #include <map>
+#include <IHudDrawable.h>
 
 using namespace std;
 
@@ -32,7 +33,7 @@ PositioningLayout::PositioningLayout(Dimension width, Dimension height) : width(
 }
 
 void PositioningLayout::getGLSquares(float layoutXPos, float layoutYPos, float layoutWidth, float layoutHeight,
-                                     map<string,GLSquare*> *list) {
+                                     map<string,IHudDrawable*> *list) {
 
     Layout::getGLSquares(layoutXPos,layoutYPos,layoutWidth,layoutHeight,list);
 
@@ -48,4 +49,15 @@ void PositioningLayout::getGLSquares(float layoutXPos, float layoutYPos, float l
 void PositioningLayout::checkChildCompatibility(Layout *child) {
     if(child->getHeight().getUnit() == Dimension::FILL || child->getWidth().getUnit() == Dimension::FILL)
         throw new invalid_argument("The width or height of a child of a PositioningLayout cannot be FILL.");
+}
+
+Layout* PositioningLayout::findById(string id) {
+    if(this->id == id)
+        return this;
+    for(auto it : children){
+        Layout* res = it->child->findById(id);
+        if(res != nullptr)
+            return res;
+    }
+    return nullptr;
 }
