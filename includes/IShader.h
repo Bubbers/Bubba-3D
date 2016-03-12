@@ -9,6 +9,8 @@
 #include "Logger.h"
 #include "glutil/glutil.h"
 
+#define MAX_LOG_SIZE 1024
+
 class IShader {
 public:
     virtual void compile() = 0;
@@ -37,9 +39,7 @@ public:
     }
 
 
-}
-
-
 };
+
 
 #endif //SUPER_BUBBA_AWESOME_SPACE_ISHADER_H
