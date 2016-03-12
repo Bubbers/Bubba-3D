@@ -8,6 +8,8 @@
 #include "GLSquare.h"
 #include <Texture.h>
 #include <HUDGraphic.h>
+#include <FontManager.h>
+#include <IHudDrawable.h>
 
 void GLSquare::render(Shader* shaderProgram, float4x4* projectionMatrix) {
 
@@ -38,19 +40,21 @@ void GLSquare::bindTextureAndDraw(Shader *shaderProgram, float4x4* projectionMat
     shaderProgram->setUniform1i("sprite", 0);
     shaderProgram->setUniformMatrix4fv("modelMatrix", getModelMatrix());
     shaderProgram->setUniformMatrix4fv("projectionMatrix",*projectionMatrix);
+    shaderProgram->setUniform1i("isFont",false);
 
     if(graphic->isTextureElseColor()) {
         graphic->getTexture()->bind(GL_TEXTURE0);
-        shaderProgram->setUniform1i("textureElseColor",true);
+        shaderProgram->setUniform1i("isTexture",true);
+        shaderProgram->setUniform1i("isColor",false);
     }else{
-        shaderProgram->setUniform1i("textureElseColor",false);
+        shaderProgram->setUniform1i("isTexture",false);
+        shaderProgram->setUniform1i("isColor",true);
         shaderProgram->setUniform4f("color",graphic->getColor());
     }
 
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-//TODO Add support for modifiable layouts
 float4x4 GLSquare::getModelMatrix() {
     return make_translation(originalPosition+relativePosition)*make_rotation_z<float4x4>(rotation)*make_translation(center)*make_identity<float4x4>();
 }
@@ -65,22 +69,14 @@ void GLSquare::init(float posX, float posY, float width, float height, HUDGraphi
     this->width = width;
     this->height = height;
     this->graphic = image;
-    relativePosition = make_vector(0.0f,0.0f,0.0f);
+    IHudDrawable::setRelativePosition(make_vector(0.0f,0.0f,0.0f));
     center = image->getCenterOffset(width,height);
     updateOriginalPosition();
     fillVertexBuffer();
 }
 
-void GLSquare::setRotation(float rotation) {
-    this->rotation = rotation;
-}
-
 void GLSquare::updateOriginalPosition() {
     originalPosition = make_vector(posX+width/2.0f+center.x,-posY-height/2.0f-center.y,0.0f);
-}
-
-void GLSquare::setRelativePosition(float3 position) {
-    this->relativePosition = relativePosition;
 }
 
 void GLSquare::setCenterOffset(float3 offset) {

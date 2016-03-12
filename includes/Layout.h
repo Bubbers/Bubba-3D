@@ -11,16 +11,16 @@
 
 using namespace std;
 
-class GLSquare;
 class Texture;
 class HUDGraphic;
+class IHudDrawable;
 
 class Layout {
 
 public:
 
     virtual void addChild(Layout* child);
-    virtual map<string,GLSquare*> getGLSquares(float layoutXPos,float layoutYPos, float layoutWidth,
+    virtual map<string,IHudDrawable*> getGLSquares(float layoutXPos,float layoutYPos, float layoutWidth,
                                            float layoutHeight);
 
     /**
@@ -34,11 +34,13 @@ public:
 
     virtual ~Layout(){}
     virtual void getGLSquares(float layoutXPos,float layoutYPos, float layoutWidth,
-                              float layoutHeight, map<string,GLSquare*>* list) = 0;
+                              float layoutHeight, map<string,IHudDrawable*>* list) = 0;
 
     virtual void setBackground(HUDGraphic* graphic);
 
-    virtual void setId(string id);
+    virtual Layout* setId(string id);
+
+    virtual Layout* findById(string id);
 
 protected:
     vector<Layout*> children;

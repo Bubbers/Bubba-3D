@@ -111,6 +111,11 @@ if(NOT SFML_FOUND)
     message(ERROR " SFML not found!")
 endif(NOT SFML_FOUND)
 
+#########################################################
+# FIND FREETYPE
+#########################################################
+find_package(Freetype REQUIRED)
+include_directories(${FREETYPE_INCLUDE_DIRS})
 
 target_include_directories (${LIBRARY_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/includes")
 target_include_directories (${LIBRARY_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/lib")
@@ -123,3 +128,4 @@ target_link_libraries(${LIBRARY_NAME}  ${ASSIMP_LIBRARY})
 target_link_libraries(${LIBRARY_NAME}  ${ASSIMP_LIBRARIES})
 
 target_link_libraries(${LIBRARY_NAME}  ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${GLEW_LIBRARIES} ${IL_LIBRARIES} ${ILU_LIBRARIES} ${ILUT_LIBRARIES} ${ASSIMP_LIBRARY} ${SFML_LIBRARIES})
+target_link_libraries(${LIBRARY_NAME} ${FREETYPE_LIBRARIES})

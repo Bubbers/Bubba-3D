@@ -15,6 +15,7 @@ using namespace std;
 class Texture;
 class Layout;
 class GLSquare;
+class IHudDrawable;
 
 class HudRenderer : public IRenderComponent
 {
@@ -25,14 +26,18 @@ public:
     virtual void render();
     virtual void renderShadow(ShaderProgram *shaderProgram);
     virtual void update(float dt);
+    virtual void updateLayout();
 
     virtual void setLayout(Layout* layout);
 
-    virtual GLSquare* getSquareByID(string id);
+    virtual Layout* getLayoutById(string id);
+
+    virtual IHudDrawable* getSquareByID(string id);
 
 protected:
     float4x4 createOrthographicProjection();
-    map<string,GLSquare*> squares;
+    map<string,IHudDrawable*> squares;
+    Layout* rootLayout;
 
 };
 

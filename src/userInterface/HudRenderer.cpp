@@ -8,6 +8,7 @@
 #include <Globals.h>
 #include "HudRenderer.h"
 #include <vector>
+#include <IHudDrawable.h>
 
 using namespace std;
 
@@ -19,8 +20,17 @@ HudRenderer::HudRenderer(){
 }
 
 void HudRenderer::setLayout(Layout *layout) {
+    rootLayout = layout;
+    updateLayout();
+}
+
+Layout* HudRenderer::getLayoutById(string id) {
+    return rootLayout->findById(id);
+}
+
+void HudRenderer::updateLayout() {
     int w = Globals::get(Globals::WINDOW_WIDTH), h = Globals::get(Globals::WINDOW_HEIGHT);
-    squares = layout->getGLSquares(0,0,(float)w,(float)h);
+    squares = rootLayout->getGLSquares(0,0,(float)w,(float)h);
 }
 
 void HudRenderer::render() {
@@ -31,8 +41,8 @@ void HudRenderer::render() {
 
 }
 
-GLSquare* HudRenderer::getSquareByID(string id) {
-    map<string,GLSquare*>::iterator it = squares.find(id);
+IHudDrawable* HudRenderer::getSquareByID(string id) {
+    map<string,IHudDrawable*>::iterator it = squares.find(id);
     return it == squares.end() ? nullptr : it->second;
 }
 

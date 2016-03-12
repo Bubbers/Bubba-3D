@@ -25,11 +25,13 @@ public:
     virtual Dimension getHeight();
 
     virtual void getGLSquares(float layoutXPos,float layoutYPos, float layoutWidth,
-                              float layoutHeight, map<string,GLSquare*>* list);
+                              float layoutHeight, map<string,IHudDrawable*>* list);
 
     PositioningLayout(Dimension width, Dimension height);
 
     void checkChildCompatibility(Layout* child);
+
+    virtual Layout* findById(string id);
 
 protected:
     struct PositionedLayout {

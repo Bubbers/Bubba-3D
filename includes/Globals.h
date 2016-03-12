@@ -7,7 +7,7 @@
 
 class Globals{
 public:
-    enum Key { WINDOW_HEIGHT=0, WINDOW_WIDTH=1,MOUSE_WINDOW_X=2,MOUSE_WINDOW_Y=3};
+    enum Key { WINDOW_HEIGHT=0, WINDOW_WIDTH=1,MOUSE_WINDOW_X=2,MOUSE_WINDOW_Y=3, FONT_TEXTURE_WIDTH=4, FONT_TEXTURE_HEIGHT=5};
     static void set(Key key, int value);
     static int get(Key key);
 
