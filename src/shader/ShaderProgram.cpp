@@ -18,35 +18,21 @@ void ShaderProgram::compileAndLink(const GLchar *vertexSource, const GLchar *fra
     linkProgram();
 }
 
+void ShaderProgram::compileShader(GLuint* shader, GLenum type, const GLchar *source, std::string shaderType) {
+    *shader = glCreateShader(type);
+    glShaderSource(*shader, 1, &source, NULL);
+    glCompileShader(*shader);
+}
+
 void ShaderProgram::compileShaders(const char *vertexSource, const char *fragmentSource) {
     GLuint vertexShader, fragmentShader;
-    compileShader(&vertexShader  , GL_VERTEX_SHADER  ,vertexSource   , "VERTEX_SHADER");
+    compileShader(&vertexShader  , GL_VERTEX_SHADER  , vertexSource   , "VERTEX_SHADER");
     compileShader(&fragmentShader, GL_FRAGMENT_SHADER, fragmentSource, "FRAGMENT_SHADER");
     createProgram(vertexShader, fragmentShader);
 }
 
-void ShaderProgram::compileShader(GLuint *shader, GLenum type, const char *source, std::string shaderType) {
-    *shader = glCreateShader(type);
-    glShaderSource(*shader, 1, &source, NULL);
-    glCompileShader(*shader);
-    checkCompileErrors(shader, shaderType);
-}
 
 
-void ShaderProgram::checkCompileErrors(GLuint *shader, std::string shaderType) {
-    GLint successfullyCompiled = false;
-    glGetShaderiv(*shader, GL_COMPILE_STATUS, &successfullyCompiled);
-    if(!successfullyCompiled) {
-        logCompileError(*shader, shaderType);
-    }
-}
-
-void ShaderProgram::logCompileError(GLuint shader, std::string shaderType) {
-    GLchar compileLog[MAX_LOG_SIZE];
-
-    glGetShaderInfoLog(shader, MAX_LOG_SIZE, NULL, compileLog);
-    Logger::logError("Failed to compile shader of type " + shaderType + "\n" + compileLog);
-}
 
 void ShaderProgram::createProgram(GLuint vertexShader, GLuint fragmentShader) {
     this->shaderID = glCreateProgram();
@@ -136,6 +122,47 @@ void ShaderProgram::setUniformBufferSubData(std::string bufferName, int offset, 
     glFinish();
     glBufferSubData(GL_UNIFORM_BUFFER, offset, size, data);
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}
+
+const char *textFileRead(const char *fn, bool fatalError) {
+
+    FILE *fp;
+    char *content = NULL;
+    int count = 0;
+
+    if (fn != NULL) {
+        fp = fopen(fn, "rt");
+        if (fp != NULL) {
+            fseek(fp, 0, SEEK_END);
+            count = ftell(fp);
+            fseek(fp, 0, SEEK_SET);
+
+            if (count > 0) {
+                content = new char[count+1];
+                count = fread( content, sizeof(char), count, fp);
+                content[count] = '\0';
+            } else {
+                if (fatalError) {
+                    char buffer[256];
+                    sprintf(buffer, "File '%s' is empty\n", fn);
+                    fatal_error(buffer);
+                }
+            }
+
+            fclose(fp);
+        } else {
+            if (fatalError) {
+                char buffer[256];
+                sprintf(buffer, "Unable to read file '%s'\n", fn);
+                fatal_error(buffer);
+            }
+        }
+    } else {
+        if (fatalError)
+            fatal_error("textFileRead - argument NULL\n");
+    }
+
+    return content;
 }
 
 

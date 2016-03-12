@@ -58,6 +58,8 @@ class ShaderProgram {
     void checkCompileErrors(GLuint *shader, std::string shaderType);
     void logCompileError(GLuint shader, std::string shaderType);
 
+
+
     void linkProgram();
     void checkLinkageErrors();
     void logLinkageError();

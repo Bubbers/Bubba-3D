@@ -49,4 +49,6 @@ static float3 createRandomVector(float minValue, float maxValue){
 }
 
 enum State{Playing, Died, Start, Won, Credits};
+
+
 #endif
