@@ -20,33 +20,15 @@ void ShaderProgram::compileAndLink(const GLchar *vertexSource, const GLchar *fra
 
 void ShaderProgram::compileShaders(const char *vertexSource, const char *fragmentSource) {
     GLuint vertexShader, fragmentShader;
-    compileShader(&vertexShader  , GL_VERTEX_SHADER  ,vertexSource   , "VERTEX_SHADER");
+    compileShader(&vertexShader  , GL_VERTEX_SHADER  , vertexSource   , "VERTEX_SHADER");
     compileShader(&fragmentShader, GL_FRAGMENT_SHADER, fragmentSource, "FRAGMENT_SHADER");
     createProgram(vertexShader, fragmentShader);
 }
 
-void ShaderProgram::compileShader(GLuint *shader, GLenum type, const char *source, std::string shaderType) {
-    *shader = glCreateShader(type);
-    glShaderSource(*shader, 1, &source, NULL);
-    glCompileShader(*shader);
-    checkCompileErrors(shader, shaderType);
-}
 
 
-void ShaderProgram::checkCompileErrors(GLuint *shader, std::string shaderType) {
-    GLint successfullyCompiled = false;
-    glGetShaderiv(*shader, GL_COMPILE_STATUS, &successfullyCompiled);
-    if(!successfullyCompiled) {
-        logCompileError(*shader, shaderType);
-    }
-}
 
-void ShaderProgram::logCompileError(GLuint shader, std::string shaderType) {
-    GLchar compileLog[MAX_LOG_SIZE];
 
-    glGetShaderInfoLog(shader, MAX_LOG_SIZE, NULL, compileLog);
-    Logger::logError("Failed to compile shader of type " + shaderType + "\n" + compileLog);
-}
 
 void ShaderProgram::createProgram(GLuint vertexShader, GLuint fragmentShader) {
     this->shaderID = glCreateProgram();
