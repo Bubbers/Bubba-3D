@@ -2,7 +2,7 @@
 // Created by simon on 2016-03-12.
 //
 
-#include <float3.h>
+#include <linmath/float3.h>
 #include "IHudDrawable.h"
 
 void IHudDrawable::setRotation(float rotation) {

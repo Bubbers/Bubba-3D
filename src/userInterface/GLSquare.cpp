@@ -4,14 +4,14 @@
 
 #include <glutil/glutil.h>
 #include <GL/glew.h>
-#include <Shader.h>
+#include <ShaderProgram.h>
 #include "GLSquare.h"
 #include <Texture.h>
 #include <HUDGraphic.h>
 #include <FontManager.h>
 #include <IHudDrawable.h>
 
-void GLSquare::render(Shader* shaderProgram, float4x4* projectionMatrix) {
+void GLSquare::render(ShaderProgram* shaderProgram, float4x4* projectionMatrix) {
 
     GLint currentDepthFunc;
     glGetIntegerv(GL_DEPTH_FUNC, &currentDepthFunc);
@@ -33,7 +33,7 @@ void GLSquare::render(Shader* shaderProgram, float4x4* projectionMatrix) {
     shaderProgram->restorePreviousShaderProgram();
 }
 
-void GLSquare::bindTextureAndDraw(Shader *shaderProgram, float4x4* projectionMatrix) {
+void GLSquare::bindTextureAndDraw(ShaderProgram *shaderProgram, float4x4* projectionMatrix) {
     shaderProgram->use();
     glBindVertexArray(vao);
 

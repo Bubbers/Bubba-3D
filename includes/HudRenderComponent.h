@@ -12,8 +12,8 @@ using namespace chag;
 class HudRenderComponent  : public IRenderComponent {
 public:
     virtual void render();
-    void renderShadow(Shader *shaderProgram){}
-    HudRenderComponent(Shader* shaderProgram, float4x4 orthographicProjection);
+    void renderShadow(ShaderProgram *shaderProgram){}
+    HudRenderComponent(ShaderProgram* shaderProgram, float4x4 orthographicProjection);
 
 private:
     float4x4 orthographicProjection;

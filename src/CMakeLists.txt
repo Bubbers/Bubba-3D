@@ -15,6 +15,7 @@ add_subdirectory(shader)
 add_subdirectory(sound)
 add_subdirectory(linmath)
 add_subdirectory(glutil)
+add_subdirectory(userInterface)
 
 add_library(${LIBRARY_NAME} STATIC ${BUBBA3D_FILES_SOURCE})
 

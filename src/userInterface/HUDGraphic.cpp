@@ -2,8 +2,8 @@
 // Created by simon on 2016-02-21.
 //
 
-#include <float3.h>
-#include <float4.h>
+#include <linmath/float3.h>
+#include <linmath/float4.h>
 #include <Texture.h>
 #include <Dimension.h>
 #include "HUDGraphic.h"

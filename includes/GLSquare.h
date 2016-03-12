@@ -6,17 +6,17 @@
 #define SUPER_BUBBA_AWESOME_SPACE_GLSQUARE_H
 
 #include <GL/glew.h>
-#include <float4x4.h>
+#include <linmath/float4x4.h>
 #include <IHudDrawable.h>
 
 using namespace chag;
 
-class Shader;
+class ShaderProgram;
 class HUDGraphic;
 
 class GLSquare : public IHudDrawable {
 public:
-    virtual void render(Shader* shaderProgram, float4x4* projectionMatrix);
+    virtual void render(ShaderProgram* shaderProgram, float4x4* projectionMatrix);
     GLSquare(float posX, float posY, float width, float height, HUDGraphic* image);
     virtual ~GLSquare();
 
@@ -26,13 +26,13 @@ protected:
     float posX,posY,width,height;
     HUDGraphic* graphic;
     GLuint vao;
-    Shader* shaderProgram;
+    ShaderProgram* shaderProgram;
     float4x4* projectionMatrix;
     float3 originalPosition;
 
     void init(float posX, float posY, float width, float height, HUDGraphic* image);
     void fillVertexBuffer();
-    void bindTextureAndDraw(Shader* shaderProgram, float4x4* projectionMatrix);
+    void bindTextureAndDraw(ShaderProgram* shaderProgram, float4x4* projectionMatrix);
     float4x4 getModelMatrix();
     void updateOriginalPosition();
 

@@ -7,7 +7,7 @@
 #include <GL/glew.h>
 #include <glutil/glutil.h>
 #include "TextObject.h"
-#include <Shader.h>
+#include <ShaderProgram.h>
 #include <FontManager.h>
 #include <ResourceManager.h>
 
@@ -86,7 +86,7 @@ void TextObject::addPoints(float *data, int i, initializer_list<float> elems) {
 
 }
 
-void TextObject::render(Shader *shaderProgram, float4x4 *projectionMatrix) {
+void TextObject::render(ShaderProgram *shaderProgram, float4x4 *projectionMatrix) {
 
     GLint currentDepthFunc;
     glGetIntegerv(GL_DEPTH_FUNC, &currentDepthFunc);

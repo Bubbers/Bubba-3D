@@ -15,7 +15,7 @@ class TextObject : public IHudDrawable {
 
 public:
     TextObject(string text, Font* font, int width, int height, int x, int y);
-    void virtual render(Shader* shaderProgram, float4x4* projectionMatrix);
+    void virtual render(ShaderProgram* shaderProgram, float4x4* projectionMatrix);
 
 protected:
     string text;

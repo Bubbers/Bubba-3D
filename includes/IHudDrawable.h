@@ -5,16 +5,16 @@
 #ifndef SUPER_BUBBA_AWESOME_SPACE_IHUDDRAWABLE_H
 #define SUPER_BUBBA_AWESOME_SPACE_IHUDDRAWABLE_H
 
-#include <float3.h>
-#include <float4x4.h>
+#include <linmath/float3.h>
+#include <linmath/float4x4.h>
 
 using namespace chag;
 
-class Shader;
+class ShaderProgram;
 
 class IHudDrawable {
 public:
-    virtual void render(Shader* shaderProgram, float4x4* projectionMatrix) = 0;
+    virtual void render(ShaderProgram* shaderProgram, float4x4* projectionMatrix) = 0;
     virtual void setRelativePosition(float3 position);
     virtual void setCenterOffset(float3 offset);
     virtual void setRotation(float rotation);
