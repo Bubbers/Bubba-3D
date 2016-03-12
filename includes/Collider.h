@@ -19,8 +19,9 @@ bool raySphereIntersection(Sphere sphere, float3 rayOrigin, float3 rayDirection)
 class Collider
 {
 public:
-	Collider(Octree* tree);
-	~Collider();
+	Collider(Octree *tree) : tree(tree) { }
+	~Collider() { }
+
 	void addGameObject(GameObject*gameObject);
 	void insertAll();
 	float rayIntersection(float3 rayOrigin, float3 rayVec);

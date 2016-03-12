@@ -1,18 +1,10 @@
 #include <GameObject.h>
 #include <Collider.h>
 #include <Triangle.h>
-#include <Sphere.h>
 #include "Octree.h"
 
 #define EPSILON 0.00001f
 bool rayTriangle(float3 r_o, float3 r_d, float3 v1, float3 v2, float3 v3, float *ins);
-
-Collider::Collider(Octree *tree) : tree(tree) {
-}
-
-
-Collider::~Collider() {
-}
 
 float Collider::rayIntersection(float3 rayOrigin, float3 rayVec) {
     std::vector<Triangle *> geometry;
@@ -68,26 +60,19 @@ bool rayTriangle(float3 r_o, float3 r_d, float3 v1, float3 v2, float3 v3, float 
     float f = 1.0f / a;           // slow division*
     float3 q = cross(s, e1);
     float u = dot(s, r);
-    bool frontfacing = true;
     float eps = 0.0001f;
-    if (a > eps)            // eps is the machine fpu epsilon (precision),
-        // or a very small number :)
-    { // Front facing triangle...
+    if (a > eps) { // Front facing triangle...
         if ((u < 0) || (u > a)) return false;
         float v = dot(r_d, q);
         if ((v < 0) || (u + v > a)) return false;
     }
     else if (a < -eps) { // Back facing triangle...
-        frontfacing = false;
         if ((u > 0) || (u < a)) return false;
         float v = dot(r_d, q);
         if ((v > 0) || (u + v < a)) return false;
     }
     else return false; // Ray parallel to triangle plane
     float t = f * dot(e2, q);
-    float v = dot(r_d, q);
-    u = u * f;
-    v = v * f;
 
     *ins = t;
 
@@ -503,16 +488,10 @@ bool isTrianglesIntersecting(Octree *object1Octree, float4x4 *object1ModelMatrix
         return false;
     }
 
-    int i = 0;
-
     for (auto t1 = triangles1->begin(); t1 != triangles1->end(); t1++) {
         Triangle triangle1 = multiplyTriangleWithModelMatrix(*t1, object1ModelMatrix);
         for (auto t2 = triangles2->begin(); t2 != triangles2->end(); t2++) {
             Triangle triangle2 = multiplyTriangleWithModelMatrix(*t2, object2ModelMatrix);
-
-            if(i++ == 11) {
-                int ix = 3;
-            }
 
             if (triangleTriangleIntersection(&triangle1, &triangle2)) {
                 return true;
