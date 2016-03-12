@@ -1,7 +1,5 @@
 
 #include <algorithm>
-#include <vector>
-#include <Logger.h>
 #include "linmath/Quaternion.h"
 #include "Sphere.h"
 #include "GameObject.h"
@@ -11,8 +9,6 @@
 #include "IComponent.h"
 #include "IRenderComponent.h"
 #include "Octree.h"
-
-
 
 #define NORMAL_TEXTURE_LOCATION 3
 #define DIFFUSE_TEXTURE_LOCATION 0
@@ -54,7 +50,7 @@ int GameObject::getUniqueId() {
 }
 
 Octree* GameObject::createOctree(Mesh* mesh) {
-    AABB* aabb = this->mesh->getAABB();
+    AABB* aabb = mesh->getAABB();
     float3 halfVector = (aabb->maxV - aabb->minV) / 2;
     float3 origin = aabb->maxV - halfVector;
     Octree* octree = new Octree(origin, halfVector);
