@@ -89,6 +89,18 @@ void GameObject::render() {
     if(renderComponent != nullptr) {
         renderComponent->render();
     }
+	if (children.size() != 0) {
+		for (auto child : children) {
+			child.first->renderChild(m_modelMatrix * child.second);
+		}
+	}
+}
+
+void GameObject::renderChild(float4x4 offsetMatrix) {
+	float4x4 temp = m_modelMatrix;
+	m_modelMatrix = m_modelMatrix * offsetMatrix;
+	render();
+	m_modelMatrix = temp;
 }
 
 std::vector<Triangle *> GameObject::getTriangles() {
@@ -102,6 +114,9 @@ float4x4 GameObject::getModelMatrix() {
 
 void GameObject::renderShadow(ShaderProgram *shaderProgram) {
     renderComponent->renderShadow(shaderProgram);
+	for (auto child : children) {
+		child.first->renderShadow(shaderProgram);
+	}
 }
 
 void GameObject::addRenderComponent(IRenderComponent* renderer) {
@@ -127,6 +142,9 @@ void GameObject::update(float dt) {
         }
         move(transform*make_scale<float4x4>(scale));
     }
+	for (auto child : children) {
+		child.first->update(dt);
+	}
 }
 
 void GameObject::callEvent(EventType type, GameObject* data) {
@@ -147,6 +165,9 @@ void GameObject::callEvent(EventType type, GameObject* data) {
         }
         break;
     }
+	for (auto child : children) {
+		child.first->callEvent(type, data);
+	}
 }
 
 AABB GameObject::getTransformedAABB() {
@@ -231,3 +252,8 @@ void GameObject::setRotation(Quaternion r) {
     rotation = r;
     hasRotation = changed = true;
 }
+
+void GameObject::addChild(std::pair<GameObject*, float4x4> child) {
+	children.push_back(child);
+}
+

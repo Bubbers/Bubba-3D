@@ -82,6 +82,8 @@ public:
      */
     virtual void renderShadow(ShaderProgram* shaderProgram);
 
+	virtual void renderChild(float4x4 offsetMatrix);
+
     void addRenderComponent(IRenderComponent* renderer);
     void addComponent(IComponent* newComponent);
     /**
@@ -123,6 +125,7 @@ public:
     float3 getLocation();
     void setLocation(float3 l);
 
+	void addChild(std::pair<GameObject*, float4x4> child);
 
     TypeIdentifier getIdentifier();
     void setIdentifier(TypeIdentifier identifier);
@@ -187,6 +190,9 @@ private:
     float3 location = make_vector(0.0f, 0.0f, 0.0f);
     bool changed = false;
 
+	/* Children */
+	std::vector<std::pair<GameObject*,float4x4>> children;
+
     /* Collision */
     Mesh *collisionMesh;
     AABB aabb;
@@ -197,7 +203,7 @@ private:
     bool dynamicObject = false;
 
     /* Components */
-    IRenderComponent* renderComponent;
+    IRenderComponent* renderComponent = nullptr;
     std::vector<IComponent*> components;
 
     bool dirty = false;
