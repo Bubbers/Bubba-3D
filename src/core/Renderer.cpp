@@ -317,8 +317,6 @@ void Renderer::initGL()
     startupGLDiagnostics();
     setupGLDebugMessages();
 
-    FreeImage_Initialise(true);
-
     /* Workaround for AMD. It might no longer be necessary, but I dunno if we
     * are ever going to remove it. (Consider it a piece of living history.)
     */

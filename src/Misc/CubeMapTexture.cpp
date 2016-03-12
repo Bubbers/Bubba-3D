@@ -1,7 +1,8 @@
 #include "CubeMapTexture.h"
 #include "glutil/glutil.h"
-#include <FreeImage.h>
 #include <Texture.h>
+#include <stb_image.h>
+#include <Logger.h>
 
 
 CubeMapTexture::CubeMapTexture(const string& posXFilename, const string& negXFilename, const string& posYFilename, const string& negYFilename, const string& posZFilename, const string& negZFilename) {
@@ -57,15 +58,22 @@ CubeMapTexture::CubeMapTexture(const string& posXFilename, const string& negXFil
 
 void CubeMapTexture::loadCubeMapFace(std::string filename, GLenum face)
 {
-	FIBITMAP *image32Bit = Texture::loadImage(filename);
-	int width, height;
-	width = FreeImage_GetWidth(image32Bit);
-	height = FreeImage_GetHeight(image32Bit);
-	GLubyte *textureData = FreeImage_GetBits(image32Bit);
+	// TODO(Bubbad) LET TEXTURE HANDLE ALL THIS
+	stbi_set_flip_vertically_on_load(true);
 
-	glTexImage2D(face, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData);
+    int width, height;
+    int comp;
+    unsigned char* image = stbi_load(filename.c_str(), &width, &height, &comp, 0);
 
-	FreeImage_Unload(image32Bit);
+    if(image == nullptr) {
+        Logger::logError("Couldnt load image "+ filename);
+    }
+
+	GLenum format = comp == 3 ? GL_RGB : GL_RGBA;
+
+	glTexImage2D(face, 0, GL_SRGB_ALPHA_EXT, width, height, 0, format, GL_UNSIGNED_BYTE, image);
+
+	stbi_image_free(image);
 }
 
 void CubeMapTexture::bind(GLenum textureUnit) {

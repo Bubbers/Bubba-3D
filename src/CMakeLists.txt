@@ -87,16 +87,6 @@ endif(NOT GLEW_FOUND)
 
 
 #########################################################
-# FIND FREEIMAGE
-#########################################################
-find_package(FREEIMAGE REQUIRED)
-include_directories(${FREEIMAGE_INCLUDE_PATH})
-
-if(NOT FREEIMAGE_FOUND)
-    message(ERROR " FreeImage not found!")
-endif(NOT FREEIMAGE_FOUND)
-
-#########################################################
 # FIND ASSIMP
 #########################################################
 find_package(ASSIMP REQUIRED)
@@ -128,8 +118,6 @@ target_include_directories (${LIBRARY_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/lib/fr
 
 target_link_libraries(${LIBRARY_NAME}  ${SFML_LIBRARIES})
 
-target_link_libraries(${LIBRARY_NAME}  ${FREEIMAGE_LIBRARY})
-target_link_libraries(${LIBRARY_NAME}  ${FREEIMAGE_LIBRARIES})
 
 target_link_libraries(${LIBRARY_NAME}  ${ASSIMP_LIBRARY})
 target_link_libraries(${LIBRARY_NAME}  ${ASSIMP_LIBRARIES})
