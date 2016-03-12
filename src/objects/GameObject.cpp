@@ -141,6 +141,9 @@ void GameObject::update(float dt) {
         }
         move(transform*make_scale<float4x4>(scale));
     }
+	for (auto child : children) {
+		child.first->update(dt);
+	}
 }
 
 void GameObject::callEvent(EventType type, GameObject* data) {
@@ -161,6 +164,9 @@ void GameObject::callEvent(EventType type, GameObject* data) {
         }
         break;
     }
+	for (auto child : children) {
+		child.first->callEvent(type, data);
+	}
 }
 
 AABB GameObject::getTransformedAABB() {
