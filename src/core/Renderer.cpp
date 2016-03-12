@@ -1,8 +1,6 @@
 #include "Renderer.h"
 #include <sstream>
-#include <SFML/Window.hpp>
 #include <Globals.h>
-#include <JoystickTranslator.h>
 #include "ResourceManager.h"
 #include "constants.h"
 #include "GameObject.h"
@@ -25,86 +23,23 @@ namespace patch
 }
 
 
-Renderer::Renderer(int width, int height)
+Renderer::Renderer()
 {
-#	if defined(__linux__)
-    linux_initialize_cwd();
-#	endif // ! __linux__
-
-    sf::ContextSettings settings = sf::ContextSettings(32, 8, 0, 3, 3);
-
-    settings.majorVersion = 3;
-    settings.minorVersion = 3;
-    settings.attributeFlags = sf::ContextSettings::Debug | sf::ContextSettings::Core;
-    window = new sf::Window(sf::VideoMode(width,height),"Super-Bubba-Awesome-Space",sf::Style::Default,settings);
-    glEnable(GL_FRAMEBUFFER_SRGB);
-    initGL();
-    resize(width, height);
 }
-
 
 Renderer::~Renderer()
 {
 }
 
-// TODO(Bubbad) Renderer should not be responsible for mouse events. This needs to be refactored out
-void Renderer::start(unsigned int maxFPS) {
-    window->setFramerateLimit(maxFPS);
-    bool running = true;
-    sf::Vector2i pos = sf::Mouse::getPosition(*window);
-    Globals::set(Globals::Key::MOUSE_WINDOW_X, pos.x);
-    Globals::set(Globals::Key::MOUSE_WINDOW_Y, pos.y);
+void Renderer::initRenderer(int width, int height) {
+	initGL();
+	resize(width, height);
 
-    if (idleMethod == nullptr)
-        Logger::logWarning("Renderer: No idle method specified.");
-    if (displayMethod == nullptr) {
-        Logger::logError("Renderer: No display method specified.");
-        return;
-    }
-
-    sf::Clock sinceStart,sinceLastIdleMethodCall;
-
-    while (running)
-    {
-        // handle events
-        sf::Event event;
-        while (window->pollEvent(event)) {
-            if (event.type == sf::Event::Closed) {
-                // end the program
-                running = false;
-            }
-            else if (event.type == sf::Event::MouseMoved) {
-                Globals::set(Globals::Key::MOUSE_WINDOW_X, event.mouseMove.x);
-                Globals::set(Globals::Key::MOUSE_WINDOW_Y, event.mouseMove.y);
-            }
-            else if (event.type == sf::Event::JoystickDisconnected || event.type == sf::Event::JoystickConnected) {
-                JoystickTranslator::getInstance()->updateMapping();
-            }
-            else if (event.type == sf::Event::Resized)
-            {
-                resize(event.size.width, event.size.height);
-            }
-
-        }
-
-        // clear the buffers
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        float dt = sinceLastIdleMethodCall.restart().asSeconds();
-        float totTime = sinceStart.getElapsedTime().asSeconds();
-        if(idleMethod != nullptr)
-            idleMethod(totTime,dt);
-        displayMethod(totTime,dt);
-
-        // end the current frame (internally swaps the front and back buffers)
-        window->display();
-    }
+	// clear the buffers
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void Renderer::resize(unsigned int width, unsigned int height) {
-    Globals::set(Globals::Key::WINDOW_HEIGHT, height);
-    Globals::set(Globals::Key::WINDOW_WIDTH, width);
-
     // adjust the viewport when the window is resized
     glViewport(0, 0, width, height);
 
@@ -112,18 +47,6 @@ void Renderer::resize(unsigned int width, unsigned int height) {
     verticalBlurFbo = createPostProcessFbo(width, height);
     horizontalBlurFbo = createPostProcessFbo(width, height);
     cutOffFbo = createPostProcessFbo(width, height);
-}
-
-void Renderer::setDisplayMethod(void(*display)(float,float)) {
-    displayMethod = display;
-}
-
-void Renderer::setIdleMethod(void(*idle)(float,float)) {
-    idleMethod = idle;
-}
-
-sf::Window* Renderer::getWindow() {
-    return window;
 }
 
 void Renderer::drawModel(IDrawable &model, ShaderProgram* shaderProgram)
@@ -306,17 +229,6 @@ void Renderer::setFog(ShaderProgram* shaderProgram) {
 
 void Renderer::initGL()
 {
-    glewExperimental = GL_TRUE;
-    glewInit();
-    glGetError();
-
-    /* Print information about OpenGL and ensure that we've got at a context
-    * that supports least OpenGL 3.0. Then setup the OpenGL Debug message
-    * mechanism.
-    */
-    startupGLDiagnostics();
-    setupGLDebugMessages();
-
     /* Workaround for AMD. It might no longer be necessary, but I dunno if we
     * are ever going to remove it. (Consider it a piece of living history.)
     */
