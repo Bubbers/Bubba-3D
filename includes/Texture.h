@@ -2,7 +2,6 @@
 #define BUBBA_3D_TEXTURE_H
 
 #include <GL/glew.h>
-#include <FreeImage.h>
 
 
 class Texture {
@@ -12,13 +11,8 @@ public:
     void bind(GLenum textureUnit);
     void loadTexture(std::string fileName);
     GLuint getID() {return textureID; };
-    static FIBITMAP *loadImage(std::string fileName);
 private:
-    static FREE_IMAGE_FORMAT getImageFormat(std::string fileName);
-    static bool isUnsupportedFormat(FREE_IMAGE_FORMAT *imageFormat, std::string fileName);
-    static FIBITMAP* loadImage32Bit(FREE_IMAGE_FORMAT imageFormat, std::string fileName);
-    static bool shouldFlip(FREE_IMAGE_FORMAT imageFormat);
-    static FIBITMAP* convertImageTo32Bit(FIBITMAP *image);
+
     GLuint textureID;
 };
 
