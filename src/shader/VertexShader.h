@@ -13,10 +13,12 @@
 
 class VertexShader : IShader {
 public:
+    VertexShader() {};
     VertexShader(std::string shaderName);
 
     virtual void compile();
     virtual void checkErrors();
+    virtual GLuint getGLId();
 
 private:
     std::string shaderString;

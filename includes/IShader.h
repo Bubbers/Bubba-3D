@@ -15,6 +15,7 @@ class IShader {
 public:
     virtual void compile() = 0;
     virtual void checkErrors() = 0;
+    virtual GLuint getGLId() = 0;
 
     GLuint compileShader(GLenum type, const char *source) {
         GLuint compiledShader = glCreateShader(type);

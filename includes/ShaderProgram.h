@@ -5,6 +5,7 @@
 #include <string>
 #include "glutil/glutil.h"
 #include "linmath/float3.h"
+#include "../src/shader/VertexShader.h"
 
 using namespace chag;
 
@@ -67,6 +68,8 @@ class ShaderProgram {
     void createProgram(GLuint vertexShader, GLuint fragmentShader);
 
     GLint getUniformLocation(std::string name);
+
+    VertexShader vertexShader;
 
     GLuint shaderID;
     std::map<std::string, GLint> uniformLocations;

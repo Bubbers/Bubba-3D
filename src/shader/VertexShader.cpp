@@ -10,6 +10,8 @@
 
 VertexShader::VertexShader(std::string shaderName) {
     shaderString = textFileRead(shaderName.c_str(), true);
+    compile();
+    checkErrors();
 }
 
 void VertexShader::compile() {
@@ -19,4 +21,8 @@ void VertexShader::compile() {
 
 void VertexShader::checkErrors() {
     checkCompileErrors(&vertexShader, VERTEX_SHADER_NAME_STRING);
+}
+
+GLuint VertexShader::getGLId() {
+    return this->vertexShader;
 }

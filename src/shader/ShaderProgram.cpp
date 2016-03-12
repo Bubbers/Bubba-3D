@@ -1,5 +1,6 @@
 #include "ShaderProgram.h"
 #include "Logger.h"
+#include "VertexShader.h"
 
 #define MAX_LOG_SIZE 1024
 
@@ -7,8 +8,9 @@ ShaderProgram::ShaderProgram() {
 
 }
 
-void ShaderProgram::loadShader(const std::string &vertexShader, const std::string &fragmentShader) {
-    const char *vs = textFileRead(vertexShader.c_str());
+void ShaderProgram::loadShader(const std::string &vertexShaderFile, const std::string &fragmentShader) {
+    vertexShader = VertexShader(vertexShaderFile);
+    const char *vs = textFileRead(vertexShaderFile.c_str());
     const char *fs = textFileRead(fragmentShader.c_str());
     compileAndLink(vs,fs);
 }
@@ -25,13 +27,10 @@ void ShaderProgram::compileShader(GLuint* shader, GLenum type, const GLchar *sou
 }
 
 void ShaderProgram::compileShaders(const char *vertexSource, const char *fragmentSource) {
-    GLuint vertexShader, fragmentShader;
-    compileShader(&vertexShader  , GL_VERTEX_SHADER  , vertexSource   , "VERTEX_SHADER");
+    GLuint fragmentShader;
     compileShader(&fragmentShader, GL_FRAGMENT_SHADER, fragmentSource, "FRAGMENT_SHADER");
-    createProgram(vertexShader, fragmentShader);
+    createProgram(vertexShader.getGLId(), fragmentShader);
 }
-
-
 
 
 void ShaderProgram::createProgram(GLuint vertexShader, GLuint fragmentShader) {
