@@ -7,6 +7,7 @@
 #include "HudRenderComponent.h"
 
 HudRenderComponent::HudRenderComponent(ShaderProgram* shaderProgram, float4x4 orthographicProjection) {
+
     this->shaderProgram = shaderProgram;
     this->orthographicProjection = orthographicProjection;
 }

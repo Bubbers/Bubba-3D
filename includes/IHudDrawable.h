@@ -15,6 +15,7 @@ class ShaderProgram;
 class IHudDrawable {
 public:
     virtual void render(ShaderProgram* shaderProgram, float4x4* projectionMatrix) = 0;
+
     virtual void setRelativePosition(float3 position);
     virtual void setCenterOffset(float3 offset);
     virtual void setRotation(float rotation);
