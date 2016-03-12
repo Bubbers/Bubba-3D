@@ -30,9 +30,7 @@ Installation
 ### Requirements:
 * <a href="http://www.cmake.org/">CMake</a>
 * <a href="http://assimp.sourceforge.net/">Assimp</a>
-* <a href="http://freeglut.sourceforge.net/">Glut (Freeglut)</a>
 * <a href="http://glew.sourceforge.net/">Glew</a>
-* <a href="http://freeimage.sourceforge.net/">FreeImage</a><br />
 * <a href="http://www.sfml-dev.org/index.php">SFML</a><br />
 
 ### Install dependencies
