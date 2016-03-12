@@ -62,27 +62,27 @@ private:
 
     Fbo createPostProcessFbo(int width, int height);
     void drawShadowMap(Fbo sbo, float4x4 viewProjectionMatrix, Scene *scene);
-    void drawShadowCasters(Shader* shaderProgram, Scene *scene);
-    void drawTransparent(Shader* shaderProgram, Scene *scene);
-    void setFog(Shader* shaderProgram);
-    void setLights(Shader* shaderProgram, Scene *scene);
+    void drawShadowCasters(ShaderProgram* shaderProgram, Scene *scene);
+    void drawTransparent(ShaderProgram* shaderProgram, Scene *scene);
+    void setFog(ShaderProgram* shaderProgram);
+    void setLights(ShaderProgram* shaderProgram, Scene *scene);
 
-    Shader* shaderProgram;
+    ShaderProgram* shaderProgram;
 
     Fbo sbo;
     Camera *cubeMapCameras[6];
 
     // Drawing
-    void drawModel(IDrawable &model, Shader* shaderProgram);
+    void drawModel(IDrawable &model, ShaderProgram* shaderProgram);
     void drawFullScreenQuad();
     void renderPostProcess();
     void blurImage();
 
     // Postprocess
-    Shader* postFxShader;
-    Shader* horizontalBlurShader;
-    Shader* verticalBlurShader;
-    Shader* cutoffShader;
+    ShaderProgram* postFxShader;
+    ShaderProgram* horizontalBlurShader;
+    ShaderProgram* verticalBlurShader;
+    ShaderProgram* cutoffShader;
     Fbo postProcessFbo, horizontalBlurFbo, verticalBlurFbo, cutOffFbo;
 };
 

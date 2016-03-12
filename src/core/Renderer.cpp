@@ -126,7 +126,7 @@ sf::Window* Renderer::getWindow() {
     return window;
 }
 
-void Renderer::drawModel(IDrawable &model, Shader* shaderProgram)
+void Renderer::drawModel(IDrawable &model, ShaderProgram* shaderProgram)
 {
     shaderProgram->use();
     model.render();
@@ -210,7 +210,7 @@ void Renderer::drawScene(Camera *camera, Scene *scene, float currentTime)
 
 }
 
-void Renderer::setLights(Shader* shaderProgram, Scene *scene) {
+void Renderer::setLights(ShaderProgram* shaderProgram, Scene *scene) {
     //set dirlights
     shaderProgram->setUniform3f("directionalLight.colors.ambientColor", scene->directionalLight.ambientColor);
     shaderProgram->setUniform3f("directionalLight.colors.diffuseColor", scene->directionalLight.diffuseColor);
@@ -252,7 +252,7 @@ void Renderer::setLights(Shader* shaderProgram, Scene *scene) {
 * In this function, add all scene elements that should cast shadow, that way
 * there is only one draw call to each of these, as this function is called twice.
 */
-void Renderer::drawShadowCasters(Shader* shaderProgram, Scene *scene)
+void Renderer::drawShadowCasters(ShaderProgram* shaderProgram, Scene *scene)
 {
     for (unsigned int i = 0; i < scene->shadowCasters.size(); i++) {
         shaderProgram->setUniform1f("object_reflectiveness", (*scene->shadowCasters[i]).shininess);
@@ -260,7 +260,7 @@ void Renderer::drawShadowCasters(Shader* shaderProgram, Scene *scene)
     }
 }
 
-void Renderer::drawTransparent(Shader* shaderProgram, Scene *scene)
+void Renderer::drawTransparent(ShaderProgram* shaderProgram, Scene *scene)
 {
     for (unsigned int i = 0; i < scene->transparentObjects.size(); i++) {
         shaderProgram->setUniform1f("object_reflectiveness", (*scene->transparentObjects[i]).shininess);
@@ -295,7 +295,7 @@ void Renderer::drawShadowMap(Fbo sbo, float4x4 viewProjectionMatrix, Scene *scen
     glUseProgram(currentProgram);
 }
 
-void Renderer::setFog(Shader* shaderProgram) {
+void Renderer::setFog(ShaderProgram* shaderProgram) {
     if (effects.fog.fEquation == FOG_EQ::NONE){ return; }
     shaderProgram->setUniform1i("fog.iEquation",	effects.fog.fEquation);
     shaderProgram->setUniform1f("fog.fDensity",	effects.fog.fDensity);

@@ -3,7 +3,7 @@
 
 #include <GL/glew.h>
 #include <GL/freeglut.h>
-#include "Shader.h"
+#include "ShaderProgram.h"
 
 //*****************************************************************************
 //	Frame buffer objects
@@ -11,7 +11,7 @@
 struct Fbo{
 	GLuint id;
 	GLuint texture;
-	Shader* shaderProgram;
+	ShaderProgram* shaderProgram;
 	GLuint depthbuffer;
 
 	int width, height;

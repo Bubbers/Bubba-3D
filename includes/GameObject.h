@@ -8,6 +8,7 @@
 #include <vector>
 #include <linmath/Quaternion.h>
 #include <Sphere.h>
+#include "ShaderProgram.h"
 
 using namespace chag;
 using namespace std;
@@ -79,7 +80,7 @@ public:
     /**
      * Renders the GameObject shadows using the GameObjects RenderComponent, if any.
      */
-    virtual void renderShadow(Shader* shaderProgram);
+    virtual void renderShadow(ShaderProgram* shaderProgram);
 
     void addRenderComponent(IRenderComponent* renderer);
     void addComponent(IComponent* newComponent);

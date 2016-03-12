@@ -22,7 +22,7 @@ public:
     };
 
     virtual void render();
-    virtual void renderShadow(Shader *shaderProgram);
+    virtual void renderShadow(ShaderProgram *shaderProgram);
     virtual void update(float dt);
     void render2DHud(Texture* texture, float4x4 *modelMatrix);
     struct HudConfig* getConfig();

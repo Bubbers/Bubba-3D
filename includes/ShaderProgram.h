@@ -15,9 +15,9 @@ using namespace chag;
  * on the graphics card. It caches the uniform locations as they are used to
  * speed up the next call.
  */
-class Shader {
+class ShaderProgram {
  public:
-    Shader();
+    ShaderProgram();
 
     /**
      * Compiles, links and creates a program of the specified shaders.

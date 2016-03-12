@@ -1,7 +1,7 @@
 #ifndef __IDRAWABLE_H__
 #define __IDRAWABLE_H__
 
-class Shader;
+class ShaderProgram;
 
 class IDrawable {
 public:
@@ -10,7 +10,7 @@ public:
 	virtual ~IDrawable(){};
 
   virtual void render() = 0;
-  virtual void renderShadow(Shader* shaderProgram) = 0;
+  virtual void renderShadow(ShaderProgram* shaderProgram) = 0;
   
   float shininess;
 };

@@ -20,7 +20,7 @@ public:
 
 	bool init(const std::string& posXFilename, const std::string& negXFilename, const std::string& posYFilename, const std::string& negYFilename, const std::string& posZFilename, const std::string& negZFilename);
 
-	void renderShadow(Shader* shaderProgram) {};
+	void renderShadow(ShaderProgram* shaderProgram) {};
 	void render();
 	void update(float dt);
 private:

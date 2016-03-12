@@ -22,7 +22,7 @@ public:
 	~ParticleGenerator();
 
 	void update(float dt);
-	void renderShadow(Shader* shaderProgram) {};
+	void renderShadow(ShaderProgram* shaderProgram) {};
 	void render();
 
 	void setScaleLod(bool value);

@@ -1,7 +1,8 @@
 #include <GameObject.h>
+#include <ShaderProgram.h>
 #include "StandardRenderer.h"
 #include "Mesh.h"
-#include "Shader.h"
+#include "ShaderProgram.h"
 
 #define NORMAL_TEXTURE_LOCATION 3
 #define DIFFUSE_TEXTURE_LOCATION 0
@@ -10,7 +11,7 @@ StandardRenderer::StandardRenderer(){
 
 }
 
-StandardRenderer::StandardRenderer(Mesh* mesh, GameObject* gameObject, Shader* shaderProgram):
+StandardRenderer::StandardRenderer(Mesh* mesh, GameObject* gameObject, ShaderProgram* shaderProgram):
         mesh(mesh), gameObject(gameObject)
 {
     this->shaderProgram = shaderProgram;
@@ -64,7 +65,7 @@ void StandardRenderer::render() {
     CHECK_GL_ERROR();
 }
 
-void StandardRenderer::renderShadow(Shader *shaderProgram) {
+void StandardRenderer::renderShadow(ShaderProgram *shaderProgram) {
 
     float4x4 modelMatrix = gameObject->getModelMatrix();
     shaderProgram->setUniformMatrix4fv("modelMatrix", modelMatrix);

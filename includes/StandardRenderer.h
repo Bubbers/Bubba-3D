@@ -6,17 +6,17 @@
 
 
 class Mesh;
-class Shader;
+class ShaderProgram;
 class GameObject;
 
 class StandardRenderer : public IRenderComponent {
 public:
     StandardRenderer();
-    StandardRenderer(Mesh*, GameObject*, Shader*);
+    StandardRenderer(Mesh*, GameObject*, ShaderProgram*);
 
     void update(float dt);
     void render();
-    void renderShadow(Shader *shaderProgram);
+    void renderShadow(ShaderProgram *shaderProgram);
 private:
     Mesh* mesh;
     GameObject *gameObject;

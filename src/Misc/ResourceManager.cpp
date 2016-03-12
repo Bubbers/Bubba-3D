@@ -1,19 +1,20 @@
 #include "ResourceManager.h"
 #include <sstream>
 #include <Logger.h>
+#include <ShaderProgram.h>
 
 
-std::map<std::string, Shader> ResourceManager::shaders;
+std::map<std::string, ShaderProgram> ResourceManager::shaders;
 std::map<std::string, Texture> ResourceManager::textures;
 std::map<std::string, Mesh> ResourceManager::meshes;
 
 void ResourceManager::loadShader(const std::string &vertexShader, const std::string &fragmentShader, std::string name){
-    Shader shaderProgram;
+    ShaderProgram shaderProgram;
     shaderProgram.loadShader(vertexShader,fragmentShader);
-    shaders.insert(std::pair<std::string, Shader>(name, shaderProgram));
+    shaders.insert(std::pair<std::string, ShaderProgram>(name, shaderProgram));
 }
 
-Shader* ResourceManager::getShader(std::string name) {
+ShaderProgram* ResourceManager::getShader(std::string name) {
     return getItemFromMap(&shaders, name);
 }
 
