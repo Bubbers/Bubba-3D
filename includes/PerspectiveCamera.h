@@ -17,6 +17,7 @@ class PerspectiveCamera : public Camera{
     float4x4 getViewMatrix();
     float4x4 getProjectionMatrix();
 
+    void update(float dt);
     void setPosition(float3 position);
     void setLookAt(float3 lookAt);
     void setUpVector(float3 up);

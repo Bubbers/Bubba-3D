@@ -3,20 +3,21 @@
 
 #include <linmath/float4x4.h>
 #include <linmath/float3.h>
-
+#include "IComponent.h"
 
 using namespace chag;
 
 /**
  * Interface for manipulating a camera
  */
-class Camera {
+class Camera : public IComponent{
 public:
 	Camera(float3 position, float3 lookAt, float3 up, float fov, float ratio, float nearPlane, float farPlane)
 			: m_vPosition(position), m_vLookAt(lookAt), m_vUp(up), m_fFov(fov),
 			  m_fRatio(ratio), m_fNearPlane(nearPlane), m_fFarPlane(farPlane){}
 	~Camera() {}
 
+	virtual void update(float dt) = 0;
 	virtual float4x4 getViewMatrix() = 0;
 	virtual float4x4 getProjectionMatrix() = 0;
 

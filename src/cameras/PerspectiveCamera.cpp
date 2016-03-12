@@ -14,6 +14,8 @@ float4x4 PerspectiveCamera::getViewMatrix() {
 	return lookAt(m_vPosition, m_vLookAt, m_vUp);
 }
 
+void PerspectiveCamera::update(float dt) { }
+
 float4x4 PerspectiveCamera::lookAt(const float3 &eye, const float3 &center, const float3 &up)
 {
     float3 dir = chag::normalize(eye - center);
