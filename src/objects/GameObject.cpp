@@ -107,10 +107,12 @@ void GameObject::renderShadow(ShaderProgram *shaderProgram) {
 void GameObject::addRenderComponent(IRenderComponent* renderer) {
     this->renderComponent = renderer;
     components.push_back(renderer);
+    renderer->bind(this);
 }
 
 void GameObject::addComponent(IComponent* newComponent) {
     components.push_back(newComponent);
+    newComponent->bind(this);
 }
 
 void GameObject::update(float dt) {
