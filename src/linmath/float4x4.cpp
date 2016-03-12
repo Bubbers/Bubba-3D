@@ -1,6 +1,6 @@
 #include "linmath/float4x4.h"
 #include "linmath/float3x3.h"
-#include "inverse.h"
+#include "linmath/inverse.h"
 
 #include <cassert>
 #include <memory.h>

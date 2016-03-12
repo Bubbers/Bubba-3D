@@ -2,7 +2,7 @@
 #define _chag_SmallVector3_inl
 
 
-#include "SmallVector3.h"
+#include "linmath/SmallVector3.h"
 #include <algorithm>
 
 // 

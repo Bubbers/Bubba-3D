@@ -103,6 +103,6 @@ const SmallVector2<T> max(const SmallVector2<T> &a, const SmallVector2<T> &b);
 
 } // namespace chag
 
-#include "SmallVector2.inl"
+#include "linmath/SmallVector2.inl"
 
 #endif // _chag_SmallVector2_h
