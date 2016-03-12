@@ -23,9 +23,7 @@ sf::Sound* AudioManager::loadAndFetchSound(const std::string &fileName){
 
 void AudioManager::loadSoundBuffer(const std::string &fileName) {
     sf::SoundBuffer soundBuffer;
-    if(soundBuffer.loadFromFile(fileName) == -1) {
-        Logger::logError("Unable to load soundbuffer " + fileName);
-    }
+    soundBuffer.loadFromFile(fileName);
 
     soundBuffers.insert(std::pair<std::string, sf::SoundBuffer>(fileName, soundBuffer));
 }
@@ -49,9 +47,7 @@ sf::Music* AudioManager::loadAndFetchMusic(const std::string &fileName) {
 
 void AudioManager::loadMusic(const std::string &fileName) {
     sf::Music *music = new sf::Music();
-    if(music->openFromFile(fileName) == -1){
-        Logger::logError("Unable to load music " + fileName);
-    }
+    music->openFromFile(fileName);
 
     musics.insert(std::pair<std::string, sf::Music*>(fileName, music));
 }

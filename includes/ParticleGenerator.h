@@ -35,7 +35,7 @@ private:
 	std::vector<Particle*> m_particles;
 	GLuint m_vaob;
 	Texture *texture;
-	int m_amount;
+	int m_amount = 0;
 
 	ParticleConf *conf;
 	bool doScale = true;

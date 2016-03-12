@@ -189,7 +189,7 @@ TEST_CASE("TriangleOctreeShouldIntersect", "[Collision, Random]") {
         std::vector<Triangle*> triangles;
         Octree octreeAllTriangles(ORIGIN_POS, HALF_VECTOR);
 
-        int maxTriangles = getRand(1.0, MAX_TRIANGLES);
+        unsigned int maxTriangles = getRand(1.0, MAX_TRIANGLES);
 
         for (unsigned int i = 0; i < maxTriangles; i++) {
             Triangle *triangle = new Triangle(createRandomVector(MIN_SPACE, MAX_SPACE),
