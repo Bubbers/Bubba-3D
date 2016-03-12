@@ -1,5 +1,5 @@
-Bubba-3D [![Build Status](https://travis-ci.org/Bubbers/Bubba-3D.svg?branch=develop)](https://travis-ci.org/Bubbers/Bubba-3D)
-========
+Bubba-3D [![Build Status](https://travis-ci.org/Bubbers/Bubba-3D.svg?branch=develop)](https://travis-ci.org/Bubbers/Bubba-3D) !['LGPL3'](https://www.gnu.org/graphics/lgplv3-88x31.png)
+=======
 
 About
 -----
