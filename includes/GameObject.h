@@ -82,6 +82,8 @@ public:
      */
     virtual void renderShadow(ShaderProgram* shaderProgram);
 
+	virtual void renderChild(float4x4 offsetMatrix);
+
     void addRenderComponent(IRenderComponent* renderer);
     void addComponent(IComponent* newComponent);
     /**

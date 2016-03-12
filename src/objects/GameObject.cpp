@@ -95,9 +95,16 @@ void GameObject::render() {
     }
 	if (children.size() != 0) {
 		for (auto child : children) {
-			child.first->render();
+			child.first->renderChild(m_modelMatrix * child.second);
 		}
 	}
+}
+
+void GameObject::renderChild(float4x4 offsetMatrix) {
+	float4x4 temp = m_modelMatrix;
+	m_modelMatrix = m_modelMatrix * offsetMatrix;
+	render();
+	m_modelMatrix = temp;
 }
 
 std::vector<Triangle *> GameObject::getTriangles() {
