@@ -1,5 +1,7 @@
 set(LIBRARY_NAME Bubba3D)
 
+set(BUBBA3D_SOURCE_FILES "")
+
 add_subdirectory(Input)
 add_subdirectory(Misc)
 add_subdirectory(cameras)
@@ -9,6 +11,7 @@ add_subdirectory(core)
 add_subdirectory(logging)
 add_subdirectory(objects)
 add_subdirectory(particle)
+add_subdirectory(shader)
 add_subdirectory(sound)
 add_subdirectory(linmath)
 add_subdirectory(glutil)
