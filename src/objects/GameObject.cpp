@@ -118,6 +118,9 @@ float4x4 GameObject::getModelMatrix() {
 
 void GameObject::renderShadow(ShaderProgram *shaderProgram) {
     renderComponent->renderShadow(shaderProgram);
+	for (auto child : children) {
+		child.first->renderShadow(shaderProgram);
+	}
 }
 
 void GameObject::addRenderComponent(IRenderComponent* renderer) {
