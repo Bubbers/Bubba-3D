@@ -3,7 +3,6 @@
 //
 
 #include <GameObject.h>
-#include <Logger.h>
 #include "MoveComponent.h"
 #include "linmath/float3x3.h"
 
@@ -22,16 +21,6 @@ MoveComponent::MoveComponent(GameObject* meshObject, Quaternion rotationSpeed, f
     this->rotationSpeed = rotationSpeed;
     this->scaleSpeed = scaleSpeed;
 }
-
-void MoveComponent::afterCollision() {
-}
-
-void MoveComponent::duringCollision() {
-}
-
-void MoveComponent::beforeCollision() {
-}
-
 
 void MoveComponent::update(float dt){
 
