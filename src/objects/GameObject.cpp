@@ -146,11 +146,17 @@ void GameObject::update(float dt) {
     }
     if (changed) {
         changed = false;
-        float4x4 transform = make_translation(this->getLocation());
+        float4x4 translation = make_translation(this->getLocation());
+        float4x4 rotation    = makematrix(this->getRotation());
+        float4x4 scale = make_scale<float4x4>(this->getScale());
 
-        transform = transform * makematrix(this->getRotation());
+        float4x4 point_translation = make_identity<float4x4>();
+        if(parent != nullptr) {
+            translation = make_translation(this->parent->location);
+            point_translation = make_translation(location);
+        }
 
-        move(transform*make_scale<float4x4>(this->getScale()));
+        move(translation * rotation * point_translation * scale);
     }
 	for (auto child : children) {
 		child->changed = true;
@@ -242,7 +248,7 @@ float3 GameObject::getScale() {
 
 Quaternion GameObject::getRotation() {
 	if (parent != nullptr) {
-		return parent->getRotation() * rotation;
+		return rotation * parent->getRotation();
 	}
 	return rotation;
 }

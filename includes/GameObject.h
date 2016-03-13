@@ -72,8 +72,8 @@ public:
      */
     GameObject(Mesh *mesh, Mesh *colliderMesh);
 
-	GameObject::GameObject(Mesh *mesh, GameObject* parent);
-	GameObject::GameObject(Mesh *mesh, Mesh *colliderMesh, GameObject* parent);
+	GameObject(Mesh *mesh, GameObject* parent);
+	GameObject(Mesh *mesh, Mesh *colliderMesh, GameObject* parent);
 
     virtual ~GameObject();
 
@@ -188,6 +188,7 @@ private:
     chag::float4x4 m_modelMatrix;
     float3 scale = make_vector(1.0f, 1.0f, 1.0f);
     Quaternion rotation = Quaternion();
+    Quaternion rotationPointReference = Quaternion();
     bool hasRotation = false;
     float3 location = make_vector(0.0f, 0.0f, 0.0f);
     bool changed = false;
