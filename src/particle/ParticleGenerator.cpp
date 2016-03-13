@@ -96,7 +96,7 @@ void ParticleGenerator::render() {
 		float3 scale;
 		if (particle->isAlive()) {
 			if(doScale) {
-				scale = conf->getScale() * (1.0 + distance / LINEAR_SCALE_FACTOR);
+				scale = conf->calcParticleScale() * (1.0 + distance / LINEAR_SCALE_FACTOR);
 			} else {
 				scale = make_vector(1.0f, 1.0f, 1.0f);
 			}
