@@ -18,7 +18,7 @@ class ParticleConf;
 class ParticleGenerator : public IRenderComponent
 {
 public:
-	ParticleGenerator(Texture *texture, int amount, Camera *camera, float3 position, ParticleConf *conf);
+	ParticleGenerator(Texture *texture, int amount, Camera *camera, float3 originPos, ParticleConf *conf);
 	~ParticleGenerator();
 
 	/**
@@ -41,7 +41,6 @@ public:
 	void setScaleLod(bool value);
 
 	Camera *m_camera;
-	float3 m_position;
 
  	void setLooping(bool value);
 private:

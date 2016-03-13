@@ -9,8 +9,8 @@
 
 using namespace chag;
 
-ParticleGenerator::ParticleGenerator(Texture *texture, int amount, Camera *camera, float3 position, ParticleConf *conf)
-	:  texture(texture), m_amount(amount), m_camera(camera), m_position(position), conf(conf)
+ParticleGenerator::ParticleGenerator(Texture *texture, int amount, Camera *camera, float3 originPos, ParticleConf *conf)
+	:  texture(texture), m_amount(amount), m_camera(camera), conf(conf)
 {
 	ResourceManager::loadShader("../shaders/particle.vert", "../shaders/particle.frag", "particleShader");
 	shaderProgram = ResourceManager::getShader("particleShader");
@@ -43,7 +43,7 @@ ParticleGenerator::ParticleGenerator(Texture *texture, int amount, Camera *camer
 	glBindVertexArray(0);
 
 	for (int i = 0; i < amount; i++) {
-		Particle *part = new Particle(&this->m_position, conf);
+		Particle *part = new Particle(conf, originPos);
 		this->m_particles.push_back(part);
 	}
 }
@@ -76,7 +76,7 @@ void ParticleGenerator::render() {
 	float3x3 modelMatrix3x3 = getModelMatrix3x3();
 
 
-	float distance = length(this->m_camera->getPosition() - this->m_position);
+	float distance = length(this->m_camera->getPosition() - this->owner->getLocation());
 	int maxParticles = (int)(m_amount * LOD_FACTOR / distance );
 	glBindVertexArray(m_vaob);
 	
@@ -118,14 +118,15 @@ void ParticleGenerator::render() {
 }
 
 void ParticleGenerator::update(float dt) {
-	float distance = length(this->m_camera->getPosition() - this->m_position);
+	float distance = length(this->m_camera->getPosition() - this->owner->getLocation());
+	float3 pos = this->owner->getLocation();
 
 	for (Particle *particle : this->m_particles) {
 		if (particle->isAlive()){
 			particle->update(dt, distance, conf);
 		}
 		else if(conf->loop(dt)){
-			particle->reset(conf);
+			particle->reset(conf, pos);
 		}
 	}
 }

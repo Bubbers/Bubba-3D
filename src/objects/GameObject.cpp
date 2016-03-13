@@ -20,16 +20,33 @@ GameObject::GameObject() {
     id = getUniqueId();
 }
 
+GameObject::GameObject(GameObject* parent) {
+	this->parent = parent;
+	m_modelMatrix = make_identity<float4x4>();
+	id = getUniqueId();
+}
+
 GameObject::GameObject(Mesh *mesh) {
     m_modelMatrix = make_identity<float4x4>();
     initGameObject(mesh, mesh);
-};
+}
 
 GameObject::GameObject(Mesh *mesh, Mesh *colliderMesh) {
     m_modelMatrix = make_identity<float4x4>();
     initGameObject(mesh, colliderMesh);
 }
 
+GameObject::GameObject(Mesh *mesh, GameObject* parent) {
+	this->parent = parent;
+	m_modelMatrix = make_identity<float4x4>();
+	initGameObject(mesh, mesh);
+}
+
+GameObject::GameObject(Mesh *mesh, Mesh *colliderMesh, GameObject* parent) {
+	this->parent = parent;
+	m_modelMatrix = make_identity<float4x4>();
+	initGameObject(mesh, colliderMesh);
+}
 
 void GameObject::initGameObject(Mesh *mesh, Mesh *colliderMesh) {
     this->mesh = mesh;
@@ -91,16 +108,9 @@ void GameObject::render() {
     }
 	if (children.size() != 0) {
 		for (auto child : children) {
-			child.first->renderChild(m_modelMatrix * child.second);
+			child->render();
 		}
 	}
-}
-
-void GameObject::renderChild(float4x4 offsetMatrix) {
-	float4x4 temp = m_modelMatrix;
-	m_modelMatrix = m_modelMatrix * offsetMatrix;
-	render();
-	m_modelMatrix = temp;
 }
 
 std::vector<Triangle *> GameObject::getTriangles() {
@@ -115,7 +125,7 @@ float4x4 GameObject::getModelMatrix() {
 void GameObject::renderShadow(ShaderProgram *shaderProgram) {
     renderComponent->renderShadow(shaderProgram);
 	for (auto child : children) {
-		child.first->renderShadow(shaderProgram);
+		child->renderShadow(shaderProgram);
 	}
 }
 
@@ -136,14 +146,15 @@ void GameObject::update(float dt) {
     }
     if (changed) {
         changed = false;
-        float4x4 transform = make_translation(location);
-        if (hasRotation) {
-            transform = transform * makematrix(rotation);
-        }
-        move(transform*make_scale<float4x4>(scale));
+        float4x4 transform = make_translation(this->getLocation());
+
+        transform = transform * makematrix(this->getRotation());
+
+        move(transform*make_scale<float4x4>(this->getScale()));
     }
 	for (auto child : children) {
-		child.first->update(dt);
+		child->changed = true;
+		child->update(dt);
 	}
 }
 
@@ -166,7 +177,7 @@ void GameObject::callEvent(EventType type, GameObject* data) {
         break;
     }
 	for (auto child : children) {
-		child.first->callEvent(type, data);
+		child->callEvent(type, data);
 	}
 }
 
@@ -223,15 +234,24 @@ int GameObject::getId() {
 }
 
 float3 GameObject::getScale() {
-    return scale;
+	if (parent != nullptr) {
+		return scale + parent->getScale();
+	}
+	return scale;
 }
 
 Quaternion GameObject::getRotation() {
-    return rotation;
+	if (parent != nullptr) {
+		return parent->getRotation() * rotation;
+	}
+	return rotation;
 }
 
 float3 GameObject::getLocation() {
-    return location;
+	if (parent != nullptr) {
+		return location + parent->getLocation();
+	}
+	return location;
 }
 
 void GameObject::updateRotation(Quaternion r) {
@@ -253,7 +273,7 @@ void GameObject::setRotation(Quaternion r) {
     hasRotation = changed = true;
 }
 
-void GameObject::addChild(std::pair<GameObject*, float4x4> child) {
+void GameObject::addChild(GameObject* child) {
 	children.push_back(child);
 }
 
