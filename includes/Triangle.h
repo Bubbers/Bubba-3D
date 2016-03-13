@@ -1,7 +1,7 @@
 #ifndef __Triangle_h__
 #define __Triangle_h__
 
-#include <float3.h>
+#include <linmath/float3.h>
 
 using namespace chag;
 

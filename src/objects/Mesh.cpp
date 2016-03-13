@@ -1,25 +1,23 @@
-#include <ResourceManager.h>
 #include "Mesh.h"
+#include <ResourceManager.h>
 #include "Logger.h"
+#include "Triangle.h"
+
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
+#include <vector>
+#include "Chunk.h"
+#include <string>
 
 using namespace chag;
 
 Mesh::Mesh() {
-    m_modelMatrix = make_identity<float4x4>();
-};
 
-Mesh::~Mesh() { };
+}
 
-Chunk::Chunk(std::vector<chag::float3> &positions,
-             std::vector<chag::float3> &normals,
-             std::vector<chag::float2> &uvs,
-             std::vector<unsigned int> &indices,
-             std::vector<chag::float3> &tangents,
-             std::vector<chag::float3> &bittangents,
-             unsigned int materialIndex) :
-        m_positions(positions), m_normals(normals), m_uvs(uvs), m_indices(indices), materialIndex(materialIndex),
-        m_tangents(tangents), m_bittangents(bittangents) {
-    m_numIndices = indices.size();
+Mesh::~Mesh() {
+
 }
 
 void Mesh::loadMesh(const std::string &fileName) {
@@ -30,44 +28,92 @@ void Mesh::loadMesh(const std::string &fileName) {
             fileName.c_str(), aiProcess_GenSmoothNormals | aiProcess_Triangulate | aiProcess_CalcTangentSpace);
 
     if (!pScene) {
-        Logger::logSevere("Error loading mesh for " + fileName);
-    }
-    else {
-        initMeshFromScene(pScene, fileName);
+        Logger::logError("Error loading mesh for " + fileName);
+    } else {
+        initMesh(pScene, fileName);
     }
 }
 
-void Mesh::initMeshFromScene(const aiScene *pScene, const std::string &fileName) {
+void Mesh::initMesh(const aiScene *pScene, const std::string &fileNameOfMesh) {
     for (unsigned int i = 0; i < pScene->mNumMeshes; i++) {
         const aiMesh *paiMesh = pScene->mMeshes[i];
-        initMesh(i, paiMesh);
+        initMeshFromAiMesh(i, paiMesh);
     }
 
-    initMaterials(pScene, fileName);
+    initMaterials(pScene, fileNameOfMesh);
+    createTriangles();
 }
 
-void Mesh::initMaterials(const aiScene *pScene, const std::string &fileName) {
+
+void Mesh::initMeshFromAiMesh(unsigned int index, const aiMesh *paiMesh) {
+    Chunk chunk;
+
+    initChunkFromAiMesh(paiMesh, chunk);
+    setupSphere(&chunk.m_positions);
+}
+
+void Mesh::initChunkFromAiMesh(const aiMesh *paiMesh, Chunk &chunk) {
+    initVerticesFromAiMesh(paiMesh, chunk);
+    initIndicesFromAiMesh(paiMesh, chunk);
+
+    chunk.materialIndex = paiMesh->mMaterialIndex;
+
+    setupChunkForRendering(chunk);
+    m_chunks.push_back(chunk);
+}
+
+
+void Mesh::initVerticesFromAiMesh(const aiMesh *paiMesh, Chunk &chunk) {
+    const aiVector3D Zero3D(0.0f, 0.0f, 0.0f);
+
+    for (unsigned int i = 0; i < paiMesh->mNumVertices; i++) {
+        const aiVector3D pPos = paiMesh->mVertices[i];
+        const aiVector3D pNormal = paiMesh->mNormals[i];
+        const aiVector3D pTexCoord = paiMesh->HasTextureCoords(0) ? paiMesh->mTextureCoords[0][i] : Zero3D;
+
+        chunk.m_positions.push_back(make_vector(pPos.x, pPos.y, pPos.z));
+        chunk.m_normals.push_back(make_vector(pNormal.x, pNormal.y, pNormal.z));
+        chunk.m_uvs.push_back(make_vector(pTexCoord.x, pTexCoord.y));
+        if (paiMesh->HasTangentsAndBitangents()) {
+            const aiVector3D pBitTangents = paiMesh->mBitangents[i];
+            const aiVector3D pTangents = paiMesh->mTangents[i];
+            chunk.m_bittangents.push_back(make_vector(pBitTangents.x, pBitTangents.y, pBitTangents.z));
+            chunk.m_tangents.push_back(make_vector(pTangents.x, pTangents.y, pTangents.z));
+        }
+
+        checkMinMax(pPos.x, pPos.y, pPos.z, &m_aabb.minV, &m_aabb.maxV);
+    }
+}
+
+void Mesh::initIndicesFromAiMesh(const aiMesh *paiMesh, Chunk &chunk) {
+    for (unsigned int i = 0; i < paiMesh->mNumFaces; i++) {
+        const aiFace face = paiMesh->mFaces[i];
+        chunk.m_indices.push_back(face.mIndices[0]);
+        chunk.m_indices.push_back(face.mIndices[1]);
+        chunk.m_indices.push_back(face.mIndices[2]);
+    }
+}
+
+
+void Mesh::initMaterials(const aiScene *pScene, const std::string &fileNameOfMesh) {
     for (unsigned int i = 0; i < pScene->mNumMaterials; i++) {
         const aiMaterial *material = pScene->mMaterials[i];
         Material m;
 
-        initMaterialTextures(&m, fileName, material);
+        initMaterialTextures(&m, fileNameOfMesh, material);
         initMaterialColors(&m, material);
-
-        float specExp;
-        material->Get(AI_MATKEY_SHININESS, specExp);
-        m.specularExponent = specExp > 0.0f ? specExp : 0.0f;
+        initMaterialShininess(&m, material);
 
         materials.push_back(m);
     }
 }
 
-void Mesh::initMaterialTextures(Material *material, std::string fileName, const aiMaterial *loadedMaterial) {
-    if(loadedMaterial->GetTextureCount(aiTextureType_DIFFUSE) > 0) {
-        material->diffuseTexture = getTexture(loadedMaterial, fileName, aiTextureType_DIFFUSE);
+void Mesh::initMaterialTextures(Material *material, std::string fileNameOfMesh, const aiMaterial *loadedMaterial) {
+    if (loadedMaterial->GetTextureCount(aiTextureType_DIFFUSE) > 0) {
+        material->diffuseTexture = getTexture(loadedMaterial, fileNameOfMesh, aiTextureType_DIFFUSE);
     }
-    if(loadedMaterial->GetTextureCount(aiTextureType_HEIGHT) > 0) {
-        material->bumpMapTexture = getTexture(loadedMaterial, fileName, aiTextureType_HEIGHT);
+    if (loadedMaterial->GetTextureCount(aiTextureType_HEIGHT) > 0) {
+        material->bumpMapTexture = getTexture(loadedMaterial, fileNameOfMesh, aiTextureType_HEIGHT);
     }
 }
 
@@ -78,23 +124,29 @@ void Mesh::initMaterialColors(Material *material, const aiMaterial *loadedMateri
     material->emissiveColor = getColorFromMaterial(AI_MATKEY_COLOR_EMISSIVE, *loadedMaterial);
 }
 
-float3 Mesh::getColorFromMaterial(const char* pKey, unsigned int type, unsigned int idx, const aiMaterial &material) {
+void Mesh::initMaterialShininess(Material *material, const aiMaterial *loadedMaterial) {
+    float specExp;
+    loadedMaterial->Get(AI_MATKEY_SHININESS, specExp);
+    material->specularExponent = specExp > 0.0f ? specExp : 0.0f;
+}
+
+float3 Mesh::getColorFromMaterial(const char* colorTypeString, unsigned int type, unsigned int index, const aiMaterial &material) {
     aiColor3D color;
-    material.Get(pKey, type, idx, color);
+    material.Get(colorTypeString, type, index, color);
     return make_vector(color.r, color.g, color.b);
 }
 
-Texture *Mesh::getTexture(const aiMaterial *material, const std::string &fileName, aiTextureType type) {
+Texture *Mesh::getTexture(const aiMaterial *material, const std::string &fileNameOfMesh, aiTextureType type) {
     aiString texturePath;
     if (material->GetTexture(type, 0, &texturePath, NULL, NULL, NULL, NULL, NULL) != AI_SUCCESS) {
         return NULL;
     }
 
-    std::string absolutePath = getAbsolutePath(fileName, string(texturePath.data));
+    std::string absolutePath = getPathOfTexture(fileNameOfMesh, string(texturePath.data));
     return ResourceManager::loadAndFetchTexture(absolutePath);
 }
 
-std::string Mesh::getAbsolutePath(const std::string &fileName, std::string textureName) {
+std::string Mesh::getPathOfTexture(const std::string &fileName, std::string textureName) {
     std::string dir = getDirectoryFromPath(fileName);
     std::string filePath = cleanFileName(textureName);
     return dir + "/" + filePath;
@@ -104,11 +156,9 @@ std::string Mesh::getDirectoryFromPath(const std::string &fileName) {
     std::string::size_type index = fileName.find_last_of("/");
     if (index == std::string::npos) {
         return ".";
-    }
-    else if (index == 0) {
+    } else if (index == 0) {
         return "/";
-    }
-    else {
+    } else {
         return fileName.substr(0, index);
     }
 }
@@ -121,96 +171,85 @@ std::string Mesh::cleanFileName(std::string fileName) {
     }
 }
 
-void Mesh::initMesh(unsigned int index, const aiMesh *paiMesh) {
-    std::vector<float3> positions;
-    std::vector<float3> normals;
-    std::vector<float3> tangents;
-    std::vector<float3> bittangents;
-    std::vector<float2> uvs;
-    std::vector<unsigned int> indices;
+Sphere Mesh::getSphere() {
+    return sphere;
+}
 
-    const aiVector3D Zero3D(0.0f, 0.0f, 0.0f);
-
-    float3 minV = make_vector(FLT_MAX, FLT_MAX, FLT_MAX);
-    float3 maxV = make_vector(-FLT_MAX, -FLT_MAX, -FLT_MAX);
-
-    for (unsigned int i = 0; i < paiMesh->mNumVertices; i++) {
-        const aiVector3D pPos = paiMesh->mVertices[i];
-        const aiVector3D pNormal = paiMesh->mNormals[i];
-        const aiVector3D pTexCoord = paiMesh->HasTextureCoords(0) ? paiMesh->mTextureCoords[0][i] : Zero3D;
-
-
-        positions.push_back(make_vector(pPos.x, pPos.y, pPos.z));
-        normals.push_back(make_vector(pNormal.x, pNormal.y, pNormal.z));
-        uvs.push_back(make_vector(pTexCoord.x, pTexCoord.y));
-        if (paiMesh->HasTangentsAndBitangents()) {
-            const aiVector3D pBitTangents = paiMesh->mBitangents[i];
-            const aiVector3D pTangents = paiMesh->mTangents[i];
-            bittangents.push_back(make_vector(pBitTangents.x, pBitTangents.y, pBitTangents.z));
-            tangents.push_back(make_vector(pTangents.x, pTangents.y, pTangents.z));
+void Mesh::setupSphere(std::vector<float3> *positions) {
+    sphere.setPosition(m_aabb.getCenterPosition());
+    sphere.setRadius(0.0f);
+    for (float3 posIt : *positions) {
+        float rad = length(sphere.getPosition() - posIt);
+        if (rad > sphere.getRadius()) {
+            sphere.setRadius(rad);
         }
+    }
+}
 
-        checkMinMax(pPos.x, pPos.y, pPos.z, &minV, &maxV);
+
+// TODO(Bubbad) Remove all GL dependencies directly in mesh
+template <typename T>
+void setupGlBuffer(std::vector<T> buffer, GLuint *bufferGLObject, GLuint vertexAttibute, int numbersPerObject,
+                   const void* firstObject, GLenum type) {
+    glGenBuffers(1, bufferGLObject);
+    glBindBuffer(type, *bufferGLObject);
+    glBufferData(type, buffer.size() * sizeof(buffer[0]), firstObject, GL_STATIC_DRAW);
+    glVertexAttribPointer(vertexAttibute, numbersPerObject, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(vertexAttibute);
+}
+
+void Mesh::setupChunkForRendering(Chunk &chunk) {
+    glGenVertexArrays(1, &chunk.m_vaob);
+    glBindVertexArray(chunk.m_vaob);
+
+    setupGlBuffer(chunk.m_positions, &chunk.m_positions_bo, 0, 3 , &chunk.m_positions[0].x, GL_ARRAY_BUFFER_ARB);
+    setupGlBuffer(chunk.m_normals, &chunk.m_normals_bo, 1, 3, &chunk.m_normals[0].x, GL_ARRAY_BUFFER_ARB);
+
+    if (chunk.m_uvs.size() > 0) {
+        setupGlBuffer(chunk.m_uvs, &chunk.m_uvs_bo, 2, 2, &chunk.m_uvs[0].x, GL_ARRAY_BUFFER_ARB);
     }
 
-    checkMinMax(minV.x, minV.y, minV.z, &m_aabb.minV, &m_aabb.maxV);
-    checkMinMax(maxV.x, maxV.y, maxV.z, &m_aabb.minV, &m_aabb.maxV);
+    setupGlBuffer(chunk.m_indices, &chunk.m_ind_bo, 3, 3, &chunk.m_indices[0], GL_ELEMENT_ARRAY_BUFFER_ARB);
 
-    for (unsigned int i = 0; i < paiMesh->mNumFaces; i++) {
-        const aiFace face = paiMesh->mFaces[i];
-        indices.push_back(face.mIndices[0]);
-        indices.push_back(face.mIndices[1]);
-        indices.push_back(face.mIndices[2]);
+    if (chunk.m_bittangents.size() > 0) {
+        setupGlBuffer(chunk.m_tangents, &chunk.m_tangents_bo, 4, 3, &chunk.m_tangents[0].x, GL_ARRAY_BUFFER_ARB);
+        setupGlBuffer(chunk.m_bittangents, &chunk.m_bittangents_bo, 5, 3,
+                      &chunk.m_bittangents[0].x, GL_ARRAY_BUFFER_ARB);
     }
+}
 
+AABB* Mesh::getAABB() {
+    return &m_aabb;
+}
 
-    Chunk c(positions, normals, uvs, indices, tangents, bittangents, paiMesh->mMaterialIndex);
-    glGenVertexArrays(1, &c.m_vaob);
-    glBindVertexArray(c.m_vaob);
-
-    glGenBuffers(1, &c.m_positions_bo);
-    glBindBuffer(GL_ARRAY_BUFFER_ARB, c.m_positions_bo);
-    glBufferData(GL_ARRAY_BUFFER_ARB, c.m_positions.size() * sizeof(float3), &c.m_positions[0].x, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
-    glEnableVertexAttribArray(0);
-
-    glGenBuffers(1, &c.m_normals_bo);
-    glBindBuffer(GL_ARRAY_BUFFER_ARB, c.m_normals_bo);
-    glBufferData(GL_ARRAY_BUFFER_ARB, c.m_normals.size() * sizeof(float3),
-                 &c.m_normals[0].x, GL_STATIC_DRAW);
-    glVertexAttribPointer(1, 3, GL_FLOAT, false, 0, 0);
-    glEnableVertexAttribArray(1);
-
-    if (c.m_uvs.size() > 0) {
-        glGenBuffers(1, &c.m_uvs_bo);
-        glBindBuffer(GL_ARRAY_BUFFER_ARB, c.m_uvs_bo);
-        glBufferData(GL_ARRAY_BUFFER_ARB, c.m_uvs.size() * sizeof(float2),
-                     &c.m_uvs[0].x, GL_STATIC_DRAW);
-        glVertexAttribPointer(2, 2, GL_FLOAT, false, 0, 0);
+void Mesh::createTriangles() {
+    for (unsigned int i = 0; i < m_chunks.size(); i++) {
+        for (unsigned int j = 0; j + 2 < m_chunks[i].m_positions.size(); j += 3) {
+            triangles.push_back(createTriangleFromPositions(m_chunks[i].m_positions, j));
+        }
     }
-    glEnableVertexAttribArray(2);
+}
 
-    glGenBuffers(1, &c.m_ind_bo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER_ARB, c.m_ind_bo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER_ARB, c.m_numIndices * sizeof(unsigned int), &c.m_indices[0], GL_STATIC_DRAW);
-    glVertexAttribPointer(3, 3, GL_FLOAT, false, 0, 0);
-    glEnableVertexAttribArray(3);
+Triangle* Mesh::createTriangleFromPositions(std::vector<chag::float3> positionBuffer, unsigned int startIndex) {
+    return new Triangle(make_vector(positionBuffer[startIndex + 0].x,
+                                    positionBuffer[startIndex + 0].y,
+                                    positionBuffer[startIndex + 0].z),
+                        make_vector(positionBuffer[startIndex + 1].x,
+                                    positionBuffer[startIndex + 1].y,
+                                    positionBuffer[startIndex + 1].z),
+                        make_vector(positionBuffer[startIndex + 2].x,
+                                    positionBuffer[startIndex + 2].y,
+                                    positionBuffer[startIndex + 2].z));
+}
 
-    if (c.m_bittangents.size() > 0) {
-        glGenBuffers(1, &c.m_tangents_bo);
-        glBindBuffer(GL_ARRAY_BUFFER_ARB, c.m_tangents_bo);
-        glBufferData(GL_ARRAY_BUFFER_ARB, c.m_tangents.size() * sizeof(float3), &c.m_tangents[0].x, GL_STATIC_DRAW);
-        glVertexAttribPointer(4, 3, GL_FLOAT, false, 0, 0);
-        glEnableVertexAttribArray(4);
+std::vector<Triangle*> Mesh::getTriangles() {
+    return triangles;
+}
 
-        glGenBuffers(1, &c.m_bittangents_bo);
-        glBindBuffer(GL_ARRAY_BUFFER_ARB, c.m_bittangents_bo);
-        glBufferData(GL_ARRAY_BUFFER_ARB, c.m_bittangents.size() * sizeof(float3), &c.m_bittangents[0].x,
-                     GL_STATIC_DRAW);
-        glVertexAttribPointer(5, 3, GL_FLOAT, false, 0, 0);
-        glEnableVertexAttribArray(5);
+std::vector<Chunk>* Mesh::getChunks() {
+    return &m_chunks;
+}
 
-    }
-
-    m_chunks.push_back(c);
+std::vector<Material>* Mesh::getMaterials() {
+    return &materials;
 }

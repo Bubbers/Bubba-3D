@@ -12,6 +12,7 @@ public:
     void loadTexture(std::string fileName);
     GLuint getID() {return textureID; };
 private:
+
     GLuint textureID;
 };
 

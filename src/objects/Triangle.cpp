@@ -1,5 +1,4 @@
 #include "Triangle.h"
-#include <math.h>
 
 using namespace chag;
 

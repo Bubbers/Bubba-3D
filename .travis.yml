@@ -1,0 +1,56 @@
+language: cpp
+compiler:
+        - gcc
+
+sudo: required
+dist: trusty
+
+install:
+  - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
+
+addons:
+  apt:
+      sources:
+        - ubuntu-toolchain-r-test
+        - george-edison55-precise-backports
+
+      packages:
+        - cmake-data
+        - gcc-4.9
+        - g++-4.9
+        - cmake
+        - freeglut3-dev
+        - libfreeimage3
+        - libfreeimage-dev
+        - libassimp-dev
+        - libglew-dev
+        - libxmu-dev
+        - libxi-dev
+        - libopenal1
+        - libopenal-dev
+        - libalut0
+        - libalut-dev
+        - libvorbis-dev
+        - libjpeg-dev
+        - libfreetype6-dev
+        - libxrandr-dev
+        - libglew-dev
+        - libsndfile1-dev
+        - libudev-dev
+        - libxcb-image0
+        - libxcb-randr0
+        - libudev-dev
+        - build-essential
+        - libcgmanager
+        - libudev1
+
+
+
+
+before_script:
+        - mkdir -p build
+        - cd build
+        - cmake -DCMAKE_BUILD_TYPE:STRING=Debug ..
+
+
+script: make -j8  && make test
