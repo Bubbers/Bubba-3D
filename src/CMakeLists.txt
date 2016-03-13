@@ -17,7 +17,7 @@ add_subdirectory(linmath)
 add_subdirectory(glutil)
 
 
-set(HEADER_FILES  ${PROJECT_SOURCE_DIR}/includes/AABB.cpp 
+set(HEADER_FILES
 		  ${PROJECT_SOURCE_DIR}/includes/IRenderComponent.h 
 		  ${PROJECT_SOURCE_DIR}/includes/ParticleGenerator.h
 		  ${PROJECT_SOURCE_DIR}/includes/AABB2.h 
