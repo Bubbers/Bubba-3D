@@ -76,7 +76,7 @@ void ParticleGenerator::render() {
 	float3x3 modelMatrix3x3 = getModelMatrix3x3();
 
 
-	float distance = length(this->m_camera->getPosition() - this->owner->getLocation());
+	float distance = length(this->m_camera->getPosition() - this->owner->getAbsoluteLocation());
 	int maxParticles = (int)(m_amount * LOD_FACTOR / distance );
 	glBindVertexArray(m_vaob);
 	
@@ -118,8 +118,8 @@ void ParticleGenerator::render() {
 }
 
 void ParticleGenerator::update(float dt) {
-	float distance = length(this->m_camera->getPosition() - this->owner->getLocation());
-	float3 pos = this->owner->getLocation();
+	float distance = length(this->m_camera->getPosition() - this->owner->getAbsoluteLocation());
+	float3 pos = this->owner->getAbsoluteLocation();
 
 	for (Particle *particle : this->m_particles) {
 		if (particle->isAlive()){

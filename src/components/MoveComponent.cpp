@@ -25,10 +25,10 @@ MoveComponent::MoveComponent(GameObject* meshObject, Quaternion rotationSpeed, f
 void MoveComponent::update(float dt){
 
     velocity += acceleration*dt;
-    meshObject->setLocation(meshObject->getLocation() + velocity*dt);
+    meshObject->setLocation(meshObject->getRelativeLocation() + velocity*dt);
 	Quaternion q = slerp(Quaternion(), rotationSpeed, dt);
 	meshObject->updateRotation(q);
-    meshObject->setScale(meshObject->getScale()+scaleSpeed*dt);
+    meshObject->setScale(meshObject->getRelativeScale()+scaleSpeed*dt);
 
 
 }

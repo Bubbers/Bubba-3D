@@ -117,14 +117,17 @@ public:
      */
     void update(float4x4 update_matrix);
 
-    float3 getScale();
-    void setScale(float3 s);
+    float3 getRelativeScale();
+	float3 getAbsoluteScale();
+	void setScale(float3 s);
 
-    Quaternion getRotation();
+    Quaternion getRelativeRotation();
+	Quaternion getAbsoluteRotation();
     void setRotation(Quaternion r);
     void updateRotation(Quaternion r);
 
-    float3 getLocation();
+    float3 getRelativeLocation();
+	float3 getAbsoluteLocation();
     void setLocation(float3 l);
 
 	void addChild(GameObject* child);

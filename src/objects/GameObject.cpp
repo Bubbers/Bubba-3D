@@ -146,13 +146,13 @@ void GameObject::update(float dt) {
     }
     if (changed) {
         changed = false;
-        float4x4 translation = make_translation(this->getLocation());
-        float4x4 rotation    = makematrix(this->getRotation());
-        float4x4 scale = make_scale<float4x4>(this->getScale());
+        float4x4 translation = make_translation(this->getAbsoluteLocation());
+        float4x4 rotation    = makematrix(this->getAbsoluteRotation());
+        float4x4 scale = make_scale<float4x4>(this->getAbsoluteScale());
 
         float4x4 point_translation = make_identity<float4x4>();
         if(parent != nullptr) {
-            translation = make_translation(this->parent->location);
+            translation = make_translation(this->parent->getAbsoluteLocation());
             point_translation = make_translation(location);
         }
 
@@ -239,29 +239,41 @@ int GameObject::getId() {
     return id;
 }
 
-float3 GameObject::getScale() {
+float3 GameObject::getAbsoluteScale() {
 	if (parent != nullptr) {
-		return scale + parent->getScale();
+		return scale + parent->getAbsoluteScale();
 	}
 	return scale;
 }
 
-Quaternion GameObject::getRotation() {
+float3 GameObject::getRelativeScale() {
+	return scale;
+}
+
+Quaternion GameObject::getAbsoluteRotation() {
 	if (parent != nullptr) {
-		return rotation * parent->getRotation();
+		return rotation * parent->getAbsoluteRotation();
 	}
 	return rotation;
 }
 
-float3 GameObject::getLocation() {
+Quaternion GameObject::getRelativeRotation() {
+	return rotation;
+}
+
+float3 GameObject::getAbsoluteLocation() {
 	if (parent != nullptr) {
-		return location + parent->getLocation();
+		return location + parent->getAbsoluteLocation();
 	}
 	return location;
 }
 
+float3 GameObject::getRelativeLocation() {
+	return location;
+}
+
 void GameObject::updateRotation(Quaternion r) {
-    setRotation(hasRotation ? r*getRotation() : r);
+    setRotation(hasRotation ? r*getRelativeRotation() : r);
 }
 
 void GameObject::setScale(float3 s) {
