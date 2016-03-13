@@ -16,6 +16,12 @@ using namespace chag;
  * The class maintains information about where the shaders are saved
  * on the graphics card. It caches the uniform locations as they are used to
  * speed up the next call.
+ *
+ * \code
+ * ShaderProgram shaderProgram;
+ * shaderProgram.loadShader(new VertexShader(vertexShaderString), new FragmentShader(fragmentShaderString));
+ * shaderProgram.use();
+ * \endcode
  */
 class ShaderProgram {
  public:

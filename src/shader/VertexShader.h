@@ -11,6 +11,13 @@
 
 #define VERTEX_SHADER_NAME_STRING "Vertex_Shader"
 
+/**
+ * \brief Compiles Vertex Shaders 
+ *
+ * Class that takes a vertex shader string and compiles it.
+ * It also checks for any possible errors that occured during compilation.
+ *
+ */
 class VertexShader : public IShader {
 public:
     VertexShader() {};
