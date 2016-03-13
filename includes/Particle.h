@@ -2,6 +2,7 @@
 #define __PARTICLE__
 
 #include "linmath/float3.h"
+#include "linmath/Quaternion.h"
 
 
 #define PARTICLE_SPEED ((rand() % 6000) - 3000.0f) / 5000.0f
@@ -18,20 +19,20 @@ class ParticleConf;
 class Particle {
 
 public:
-    Particle(float3 *pos, ParticleConf *conf);
+	Particle(ParticleConf *conf, float4x4 modelMatrix);
 
     /**
      * Resets the particle according to the given ParticleConf.
      * This is used in order to reuse particles.
      * @param conf The ParticleConf to used by the ParticleGenerator.
      */
-    void reset(ParticleConf *conf);
+	void reset(ParticleConf *conf, float4x4 modelMatrix);
 
     /**
      * @return If the Particle is alive, that is visible, or not.
      *         Dead Particles will can be reused by calling reset().
      */
-    bool isAlive();
+	bool isAlive();
 
     /**
      * @param deltaTime Time since last update in seconds.
