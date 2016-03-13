@@ -56,6 +56,7 @@ class Octree;
 class GameObject : public IDrawable {
 public:
     GameObject();
+	GameObject(GameObject* parent);
 
     /**
      * Initiates the GameObject with the same mesh for rendering and collision
@@ -71,6 +72,9 @@ public:
      */
     GameObject(Mesh *mesh, Mesh *colliderMesh);
 
+	GameObject::GameObject(Mesh *mesh, GameObject* parent);
+	GameObject::GameObject(Mesh *mesh, Mesh *colliderMesh, GameObject* parent);
+
     virtual ~GameObject();
 
     /**
@@ -81,8 +85,6 @@ public:
      * Renders the GameObject shadows using the GameObjects RenderComponent, if any.
      */
     virtual void renderShadow(ShaderProgram* shaderProgram);
-
-	virtual void renderChild(float4x4 offsetMatrix);
 
     void addRenderComponent(IRenderComponent* renderer);
     void addComponent(IComponent* newComponent);
@@ -125,7 +127,7 @@ public:
     float3 getLocation();
     void setLocation(float3 l);
 
-	void addChild(std::pair<GameObject*, float4x4> child);
+	void addChild(GameObject* child);
 
     TypeIdentifier getIdentifier();
     void setIdentifier(TypeIdentifier identifier);
@@ -190,8 +192,9 @@ private:
     float3 location = make_vector(0.0f, 0.0f, 0.0f);
     bool changed = false;
 
-	/* Children */
-	std::vector<std::pair<GameObject*,float4x4>> children;
+	/* Hierarchy */
+	GameObject* parent = nullptr;
+	std::vector<GameObject*> children;
 
     /* Collision */
     Mesh *collisionMesh;
