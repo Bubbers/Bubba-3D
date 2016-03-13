@@ -75,7 +75,6 @@ set(HEADER_FILES
 		  ${PROJECT_SOURCE_DIR}/includes/Octree.h 
 		  ${PROJECT_SOURCE_DIR}/includes/stb_image.h 
 		  ${PROJECT_SOURCE_DIR}/includes/IDrawable.h 
-		  ${PROJECT_SOURCE_DIR}/includes/Particle.h 
 		  ${PROJECT_SOURCE_DIR}/includes/timer.h
  		  ${PROJECT_SOURCE_DIR}/includes/IJoystickTranslation.h
  		  ${PROJECT_SOURCE_DIR}/includes/ParticleConf.h)
