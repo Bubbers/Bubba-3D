@@ -16,40 +16,96 @@ add_subdirectory(sound)
 add_subdirectory(linmath)
 add_subdirectory(glutil)
 
-add_library(${LIBRARY_NAME} STATIC ${BUBBA3D_FILES_SOURCE})
+
+set(HEADER_FILES  ${PROJECT_SOURCE_DIR}/includes/AABB.cpp 
+		  ${PROJECT_SOURCE_DIR}/includes/IRenderComponent.h 
+		  ${PROJECT_SOURCE_DIR}/includes/ParticleGenerator.h
+		  ${PROJECT_SOURCE_DIR}/includes/AABB2.h 
+		  ${PROJECT_SOURCE_DIR}/includes/IShader.h
+		  ${PROJECT_SOURCE_DIR}/includes/PerspectiveCamera.h 
+		  ${PROJECT_SOURCE_DIR}/includes/AudioManager.h 
+		  ${PROJECT_SOURCE_DIR}/includes/Input.h 
+		  ${PROJECT_SOURCE_DIR}/includes/Renderer.h 
+		  ${PROJECT_SOURCE_DIR}/includes/BFBroadPhase.h 
+		  ${PROJECT_SOURCE_DIR}/includes/JoystickAxis.h 
+		  ${PROJECT_SOURCE_DIR}/includes/ResourceManager.h 
+		  ${PROJECT_SOURCE_DIR}/includes/BroadPhase.h 
+		  ${PROJECT_SOURCE_DIR}/includes/JoystickButton.h 
+		  ${PROJECT_SOURCE_DIR}/includes/Scene.h 
+		  ${PROJECT_SOURCE_DIR}/includes/Camera.h 
+		  ${PROJECT_SOURCE_DIR}/includes/JoystickTranslation.h 
+ 		  ${PROJECT_SOURCE_DIR}/includes/ShaderProgram.h 
+		  ${PROJECT_SOURCE_DIR}/includes/Chunk.h 
+		  ${PROJECT_SOURCE_DIR}/includes/JoystickTranslator.h 
+		  ${PROJECT_SOURCE_DIR}/includes/SkyBoxRenderer.h 
+		  ${PROJECT_SOURCE_DIR}/includes/Collider.h 
+		  ${PROJECT_SOURCE_DIR}/includes/KeyboardButton.h 
+		  ${PROJECT_SOURCE_DIR}/includes/Sphere.h 
+		  ${PROJECT_SOURCE_DIR}/includes/ControlStatus.h 
+		  ${PROJECT_SOURCE_DIR}/includes/Lights.h 
+		  ${PROJECT_SOURCE_DIR}/includes/StandardRenderer.h 
+		  ${PROJECT_SOURCE_DIR}/includes/Controls.h 
+		  ${PROJECT_SOURCE_DIR}/includes/LogHandler.h 
+		  ${PROJECT_SOURCE_DIR}/includes/StdOutLogHandler.h 
+		  ${PROJECT_SOURCE_DIR}/includes/ControlsManager.h 
+		  ${PROJECT_SOURCE_DIR}/includes/Logger.h 
+		  ${PROJECT_SOURCE_DIR}/includes/Texture.h 
+		  ${PROJECT_SOURCE_DIR}/includes/CubeMapTexture.h 
+		  ${PROJECT_SOURCE_DIR}/includes/Material.h 
+		  ${PROJECT_SOURCE_DIR}/includes/Triangle.h
+		  ${PROJECT_SOURCE_DIR}/includes/DestructorUtils.h 
+		  ${PROJECT_SOURCE_DIR}/includes/Mesh.h 
+		  ${PROJECT_SOURCE_DIR}/includes/Utils.h 
+		  ${PROJECT_SOURCE_DIR}/includes/Effects.h 
+		  ${PROJECT_SOURCE_DIR}/includes/MouseAxis.h 
+		  ${PROJECT_SOURCE_DIR}/includes/Window.h 
+		  ${PROJECT_SOURCE_DIR}/includes/FileLogHandler.h 
+		  ${PROJECT_SOURCE_DIR}/includes/MouseButton.h 
+		  ${PROJECT_SOURCE_DIR}/includes/constants.h 
+		  ${PROJECT_SOURCE_DIR}/includes/GameObject.h 
+		  ${PROJECT_SOURCE_DIR}/includes/MousePosition.h 
+		  ${PROJECT_SOURCE_DIR}/includes/glutil/glutil.h 
+		  ${PROJECT_SOURCE_DIR}/includes/Globals.h 
+		  ${PROJECT_SOURCE_DIR}/includes/MouseWarp.h 
+		  ${PROJECT_SOURCE_DIR}/includes/linmath 
+		  ${PROJECT_SOURCE_DIR}/includes/HudRenderer.h 
+		  ${PROJECT_SOURCE_DIR}/includes/MoveComponent.h 
+		  ${PROJECT_SOURCE_DIR}/includes/rapidjson 	 
+		  ${PROJECT_SOURCE_DIR}/includes/IComponent.h 
+		  ${PROJECT_SOURCE_DIR}/includes/Octree.h 
+		  ${PROJECT_SOURCE_DIR}/includes/stb_image.h 
+		  ${PROJECT_SOURCE_DIR}/includes/IDrawable.h 
+		  ${PROJECT_SOURCE_DIR}/includes/Particle.h 
+		  ${PROJECT_SOURCE_DIR}/includes/timer.h
+ 		  ${PROJECT_SOURCE_DIR}/includes/IJoystickTranslation.h
+ 		  ${PROJECT_SOURCE_DIR}/includes/ParticleConf.h)
+
+add_library(${LIBRARY_NAME} STATIC ${BUBBA3D_FILES_SOURCE} ${HEADER_FILES})
 
 #########################################################
 # STRUCTURE MSVS
 #########################################################
-source_group(Logging	FILES logging/Logger.cpp)
-source_group(Cameras	FILES cameras/Camera.cpp cameras/PerspectiveCamera.cpp)
-source_group(Objects	FILES objects/Mesh.cpp objects/Scene.cpp objects/SkyBoxRenderer.cpp objects/Triangle.cpp)
-source_group(Collision	FILES collision/Collider.cpp collision/Octree.cpp)
-source_group(Core		FILES core/Renderer.cpp)
-source_group(Misc		FILES Misc/CubeMapTexture.cpp ${PROJECT_SOURCE_DIR}/includes/glutil/glutil.cpp)
-source_group(Particle   FILES particle/Particle.cpp particle/FireParticle.cpp particle/ParticleGenerator.cpp)
-source_group(Math		FILES
-        ${PROJECT_SOURCE_DIR}/includes/linmath/float2.cpp
-        ${PROJECT_SOURCE_DIR}/includes/linmath/float3.cpp
-        ${PROJECT_SOURCE_DIR}includes/linmath/float3x3.cpp
-        ${PROJECT_SOURCE_DIR}/includes/linmath/float4.cpp
-        ${PROJECT_SOURCE_DIR}/includes/linmath/float4x4.cpp
-        ${PROJECT_SOURCE_DIR}/includes/linmath/int2.cpp
-        ${PROJECT_SOURCE_DIR}/includes/linmath/int3.cpp
-        ${PROJECT_SOURCE_DIR}/includes/linmath/int4.cpp
-        ${PROJECT_SOURCE_DIR}/includes/linmath/Quaternion.cpp)
-source_group(Shaders    FILES
-        ${PROJECT_SOURCE_DIR}/shaders/simple.frag
-        ${PROJECT_SOURCE_DIR}/shaders/simple.vert
-        ${PROJECT_SOURCE_DIR}/shaders/skybox.frag
-        ${PROJECT_SOURCE_DIR}/shaders/skybox.vert
-        ${PROJECT_SOURCE_DIR}/shaders/vertical_blur.frag
-        ${PROJECT_SOURCE_DIR}/shaders/horizontal_blur.frag
-        ${PROJECT_SOURCE_DIR}/shaders/cutoff.frag
-        ${PROJECT_SOURCE_DIR}/shaders/postFx.frag
-        ${PROJECT_SOURCE_DIR}/shaders/postFx.vert
-        ${PROJECT_SOURCE_DIR}/shaders/shadowMap.frag
-        ${PROJECT_SOURCE_DIR}/shaders/shadowMap.vert)
+
+source_group(Cameras	REGULAR_EXPRESSION cameras/ )
+source_group(Collision  REGULAR_EXPRESSION collision/ )
+source_group(Components REGULAR_EXPRESSION components/ ) 
+source_group(Core       REGULAR_EXPRESSION core/ )
+source_group(Glutil     REGULAR_EXPRESSION glutil/ )
+source_group(Input      REGULAR_EXPRESSION Input/)
+source_group(Linmath    REGULAR_EXPRESSION linmath/)
+source_group(Logging	REGULAR_EXPRESSION logging/)
+source_group(Misc	REGULAR_EXPRESSION Misc/)
+source_group(Objects	REGULAR_EXPRESSION objects/)
+source_group(Particle   REGULAR_EXPRESSION particle/)
+source_group(Shader     REGULAR_EXPRESSION shader/)
+source_group(Sound      REGULAR_EXPRESSION sound/)
+
+
+
+ 
+
+
+
 
 #########################################################
 # FIND GLUT
