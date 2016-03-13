@@ -270,10 +270,11 @@ Quaternion GameObject::getRelativeRotation() {
 }
 
 float3 GameObject::getAbsoluteLocation() {
-	if (parent != nullptr) {
-		return location + parent->getAbsoluteLocation();
-	}
-	return location;
+	float3 pos;
+	pos.x = m_modelMatrix.c4.x;
+	pos.y = m_modelMatrix.c4.y;
+	pos.z = m_modelMatrix.c4.z;
+	return pos;
 }
 
 float3 GameObject::getRelativeLocation() {

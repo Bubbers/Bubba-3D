@@ -18,7 +18,7 @@ class ParticleConf;
 class ParticleGenerator : public IRenderComponent
 {
 public:
-	ParticleGenerator(Texture *texture, int amount, Camera *camera, float3 originPos, ParticleConf *conf);
+	ParticleGenerator(Texture *texture, int amount, Camera *camera, float4x4 modelMatrix, ParticleConf *conf);
 	~ParticleGenerator();
 
 	/**

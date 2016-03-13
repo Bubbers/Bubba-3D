@@ -3,6 +3,7 @@
 
 #include <GL/glew.h>
 #include "linmath/float3.h"
+#include "linmath/Quaternion.h"
 
 using namespace chag;
 class ParticleConf {
@@ -19,7 +20,7 @@ public:
      * Is called on particle reset.
      * @param genPos The position of the ParticleGenerator spawning the Particle.
      */
-    virtual float3 initialPosition(float3 genPos) = 0;
+    virtual float3 initialPosition() = 0;
 
     /**
      * The initial velocity for the Particle.

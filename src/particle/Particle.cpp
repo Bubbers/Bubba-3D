@@ -1,17 +1,18 @@
 #include "Particle.h"
 #include "ParticleConf.h"
 
-/**
- *
- */
-Particle::Particle(float3* pos, ParticleConf *conf) {
-    generatorPos = pos;
-    reset(conf);
+Particle::Particle(ParticleConf *conf, float4x4 modelMatrix) {
+    reset(conf, modelMatrix);
 };
 
-void Particle::reset(ParticleConf *conf) {
-    position = conf->initialPosition(*generatorPos);
-    velocity = conf->initialVelocity();
+void Particle::reset(ParticleConf *conf, float4x4 modelMatrix) {
+    position = conf->initialPosition();
+	float4 vec = make_vector(position.x, position.y, position.z, 1.0f);
+	float4 mat = modelMatrix * vec;
+	position.x = mat.x;
+	position.y = mat.y;
+	position.z = mat.z;
+	velocity = conf->initialVelocity();
     life     = conf->calcLifetime();
 }
 
