@@ -7,6 +7,13 @@
 #include "Mesh.h"
 #include <sstream>
 
+/**
+ * \brief ResourceManager for all resources that can be shared 
+ *
+ * The purpose of this class is to only maintain one copy of
+ * each resource in memory and then distribute a pointer to that allocation.
+ *
+ */
 class ResourceManager {
 public:
     static void loadShader(const std::string &vertexShader, const std::string &fragmentShader, std::string name);

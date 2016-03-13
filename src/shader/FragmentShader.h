@@ -7,6 +7,13 @@
 
 #include <IShader.h>
 
+/**
+* \brief Compiles Fragment Shaders
+*
+* Class that takes a fragment shader string and compiles it.
+* It also checks for any possible errors that occured during compilation.
+*
+*/
 class FragmentShader : public IShader{
 public:
     FragmentShader() {};
