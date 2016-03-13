@@ -21,8 +21,21 @@ public:
 	ParticleGenerator(Texture *texture, int amount, Camera *camera, float3 position, ParticleConf *conf);
 	~ParticleGenerator();
 
+	/**
+	 * Update the position of all spawned Particles.
+	 * @param dt The time in seconds since last update call.
+	 */
 	void update(float dt);
+
+	/**
+	 * Render shadows from the spawned Particles.
+	 * @param shaderProgram The ShaderProgram used to render the shadows.
+	 */
 	void renderShadow(ShaderProgram* shaderProgram) {};
+
+	/**
+	 * Render all the spawned Particles.
+	 */
 	void render();
 
 	void setScaleLod(bool value);
