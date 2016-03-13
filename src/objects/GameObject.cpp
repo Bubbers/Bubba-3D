@@ -140,23 +140,31 @@ void GameObject::addComponent(IComponent* newComponent) {
     newComponent->bind(this);
 }
 
+float4x4 GameObject::getFullMatrix() {
+    float4x4 parentMat;
+
+    float4x4 translation = make_translation(this->getRelativeLocation());
+    float4x4 rotation    = makematrix(this->getRelativeRotation());
+    float4x4 scale = make_scale<float4x4>(this->getRelativeScale());
+
+    parentMat = translation * rotation * scale;
+
+    if(parent != nullptr) {
+        parentMat = parent->getFullMatrix() * parentMat;
+    }
+
+    return parentMat;
+}
+
+
 void GameObject::update(float dt) {
     for (auto &component : components) {
         component->update(dt);
     }
     if (changed) {
         changed = false;
-        float4x4 translation = make_translation(this->getAbsoluteLocation());
-        float4x4 rotation    = makematrix(this->getAbsoluteRotation());
-        float4x4 scale = make_scale<float4x4>(this->getAbsoluteScale());
 
-        float4x4 point_translation = make_identity<float4x4>();
-        if(parent != nullptr) {
-            translation = make_translation(this->parent->getAbsoluteLocation());
-            point_translation = make_translation(location);
-        }
-
-        move(translation * rotation * point_translation * scale);
+        move(getFullMatrix());
     }
 	for (auto child : children) {
 		child->changed = true;
@@ -241,7 +249,7 @@ int GameObject::getId() {
 
 float3 GameObject::getAbsoluteScale() {
 	if (parent != nullptr) {
-		return scale + parent->getAbsoluteScale();
+		return scale * parent->getAbsoluteScale();
 	}
 	return scale;
 }
