@@ -83,7 +83,8 @@ void TextObject::init(vector<string> lines, vector<int> linesOffsetX, int numCha
 
     int x = this->x;
     int y = this->y - font->getPixelSize();
-    GLfloat data[numChars*5*6];
+	std::vector<GLfloat> data;
+    //GLfloat data[numChars*5*6];
     int i = 0;
     float atlasWidth = Globals::get(Globals::FONT_TEXTURE_WIDTH),
             atlasHeight = Globals::get(Globals::FONT_TEXTURE_HEIGHT);
@@ -108,17 +109,17 @@ void TextObject::init(vector<string> lines, vector<int> linesOffsetX, int numCha
                 if (!w || !h)
                     continue;
 
-                addPoints(data, i, {x2 + w, -y2, 0, (ox + w) / atlasWidth, 0});
+                addPoints(&data, i, {x2 + w, -y2, 0, (ox + w) / atlasWidth, 0});
                 i += 5;
-                addPoints(data, i, {x2, -y2, 0, ox / atlasWidth, 0});
+                addPoints(&data, i, {x2, -y2, 0, ox / atlasWidth, 0});
                 i += 5;
-                addPoints(data, i, {x2, -y2 - h, 0, ox / atlasWidth, h / atlasHeight});
+                addPoints(&data, i, {x2, -y2 - h, 0, ox / atlasWidth, h / atlasHeight});
                 i += 5;
-                addPoints(data, i, {x2 + w, -y2, 0, (ox + w) / atlasWidth, 0});
+                addPoints(&data, i, {x2 + w, -y2, 0, (ox + w) / atlasWidth, 0});
                 i += 5;
-                addPoints(data, i, {x2, -y2 - h, 0, ox / atlasWidth, h / atlasHeight});
+                addPoints(&data, i, {x2, -y2 - h, 0, ox / atlasWidth, h / atlasHeight});
                 i += 5;
-                addPoints(data, i, {x2 + w, -y2 - h, 0, (ox + w) / atlasWidth, h / atlasHeight});
+                addPoints(&data, i, {x2 + w, -y2 - h, 0, (ox + w) / atlasWidth, h / atlasHeight});
                 i += 5;
             }
         }
@@ -133,7 +134,7 @@ void TextObject::init(vector<string> lines, vector<int> linesOffsetX, int numCha
     GLuint pos_vbo;
     glGenBuffers(1, &pos_vbo);
     glBindBuffer(GL_ARRAY_BUFFER, pos_vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(data), data, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(GLfloat), data.data(), GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0);
@@ -147,10 +148,10 @@ void TextObject::init(vector<string> lines, vector<int> linesOffsetX, int numCha
 
 }
 
-void TextObject::addPoints(float *data, int i, initializer_list<float> elems) {
+void TextObject::addPoints(std::vector<GLfloat> *data, int i, initializer_list<float> elems) {
 
     for(float elem : elems)
-        data[i++] = elem;
+        data->push_back(elem);
 
 }
 
@@ -168,14 +169,14 @@ void TextObject::render(ShaderProgram *shaderProgram, float4x4 *projectionMatrix
     shaderProgram->use();
     glBindVertexArray(vao);
 
-    shaderProgram->setUniform1i("sprite", 1);
+    shaderProgram->setUniform1i("sprite", 4);
     shaderProgram->setUniformMatrix4fv("modelMatrix", getModelMatrix());
     shaderProgram->setUniformMatrix4fv("projectionMatrix",*projectionMatrix);
     shaderProgram->setUniform1i("isTexture",false);
     shaderProgram->setUniform1i("isColor",false);
     shaderProgram->setUniform1i("isFont",true);
 
-    glActiveTexture(GL_TEXTURE1);
+    glActiveTexture(GL_TEXTURE4);
     glBindTexture(GL_TEXTURE_2D,*FontManager::getTex());
 
     glDrawArrays(GL_TRIANGLES, 0, numVertices);

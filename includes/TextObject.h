@@ -7,6 +7,7 @@
 
 #include <IHudDrawable.h>
 #include <GL/glew.h>
+#include <vector>
 
 using namespace std;
 using namespace chag;
@@ -26,7 +27,7 @@ protected:
     GLuint vao;
 
 private:
-    void addPoints(float data[], int i, initializer_list<float> elems);
+    void addPoints(std::vector<GLfloat> *data, int i, initializer_list<float> elems);
     void getLines(vector<string>* lines, vector<int>* linesOffsetLeft, int* numChars);
     int getOffsetByLineLength(int lineLength);
     void init(vector<string> lines, vector<int> linesOffsetLeft, int numChars);

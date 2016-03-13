@@ -75,15 +75,12 @@ void FontManager::loadFont(string fontFace, int pixelSize) {
 
 void FontManager::initTexture(unsigned int width, unsigned int height) {
     GLuint* tex = getTex();
-    glActiveTexture(GL_TEXTURE1);
+    glActiveTexture(GL_TEXTURE4);
     glGenTextures(1, tex);
     glBindTexture(GL_TEXTURE_2D, *tex);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-    //glTexStorage2D(GL_TEXTURE_2D,1,GL_R8,width,height);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, NULL);
+    glTexStorage2D(GL_TEXTURE_2D,1,GL_R8,width,height);
 }
 
 void FontManager::iterateGlyphs(vector<FontDefinition> *defs, unsigned int* width, unsigned int* height) {
@@ -110,12 +107,8 @@ void FontManager::iterateGlyphs(vector<FontDefinition> *defs, unsigned int* widt
             allGlyphs->push_back(Font::GlyphData(*width,glyph));
             *height = max(*height,glyph->bitmap.rows);
             *width += glyph->bitmap.width;
-
         }
-
     }
-
-
 }
 
 void FontManager::drawGlyphs(vector<FontDefinition> *defs) {
@@ -139,9 +132,12 @@ void FontManager::drawGlyphs(vector<FontDefinition> *defs) {
                 continue;
             }
 
-            glTexSubImage2D(GL_TEXTURE_2D, 0, x, 0, glyph->bitmap.width, glyph->bitmap.rows,
-                            GL_RED, GL_UNSIGNED_BYTE, glyph->bitmap.buffer);
-            CHECK_GL_ERROR();
+			if (glyph->bitmap.width > 0 && glyph->bitmap.rows > 0) {
+				glTexSubImage2D(GL_TEXTURE_2D, 0, x, 0, glyph->bitmap.width, glyph->bitmap.rows,
+					GL_RED, GL_UNSIGNED_BYTE, glyph->bitmap.buffer);
+				CHECK_GL_ERROR();
+			}
+            
             font->addGlyph(glyph,x,c);
             x += glyph->bitmap.width;
 

@@ -36,12 +36,9 @@ void HudRenderer::updateLayout() {
 
 void HudRenderer::render() {
 
-    float4x4 t = make_identity<float4x4>();
-    //GLSquare(-0.5f,-0.5f,1.0f,1.0f,new HUDGraphic(HUDGraphic::Color(new string("#fff")))).render(shaderProgram,&t);
-    /*
     float4x4 orthographicProjection = createOrthographicProjection();
     for(auto child : squares)
-        child.second->render(shaderProgram,&orthographicProjection);*/
+        child.second->render(shaderProgram,&orthographicProjection);
 
 }
 
@@ -56,7 +53,7 @@ float4x4 HudRenderer::createOrthographicProjection() {
     if(Globals::get(Globals::WINDOW_WIDTH) != w || Globals::get(Globals::WINDOW_HEIGHT) != h){
         w = Globals::get(Globals::WINDOW_WIDTH);
         h = Globals::get(Globals::WINDOW_HEIGHT);
-        float r = (float)w, l = 0.0f, b = -(float)h, t = 0.0f, f = 1.0f, n = -1.0f;
+        float r = (float)w, l = 0.0f, b = -(float)h, t =  0.0f, f = 1.0f, n = -1.0f;
         orthoMatrix = make_ortho(r,l,t,b,f,n);
     }
     return orthoMatrix;
