@@ -36,7 +36,7 @@ public:
     virtual void getGLSquares(float layoutXPos,float layoutYPos, float layoutWidth,
                               float layoutHeight, map<string,IHudDrawable*>* list) = 0;
 
-    virtual void setBackground(HUDGraphic* graphic);
+    virtual Layout* setBackground(HUDGraphic* graphic);
 
     virtual Layout* setId(string id);
 

@@ -30,9 +30,7 @@ void TextLayout::getGLSquares(float layoutXPos, float layoutYPos, float layoutWi
 
     Layout::getGLSquares(layoutXPos,layoutYPos,layoutWidth,layoutHeight,list);
 
-    float w = width.getUnit() == Dimension::FILL ? layoutWidth : width.getSize(layoutWidth);
-    float h = height.getUnit() == Dimension::FILL ? layoutHeight : height.getSize(layoutHeight);
-    TextObject* textDrawer = new TextObject(text,font,w,h, layoutXPos,layoutYPos);
+    TextObject* textDrawer = new TextObject(text,font,layoutWidth,layoutHeight, layoutXPos,layoutYPos);
     list->insert(pair<string,IHudDrawable*>(getNextRandId(),textDrawer));
 
 }

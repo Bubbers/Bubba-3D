@@ -28,13 +28,16 @@ public:
         GlyphData(){}
     };
 
-    GlyphData getCharacter(char character);
-    Font();
-    void addGlyph(FT_GlyphSlot glyph, int offsetX, char character);
+    GlyphData getCharacter(unsigned char character);
+    Font(int pixelSize);
+    void addGlyph(FT_GlyphSlot glyph, int offsetX, unsigned char character);
+
+    int getPixelSize();
 
 private:
-    void checkInvalidCharacter(char character);
+    void checkInvalidCharacter(unsigned char character);
     GlyphData glyphs[128-32];
+    int pixelSize = 0;
 
 };
 

@@ -97,7 +97,7 @@ void FontManager::iterateGlyphs(vector<FontDefinition> *defs, unsigned int* widt
         FT_Set_Pixel_Sizes(face,0,(*defs)[i].pixelSize);
         FT_GlyphSlot glyph = face->glyph;
 
-        for(int c = 32; c < 128; c++){
+        for(unsigned char c = 32; c < 128; c++){
 
             if(int error = FT_Load_Char(face,c,FT_LOAD_RENDER)){
                 Logger::logError("Failed loading char '" + to_string(c) + "'. Error code: " + to_string(error));
@@ -127,9 +127,9 @@ void FontManager::drawGlyphs(vector<FontDefinition> *defs) {
         }
         FT_Set_Pixel_Sizes(face,0,(*defs)[i].pixelSize);
         FT_GlyphSlot glyph = face->glyph;
-        Font* font = new Font();
+        Font* font = new Font((*defs)[i].pixelSize);
 
-        for(int c = 32; c < 128; c++){
+        for(unsigned char c = 32; c < 128; c++){
 
             if(int error = FT_Load_Char(face,c,FT_LOAD_RENDER)){
                 Logger::logError("Failed loading char '" + to_string(c) + "'. Error code: " + to_string(error));
@@ -152,7 +152,7 @@ void FontManager::drawGlyphs(vector<FontDefinition> *defs) {
 }
 
 vector<FontManager::FontDefinition>* FontManager::getPreviouslyLoadedDefinitionsAnd(FontDefinition fd) {
-    vector<FontManager::FontDefinition>* list = new vector<FontManager::FontDefinition>(loadedFonts.size()+1);
+    vector<FontManager::FontDefinition>* list = new vector<FontManager::FontDefinition>();
     for(auto it : loadedFonts)
         list->push_back(it.first);
     list->push_back(fd);

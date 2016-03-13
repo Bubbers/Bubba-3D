@@ -13,49 +13,117 @@
 
 TextObject::TextObject(string text, Font* font, int width, int height, int x, int y)
         : text(text), font(font), width(width), height(height), x(x), y(-y){
-    init();
+
+    vector<string> lines;
+    vector<int> linesOffsetX;
+    int numChars =0;
+    getLines(&lines,&linesOffsetX,&numChars);
+
+    init(lines,linesOffsetX, numChars);
 }
 
-void TextObject::init() {
+void TextObject::getLines(vector<string>* lines, vector<int>* linesOffsetX, int* numChars){
+    int lineLength = 0;
+    string curLine = "";
+    string word = "";
+    int wordLength = 0;
+    for(unsigned char c : text){
+        if(c > ' ' && c < 128){ // visible characters
+            wordLength += font->getCharacter(c).advanceX/64;
+            word += c;
+            (*numChars)++;
+        }else if(c == ' '){
+            if(lineLength + wordLength > width){
+                lines->push_back(curLine);
+                linesOffsetX->push_back(getOffsetByLineLength(lineLength));
+                curLine = word;
+                lineLength = wordLength;
+            }else{
+                curLine += " " + word;
+                lineLength += font->getCharacter(' ').advanceX/64 + wordLength;
+            }
+            word = "";
+            wordLength = 0;
+        } else if(c == '\r'){
+            if(lineLength + wordLength > width){
+                lines->push_back(curLine);
+                linesOffsetX->push_back(getOffsetByLineLength(lineLength));
+                curLine = word;
+                lineLength = wordLength;
+            }else{
+                curLine += " " + word;
+                lineLength += font->getCharacter(' ').advanceX/64 + wordLength;
+            }
+            lines->push_back(curLine);
+            linesOffsetX->push_back(getOffsetByLineLength(lineLength));
+            curLine = "";
+            lineLength = 0;
+            word = "";
+            wordLength = 0;
+        }
+    }
+    if(lineLength + wordLength > width){
+        lines->push_back(curLine);
+        linesOffsetX->push_back(getOffsetByLineLength(lineLength));
+        curLine = word;
+        lineLength = wordLength;
+    }else{
+        curLine += " " + word;
+        lineLength += font->getCharacter(' ').advanceX/64 + wordLength;
+    }
+    lines->push_back(curLine);
+    linesOffsetX->push_back(getOffsetByLineLength(lineLength));
+}
+
+int TextObject::getOffsetByLineLength(int lineLength) {
+    return (width-lineLength)/2;
+}
+
+void TextObject::init(vector<string> lines, vector<int> linesOffsetX, int numChars) {
 
     int x = this->x;
-    int y = this->y;
-    GLfloat data[text.size()*5*6];
+    int y = this->y - font->getPixelSize();
+    GLfloat data[numChars*5*6];
     int i = 0;
     float atlasWidth = Globals::get(Globals::FONT_TEXTURE_WIDTH),
             atlasHeight = Globals::get(Globals::FONT_TEXTURE_HEIGHT);
-    vector<float> word;
     Font::GlyphData gData;
-    for(char c : text){
-        if(c >= 32){
-            gData = font->getCharacter(c);
-            float x2 =  x + gData.bitmapLeft;
-            float y2 = -y - gData.bitmapTop;
-            float w = gData.bitmapWidth;
-            float h = gData.bitmapHeight;
-            float ox = gData.offsetX;
+    int l = 0;
+    for(string line : lines) {
+        int lox = linesOffsetX[l++];
+        for (unsigned char c : line) {
+            if (c >= 32) {
+                gData = font->getCharacter(c);
+                float x2 = x + gData.bitmapLeft + lox;
+                float y2 = -y - gData.bitmapTop;
+                float w = gData.bitmapWidth;
+                float h = gData.bitmapHeight;
+                float ox = gData.offsetX;
 
-            /* Advance the cursor to the start of the next character */
-            x += gData.advanceX/64;
-            y += gData.advanceY/64;
+                /* Advance the cursor to the start of the next character */
+                x += gData.advanceX / 64;
+                y += gData.advanceY / 64;
 
-            /* Skip glyphs that have no pixels */
-            if(!w || !h)
-                continue;
+                /* Skip glyphs that have no pixels */
+                if (!w || !h)
+                    continue;
 
-            addPoints(data,i,{x2+w   , -y2    , 0, (ox+w)/atlasWidth, 0});
-            i += 5;
-            addPoints(data,i,{x2   , -y2 , 0,  ox/atlasWidth      , 0});
-            i += 5;
-            addPoints(data,i,{x2, -y2-h   , 0, ox/atlasWidth      , h/atlasHeight});
-            i += 5;
-            addPoints(data,i,{x2 + w, -y2, 0, (ox+w)/atlasWidth, 0});
-            i += 5;
-            addPoints(data,i,{x2, -y2-h  , 0, ox/atlasWidth, h/atlasHeight});
-            i += 5;
-            addPoints(data,i,{x2 + w, -y2 -h, 0, (ox+w)/atlasWidth      , h/atlasHeight});
-            i += 5;
+                addPoints(data, i, {x2 + w, -y2, 0, (ox + w) / atlasWidth, 0});
+                i += 5;
+                addPoints(data, i, {x2, -y2, 0, ox / atlasWidth, 0});
+                i += 5;
+                addPoints(data, i, {x2, -y2 - h, 0, ox / atlasWidth, h / atlasHeight});
+                i += 5;
+                addPoints(data, i, {x2 + w, -y2, 0, (ox + w) / atlasWidth, 0});
+                i += 5;
+                addPoints(data, i, {x2, -y2 - h, 0, ox / atlasWidth, h / atlasHeight});
+                i += 5;
+                addPoints(data, i, {x2 + w, -y2 - h, 0, (ox + w) / atlasWidth, h / atlasHeight});
+                i += 5;
+            }
         }
+        y -= font->getPixelSize();
+        x = this->x;
     }
     numVertices = i/5;
 

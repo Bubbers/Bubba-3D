@@ -18,19 +18,21 @@ Font::GlyphData::GlyphData(int offsetX, FT_GlyphSlot ft_glyphSlot) {
     this->bitmapTop = ft_glyphSlot->bitmap_top;
 }
 
-Font::GlyphData Font::getCharacter(char character) {
+Font::GlyphData Font::getCharacter(unsigned char character) {
     checkInvalidCharacter(character);
     return glyphs[character-32];
 }
 
-void Font::checkInvalidCharacter(char character) {
+void Font::checkInvalidCharacter(unsigned char character) {
     if(character < 32 || character >= 128)
         throw invalid_argument("The font only support characters with ascii value from 32 inclusive to 128 exclusive.");
 }
 
-void Font::addGlyph(FT_GlyphSlot glyph, int offsetX, char character) {
+void Font::addGlyph(FT_GlyphSlot glyph, int offsetX, unsigned char character) {
     checkInvalidCharacter(character);
     glyphs[character-32] = GlyphData(offsetX,glyph);
 }
 
-Font::Font() {}
+int Font::getPixelSize() { return pixelSize; }
+
+Font::Font(int pixelSize) : pixelSize(pixelSize) {}

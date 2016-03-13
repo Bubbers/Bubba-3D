@@ -44,8 +44,9 @@ Layout* Layout::findById(string id) {
     return nullptr;
 }
 
-void Layout::setBackground(HUDGraphic *graphic) {
+Layout* Layout::setBackground(HUDGraphic *graphic) {
     this->graphic = graphic;
+    return this;
 }
 
 string Layout::getNextRandId() {

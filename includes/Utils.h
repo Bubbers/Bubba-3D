@@ -48,7 +48,5 @@ static float3 createRandomVector(float minValue, float maxValue){
 	return make_vector(getRand(minValue,maxValue),getRand(minValue,maxValue),getRand(minValue,maxValue));
 }
 
-enum State{Playing, Died, Start, Won, Credits};
-
 
 #endif
