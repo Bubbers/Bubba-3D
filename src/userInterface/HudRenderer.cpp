@@ -9,6 +9,7 @@
 #include "HudRenderer.h"
 #include <vector>
 #include <IHudDrawable.h>
+#include <HUDGraphic.h>
 
 using namespace std;
 
@@ -52,7 +53,7 @@ float4x4 HudRenderer::createOrthographicProjection() {
     if(Globals::get(Globals::WINDOW_WIDTH) != w || Globals::get(Globals::WINDOW_HEIGHT) != h){
         w = Globals::get(Globals::WINDOW_WIDTH);
         h = Globals::get(Globals::WINDOW_HEIGHT);
-        float r = (float)w, l = 0.0f, b = -(float)h, t = 0.0f, f = 1.0f, n = -1.0f;
+        float r = (float)w, l = 0.0f, b = -(float)h, t =  0.0f, f = 1.0f, n = -1.0f;
         orthoMatrix = make_ortho(r,l,t,b,f,n);
     }
     return orthoMatrix;
