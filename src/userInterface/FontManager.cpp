@@ -80,7 +80,10 @@ void FontManager::initTexture(unsigned int width, unsigned int height) {
     glBindTexture(GL_TEXTURE_2D, *tex);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-    glTexStorage2D(GL_TEXTURE_2D,1,GL_R8,width,height);
+    //glTexStorage2D(GL_TEXTURE_2D,1,GL_R8,width,height);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, NULL);
 }
 
 void FontManager::iterateGlyphs(vector<FontDefinition> *defs, unsigned int* width, unsigned int* height) {

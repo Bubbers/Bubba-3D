@@ -10,6 +10,11 @@
 
 using namespace std;
 
+/**
+ * A class that contains data about the characters of a font
+ * Load a font using FontManager. TextObject can render text
+ * using a Font.
+ */
 class Font {
 public:
 
