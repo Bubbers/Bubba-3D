@@ -1,4 +1,4 @@
-#include "Particle.h"
+#include "particle/Particle.h"
 #include "ParticleConf.h"
 
 Particle::Particle(ParticleConf *conf, float4x4 modelMatrix) {
