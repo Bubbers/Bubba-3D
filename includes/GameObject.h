@@ -171,6 +171,8 @@ public:
 private:
     void initGameObject(Mesh *mesh, Mesh *colliderMesh);
 
+    float4x4 getFullMatrix();
+
     /**
      * Returns a fresh id number.
      */
