@@ -1,68 +1,32 @@
 #ifndef __MESH_H__
 #define __MESH_H__
 
-
 #include <string>
 #include <vector>
-#include "float2.h"
-#include "float3.h"
-#include "float4.h"
-#include "glutil/glutil.h"
-#include "GL/glew.h"
-#include "GL/glut.h"
-#include <assimp/Importer.hpp>
-#include <assimp/postprocess.h>
-#include <assimp/scene.h>
+#include "linmath/float3.h"
+#include "Material.h"
+#include "Chunk.h"
 #include "AABB2.h"
-#include "IDrawable.h"
-#include "Texture.h"
-
-struct Material {
-    chag::float3 diffuseColor;
-    chag::float3 ambientColor;
-    chag::float3 specularColor;
-    chag::float3 emissiveColor;
-    float specularExponent;
-    Texture *diffuseTexture = NULL;
-    Texture *bumpMapTexture = NULL;
-};
-
-struct Chunk {
-    Chunk(std::vector<chag::float3> &positions,
-          std::vector<chag::float3> &normals,
-          std::vector<chag::float2> &uvs,
-          std::vector<unsigned int> &indices,
-          std::vector<chag::float3> &tangents,
-          std::vector<chag::float3> &bittangents,
-          unsigned int textureIndex);
-
-    ~Chunk() { };
+#include "assimp/material.h"
+#include <Sphere.h>
 
 
-    // Data on host
-    std::vector<chag::float3> m_positions;
-    std::vector<chag::float3> m_normals;
-    std::vector<chag::float2> m_uvs;
-    std::vector<unsigned int> m_indices;
-    std::vector<chag::float3> m_tangents;
-    std::vector<chag::float3> m_bittangents;
+using namespace chag;
 
-    // Data on GPU
-    GLuint m_positions_bo;
-    GLuint m_normals_bo;
-    GLuint m_uvs_bo;
-    GLuint m_ind_bo;
-    GLuint m_tangents_bo;
-    GLuint m_bittangents_bo;
-    // Vertex Array Object
-    GLuint m_vaob;
-
-    unsigned int materialIndex;
-
-    unsigned int m_numIndices;
-};
+class Triangle;
+class aiScene;
+class aiMesh;
+class aiMaterial;
 
 
+/**
+ * A class for containing all triangle and material of a mesh.
+ *
+ * \code
+ * Mesh mesh;
+ * mesh.loadMesh("url/to/meshfile");
+ * \endcode
+ */
 class Mesh {
 public:
     Mesh();
@@ -71,23 +35,119 @@ public:
 
     void loadMesh(const std::string &fileName);
 
-private:
+    /**
+     * NOTE: The triangles have not been transformed.
+     *
+     * @return A list of all the triangles of the mesh.
+     */
+    std::vector<Triangle *> getTriangles();
 
-    void initMeshFromScene(const aiScene *pScene, const std::string &fileName);
-    void initMesh(unsigned int index, const aiMesh *paiMesh);
-    void initMaterials(const aiScene *pScene, const std::string &fileName);
-    void initMaterialTextures(Material *material, std::string fileName, const aiMaterial *loadedMaterial);
+    /**
+     * NOTE: The AABB has not been transformed.
+     *
+     * @return The AABB of the mesh.
+     */
+    AABB* getAABB();
+
+    /**
+     * NOTE: The sphere has not been transformed.
+     *
+     * @return The sphere surrounding the object.
+     */
+    Sphere getSphere();
+
+    std::vector<Chunk>* getChunks();
+    std::vector<Material>* getMaterials();
+
+ private:
+    /**
+     * NOTE: This will only load the first mesh in the scene. If you have
+     * several meshes in a single loaded object please implement support for it!
+     *
+     * Loads all the chunks, materials, triangles and collision details of the mesh
+     * in the loaded aiScene.
+     *
+     * @param pScene The loaded aiScene containing the mesh to be loaded
+     * @param fileNameOfMesh The absolute/relative file path to the file containing the mesh
+     */
+    void initMesh(const aiScene *pScene, const std::string &fileNameOfMesh);
+    void initMeshFromAiMesh(unsigned int index, const aiMesh *paiMesh);
+    void initChunkFromAiMesh(const aiMesh *paiMesh, Chunk &chunk);
+    void initVerticesFromAiMesh(const aiMesh *paiMesh, Chunk &chunk);
+    void initIndicesFromAiMesh(const aiMesh *paiMesh, Chunk &chunk);
+
+    /**
+     * Loads all materials from the loaded aiScene.
+     *
+     * @param pScene The loaded aiScene containing the materials to be loaded
+     * @param fileNameOfMesh The absolute/relative file path to the file containing the mesh
+     */
+    void initMaterials(const aiScene *pScene, const std::string &fileNameOfMesh);
+    void initMaterialTextures(Material *material, std::string fileNameOfMesh, const aiMaterial *loadedMaterial);
     void initMaterialColors(Material *material, const aiMaterial *loadedMaterial);
-    std::string getAbsolutePath(const std::string &fileName, std::string textureName);
-    std::string getDirectoryFromPath(const std::string &fileName);
-    std::string cleanFileName(std::string filePath);
-    float3 getColorFromMaterial(const char* pKey, unsigned int type, unsigned int idx, const aiMaterial &material);
-    Texture* getTexture(const aiMaterial *material, const std::string &fileName, aiTextureType type);
+    void initMaterialShininess(Material *material, const aiMaterial *loadedMaterial);
 
-public:
+    /**
+     * Fetches the color of specified type in the aiMaterial.
+     * Use the predefined macros for the first three parameters (eg AI_MATKEY_COLOR_AMBIENT)
+     *
+     * @param colorTypeString
+     * @param type
+     * @param index
+     * @param loadedMaterial
+     * @return A float3 containing the colors rgb
+     */
+    float3 getColorFromMaterial(const char* colorTypeString, unsigned int type, unsigned int index, const aiMaterial &material);
+
+    /**
+     * Uses the file name of the mesh to calculate the absolute path to the specified texture
+     *
+     * @param fileNameOfMesh Absolute/relative path to the mesh file
+     * @param textureName The path to the textureName relative to the mesh file
+     * @return The path to the specified texture
+     */
+    std::string getPathOfTexture(const std::string &fileNameOfMesh, std::string textureName);
+
+    /**
+     * Removes the file part from the path
+     */
+    std::string getDirectoryFromPath(const std::string &fileName);
+
+    /**
+     * Removes possible ending '.\\' from a path
+     * @param filePath
+     * @return  A cleaned file
+     */
+    std::string cleanFileName(std::string filePath);
+
+    /**
+     * Returns the texture that was specified in the material.
+     * Loads the texture into the resourcemanager if it was not previously loaded, or
+     * fetches it from the resourcemanager if it was.
+     *
+     * @param material The material containing a texture
+     * @param fileNameOfMesh
+     * @param type A enum saying which texture type to load from the material
+     * @return A pointer to the texture loaded
+     */
+    Texture* getTexture(const aiMaterial *material, const std::string &fileNameOfMesh, aiTextureType type);
+
+    /**
+     * Initiates OpenGL buffers and buffers the chunk data on to the graphics memory.
+     * @param chunk The chunk to be initiated for rendering
+     */
+    void setupChunkForRendering(Chunk &chunk);
+
+    void setupSphere(std::vector<float3> *positions);
+
+    void createTriangles();
+    Triangle* createTriangleFromPositions(std::vector<chag::float3> positionBuffer, unsigned int startIndex);
+
+    std::vector<Triangle *> triangles;
     std::vector<Material> materials;
-    chag::float4x4 m_modelMatrix;
     std::vector<Chunk> m_chunks;
+
+    Sphere sphere;
     AABB m_aabb;
 };
 

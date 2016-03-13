@@ -1,4 +1,4 @@
-#version 130
+#version 330
 #extension GL_ARB_explicit_attrib_location : enable
 
 in vec3 texCoord;

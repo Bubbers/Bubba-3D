@@ -1,8 +1,12 @@
 /Debug/*
 /build/*
 /Release/*
+/Testing/*
 Thumbs.db
 *~
 .idea
 *.swo
 *.swp
+
+*.blender
+*.blender1

@@ -424,14 +424,14 @@ struct aiAnimMesh
 	 * set of vertex colors on his host mesh. 
 	 *  @param pIndex 0<index<AI_MAX_NUMBER_OF_COLOR_SETS */ 
 	bool HasVertexColors( unsigned int pIndex) const	{ 
-		return pIndex >= AI_MAX_NUMBER_OF_COLOR_SETS ? false : mColors[pIndex] != NULL; 
+		return pIndex >= AI_MAX_NUMBER_OF_COLOR_SETS && mColors[pIndex] != NULL;
 	}
 
 	/** Check whether the anim mesh overrides a particular
 	 * set of texture coordinates on his host mesh. 
 	 *  @param pIndex 0<index<AI_MAX_NUMBER_OF_TEXTURECOORDS */ 
 	bool HasTextureCoords( unsigned int pIndex) const	{ 
-		return pIndex >= AI_MAX_NUMBER_OF_TEXTURECOORDS ? false : mTextureCoords[pIndex] != NULL; 
+		return pIndex >= AI_MAX_NUMBER_OF_TEXTURECOORDS && mTextureCoords[pIndex] != NULL;
 	}
 
 #endif

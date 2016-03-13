@@ -1,26 +1,54 @@
 #include "Logger.h"
-
-#include<time.h>
-#include<cstdio>
+#include "sstream"
+#include <time.h>
 
 using namespace std;
 
-
-bool Logger::debug      = true;
-bool Logger::saveToFile = false;
+unsigned int Logger::currentLogLevel = DEBUG;
+std::vector<LogHandler*> Logger::logHandlers;
 
 void Logger::logDebug(string msg) {
-	if (debug) {
-	  printf("[DEBUG] %s %s\n", getTime().c_str(), msg.c_str());
-	}
+	log(DEBUG, msg);
 }
 
-void Logger::logSevere(string msg) {
-	printf("[SEVERE] %s %s\n", getTime().c_str(), msg.c_str());
+void Logger::logWarning(string msg) {
+	log(WARNING, msg);
+}
+
+void Logger::logError(string msg) {
+	log(SEVERE, msg);
 }
 
 void Logger::logInfo(string msg) {
-	printf("[INFO] %s  %s\n", getTime().c_str(), msg.c_str());
+	log(INFO, msg);
+}
+
+void Logger::log(unsigned int level, string msg) {
+	if (level >= currentLogLevel) {
+		for (auto logHandler : logHandlers) {
+			std::stringstream ss;
+			ss << levelToString(level) << "\t" << getTime().c_str() << "\t" << msg.c_str() << "\n";
+			logHandler->log(ss.str());
+		}
+	}
+}
+
+void Logger::addLogHandler(LogHandler *logHandler) {
+    logHandlers.push_back(logHandler);
+}
+
+void Logger::setLogLevel(unsigned int level) {
+	currentLogLevel = level;
+}
+
+string Logger::levelToString(unsigned int level) {
+	switch (level) {
+		case INFO:     return "INFO";
+		case DEBUG:    return "DEBUG";
+		case WARNING:  return "WARNING";
+		case SEVERE:   return "SEVERE";
+		default: return "BAD level";
+	}
 }
 
 string Logger::getTime() {

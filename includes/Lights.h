@@ -2,7 +2,7 @@
 #define __LIGHTS_H__
 
 
-#include <float3.h>
+#include <linmath/float3.h>
 
 using namespace chag;
 

@@ -122,6 +122,6 @@ const SmallVector3<T> perpendicular(const SmallVector3<T> &v);
 
 } // namespace chag
 
-#include "SmallVector3.inl"
+#include "linmath/SmallVector3.inl"
 
 #endif // _chag_SmallVector3_h

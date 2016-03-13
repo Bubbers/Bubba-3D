@@ -5,8 +5,8 @@
  * graphics at chalmers, they are not covered by any particular license...
  */
 
-#include "float4x4.h"
-#include "float3.h"
+#include "linmath/float4x4.h"
+#include "linmath/float3.h"
 
 #include <string>
 #include <cassert>

@@ -1,7 +1,7 @@
 #ifndef __EFFECTS_H__
 #define __EFFECTS_H__
 
-#include "float3.h"
+#include "linmath/float3.h"
 
 using namespace chag;
 namespace FOG_EQ {
@@ -31,7 +31,7 @@ struct Blur {
 
   Blur() {
     cutOff = 1.0f;
-    active = false;
+    active = true;
   }
 };
 

@@ -12,6 +12,14 @@ struct AABB {
 		maxV = chag::make_vector(-FLT_MAX, -FLT_MAX, -FLT_MAX);
 		minV = chag::make_vector(FLT_MAX, FLT_MAX, FLT_MAX);
 	}
+
+	float getSize() {
+		return sqrtf(pow(maxV.x - minV.x,2) + pow(maxV.y - minV.y,2) + pow(maxV.z - minV.z,2));
+	}
+
+	chag::float3 getCenterPosition() {
+		return (maxV - minV) / 2;
+	}
 };
 
 #endif

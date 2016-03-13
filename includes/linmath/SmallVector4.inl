@@ -2,7 +2,7 @@
 #define _chag_SmallVector4_inl
 
 
-#include "SmallVector4.h"
+#include "linmath/SmallVector4.h"
 
 // 
 namespace chag

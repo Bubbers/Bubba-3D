@@ -1,7 +1,7 @@
 #ifndef _chag_float2_h
 #define _chag_float2_h
 
-#include "SmallVector2.h"
+#include "linmath/SmallVector2.h"
 
 namespace chag
 {

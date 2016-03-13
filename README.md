@@ -1,41 +1,31 @@
-#Bubba-3D!
-This is a small 3D-engine programmed in C++
-using Glut and Glew.  Managed by cmake.
+Bubba-3D [![Build Status](https://travis-ci.org/Bubbers/Bubba-3D.svg?branch=master)](https://travis-ci.org/Bubbers/Bubba-3D) !['LGPL3'](https://www.gnu.org/graphics/lgplv3-88x31.png)
+=======
+
+About
+-----
+This is a small 3D Game-Engine programmed in C++ using openGL.
 Originally implemented as a school project, now extended for fun!
 
-***  
-###Implemented
-* Mesh loading using Assimp
-* Normal maps
-* Different lights (Directional, spot and point lights)
-* Directional shadow map
-* Fog
-* Blur
-* Skyboxes
-* Dynamic / static cube maps
-* Perspective camera
-* Particle system
+Usage
+-----
+Tutorials can be found on the [wiki](https://github.com/Bubbers/Bubba-3D/wiki)
 
-###Current todos
-* Refactor cube maps
-* Finish octrees / implement AABB collision structure
-* Support skinned meshes
-* Optimizations!
+Installation
+------------
+### Requirements:
+* [CMake](http://www.cmake.org/)
+* [Assimp](https://github.com/assimp/assimp)
+* [GLEW](https://github.com/nigels-com/glew)
+* [SFML](http://www.sfml-dev.org/index.php)
+* [Freetype](http://www.freetype.org/)
 
-***
-###Example
-Code example is outdated, new coming soon!
+#### Installing dependencies
+See [wiki](https://github.com/Bubbers/Bubba-3D/wiki)
 
-###Installation
-Requirements:
-* <a href="http://www.cmake.org/">CMake</a>
-* <a href="http://assimp.sourceforge.net/">Assimp</a>
-* <a href="http://freeglut.sourceforge.net/">Glut (Freeglut)</a>
-* <a href="http://glew.sourceforge.net/">Glew</a>
-* <a href="http://openil.sourceforge.net/">DevIL</a><br />
-
-Linux: Install using the Makefile supplied in root map. run make install. This will install all dependencies for the project. Then you may run it with make run.
-
-Windows: Either download the dependencies yourself from the links above, or use the specified libs in the libs folder. For more info how to config cmake using these, see README.md in libs/. 
-
-Feel free to contact me regarding questions and/or installation trouble!
+### Compile using cmake:
+```bash
+mkdir build
+cd build
+cmake ..
+make
+```

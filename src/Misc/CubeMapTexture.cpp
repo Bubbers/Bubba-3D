@@ -1,5 +1,8 @@
 #include "CubeMapTexture.h"
-#include <glutil/glutil.h>
+#include "glutil/glutil.h"
+#include <Texture.h>
+#include <stb_image.h>
+#include <Logger.h>
 
 
 CubeMapTexture::CubeMapTexture(const string& posXFilename, const string& negXFilename, const string& posYFilename, const string& negYFilename, const string& posZFilename, const string& negZFilename) {
@@ -26,13 +29,19 @@ CubeMapTexture::CubeMapTexture(const string& posXFilename, const string& negXFil
 	//			Set filtering parameters
 	//************************************************
 
-	//glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+	glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 
 	// Sets the type of mipmap interpolation to be used on magnifying and 
 	// minifying the active texture. 
 	// For cube maps, filtering across faces causes artifacts - so disable filtering
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	//glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	//glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_REPEAT);
 
 	// In case you want filtering anyway, try this below instead
 	//glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -49,27 +58,27 @@ CubeMapTexture::CubeMapTexture(const string& posXFilename, const string& negXFil
 
 void CubeMapTexture::loadCubeMapFace(std::string filename, GLenum face)
 {
-	ILuint image;
-	ilGenImages(1, &image);
-	ilBindImage(image);
+	// TODO(Bubbad) LET TEXTURE HANDLE ALL THIS
+	stbi_set_flip_vertically_on_load(true);
 
-	bool he = ilLoadImage(filename.c_str());
+    int width, height;
+    int comp;
+    unsigned char* image = stbi_load(filename.c_str(), &width, &height, &comp, 0);
 
-	if (ilLoadImage(filename.c_str()) == IL_FALSE)   {
-	  Logger::logSevere("Failed to load texture " + filename);
-		ILenum Error;
-		while ((Error = ilGetError()) != IL_NO_ERROR)
-			printf("%d: %s\n", Error, iluErrorString(Error));
-	}
-	ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
-	int s = std::max(ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT));
-	iluScale(s, s, ilGetInteger(IL_IMAGE_DEPTH));
-	glTexImage2D(face, 0, GL_RGBA, ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT), 0, GL_RGBA, GL_UNSIGNED_BYTE, ilGetData());
+    if(image == nullptr) {
+        Logger::logError("Couldnt load image "+ filename);
+    }
+
+	GLenum format = comp == 3 ? GL_RGB : GL_RGBA;
+
+	glTexImage2D(face, 0, GL_SRGB_ALPHA_EXT, width, height, 0, format, GL_UNSIGNED_BYTE, image);
+
+	stbi_image_free(image);
 }
 
 void CubeMapTexture::bind(GLenum textureUnit) {
 	glActiveTexture(textureUnit);
-	glEnable(GL_TEXTURE_2D);
+//	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, m_texture);
 }
 

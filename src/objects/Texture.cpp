@@ -1,58 +1,41 @@
-#include <IL/il.h>
-#include <glutil/glutil.h>
+#include "glutil/glutil.h"
 #include <Logger.h>
-#include <IL/ilu.h>
 #include "Texture.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+
+#include "stb_image.h"
 
 void Texture::bind(GLenum textureUnit){
     glActiveTexture(textureUnit);
-    glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, textureID);
 }
 
-
 void Texture::loadTexture(std::string fileName)
 {
-    Logger::logInfo("Loading texture: " + fileName);
-    ILuint image = ilGenImage();
-    ilBindImage(image);
-    CHECK_GL_ERROR();
+    stbi_set_flip_vertically_on_load(true);
 
-    if (ilLoadImage(fileName.c_str()) == IL_FALSE)
-    {
-        Logger::logSevere("Error to load texture " + fileName);
-        ILenum Error;
-        while ((Error = ilGetError()) != IL_NO_ERROR)
-        {
-            printf("  %d: %s\n", Error, iluErrorString(Error));
-        }
-        ilDeleteImage(image);
+    int width, height;
+    int comp;
+    unsigned char* image = stbi_load(fileName.c_str(), &width, &height, &comp, 0);
+
+    if(image == nullptr) {
+        Logger::logError("Couldnt load image "+ fileName);
     }
-    CHECK_GL_ERROR();
-    // why not?
-    if (ilTypeFromExt(fileName.c_str()) == IL_PNG || ilTypeFromExt(fileName.c_str()) == IL_JPG)
-    {
-        iluFlipImage();
-    }
-    ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
+
     GLuint texid;
     glGenTextures(1, &texid);
     glActiveTexture(GL_TEXTURE0);
     CHECK_GL_ERROR();
     glBindTexture(GL_TEXTURE_2D, texid);
     CHECK_GL_ERROR();
-    int width = ilGetInteger(IL_IMAGE_WIDTH);
-    int height = ilGetInteger(IL_IMAGE_HEIGHT);
-    // Note: now with SRGB
-    ILubyte* b = ilGetData();
-    ILubyte c = *b;
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB_ALPHA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, b);
-    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, ilGetData());
+
+
+    GLenum format = comp == 3 ? GL_RGB : GL_RGBA;
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB_ALPHA_EXT, width, height, 0, format, GL_UNSIGNED_BYTE, image);
+
     CHECK_GL_ERROR();
-    ilDeleteImage(image);
-    CHECK_GL_ERROR();
-    //GLuint texid = ilutGLLoadImage(const_cast<char *>(fileName.c_str()));
     glGenerateMipmap(GL_TEXTURE_2D);
     CHECK_GL_ERROR();
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -65,4 +48,7 @@ void Texture::loadTexture(std::string fileName)
     glBindTexture(GL_TEXTURE_2D, 0);
     CHECK_GL_ERROR();
     textureID = texid;
+
+    stbi_image_free(image);
 }
+

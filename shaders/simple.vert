@@ -1,6 +1,5 @@
-#version 130
+#version 330
 
-#extension GL_ARB_gpu_shader5 : enable
 #extension GL_ARB_explicit_attrib_location : enable
 
 
@@ -19,16 +18,20 @@ out	vec2	texCoord;	// outgoing interpolated texcoord to fragshader
 out vec4    shadowTexCoord;
 out mat3    TBN;
 
-uniform mat4 modelMatrix; 
-uniform mat4 viewMatrix; 
-uniform mat4 projectionMatrix;
+uniform mat4 modelMatrix;
 uniform mat4 normalMatrix;
 uniform mat4 lightMatrix;
+
+layout(std140) uniform Matrices {
+    mat4 viewMatrix;
+    mat4 projectionMatrix;
+    mat4 viewProjectionMatrix;
+};
 
 
 void main() 
 {
-	mat4 modelViewMatrix = viewMatrix * modelMatrix; 
+	mat4 modelViewMatrix = viewMatrix * modelMatrix;
 	mat4 modelViewProjectionMatrix = projectionMatrix * modelViewMatrix;
 
 	vec3 T = normalize(normalMatrix * vec4(tangent, 0.0)).xyz;

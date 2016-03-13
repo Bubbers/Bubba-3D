@@ -130,6 +130,6 @@ inline const SmallVector3<T> make_vector3(const SmallVector4<T> &v) { return mak
 
 } // namespace chag
 
-#include "SmallVector4.inl"
+#include "linmath/SmallVector4.inl"
 
 #endif // _chag_SmallVector4_h

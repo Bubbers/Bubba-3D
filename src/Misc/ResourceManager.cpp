@@ -1,26 +1,22 @@
 #include "ResourceManager.h"
 #include <sstream>
+#include <Logger.h>
+#include <ShaderProgram.h>
+#include <shader/VertexShader.h>
+#include <shader/FragmentShader.h>
 
-
-std::map<std::string, Shader> ResourceManager::shaders;
+std::map<std::string, ShaderProgram> ResourceManager::shaders;
 std::map<std::string, Texture> ResourceManager::textures;
 std::map<std::string, Mesh> ResourceManager::meshes;
 
 void ResourceManager::loadShader(const std::string &vertexShader, const std::string &fragmentShader, std::string name){
-    Shader shaderProgram;
-    shaderProgram.loadShader(vertexShader,fragmentShader);
-    shaders.insert(std::pair<std::string, Shader>(name, shaderProgram));
+    ShaderProgram shaderProgram;
+    shaderProgram.loadShader(new VertexShader(vertexShader), new FragmentShader(fragmentShader));
+    shaders.insert(std::pair<std::string, ShaderProgram>(name, shaderProgram));
 }
 
-Shader ResourceManager::getShader(std::string name) {
-    std::map<std::string, Shader>::iterator it =  shaders.find(name);
-    if( it != shaders.end()) {
-        return it->second;
-    } else {
-        std::stringstream errorMessage;
-        errorMessage << "Shader " << name << " hasn't been loaded into ResourceManager before fetched";
-        throw std::invalid_argument(errorMessage.str());
-    }
+ShaderProgram* ResourceManager::getShader(std::string name) {
+    return getItemFromMap(&shaders, name);
 }
 
 Texture* ResourceManager::loadAndFetchTexture(const std::string &fileName) {
@@ -39,14 +35,7 @@ void ResourceManager::loadTexture(const std::string &fileName) {
 }
 
 Texture* ResourceManager::getTexture(std::string fileName) {
-    std::map<std::string, Texture>::iterator it =  textures.find(fileName);
-    if( it != textures.end()) {
-        return &it->second;
-    } else {
-        std::stringstream errorMessage;
-        errorMessage << "Shader " << fileName << " hasn't been loaded into ResourceManager before fetched";
-        throw std::invalid_argument(errorMessage.str());
-    }
+    return getItemFromMap(&textures, fileName);
 }
 
 
@@ -67,12 +56,23 @@ void ResourceManager::loadMesh(const std::string &fileName){
 
 Mesh* ResourceManager::getMesh(std::string fileName)
 {
-    std::map<std::string, Mesh>::iterator it = meshes.find(fileName);
-    if( it != meshes.end()) {
+    return getItemFromMap(&meshes, fileName);
+}
+
+template<typename Type>
+Type* ResourceManager::getItemFromMap(std::map<std::string, Type> *map, std::string id) {
+    typename std::map<std::string, Type>::iterator it = map->find(id);
+    if( it != map->end()) {
         return &it->second;
     } else {
         std::stringstream errorMessage;
-        errorMessage << "Mesh " << fileName << " hasn't been loaded into ResourceManager before fetched";
+        errorMessage << id << " hasn't been loaded into ResourceManager before fetched";
         throw std::invalid_argument(errorMessage.str());
     }
 }
+
+
+
+
+
+
