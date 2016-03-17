@@ -27,7 +27,7 @@ protected:
     GLuint vao;
 
 private:
-    void addPoints(std::vector<GLfloat> *data, int i, initializer_list<float> elems);
+    void addPoints(std::vector<GLfloat> *data, initializer_list<float> elems);
     void getLines(vector<string>* lines, vector<int>* linesOffsetLeft, int* numChars);
     int getOffsetByLineLength(int lineLength);
     void init(vector<string> lines, vector<int> linesOffsetLeft, int numChars);

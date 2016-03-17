@@ -35,11 +35,13 @@ void HudRenderer::updateLayout() {
 }
 
 void HudRenderer::render() {
-
+	//float4x4 t = make_identity<float4x4>();
+	//GLSquare(1.0f, 1.0f, 1.0f, 1.0f, new HUDGraphic(HUDGraphic::Color(new string("#fff")))).render(shaderProgram, &t);
+	
     float4x4 orthographicProjection = createOrthographicProjection();
     for(auto child : squares)
         child.second->render(shaderProgram,&orthographicProjection);
-
+		
 }
 
 IHudDrawable* HudRenderer::getSquareByID(string id) {

@@ -84,7 +84,6 @@ void TextObject::init(vector<string> lines, vector<int> linesOffsetX, int numCha
     int x = this->x;
     int y = this->y - font->getPixelSize();
 	std::vector<GLfloat> data;
-    //GLfloat data[numChars*5*6];
     int i = 0;
     float atlasWidth = Globals::get(Globals::FONT_TEXTURE_WIDTH),
             atlasHeight = Globals::get(Globals::FONT_TEXTURE_HEIGHT);
@@ -109,18 +108,13 @@ void TextObject::init(vector<string> lines, vector<int> linesOffsetX, int numCha
                 if (!w || !h)
                     continue;
 
-                addPoints(&data, i, {x2 + w, -y2, 0, (ox + w) / atlasWidth, 0});
-                i += 5;
-                addPoints(&data, i, {x2, -y2, 0, ox / atlasWidth, 0});
-                i += 5;
-                addPoints(&data, i, {x2, -y2 - h, 0, ox / atlasWidth, h / atlasHeight});
-                i += 5;
-                addPoints(&data, i, {x2 + w, -y2, 0, (ox + w) / atlasWidth, 0});
-                i += 5;
-                addPoints(&data, i, {x2, -y2 - h, 0, ox / atlasWidth, h / atlasHeight});
-                i += 5;
-                addPoints(&data, i, {x2 + w, -y2 - h, 0, (ox + w) / atlasWidth, h / atlasHeight});
-                i += 5;
+                addPoints(&data, {x2 + w, -y2, 0, (ox + w) / atlasWidth, 0});
+                addPoints(&data, {x2, -y2, 0, ox / atlasWidth, 0});
+                addPoints(&data, {x2, -y2 - h, 0, ox / atlasWidth, h / atlasHeight});
+                addPoints(&data, {x2 + w, -y2, 0, (ox + w) / atlasWidth, 0});
+                addPoints(&data, {x2, -y2 - h, 0, ox / atlasWidth, h / atlasHeight});
+                addPoints(&data, {x2 + w, -y2 - h, 0, (ox + w) / atlasWidth, h / atlasHeight});
+                i += 6*5;
             }
         }
         y -= font->getPixelSize();
@@ -148,7 +142,7 @@ void TextObject::init(vector<string> lines, vector<int> linesOffsetX, int numCha
 
 }
 
-void TextObject::addPoints(std::vector<GLfloat> *data, int i, initializer_list<float> elems) {
+void TextObject::addPoints(std::vector<GLfloat> *data, initializer_list<float> elems) {
 
     for(float elem : elems)
         data->push_back(elem);

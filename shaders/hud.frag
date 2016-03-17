@@ -1,4 +1,5 @@
-#version 130
+#version 330
+
 
 precision highp float;
 
@@ -20,4 +21,5 @@ void main() {
 	}else if(isFont){
 	    fragmentColor = vec4(1,1,1,texture(sprite,texCoord).x);
 	}
+	
 }

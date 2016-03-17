@@ -10,6 +10,7 @@
 #include <HUDGraphic.h>
 #include <FontManager.h>
 #include <IHudDrawable.h>
+#include <ResourceManager.h>
 
 void GLSquare::render(ShaderProgram* shaderProgram, float4x4* projectionMatrix) {
 
@@ -42,7 +43,7 @@ void GLSquare::bindTextureAndDraw(ShaderProgram *shaderProgram, float4x4* projec
     shaderProgram->setUniformMatrix4fv("projectionMatrix",*projectionMatrix);
     shaderProgram->setUniform1i("isFont",false);
 
-    if(graphic->isTextureElseColor()) {
+	if(graphic->isTextureElseColor()) {
         graphic->getTexture()->bind(GL_TEXTURE0);
         shaderProgram->setUniform1i("isTexture",true);
         shaderProgram->setUniform1i("isColor",false);
@@ -107,10 +108,10 @@ void GLSquare::fillVertexBuffer() {
     glBufferData(GL_ARRAY_BUFFER, sizeof(quad), quad, GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5*sizeof(float), 0);
 
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), ((char *)NULL + sizeof(float)*3));
 
     // CLEANUP
     glBindVertexArray(0);
