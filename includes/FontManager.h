@@ -16,18 +16,49 @@ using namespace std;
 
 class Font;
 
+/**
+ * Used to load and perform initialization on fonts
+ */
 class FontManager {
 
 public:
+
+    /**
+     * If the font has been loaded before it is just returned. Otherwise
+     * the font is loaded and the characters are cached to the graphics card.
+     *
+     * \warning Never dereference the returned font or copy it as the font
+     * may change when other fonts are added.
+     */
     Font* loadAndFetchFont(string fontFace, int pixelSize);
-    FontManager();
-    static GLuint* getTex();
+
+    /**
+     * Returns the texture id used to store the font glyphs in.
+     *
+     * \warning The texture id might change when new fonts are loaded.
+     *
+     * \throws logic_error If the method is called before any fonts have been loaded.
+     */
+    GLuint* getTex() ;
+
+    /**
+     * Returns the singleton instance of the FontManager
+     */
+    static FontManager* getInstance();
 
 protected:
+    /**
+     * Loads a font and caches it to the graphics card
+     */
     virtual void loadFont(string fontFace, int pixelSize);
 
 private:
+    FontManager();
 
+    /**
+     * An identifier for a font. Contains the file path to the font-face and
+     * a font size.
+     */
     struct FontDefinition{
         string face;
         int pixelSize;
@@ -39,6 +70,9 @@ private:
         int getPixelSize() const;
     };
 
+    /**
+     * Hash function for FontDefinition
+     */
     struct FontDefHash
     {
         std::size_t operator()(FontDefinition const& fd) const
@@ -49,15 +83,20 @@ private:
         }
     };
 
-    void initTexture(unsigned int width, unsigned int height);
-
+    /**
+     * An unordered map mapping a font definition to a font
+     */
     typedef unordered_map<FontDefinition,Font*,FontDefHash> fontMap;
 
-    vector<FontDefinition>* getPreviouslyLoadedDefinitionsAnd(FontDefinition fd);
-    void iterateGlyphs(vector<FontDefinition>* defs, unsigned int* width, unsigned int* height);
-    void drawGlyphs(vector<FontDefinition> *defs);
+    void iterateGlyphs(FontDefinition def, unsigned int* width, unsigned int* height);
+    void drawGlyphs();
+    void initTexture();
+    GLuint* getTex(bool force) ;
+
     fontMap loadedFonts;
     FT_Library* ft_library;
+    unsigned int atlasWidth = 0, atlasHeight = 0;
+    bool initiated = false;
 
 };
 

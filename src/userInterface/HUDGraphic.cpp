@@ -21,10 +21,6 @@ float3 HUDGraphic::getCenterOffset(float width, float height) {
     return make_vector(offsetX.getSize(width),offsetY.getSize(height),0.0f);
 }
 
-template <typename T>
-HUDGraphic::TexturePosition<T>::TexturePosition(T topLeftX, T topLeftY, T botRightX, T botRightY)
-        : topLeftX(topLeftX), topLeftY(topLeftY), botRightX(botRightX), botRightY(botRightY) {}
-
 HUDGraphic* HUDGraphic::setCenterOffset(Dimension offsetX, Dimension offsetY) {
     this->offsetX = offsetX;
     this->offsetY = offsetY;
@@ -36,10 +32,24 @@ HUDGraphic* HUDGraphic::setTexturePosition(HUDGraphic::TexturePosition<int> text
     return this;
 }
 
-HUDGraphic::TexturePosition<float> HUDGraphic::getTexturePosition(float width, float height) {
+HUDGraphic::TexturePosition<float> HUDGraphic::getTexturePosition() {
     TexturePosition<int> tp = texturePosition;
-    return TexturePosition<float>((float)tp.topLeftX/width,(float)tp.topLeftY/height,
-                                  (float)tp.botRightX/width,(float)tp.botRightY/height);
+    if(tp.isEmpty())
+        return TexturePosition<float>(0.0f,0.0f,1.0f,1.0f);
+    else {
+        float width = 1.0f, height = 1.0f;
+        if(isTextureElseColor()){
+            width = texture->getWidth();
+            height = texture->getHeight();
+        }
+        return TexturePosition<float>((float) tp.botLeftX / width, (float) tp.botLeftY / height,
+                                      (float) tp.topRightX / width, (float) tp.topRightY / height);
+    }
+}
+
+template <typename T>
+bool HUDGraphic::TexturePosition<T>::isEmpty() {
+    return empty;
 }
 
 Texture* HUDGraphic::getTexture() {

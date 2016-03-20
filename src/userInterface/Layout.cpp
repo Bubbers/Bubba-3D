@@ -22,13 +22,14 @@ map<string,IHudDrawable*> Layout::getGLSquares(float layoutXPos, float layoutYPo
 
 void Layout::getGLSquares(float layoutXPos, float layoutYPos, float layoutWidth, float layoutHeight,
                           map<string,IHudDrawable*> *list) {
+
+    id = id == "" ? getNextRandId() : id;
     if(graphic != nullptr) {
-        string idd = id == "" ? getNextRandId() : id;
-        list->insert(list->end(),pair<string,GLSquare*>(idd,new GLSquare(layoutXPos, layoutYPos, layoutWidth, layoutHeight, graphic)));
+        list->insert(list->end(),pair<string,GLSquare*>(id,new GLSquare(layoutXPos, layoutYPos, layoutWidth, layoutHeight, graphic)));
     }
 }
 
-Layout* Layout::setId(string id) {
+Layout* Layout::setLayoutId(string id) {
     this->id = id;
     return this;
 }

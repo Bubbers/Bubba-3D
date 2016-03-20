@@ -21,11 +21,14 @@
 
 using namespace std;
 
-size_t FontManager::FontDefinition::hash() {
-    return std::hash<string>()(face) + pixelSize;
+GLuint* FontManager::getTex() {
+    getTex(false);
 }
 
-GLuint* FontManager::getTex() {
+GLuint* FontManager::getTex(bool force) {
+    if(!force && !initiated)
+        throw logic_error("Bad state: FontManager hasn't loaded any fonts yet.");
+
     static GLuint h = 0;
     return &h;
 }
@@ -42,6 +45,14 @@ int FontManager::FontDefinition::getPixelSize() const {
     return pixelSize;
 }
 
+FontManager* FontManager::getInstance() {
+
+    static FontManager instance; // Guaranteed to be destroyed.
+    // Instantiated on first use.
+    return &instance;
+
+}
+
 FontManager::FontDefinition::FontDefinition(string face, int pixelSize) : face(face), pixelSize(pixelSize){ }
 
 Font* FontManager::loadAndFetchFont(string fontFace, int pixelSize) {
@@ -56,74 +67,82 @@ Font* FontManager::loadAndFetchFont(string fontFace, int pixelSize) {
 
 void FontManager::loadFont(string fontFace, int pixelSize) {
 
-    loadedFonts = fontMap();
+    FontDefinition newFont = FontDefinition(fontFace,pixelSize);
+    loadedFonts.insert(std::pair<FontDefinition,Font*>(newFont,new Font(pixelSize)));
 
-    vector<FontDefinition>* fontDefs = getPreviouslyLoadedDefinitionsAnd(FontDefinition(fontFace,pixelSize));
     unsigned int *width = (unsigned int*)calloc(sizeof(unsigned int),1);
     unsigned int *height = (unsigned int*)calloc(sizeof(unsigned int),1);
+    *width = atlasWidth;
+    *height = atlasHeight;
 
-    iterateGlyphs(fontDefs,width,height);
+    iterateGlyphs(newFont,width,height);
 
-    initTexture(*width,*height);
+    atlasWidth = *width;
+    atlasHeight = *height;
 
-    drawGlyphs(fontDefs);
+    initTexture();
+
+    drawGlyphs();
 
     Globals::set(Globals::FONT_TEXTURE_WIDTH,*width);
     Globals::set(Globals::FONT_TEXTURE_HEIGHT,*height);
 
 }
 
-void FontManager::initTexture(unsigned int width, unsigned int height) {
-    GLuint* tex = getTex();
+void FontManager::initTexture() {
+    GLuint* tex = getTex(true);
+
+    if(initiated)
+        glDeleteTextures(1,tex);
+    else
+        initiated = true;
+
     glActiveTexture(GL_TEXTURE4);
     glGenTextures(1, tex);
     glBindTexture(GL_TEXTURE_2D, *tex);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-    glTexStorage2D(GL_TEXTURE_2D,1,GL_R8,width,height);
+    glTexStorage2D(GL_TEXTURE_2D,1,GL_R8,atlasWidth,atlasHeight);
 }
 
-void FontManager::iterateGlyphs(vector<FontDefinition> *defs, unsigned int* width, unsigned int* height) {
+void FontManager::iterateGlyphs(FontDefinition def, unsigned int* width, unsigned int* height) {
 
-    vector<Font::GlyphData>* allGlyphs = new vector<Font::GlyphData>;
     FT_Face face = (FT_Face)malloc(sizeof(FT_Face));
-    for(unsigned int i = 0; i< defs->size(); i++){
 
+    if(int error = FT_New_Face(*ft_library,def.face.c_str(),0,&face)){
+        Logger::logError("Failed loading face '" + def.face + "'. Error code: " + to_string(error));
+        return;
+    }
+    FT_Set_Pixel_Sizes(face,0,def.pixelSize);
+    FT_GlyphSlot glyph = face->glyph;
 
-        if(int error = FT_New_Face(*ft_library,(*defs)[i].face.c_str(),0,&face)){
-            Logger::logError("Failed loading face '" + (*defs)[i].face + "'. Error code: " + to_string(error));
+    for(unsigned char c = 32; c < 128; c++){
+
+        if(int error = FT_Load_Char(face,c,FT_LOAD_RENDER)){
+            Logger::logError("Failed loading char '" + to_string(c) + "'. Error code: " + to_string(error));
             continue;
         }
-        FT_Set_Pixel_Sizes(face,0,(*defs)[i].pixelSize);
-        FT_GlyphSlot glyph = face->glyph;
 
-        for(unsigned char c = 32; c < 128; c++){
-
-            if(int error = FT_Load_Char(face,c,FT_LOAD_RENDER)){
-                Logger::logError("Failed loading char '" + to_string(c) + "'. Error code: " + to_string(error));
-                continue;
-            }
-
-            allGlyphs->push_back(Font::GlyphData(*width,glyph));
-            *height = max(*height,glyph->bitmap.rows);
-            *width += glyph->bitmap.width;
-        }
+        *height = max(*height,glyph->bitmap.rows);
+        *width += glyph->bitmap.width;
     }
+
 }
 
-void FontManager::drawGlyphs(vector<FontDefinition> *defs) {
+void FontManager::drawGlyphs() {
 
     FT_Face face;
     int x = 0;
-    for(unsigned int i = 0; i< defs->size(); i++){
+    for(auto fontIt : loadedFonts){
 
-        if(int error = FT_New_Face(*ft_library,(*defs)[i].face.c_str(),0,&face)){
-            Logger::logError("Failed loading face '" + (*defs)[i].face + "'. Error code: " + to_string(error));
+        Font* font = fontIt.second;
+        FontDefinition fDef = fontIt.first;
+        if(int error = FT_New_Face(*ft_library,fDef.face.c_str(),0,&face)){
+            Logger::logError("Failed loading face '" + fDef.face + "'. Error code: " + to_string(error));
             continue;
         }
-        FT_Set_Pixel_Sizes(face,0,(*defs)[i].pixelSize);
+        FT_Set_Pixel_Sizes(face,0,fDef.pixelSize);
         FT_GlyphSlot glyph = face->glyph;
-        Font* font = new Font((*defs)[i].pixelSize);
 
         for(unsigned char c = 32; c < 128; c++){
 
@@ -143,19 +162,9 @@ void FontManager::drawGlyphs(vector<FontDefinition> *defs) {
 
         }
 
-        loadedFonts.insert(std::pair<FontDefinition,Font*>((*defs)[i], font));
-
     }
 
 
-}
-
-vector<FontManager::FontDefinition>* FontManager::getPreviouslyLoadedDefinitionsAnd(FontDefinition fd) {
-    vector<FontManager::FontDefinition>* list = new vector<FontManager::FontDefinition>();
-    for(auto it : loadedFonts)
-        list->push_back(it.first);
-    list->push_back(fd);
-    return list;
 }
 
 FontManager::FontManager() {

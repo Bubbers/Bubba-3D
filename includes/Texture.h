@@ -14,9 +14,14 @@ public:
     void bind(GLenum textureUnit);
     void loadTexture(std::string fileName);
     GLuint getID() {return textureID; };
+
+    int getHeight();
+    int getWidth();
+
 private:
 
     GLuint textureID;
+    int width,height;
 };
 
 #endif //BUBBA_3D_TEXTURE_H

@@ -12,11 +12,23 @@ using namespace chag;
 
 class ShaderProgram;
 
+/**
+ * An interface for low-level objects used by HudRenderer to render the HUD.
+ * Mainly produced by different implementations of Layout
+ */
 class IHudDrawable {
 public:
     virtual void render(ShaderProgram* shaderProgram, float4x4* projectionMatrix) = 0;
 
+    /**
+     * Sets a position relative to the original position calculated
+     * by Layout implementations.
+     */
     virtual void setRelativePosition(float3 position);
+    /**
+     * Sets the rotation center offset. The original center is the actual center
+     * of the drawn object.
+     */
     virtual void setCenterOffset(float3 offset);
     virtual void setRotation(float rotation);
 

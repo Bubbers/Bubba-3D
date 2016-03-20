@@ -89,14 +89,16 @@ void GLSquare::fillVertexBuffer() {
 
     float halfWidth = width/2, halfHeight = height/2;
 
-    GLfloat quad[] = {
-            -halfWidth, -halfHeight, 0.0f, 0.0f, 0.0f,
-            halfWidth,  -halfHeight, 0.0f, 1.0f, 0.0f,
-            halfWidth,  halfHeight, 0.0f, 1.0f, 1.0f,
+    HUDGraphic::TexturePosition<float> tp = graphic->isTextureElseColor() ? graphic->getTexturePosition() : HUDGraphic::TexturePosition<float>(0.0f,0.0f,1.0f,1.0f);
 
-            -halfWidth, -halfHeight,  0.0f, 0.0f, 0.0f,
-            halfWidth,  halfHeight, 0.0f, 1.0f, 1.0f,
-            -halfWidth, halfHeight,  0.0f, 0.0f, 1.0f,
+    GLfloat quad[] = {
+            -halfWidth, -halfHeight, 0.0f, tp.botLeftX, tp.botLeftY,
+            halfWidth,  -halfHeight, 0.0f, tp.topRightX, tp.botLeftY,
+            halfWidth,  halfHeight, 0.0f, tp.topRightX, tp.topRightY,
+
+            -halfWidth, -halfHeight,  0.0f, tp.botLeftX, tp.botLeftY,
+            halfWidth,  halfHeight, 0.0f, tp.topRightX, tp.topRightY,
+            -halfWidth, halfHeight,  0.0f, tp.botLeftX, tp.topRightY,
     };
 
     glGenVertexArrays(1, &vao);

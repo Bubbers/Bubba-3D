@@ -10,30 +10,56 @@
 
 using namespace std;
 
+/**
+ * A layout used to present text.
+ */
 class TextLayout : public Layout{
 
 public:
 
     /**
-     * \warn Never allowed to return a wrapping dimension
+     * \internal
+     * \warning Never allowed to return a wrapping dimension
      */
     virtual Dimension getWidth();
+
     /**
-     * \warn Never allowed to return a wrapping dimension
+     * \internal
+     * \warning Never allowed to return a wrapping dimension
      */
     virtual Dimension getHeight();
 
+    /**
+     * \internal
+     */
     virtual void getGLSquares(float layoutXPos,float layoutYPos, float layoutWidth,
                               float layoutHeight, map<string,IHudDrawable*>* list);
 
+    /**
+     * Creates a text layout. Create a font using FontManager::loadAndFetchFont()
+     */
     TextLayout(string text, Font* font, Dimension width, Dimension height);
 
+    /**
+     * Changes the text of the TextLayout. If you want to change the text of
+     * an already drawn text you should use TextObject::setText() instead.
+     * You can get a hold of the TextObject by first setting an ID on this
+     * object before adding it to the HUD using TextLayout::setTextId(). Then
+     * call HudRenderer::getHudDrawableById() and typecast the result to a TextObject.
+     */
     void setText(string text);
+
+    /**
+     * Sets the id of the to-be-rendered TextObject. This object can be accessed by
+     * HudRenderer::getHudDrawableById().
+     */
+    TextLayout* setTextId(string id);
 
 private:
     Dimension width, height;
     string text;
     Font* font;
+    string textId = "";
 
 };
 

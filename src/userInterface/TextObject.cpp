@@ -14,12 +14,20 @@
 TextObject::TextObject(string text, Font* font, int width, int height, int x, int y)
         : text(text), font(font), width(width), height(height), x(x), y(-y){
 
+    setText(text);
+
+}
+
+void TextObject::setText(string text) {
+
+    this->text = text;
     vector<string> lines;
     vector<int> linesOffsetX;
     int numChars =0;
     getLines(&lines,&linesOffsetX,&numChars);
 
     init(lines,linesOffsetX, numChars);
+
 }
 
 void TextObject::getLines(vector<string>* lines, vector<int>* linesOffsetX, int* numChars){
@@ -81,8 +89,8 @@ int TextObject::getOffsetByLineLength(int lineLength) {
 
 void TextObject::init(vector<string> lines, vector<int> linesOffsetX, int numChars) {
 
-    int x = this->x;
-    int y = this->y - font->getPixelSize();
+    int x = -width/2;//this->x;
+    int y = height/2 - font->getPixelSize();
 	std::vector<GLfloat> data;
     int i = 0;
     float atlasWidth = Globals::get(Globals::FONT_TEXTURE_WIDTH),
@@ -108,26 +116,22 @@ void TextObject::init(vector<string> lines, vector<int> linesOffsetX, int numCha
                 if (!w || !h)
                     continue;
 
-                addPoints(&data, {x2 + w, -y2, 0, (ox + w) / atlasWidth, 0});
-                addPoints(&data, {x2, -y2, 0, ox / atlasWidth, 0});
-                addPoints(&data, {x2, -y2 - h, 0, ox / atlasWidth, h / atlasHeight});
-                addPoints(&data, {x2 + w, -y2, 0, (ox + w) / atlasWidth, 0});
-                addPoints(&data, {x2, -y2 - h, 0, ox / atlasWidth, h / atlasHeight});
+                // Each vertex: posX,posY,posZ,textureX,textureY
+                addPoints(&data, {x2 + w, -y2    , 0, (ox + w) / atlasWidth, 0});
+                addPoints(&data, {x2    , -y2    , 0, ox / atlasWidth      , 0});
+                addPoints(&data, {x2    , -y2 - h, 0, ox / atlasWidth      , h / atlasHeight});
+                addPoints(&data, {x2 + w, -y2    , 0, (ox + w) / atlasWidth, 0});
+                addPoints(&data, {x2    , -y2 - h, 0, ox / atlasWidth      , h / atlasHeight});
                 addPoints(&data, {x2 + w, -y2 - h, 0, (ox + w) / atlasWidth, h / atlasHeight});
                 i += 6*5;
             }
         }
         y -= font->getPixelSize();
-        x = this->x;
+        x = -width/2;
     }
     numVertices = i/5;
 
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
-
-    GLuint pos_vbo;
-    glGenBuffers(1, &pos_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, pos_vbo);
+    initAndBindBuffers();
     glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(GLfloat), data.data(), GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
@@ -146,6 +150,21 @@ void TextObject::addPoints(std::vector<GLfloat> *data, initializer_list<float> e
 
     for(float elem : elems)
         data->push_back(elem);
+
+}
+
+void TextObject::initAndBindBuffers() {
+
+    if(buffersInitiated){
+        glBindVertexArray(vao);
+        glBindBuffer(GL_ARRAY_BUFFER,vbo);
+    }else{
+        glGenVertexArrays(1, &vao);
+        glBindVertexArray(vao);
+
+        glGenBuffers(1, &vbo);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    }
 
 }
 
@@ -171,7 +190,7 @@ void TextObject::render(ShaderProgram *shaderProgram, float4x4 *projectionMatrix
     shaderProgram->setUniform1i("isFont",true);
 
     glActiveTexture(GL_TEXTURE4);
-    glBindTexture(GL_TEXTURE_2D,*FontManager::getTex());
+    glBindTexture(GL_TEXTURE_2D,*FontManager::getInstance()->getTex());
 
     glDrawArrays(GL_TRIANGLES, 0, numVertices);
 
@@ -186,5 +205,6 @@ void TextObject::render(ShaderProgram *shaderProgram, float4x4 *projectionMatrix
 }
 
 float4x4 TextObject::getModelMatrix() {
-    return make_translation(relativePosition)*make_rotation_z<float4x4>(rotation)*make_translation(center)*make_identity<float4x4>();
+    float3 originalPosition = make_vector((float)x+width/2,(float)y-height/2,0.0f)-center;
+    return make_translation(originalPosition+relativePosition)*make_rotation_z<float4x4>(rotation)*make_translation(center)*make_identity<float4x4>();
 }

@@ -25,12 +25,17 @@ void TextLayout::setText(string text) {
     this->text = text;
 }
 
+TextLayout* TextLayout::setTextId(string id) {
+    this->textId = id;
+    return this;
+}
+
 void TextLayout::getGLSquares(float layoutXPos, float layoutYPos, float layoutWidth, float layoutHeight,
                               map<string, IHudDrawable *> *list) {
 
     Layout::getGLSquares(layoutXPos,layoutYPos,layoutWidth,layoutHeight,list);
 
     TextObject* textDrawer = new TextObject(text,font,layoutWidth,layoutHeight, layoutXPos,layoutYPos);
-    list->insert(pair<string,IHudDrawable*>(getNextRandId(),textDrawer));
+    list->insert(pair<string,IHudDrawable*>(textId == "" ? getNextRandId() : textId,textDrawer));
 
 }

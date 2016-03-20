@@ -16,11 +16,11 @@ public:
     virtual void addChild(Layout* child, Dimension x, Dimension y);
 
     /**
-     * \warn Never allowed to return a wrapping dimension
+     * \warning Never allowed to return a wrapping dimension
      */
     virtual Dimension getWidth();
     /**
-     * \warn Never allowed to return a wrapping dimension
+     * \warning Never allowed to return a wrapping dimension
      */
     virtual Dimension getHeight();
 

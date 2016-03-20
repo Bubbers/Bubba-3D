@@ -15,7 +15,6 @@ void Texture::loadTexture(std::string fileName)
 {
     stbi_set_flip_vertically_on_load(true);
 
-    int width, height;
     int comp;
     unsigned char* image = stbi_load(fileName.c_str(), &width, &height, &comp, 0);
 
@@ -52,3 +51,10 @@ void Texture::loadTexture(std::string fileName)
     stbi_image_free(image);
 }
 
+int Texture::getHeight() {
+    return height;
+}
+
+int Texture::getWidth() {
+    return width;
+}

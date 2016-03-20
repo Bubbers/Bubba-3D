@@ -14,6 +14,10 @@ using namespace chag;
 class ShaderProgram;
 class HUDGraphic;
 
+/**
+ * Represents a low level gl square with a HUDGraphic as its
+ * graphical element
+ */
 class GLSquare : public IHudDrawable {
 public:
     virtual void render(ShaderProgram* shaderProgram, float4x4* projectionMatrix);
