@@ -22,7 +22,7 @@
 using namespace std;
 
 GLuint* FontManager::getTex() {
-    getTex(false);
+    return getTex(false);
 }
 
 GLuint* FontManager::getTex(bool force) {

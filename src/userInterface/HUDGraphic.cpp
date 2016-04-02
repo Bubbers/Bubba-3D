@@ -9,6 +9,7 @@
 #include "HUDGraphic.h"
 #include <iostream>
 #include <sstream>
+#include <stdexcept>
 
 using namespace chag;
 
