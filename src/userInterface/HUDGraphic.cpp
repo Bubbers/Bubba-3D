@@ -2,6 +2,7 @@
 // Created by simon on 2016-02-21.
 //
 
+#include <linmath/float2.h>
 #include <linmath/float3.h>
 #include <linmath/float4.h>
 #include <Texture.h>
@@ -65,6 +66,15 @@ float4 HUDGraphic::getColor() {
     return color;
 }
 
+HUDGraphic* HUDGraphic::setRoundedCorners(int pixels) {
+    roundedCorners = pixels;
+    return this;
+}
+
+float2 HUDGraphic::getRoundedCorners(float width, float height) {
+    return make_vector((float)roundedCorners/width,(float)roundedCorners/height);
+}
+
 HUDGraphic::Color::Color(int red, int green, int blue, float opacity)
         : Color(make_vector((float)red/255.0f,(float)green/255.0f,(float)blue/255.0f,opacity)){}
 
@@ -81,7 +91,7 @@ HUDGraphic::Color::Color(string* hexString, float opacity) {
     if((*hexString)[0] == '#')
         *hexString = hexString->substr(1,hexString->length()-1);
 
-    if (hexString->find_first_not_of("0123456789abcdefABCDEF", 0) != std::string::npos) {
+    if (hexString->find_first_not_of("0123456789abcdefABCDEF", 0) != string::npos) {
         throw invalid_argument("The color hexString can only contain: 0-9, a-f or A-F HUDGraphic::Color::Color()->");
     }
 

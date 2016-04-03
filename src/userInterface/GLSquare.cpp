@@ -42,6 +42,7 @@ void GLSquare::bindTextureAndDraw(ShaderProgram *shaderProgram, float4x4* projec
     shaderProgram->setUniformMatrix4fv("modelMatrix", getModelMatrix());
     shaderProgram->setUniformMatrix4fv("projectionMatrix",*projectionMatrix);
     shaderProgram->setUniform1i("isFont",false);
+    shaderProgram->setUniform2f("roundedCorners",graphic->getRoundedCorners(width,height));
 
 	if(graphic->isTextureElseColor()) {
         graphic->getTexture()->bind(GL_TEXTURE0);
@@ -53,7 +54,7 @@ void GLSquare::bindTextureAndDraw(ShaderProgram *shaderProgram, float4x4* projec
         shaderProgram->setUniform4f("color",graphic->getColor());
     }
 
-    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }
 
 float4x4 GLSquare::getModelMatrix() {
@@ -92,13 +93,10 @@ void GLSquare::fillVertexBuffer() {
     HUDGraphic::TexturePosition<float> tp = graphic->isTextureElseColor() ? graphic->getTexturePosition() : HUDGraphic::TexturePosition<float>(0.0f,0.0f,1.0f,1.0f);
 
     GLfloat quad[] = {
-            -halfWidth, -halfHeight, 0.0f, tp.botLeftX, tp.botLeftY,
-            halfWidth,  -halfHeight, 0.0f, tp.topRightX, tp.botLeftY,
-            halfWidth,  halfHeight, 0.0f, tp.topRightX, tp.topRightY,
-
-            -halfWidth, -halfHeight,  0.0f, tp.botLeftX, tp.botLeftY,
-            halfWidth,  halfHeight, 0.0f, tp.topRightX, tp.topRightY,
-            -halfWidth, halfHeight,  0.0f, tp.botLeftX, tp.topRightY,
+            -halfWidth, -halfHeight, 0.0f, tp.botLeftX, tp.botLeftY,0.0,0.0,
+            halfWidth,  -halfHeight, 0.0f, tp.topRightX, tp.botLeftY,1.0,0.0,
+            -halfWidth, halfHeight,  0.0f, tp.botLeftX, tp.topRightY,0.0,1.0,
+            halfWidth,  halfHeight, 0.0f, tp.topRightX, tp.topRightY,1.0,1.0,
     };
 
     glGenVertexArrays(1, &vao);
@@ -110,10 +108,13 @@ void GLSquare::fillVertexBuffer() {
     glBufferData(GL_ARRAY_BUFFER, sizeof(quad), quad, GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5*sizeof(float), 0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 7*sizeof(float), 0);
 
     glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), ((char *)NULL + sizeof(float)*3));
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 7 * sizeof(float), ((char *)NULL + sizeof(float)*3));
+
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2,2,GL_FLOAT,GL_FALSE,7*sizeof(float), ((char *)NULL + sizeof(float)*5));
 
     // CLEANUP
     glBindVertexArray(0);

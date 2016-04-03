@@ -6,6 +6,7 @@
 #define SUPER_BUBBA_AWESOME_SPACE_HUDGRAPHIC_H
 
 #include <Dimension.h>
+#include <linmath/float2.h>
 
 using namespace chag;
 
@@ -86,6 +87,8 @@ public:
     Texture* getTexture();
     float4 getColor();
     bool isTextureElseColor();
+    HUDGraphic* setRoundedCorners(int pixels);
+    float2 getRoundedCorners(float width,float height);
 
 protected:
 
@@ -94,6 +97,7 @@ protected:
     float4 color;
     TexturePosition<int> texturePosition;
     bool textureElseColor;
+    int roundedCorners = 0;
 
 private:
 };

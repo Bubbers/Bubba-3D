@@ -3,6 +3,7 @@
 
 #include <map>
 #include <string>
+#include <linmath/float2.h>
 #include "glutil/glutil.h"
 #include "linmath/float3.h"
 #include "IShader.h"
@@ -51,6 +52,7 @@ class ShaderProgram {
 
     void setUniform1i(std::string name, int value);
     void setUniform1f(std::string name, float value);
+    void setUniform2f(std::string name, float2 value);
     void setUniform3f(std::string name, float3 value);
     void setUniform4f(std::string name, float4 value);
     void setUniformMatrix4fv(std::string name, float4x4 matrix);
