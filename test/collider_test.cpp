@@ -7,7 +7,6 @@
 #include <vector>
 #include "Triangle.h"
 #include "catch.hpp"
-#include "BFBroadPhase.h"
 #include "linmath/float3.h"
 #include "Collider.h"
 #include "Utils.h"
@@ -21,6 +20,8 @@ using namespace chag;
 #define MIN_SPACE -10
 #define ORIGIN_POS make_vector(0.0f, 0.0f, 0.0f)
 #define HALF_VECTOR make_vector(10.0f, 10.0f, 10.0f)
+
+
 
 
 TEST_CASE("AABBShouldIntersect", "[Collision]") {
@@ -208,7 +209,7 @@ TEST_CASE("TriangleOctreeShouldIntersect", "[Collision, Random]") {
                 float3 maxV = make_vector(-FLT_MAX, -FLT_MAX, -FLT_MAX);
 
                 for (float3 point : triangle2->getBoundingBox()->points) {
-                    checkMinMax(point.x, point.y, point.z, &minV, &maxV);
+                    updateMinAndMax(point.x, point.y, point.z, &minV, &maxV);
                 }
 
                 float3 halfVector = (maxV - minV) / 2;

@@ -26,8 +26,7 @@ set(HEADER_FILES
 		  ${PROJECT_SOURCE_DIR}/includes/PerspectiveCamera.h 
 		  ${PROJECT_SOURCE_DIR}/includes/AudioManager.h 
 		  ${PROJECT_SOURCE_DIR}/includes/Input.h 
-		  ${PROJECT_SOURCE_DIR}/includes/Renderer.h 
-		  ${PROJECT_SOURCE_DIR}/includes/BFBroadPhase.h 
+		  ${PROJECT_SOURCE_DIR}/includes/Renderer.h
 		  ${PROJECT_SOURCE_DIR}/includes/JoystickAxis.h 
 		  ${PROJECT_SOURCE_DIR}/includes/ResourceManager.h 
 		  ${PROJECT_SOURCE_DIR}/includes/BroadPhaseCollider.h

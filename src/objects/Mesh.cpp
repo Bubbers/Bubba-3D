@@ -9,6 +9,7 @@
 #include <vector>
 #include "Chunk.h"
 #include <string>
+#include "Utils.h"
 
 using namespace chag;
 
@@ -81,7 +82,7 @@ void Mesh::initVerticesFromAiMesh(const aiMesh *paiMesh, Chunk &chunk) {
             chunk.m_tangents.push_back(make_vector(pTangents.x, pTangents.y, pTangents.z));
         }
 
-        checkMinMax(pPos.x, pPos.y, pPos.z, &m_aabb.minV, &m_aabb.maxV);
+        updateMinAndMax(pPos.x, pPos.y, pPos.z, &m_aabb.minV, &m_aabb.maxV);
     }
 }
 
