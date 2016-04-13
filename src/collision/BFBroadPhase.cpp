@@ -14,29 +14,11 @@ BFBroadPhase::BFBroadPhase() {
 
 }
 
-void BFBroadPhase::addGameObject(GameObject *gameObject){
-    GameObjectList.push_back(gameObject);
-}
 
-void BFBroadPhase::removeDirty(){
-	for (auto it = GameObjectList.begin(); it != GameObjectList.end();) {
-		if ((*it)->isDirty()) {
-			it = GameObjectList.erase(it);
-		}
-		else {
-			it++;
-		}
-	}
-}
-
-void BFBroadPhase::updateCollision() {
-
-
-    removeDirty();
-
+void BFBroadPhase::updateCollision(Scene *scene) {
     utils::Timer timer;
     timer.start();
-    CollisionPairList possibleCollision = computeCollisionPairs();
+    CollisionPairList possibleCollision = computeCollisionPairs(scene);
     computeExactCollision(possibleCollision);
 
     timer.stop();
@@ -46,11 +28,12 @@ void BFBroadPhase::updateCollision() {
 }
 
 
-CollisionPairList BFBroadPhase::computeCollisionPairs() {
+CollisionPairList BFBroadPhase::computeCollisionPairs(Scene *scene) {
+    std::vector<GameObject*> sceneObjects = scene->getGameObjects();
     CollisionPairList collisionPairs;
 
-    for (auto i = GameObjectList.begin(); i != GameObjectList.end(); i++) {
-        for (auto j = i + 1; j != GameObjectList.end(); j++) {
+    for (auto i = sceneObjects.begin(); i != sceneObjects.end(); i++) {
+        for (auto j = i + 1; j != sceneObjects.end(); j++) {
             GameObject* gameObject1 = *i;
             GameObject* gameObject2 = *j;
 

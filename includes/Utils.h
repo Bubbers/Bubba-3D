@@ -4,6 +4,7 @@
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 #include "ShaderProgram.h"
+#include "GameObject.h"
 
 //*****************************************************************************
 //	Frame buffer objects
@@ -48,5 +49,7 @@ static float3 createRandomVector(float minValue, float maxValue){
 	return make_vector(getRand(minValue,maxValue),getRand(minValue,maxValue),getRand(minValue,maxValue));
 }
 
+typedef std::pair<GameObject*, GameObject*> CollisionPair;
+typedef std::vector<CollisionPair> CollisionPairList;
 
 #endif

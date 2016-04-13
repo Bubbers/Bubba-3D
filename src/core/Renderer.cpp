@@ -177,17 +177,19 @@ void Renderer::setLights(ShaderProgram* shaderProgram, Scene *scene) {
 */
 void Renderer::drawShadowCasters(ShaderProgram* shaderProgram, Scene *scene)
 {
-    for (unsigned int i = 0; i < scene->shadowCasters.size(); i++) {
-        shaderProgram->setUniform1f("object_reflectiveness", (*scene->shadowCasters[i]).shininess);
-        drawModel(*scene->shadowCasters[i], shaderProgram);
+    std::vector<GameObject*> shadowCasters = scene->getShadowCasters();
+    for (unsigned int i = 0; i < scene->getShadowCasters().size(); i++) {
+        shaderProgram->setUniform1f("object_reflectiveness", (*shadowCasters[i]).shininess);
+        drawModel(*shadowCasters[i], shaderProgram);
     }
 }
 
 void Renderer::drawTransparent(ShaderProgram* shaderProgram, Scene *scene)
 {
-    for (unsigned int i = 0; i < scene->transparentObjects.size(); i++) {
-        shaderProgram->setUniform1f("object_reflectiveness", (*scene->transparentObjects[i]).shininess);
-        drawModel(*scene->transparentObjects[i], shaderProgram);
+    std::vector<GameObject*> transparentObjects = scene->getTransparentObjects();
+    for (unsigned int i = 0; i < transparentObjects.size(); i++) {
+        shaderProgram->setUniform1f("object_reflectiveness", (*transparentObjects[i]).shininess);
+        drawModel(*transparentObjects[i], shaderProgram);
     }
 }
 
@@ -207,9 +209,10 @@ void Renderer::drawShadowMap(Fbo sbo, float4x4 viewProjectionMatrix, Scene *scen
     sbo.shaderProgram->use();
     sbo.shaderProgram->setUniformMatrix4fv("viewProjectionMatrix", viewProjectionMatrix);
 
-    for (unsigned int i = 0; i < scene->shadowCasters.size(); i++) {
-        sbo.shaderProgram->setUniform1f("object_reflectiveness", (*scene->shadowCasters[i]).shininess);
-        (*scene->shadowCasters[i]).renderShadow(sbo.shaderProgram);
+    std::vector<GameObject*> shadowCasters = scene->getShadowCasters();
+    for (unsigned int i = 0; i < shadowCasters.size(); i++) {
+        sbo.shaderProgram->setUniform1f("object_reflectiveness", (*shadowCasters[i]).shininess);
+        (*shadowCasters[i]).renderShadow(sbo.shaderProgram);
     }
 
     //CLEANUP

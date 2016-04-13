@@ -5,19 +5,17 @@
 #ifndef BUBBA_3D_BRUTEFORCEBROADPHASE_H
 #define BUBBA_3D_BRUTEFORCEBROADPHASE_H
 
-#include "BroadPhase.h"
+#include "BroadPhaseCollision.h"
 #include "GameObject.h"
 
 
-
-class BFBroadPhase : BroadPhase
+class BFBroadPhase : BroadPhaseCollision
 {
 public:
     BFBroadPhase();
 
-    virtual void addGameObject(GameObject* GameObject);
-    virtual CollisionPairList computeCollisionPairs() ;
-    virtual void updateCollision();
+    virtual CollisionPairList computeCollisionPairs(Scene* scene) override ;
+    virtual void updateCollision(Scene* scene) override ;
 private:
     bool isPossiblyColliding(GameObject* gameObject1, GameObject* gameObject2);
     void computeExactCollision(CollisionPairList possibleCollision);
@@ -30,10 +28,7 @@ private:
     int getMaxId(GameObject* object1, GameObject* object2);
     int getMinId(GameObject* object1, GameObject* object2);
 
-    std::vector<GameObject*> GameObjectList;
     std::vector<std::pair<int, int>> collidingList;
-    void removeDirty();
-
 };
 
 #endif //BUBBA_3D_BRUTEFORCEBROADPHASE_H
