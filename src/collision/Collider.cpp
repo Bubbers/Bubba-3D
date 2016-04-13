@@ -6,46 +6,6 @@
 #define EPSILON 0.00001f
 bool rayTriangle(float3 r_o, float3 r_d, float3 v1, float3 v2, float3 v3, float *ins);
 
-float Collider::rayIntersection(float3 rayOrigin, float3 rayVec) {
-    std::vector<Triangle *> geometry;
-    float3 rayVecInv = make_vector(1.0f / rayVec.x, 1.0f / rayVec.y, 1.0f / rayVec.z);
-    if (rayVec.x < 0.001f) rayVecInv.x = 0.0f;
-    if (rayVec.y < 0.001f) rayVecInv.y = 0.0f;
-    if (rayVec.z < 0.001f) rayVecInv.z = 0.0f;
-
-    tree->getTrianglesInsersectedByRayCast(rayOrigin, rayVecInv, &geometry);
-
-    bool prevSet = false;
-    float minIns = 0.0f;
-    for (unsigned int i = 0; i < geometry.size(); i++) {
-        Triangle t = *geometry[i];
-        float ins;
-
-        if (rayTriangle(rayOrigin, rayVec, t.p1, t.p2, t.p3, &ins)) {
-            if ((minIns) > (ins) || !prevSet) {
-                prevSet = true;
-                minIns = ins;
-            }
-        }
-    }
-
-    if (!prevSet || geometry.size() == 0) {
-        return 0;
-    }
-
-    return -minIns;
-}
-
-
-void Collider::insertAll() {
-    tree->insertAll(ts);
-}
-
-
-void Collider::addGameObject(GameObject *gameObject) {
-    std::vector<Triangle *> gobTs = gameObject->getTriangles();
-    ts.insert(ts.end(), gobTs.begin(), gobTs.end());
-}
 
 
 bool rayTriangle(float3 r_o, float3 r_d, float3 v1, float3 v2, float3 v3, float *ins) {
