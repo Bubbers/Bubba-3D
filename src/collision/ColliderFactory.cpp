@@ -5,11 +5,8 @@
 #include <BFBroadPhase.h>
 #include "../../includes/ColliderFactory.h"
 #include "ExactOctreeCollider.h"
+#include "TwoPhaseCollider.h"
 
-BroadPhaseCollider* ColliderFactory::getBroadPhaseCollider() {
-    return new BFBroadPhase();
-}
-
-ExactPhaseCollider* ColliderFactory::getExactPhaseCollider() {
-    return new ExactOctreeCollider();
+Collider* ColliderFactory::getTwoPhaseCollider() {
+    return new TwoPhaseCollider(new BFBroadPhase(), new ExactOctreeCollider());
 }

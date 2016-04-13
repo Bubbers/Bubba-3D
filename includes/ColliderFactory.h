@@ -5,13 +5,11 @@
 #ifndef SUPER_BUBBA_AWESOME_SPACE_COLLIDERFACTORY_H
 #define SUPER_BUBBA_AWESOME_SPACE_COLLIDERFACTORY_H
 
-#include "BroadPhaseCollider.h"
-#include "ExactPhaseCollider.h"
+#include "Collider.h"
 
 class ColliderFactory {
 public:
-    static BroadPhaseCollider* getBroadPhaseCollider();
-    static ExactPhaseCollider* getExactPhaseCollider();
+    static Collider* getTwoPhaseCollider();
 };
 
 #endif //SUPER_BUBBA_AWESOME_SPACE_COLLIDERFACTORY_H
