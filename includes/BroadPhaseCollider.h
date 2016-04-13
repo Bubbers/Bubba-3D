@@ -11,8 +11,15 @@
 
 class GameObject;
 
+/**
+ * The broad phase collider performs fast and inaccurate (many false positives, no false negatives)
+ * collision detections. A more exact collision test should be performed after.
+ */
 class BroadPhaseCollider {
 public:
+    /**
+     * Returns a list of possibly colliding pairs
+     */
     virtual CollisionPairList computeCollisionPairs(Scene *scene) = 0;
 
 

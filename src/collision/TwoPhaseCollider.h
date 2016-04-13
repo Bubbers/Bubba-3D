@@ -9,10 +9,16 @@
 #include <ExactPhaseCollider.h>
 #include "../../includes/Collider.h"
 
+/**
+ * Class responsible for maintaining a two phase collider, ie
+ * first a fast inaccurate test and then a more exact test on
+ * all possibly colliding objects.
+ */
 class TwoPhaseCollider : public Collider{
 public:
     TwoPhaseCollider(BroadPhaseCollider *broadPhaseCollider, ExactPhaseCollider *exactPhaseCollider);
-    void updateCollision(Scene *scene);
+
+    void updateCollision(Scene *scene) override;
 
 private:
     BroadPhaseCollider *broadPhaseCollider;

@@ -7,8 +7,17 @@
 
 #include "Utils.h"
 
+/**
+ * The exact phase collider is responsible for performing
+ * exact collision tests.
+ */
 class ExactPhaseCollider {
 public:
+    /**
+     * Takes a list of possibly colliding pairs and performs exact collision
+     * tests between them.
+     *
+     */
     virtual void computeExactCollision(CollisionPairList possibleCollision) = 0;
 
 };
