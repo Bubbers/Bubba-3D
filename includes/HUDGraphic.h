@@ -28,7 +28,7 @@ public:
          * \param hexString May or may not star with '#'. The size of the string
          * excluding the '#' sign should be 3 or 6.
          */
-        Color(string* hexString);
+        Color(string hexString);
         /**
          * Create a color from its hex value and opacity.
          *
@@ -36,7 +36,7 @@ public:
          * excluding the '#' sign should be 3 or 6.
          * \param opacity A value between 0.0 and 1.0 specifying the opacity of the color
          */
-        Color(string* hexString, float opacity);
+        Color(string hexString, float opacity);
 
         /**
          * Create a color from its color values. The values are expected to be
@@ -63,7 +63,7 @@ public:
 
     private:
         float4 color;
-        void hexStringToFloat(string* hexString,unsigned int pos, unsigned int len, float* target);
+        void hexStringToFloat(string hexString,unsigned int pos, unsigned int len, float* target);
     };
 
     template <typename T>
@@ -87,8 +87,15 @@ public:
     Texture* getTexture();
     float4 getColor();
     bool isTextureElseColor();
+    float4 getRoundedCorners(float height);
+    float4 getBorder(float width, float height);
+    float4 getBorderColor();
+
     HUDGraphic* setRoundedCorners(int pixels);
-    float2 getRoundedCorners(float width,float height);
+    HUDGraphic* setRoundedCorners(int topLeft,int topRight, int botRight, int botLeft);
+    HUDGraphic* setBorder(int pixels, Color borderColor);
+    HUDGraphic* setBorder(int botAndTop,int leftAndRight, Color borderColor);
+    HUDGraphic* setBorder(int top, int right, int bot,int left, Color borderColor);
 
 protected:
 
@@ -97,7 +104,9 @@ protected:
     float4 color;
     TexturePosition<int> texturePosition;
     bool textureElseColor;
-    int roundedCorners = 0;
+    int roundedCorners[4] = {0,0,0,0};
+    int borders[4] = {0,0,0,0};
+    float4 borderColor;
 
 private:
 };

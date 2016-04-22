@@ -66,13 +66,46 @@ float4 HUDGraphic::getColor() {
     return color;
 }
 
-HUDGraphic* HUDGraphic::setRoundedCorners(int pixels) {
-    roundedCorners = pixels;
+HUDGraphic* HUDGraphic::setBorder(int pixels, Color borderColor) {
+    return setBorder(pixels,pixels,borderColor);
+}
+
+HUDGraphic* HUDGraphic::setBorder(int botAndTop, int leftAndRight, Color borderColor) {
+    return setBorder(botAndTop,leftAndRight,botAndTop,leftAndRight,borderColor);
+}
+
+HUDGraphic* HUDGraphic::setBorder(int top, int right, int bot, int left, Color borderColor) {
+    this->borderColor = borderColor.getColor();
+    borders[0] = top;
+    borders[1] = right;
+    borders[2] = bot;
+    borders[3] = left;
     return this;
 }
 
-float2 HUDGraphic::getRoundedCorners(float width, float height) {
-    return make_vector((float)roundedCorners/width,(float)roundedCorners/height);
+float4 HUDGraphic::getBorderColor() {
+    return borderColor;
+}
+
+float4 HUDGraphic::getBorder(float width, float height) {
+    return make_vector(borders[0]/height,borders[1]/width,borders[2]/height,borders[3]/width);
+}
+
+HUDGraphic* HUDGraphic::setRoundedCorners(int pixels){
+    return setRoundedCorners(pixels,pixels,pixels,pixels);
+}
+
+HUDGraphic* HUDGraphic::setRoundedCorners(int topLeft, int topRight, int botRight, int botLeft) {
+    roundedCorners[0] = topLeft;
+    roundedCorners[1] = topRight;
+    roundedCorners[2] = botLeft;
+    roundedCorners[3] = botRight;
+    return this;
+}
+
+float4 HUDGraphic::getRoundedCorners(float height) {
+    return make_vector(roundedCorners[0]/height,roundedCorners[1]/height,
+                       roundedCorners[2]/height,roundedCorners[3]/height);
 }
 
 HUDGraphic::Color::Color(int red, int green, int blue, float opacity)
@@ -82,25 +115,26 @@ HUDGraphic::Color::Color(float4 rawColor) : color(rawColor) { }
 
 HUDGraphic::Color::Color(int red, int green, int blue)  : Color(red,green,blue,1.0f){}
 
-HUDGraphic::Color::Color(string* hexString) : Color(hexString,1.0f) { }
+HUDGraphic::Color::Color(string hexString) : Color(hexString,1.0f) { }
 
-HUDGraphic::Color::Color(string* hexString, float opacity) {
-    if(hexString->length() == 0)
+HUDGraphic::Color::Color(string hexString, float opacity) {
+
+    if(hexString.length() == 0)
         throw invalid_argument("The color hexString can't be empty in HUDGraphic::Color::Color().");
 
-    if((*hexString)[0] == '#')
-        *hexString = hexString->substr(1,hexString->length()-1);
+    if(hexString[0] == '#')
+        hexString = hexString.substr(1,hexString.length()-1);
 
-    if (hexString->find_first_not_of("0123456789abcdefABCDEF", 0) != string::npos) {
-        throw invalid_argument("The color hexString can only contain: 0-9, a-f or A-F HUDGraphic::Color::Color()->");
+    if (hexString.find_first_not_of("0123456789abcdefABCDEF", 0) != string::npos) {
+        throw invalid_argument("The color hexString can only contain: 0-9, a-f or A-F.");
     }
 
     float divBy;
     unsigned int valLen;
-    if(hexString->length() == 3){
+    if(hexString.length() == 3){
         divBy = 15.0f;
         valLen = 1;
-    } else if(hexString->length() == 6){
+    } else if(hexString.length() == 6){
         divBy = 255.0f;
         valLen = 2;
     }else
@@ -114,9 +148,9 @@ HUDGraphic::Color::Color(string* hexString, float opacity) {
     color.w = opacity;
 }
 
-void HUDGraphic::Color::hexStringToFloat(string* hexString,unsigned int pos, unsigned int len, float* target){
+void HUDGraphic::Color::hexStringToFloat(string hexString,unsigned int pos, unsigned int len, float* target){
     int temp = 0;
-    stringstream(hexString->substr(pos,len)) >> hex >> temp;
+    stringstream(hexString.substr(pos,len)) >> hex >> temp;
     *target = (float)temp;
 }
 

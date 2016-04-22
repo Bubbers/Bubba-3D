@@ -11,6 +11,7 @@
 #include <FontManager.h>
 #include <IHudDrawable.h>
 #include <ResourceManager.h>
+#include <Globals.h>
 
 void GLSquare::render(ShaderProgram* shaderProgram, float4x4* projectionMatrix) {
 
@@ -42,7 +43,10 @@ void GLSquare::bindTextureAndDraw(ShaderProgram *shaderProgram, float4x4* projec
     shaderProgram->setUniformMatrix4fv("modelMatrix", getModelMatrix());
     shaderProgram->setUniformMatrix4fv("projectionMatrix",*projectionMatrix);
     shaderProgram->setUniform1i("isFont",false);
-    shaderProgram->setUniform2f("roundedCorners",graphic->getRoundedCorners(width,height));
+    shaderProgram->setUniform4f("roundedCorners",graphic->getRoundedCorners(height));
+    shaderProgram->setUniform1f("ratioWidthToHeight", width/height);
+    shaderProgram->setUniform4f("border",graphic->getBorder(width,height));
+    shaderProgram->setUniform4f("borderColor",graphic->getBorderColor());
 
 	if(graphic->isTextureElseColor()) {
         graphic->getTexture()->bind(GL_TEXTURE0);
