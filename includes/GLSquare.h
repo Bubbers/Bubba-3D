@@ -25,6 +25,12 @@ public:
     virtual ~GLSquare();
 
     void setCenterOffset(float3 offset);
+    float getX();
+    float getY();
+    float getWidth();
+    float getHeight();
+    HUDGraphic* getGraphic();
+
 
 protected:
     float posX,posY,width,height;

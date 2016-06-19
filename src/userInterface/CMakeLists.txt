@@ -11,6 +11,11 @@ set(BUBBA3D_FILES_SOURCE userInterface/Dimension.cpp
         userInterface/PositioningLayout.cpp
         userInterface/TextLayout.cpp
         userInterface/TextObject.cpp
+        userInterface/InsideChecker.h
+        userInterface/InsideSquareChecker.h
+        userInterface/InsideSquareChecker.cpp
+        userInterface/InsideRoundedSquareChecker.h
+        userInterface/InsideRoundedSquareChecker.cpp
 
         ${BUBBA3D_FILES_SOURCE}
                          PARENT_SCOPE)

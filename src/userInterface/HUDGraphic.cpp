@@ -87,8 +87,8 @@ float4 HUDGraphic::getBorderColor() {
     return borderColor;
 }
 
-float4 HUDGraphic::getBorder(float width, float height) {
-    return make_vector(borders[0]/height,borders[1]/width,borders[2]/height,borders[3]/width);
+int* HUDGraphic::getBorders() {
+    return borders;
 }
 
 HUDGraphic* HUDGraphic::setRoundedCorners(int pixels){
@@ -103,9 +103,8 @@ HUDGraphic* HUDGraphic::setRoundedCorners(int topLeft, int topRight, int botRigh
     return this;
 }
 
-float4 HUDGraphic::getRoundedCorners(float height) {
-    return make_vector(roundedCorners[0]/height,roundedCorners[1]/height,
-                       roundedCorners[2]/height,roundedCorners[3]/height);
+int* HUDGraphic::getRoundedCorners() {
+    return roundedCorners;
 }
 
 HUDGraphic::Color::Color(int red, int green, int blue, float opacity)

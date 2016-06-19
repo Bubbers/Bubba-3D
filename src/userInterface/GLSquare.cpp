@@ -43,9 +43,18 @@ void GLSquare::bindTextureAndDraw(ShaderProgram *shaderProgram, float4x4* projec
     shaderProgram->setUniformMatrix4fv("modelMatrix", getModelMatrix());
     shaderProgram->setUniformMatrix4fv("projectionMatrix",*projectionMatrix);
     shaderProgram->setUniform1i("isFont",false);
-    shaderProgram->setUniform4f("roundedCorners",graphic->getRoundedCorners(height));
+
+    int* roundedCorners = graphic->getRoundedCorners();
+    float4 calcCorners = make_vector(roundedCorners[0]/height,roundedCorners[1]/height,
+                roundedCorners[2]/height,roundedCorners[3]/height);
+    shaderProgram->setUniform4f("roundedCorners",calcCorners);
+
     shaderProgram->setUniform1f("ratioWidthToHeight", width/height);
-    shaderProgram->setUniform4f("border",graphic->getBorder(width,height));
+
+    int* borders = graphic->getBorders();
+    float4 calcBorders = make_vector(borders[0]/height,borders[1]/width,borders[2]/height,borders[3]/width);
+    shaderProgram->setUniform4f("border",calcBorders);
+
     shaderProgram->setUniform4f("borderColor",graphic->getBorderColor());
 
 	if(graphic->isTextureElseColor()) {
@@ -127,4 +136,24 @@ void GLSquare::fillVertexBuffer() {
 
 GLSquare::~GLSquare() {
     glDeleteVertexArrays(1,&vao);
+}
+
+float GLSquare::getX() {
+    return posX;
+}
+
+float GLSquare::getY() {
+    return posY;
+}
+
+float GLSquare::getWidth(){
+    return width;
+}
+
+float GLSquare::getHeight() {
+    return height;
+}
+
+HUDGraphic* GLSquare::getGraphic(){
+    return graphic;
 }

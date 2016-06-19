@@ -9,6 +9,9 @@
 #include <linmath/float2.h>
 
 using namespace chag;
+using namespace std;
+
+class Texture;
 
 /**
  * A class used to specify the background graphics of Layout implementations.
@@ -87,8 +90,8 @@ public:
     Texture* getTexture();
     float4 getColor();
     bool isTextureElseColor();
-    float4 getRoundedCorners(float height);
-    float4 getBorder(float width, float height);
+    int* getRoundedCorners();
+    int* getBorders();
     float4 getBorderColor();
 
     HUDGraphic* setRoundedCorners(int pixels);
