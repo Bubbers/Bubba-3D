@@ -7,6 +7,8 @@
 #include <vector>
 #include <map>
 #include <IHudDrawable.h>
+#include <iostream>
+#include "InsideChecker.h"
 
 using namespace std;
 
@@ -60,4 +62,22 @@ Layout* PositioningLayout::findById(string id) {
             return res;
     }
     return nullptr;
+}
+
+void PositioningLayout::invokeListenersInternal(int x, int y, ListenerType listenerType, bool mayBeHit) {
+    bool *wasActive = listenerType == Layout::ON_CLICK_LISTENER ? &mouseWasDown : &hoveredBackground;
+    if(insideChecker != nullptr && mayBeHit && insideChecker->isInside(x, y)){
+        if(!*wasActive)
+            callListeners(x,y,listenerType,true);
+        *wasActive = true;
+        for (PositionedLayout *child : children) {
+            child->child->invokeListenersInternal(x, y, listenerType, true);
+        }
+    }else if(*wasActive){
+        callListeners(x,y,listenerType,false);
+        *wasActive = false;
+        for (PositionedLayout *child : children) {
+            child->child->invokeListenersInternal(x, y, listenerType, false);
+        }
+    }
 }

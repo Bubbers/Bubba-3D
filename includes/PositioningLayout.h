@@ -33,6 +33,8 @@ public:
 
     virtual Layout* findById(string id);
 
+    virtual void invokeListenersInternal(int x, int y, ListenerType listenerType, bool mayBeHit);
+
 protected:
     struct PositionedLayout {
         Layout* child;

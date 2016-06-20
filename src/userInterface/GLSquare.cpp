@@ -11,6 +11,7 @@
 #include <FontManager.h>
 #include <IHudDrawable.h>
 #include <ResourceManager.h>
+#include <Globals.h>
 
 void GLSquare::render(ShaderProgram* shaderProgram, float4x4* projectionMatrix) {
 
@@ -43,6 +44,19 @@ void GLSquare::bindTextureAndDraw(ShaderProgram *shaderProgram, float4x4* projec
     shaderProgram->setUniformMatrix4fv("projectionMatrix",*projectionMatrix);
     shaderProgram->setUniform1i("isFont",false);
 
+    int* roundedCorners = graphic->getRoundedCorners();
+    float4 calcCorners = make_vector(roundedCorners[0]/height,roundedCorners[1]/height,
+                roundedCorners[2]/height,roundedCorners[3]/height);
+    shaderProgram->setUniform4f("roundedCorners",calcCorners);
+
+    shaderProgram->setUniform1f("ratioWidthToHeight", width/height);
+
+    int* borders = graphic->getBorders();
+    float4 calcBorders = make_vector(borders[0]/height,borders[1]/width,borders[2]/height,borders[3]/width);
+    shaderProgram->setUniform4f("border",calcBorders);
+
+    shaderProgram->setUniform4f("borderColor",graphic->getBorderColor());
+
 	if(graphic->isTextureElseColor()) {
         graphic->getTexture()->bind(GL_TEXTURE0);
         shaderProgram->setUniform1i("isTexture",true);
@@ -53,7 +67,7 @@ void GLSquare::bindTextureAndDraw(ShaderProgram *shaderProgram, float4x4* projec
         shaderProgram->setUniform4f("color",graphic->getColor());
     }
 
-    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }
 
 float4x4 GLSquare::getModelMatrix() {
@@ -92,13 +106,10 @@ void GLSquare::fillVertexBuffer() {
     HUDGraphic::TexturePosition<float> tp = graphic->isTextureElseColor() ? graphic->getTexturePosition() : HUDGraphic::TexturePosition<float>(0.0f,0.0f,1.0f,1.0f);
 
     GLfloat quad[] = {
-            -halfWidth, -halfHeight, 0.0f, tp.botLeftX, tp.botLeftY,
-            halfWidth,  -halfHeight, 0.0f, tp.topRightX, tp.botLeftY,
-            halfWidth,  halfHeight, 0.0f, tp.topRightX, tp.topRightY,
-
-            -halfWidth, -halfHeight,  0.0f, tp.botLeftX, tp.botLeftY,
-            halfWidth,  halfHeight, 0.0f, tp.topRightX, tp.topRightY,
-            -halfWidth, halfHeight,  0.0f, tp.botLeftX, tp.topRightY,
+            -halfWidth, -halfHeight, 0.0f, tp.botLeftX, tp.botLeftY,0.0,0.0,
+            halfWidth,  -halfHeight, 0.0f, tp.topRightX, tp.botLeftY,1.0,0.0,
+            -halfWidth, halfHeight,  0.0f, tp.botLeftX, tp.topRightY,0.0,1.0,
+            halfWidth,  halfHeight, 0.0f, tp.topRightX, tp.topRightY,1.0,1.0,
     };
 
     glGenVertexArrays(1, &vao);
@@ -110,10 +121,13 @@ void GLSquare::fillVertexBuffer() {
     glBufferData(GL_ARRAY_BUFFER, sizeof(quad), quad, GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5*sizeof(float), 0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 7*sizeof(float), 0);
 
     glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), ((char *)NULL + sizeof(float)*3));
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 7 * sizeof(float), ((char *)NULL + sizeof(float)*3));
+
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2,2,GL_FLOAT,GL_FALSE,7*sizeof(float), ((char *)NULL + sizeof(float)*5));
 
     // CLEANUP
     glBindVertexArray(0);
@@ -122,4 +136,35 @@ void GLSquare::fillVertexBuffer() {
 
 GLSquare::~GLSquare() {
     glDeleteVertexArrays(1,&vao);
+}
+
+float GLSquare::getX() {
+    return posX;
+}
+
+float GLSquare::getY() {
+    return posY;
+}
+
+float GLSquare::getWidth(){
+    return width;
+}
+
+float GLSquare::getHeight() {
+    return height;
+}
+
+HUDGraphic* GLSquare::getGraphic(){
+    return graphic;
+}
+
+void GLSquare::updateGraphic() {
+    setCenterOffset(graphic->getCenterOffset(width,height));
+    glDeleteVertexArrays(1,&vao);
+    fillVertexBuffer();
+}
+
+void GLSquare::setGraphic(HUDGraphic *graphic) {
+    this->graphic = graphic;
+    updateGraphic();
 }

@@ -55,11 +55,16 @@ public:
      */
     TextLayout* setTextId(string id);
 
+    TextLayout* setPadding(int pixels);
+    TextLayout* setPadding(int topAndBottom, int rightAndLeft);
+    TextLayout* setPadding(int top, int right, int bot, int left);
+
 private:
     Dimension width, height;
     string text;
     Font* font;
     string textId = "";
+    int padding[4] = {0,0,0,0};
 
 };
 

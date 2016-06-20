@@ -84,6 +84,10 @@ void ShaderProgram::setUniformMatrix4fv(std::string name, float4x4 matrix) {
     glUniformMatrix4fv(getUniformLocation(name), 1, false, &matrix.c1.x);
 }
 
+void ShaderProgram::setUniform2f(std::string name, float2 value) {
+    glUniform2fv(getUniformLocation(name),1,&value.x);
+}
+
 void ShaderProgram::setUniformBufferObjectBinding(std::string bufferName, int index) {
     GLuint matricesUniform = glGetUniformBlockIndex(shaderID, bufferName.c_str());
     glUniformBlockBinding(shaderID, matricesUniform, index);

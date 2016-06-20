@@ -8,12 +8,15 @@
 #include <vector>
 #include <map>
 #include <Dimension.h>
+#include <functional>
 
 using namespace std;
 
 class Texture;
 class HUDGraphic;
 class IHudDrawable;
+class InsideChecker;
+class GLSquare;
 
 /**
  * A layout is an object that is passed to the HudRenderer to render a menu or UI.
@@ -21,6 +24,10 @@ class IHudDrawable;
 class Layout {
 
 public:
+
+    enum ListenerType {ON_CLICK_LISTENER,ON_HOVER_LISTENER};
+
+    typedef function<void (int x, int y, Layout* element, bool enteredElseLeaving)> EventFunction;
 
     /**
      * Add a sub-layout. How the child is positioned and its dimensions are
@@ -90,10 +97,27 @@ public:
      */
     virtual Layout* findById(string id);
 
+    virtual void invokeListeners(int x, int y, ListenerType listenerType);
+    virtual void invokeListenersInternal(int x, int y, ListenerType listenerType, bool mayBeHit);
+
+    virtual Layout* addClickListener(EventFunction eventFunction);
+    virtual Layout* addHoverListener(EventFunction eventFunction);
+    virtual void clearHoverListeners();
+    virtual void clearClickListeners();
+    virtual void callListeners(int x, int y, ListenerType listenerType, bool enteringElseLeaving);
+    virtual HUDGraphic* getGraphic();
+    virtual void updateGraphic();
+
 protected:
     vector<Layout*> children;
     HUDGraphic* graphic = nullptr;
     string id = "";
+    InsideChecker* insideChecker = nullptr;
+    vector<EventFunction>* hoverListeners = new vector<EventFunction>();
+    vector<EventFunction>* clickListeners = new vector<EventFunction>();
+    GLSquare* renderedBackground = nullptr;
+    bool hoveredBackground = false;
+    bool mouseWasDown = false;
 
     string getNextRandId();
 

@@ -4,8 +4,10 @@
 
 #include <GLSquare.h>
 #include <map>
-#include <IHudDrawable.h>
+#include <HUDGraphic.h>
+#include <iostream>
 #include "Layout.h"
+#include "InsideRoundedSquareChecker.h"
 
 using namespace std;
 
@@ -25,8 +27,35 @@ void Layout::getGLSquares(float layoutXPos, float layoutYPos, float layoutWidth,
 
     id = id == "" ? getNextRandId() : id;
     if(graphic != nullptr) {
-        list->insert(list->end(),pair<string,GLSquare*>(id,new GLSquare(layoutXPos, layoutYPos, layoutWidth, layoutHeight, graphic)));
+        GLSquare* renderedSquare = new GLSquare(layoutXPos, layoutYPos, layoutWidth, layoutHeight, graphic);
+        list->insert(list->end(),pair<string,GLSquare*>(id,renderedSquare));
+        renderedBackground = renderedSquare;
+        int* roundedBorders = graphic->getRoundedCorners();
+        insideChecker = new InsideRoundedSquareChecker(layoutXPos,layoutYPos,layoutWidth,layoutHeight,roundedBorders[0],roundedBorders[1],roundedBorders[2],roundedBorders[3]);
+    }else {
+        renderedBackground = nullptr;
+        insideChecker = new InsideSquareChecker(layoutXPos, layoutYPos, layoutWidth, layoutHeight);
     }
+}
+
+void Layout::invokeListeners(int x, int y, ListenerType listenerType) {
+
+    invokeListenersInternal(x,y,listenerType,true);
+
+}
+
+void Layout::invokeListenersInternal(int x, int y, ListenerType listenerType, bool mayBeHit) {
+
+    bool *wasActive = listenerType == Layout::ON_CLICK_LISTENER ? &mouseWasDown : &hoveredBackground;
+    if((insideChecker != nullptr && mayBeHit && insideChecker->isInside(x, y)) == !*wasActive) {
+        *wasActive = !*wasActive;
+        callListeners(x, y, listenerType, *wasActive);
+        for (Layout *child : children) {
+            child->invokeListenersInternal(x, y, listenerType, *wasActive);
+        }
+    }
+
+
 }
 
 Layout* Layout::setLayoutId(string id) {
@@ -47,6 +76,9 @@ Layout* Layout::findById(string id) {
 
 Layout* Layout::setBackground(HUDGraphic *graphic) {
     this->graphic = graphic;
+    if(renderedBackground != nullptr){
+        renderedBackground->setGraphic(graphic);
+    }
     return this;
 }
 
@@ -59,4 +91,49 @@ string Layout::getNextRandId() {
     }else
         prev.push_back('a');
     return prev;
+}
+
+void Layout::clearClickListeners() {
+    clickListeners->clear();
+}
+
+void Layout::clearHoverListeners() {
+    hoverListeners->clear();
+}
+
+Layout* Layout::addClickListener(EventFunction eventFunction) {
+    clickListeners->insert(clickListeners->end(),eventFunction);
+    return this;
+}
+
+Layout* Layout::addHoverListener(EventFunction eventFunction) {
+    hoverListeners->insert(hoverListeners->end(),eventFunction);
+    return this;
+}
+
+void Layout::callListeners(int x, int y, ListenerType listenerType, bool enteringElseLeaving) {
+    vector<EventFunction>* toCall;
+    switch (listenerType){
+        case ON_HOVER_LISTENER:
+            toCall = hoverListeners;
+            break;
+        case ON_CLICK_LISTENER:
+            toCall = clickListeners;
+            break;
+    }
+    for (EventFunction call : *toCall) {
+        call(x, y, this,enteringElseLeaving);
+    }
+}
+
+HUDGraphic* Layout::getGraphic() {
+    if(renderedBackground == nullptr)
+        return graphic;
+    else
+        return renderedBackground->getGraphic();
+}
+
+void Layout::updateGraphic() {
+    if(renderedBackground != nullptr)
+        renderedBackground->updateGraphic();
 }
