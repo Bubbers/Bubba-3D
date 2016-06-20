@@ -55,6 +55,8 @@ bool HUDGraphic::TexturePosition<T>::isEmpty() {
 }
 
 Texture* HUDGraphic::getTexture() {
+    if(!textureElseColor)
+        throw runtime_error("This graphic doesn't have a texture.");
     return texture;
 }
 
@@ -63,6 +65,8 @@ bool HUDGraphic::isTextureElseColor() {
 }
 
 float4 HUDGraphic::getColor() {
+    if(textureElseColor)
+        throw runtime_error("This graphic doesn't have a solid color.");
     return color;
 }
 
