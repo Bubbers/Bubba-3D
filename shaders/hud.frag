@@ -78,13 +78,13 @@ void calculateCornersAndBorders(){
         }
         borderRadius = supposedRadius - borderRadius;
         dist = supposedRadius - length(pointFromCenter);
+        calculateAlpha(dist,borderRadius,inCorner);
     }else{
         if(distance.x < borderSize.x || distance.y < borderSize.y){
             fragmentColor = borderColor;
         }
     }
 
-    calculateAlpha(dist,borderRadius,inCorner);
 
 }
 
