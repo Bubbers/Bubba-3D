@@ -26,12 +26,13 @@ set(HEADER_FILES
 		  ${PROJECT_SOURCE_DIR}/includes/PerspectiveCamera.h 
 		  ${PROJECT_SOURCE_DIR}/includes/AudioManager.h 
 		  ${PROJECT_SOURCE_DIR}/includes/Input.h 
-		  ${PROJECT_SOURCE_DIR}/includes/Renderer.h 
-		  ${PROJECT_SOURCE_DIR}/includes/BFBroadPhase.h 
+		  ${PROJECT_SOURCE_DIR}/includes/Renderer.h
 		  ${PROJECT_SOURCE_DIR}/includes/JoystickAxis.h 
 		  ${PROJECT_SOURCE_DIR}/includes/ResourceManager.h 
-		  ${PROJECT_SOURCE_DIR}/includes/BroadPhase.h 
-		  ${PROJECT_SOURCE_DIR}/includes/JoystickButton.h 
+		  ${PROJECT_SOURCE_DIR}/includes/BroadPhaseCollider.h
+		  ${PROJECT_SOURCE_DIR}/includes/ExactPhaseCollider.h
+		  ${PROJECT_SOURCE_DIR}/includes/JoystickButton.h
+		  ${PROJECT_SOURCE_DIR}/includes/ColliderFactory.h
 		  ${PROJECT_SOURCE_DIR}/includes/Scene.h 
 		  ${PROJECT_SOURCE_DIR}/includes/Camera.h 
 		  ${PROJECT_SOURCE_DIR}/includes/JoystickTranslation.h 

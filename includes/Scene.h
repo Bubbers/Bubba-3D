@@ -25,12 +25,20 @@ public:
 	std::vector<PointLight> pointLights;
 	std::vector<SpotLight> spotLights;
 
-	std::vector<GameObject*> shadowCasters;
-	std::vector<GameObject*> transparentObjects;
+	void addShadowCaster(GameObject* object);
+	void addTransparentObject(GameObject* object);
+
+	std::vector<GameObject*> getGameObjects();
+	std::vector<GameObject*> getShadowCasters();
+	std::vector<GameObject*> getTransparentObjects();
 
 	void update(float dt, std::vector<GameObject*> *toDelete);
 
 private:
+	std::vector<GameObject*> shadowCasters;
+	std::vector<GameObject*> transparentObjects;
+	std::vector<GameObject*> allObjects;
+
 	void removeDirty(std::vector<GameObject*> *v, std::vector<GameObject*> *toDelete);
 };
 
