@@ -119,6 +119,7 @@ void Renderer::drawScene(Camera *camera, Scene *scene, float currentTime)
 
     //Set cube map
     if (scene->cubeMap != NULL) {
+        shaderProgram->setUniform1i("has_cube_map", 1);
         shaderProgram->setUniform1i("cubeMap", 2);
         scene->cubeMap->bind(GL_TEXTURE2);
     }
