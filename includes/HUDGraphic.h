@@ -79,19 +79,69 @@ public:
         bool isEmpty();
     };
 
+    /**
+     * Creates a graphic that has a texture as a background. If
+     * a portion of the texture is required, use HUDGraphic::setTexturePosition()
+     */
     HUDGraphic(Texture* texture);
+
+    /**
+     * Creates a graphic with a solid color as a background.
+     */
     HUDGraphic(Color color);
 
+    /**
+     * Set the offset from the actual center that the rotational center should be.
+     */
     HUDGraphic* setCenterOffset(Dimension offsetX, Dimension offsetY);
+
+    /**
+     * Sets the portion of the texture that should be used.
+     */
     HUDGraphic* setTexturePosition(TexturePosition<int> texturePosition);
 
+    /**
+     * \internal
+     */
     TexturePosition<float> getTexturePosition();
+
+    /**
+     * \internal
+     */
     float3 getCenterOffset(float width, float height);
+
+    /**
+     * Returns the texture of this graphic, or throws a runtime_error
+     * if it only contains a color.
+     */
     Texture* getTexture();
+
+    /**
+     * Returns the color of this graphic, or throws a runtime_error
+     * if it only contains a texture.
+     */
     float4 getColor();
+
+    /**
+     * Returns true if this contains a texture
+     */
     bool isTextureElseColor();
+
+    /**
+     * Returns an array of size four. The sizes of the rounded corners
+     * are int he following order: top left, top right, bot right, bot left.
+     */
     int* getRoundedCorners();
+
+    /**
+     * Returns an array of size four. The sizes of the borders are in
+     * the following order: top, right, bot, left
+     */
     int* getBorders();
+
+    /**
+     * Returns the raw color of the border in RGBA
+     */
     float4 getBorderColor();
 
     HUDGraphic* setRoundedCorners(int pixels);
@@ -107,7 +157,7 @@ public:
 protected:
 
     Dimension offsetX, offsetY;
-    Texture* texture;
+    Texture* texture = nullptr;
     float4 color;
     TexturePosition<int> texturePosition;
     bool textureElseColor;
