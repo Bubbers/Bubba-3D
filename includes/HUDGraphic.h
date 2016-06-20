@@ -99,6 +99,10 @@ public:
     HUDGraphic* setBorder(int pixels, Color borderColor);
     HUDGraphic* setBorder(int botAndTop,int leftAndRight, Color borderColor);
     HUDGraphic* setBorder(int top, int right, int bot,int left, Color borderColor);
+    HUDGraphic* setBorderSize(int top, int right, int bot, int left);
+    HUDGraphic* setBorderColor(Color borderColor);
+    HUDGraphic* setBackground(Color color);
+    HUDGraphic* setBackground(Texture* texture);
 
 protected:
 

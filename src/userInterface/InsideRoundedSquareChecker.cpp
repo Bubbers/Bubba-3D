@@ -29,7 +29,7 @@ bool InsideRoundedSquareChecker::isInside(int x, int y) {
         }else // upper half
             corner = rctl;
     }
-    if(x > corner && y > corner){
+    if(x > corner || y > corner){
         return true;
     }
     chag::SmallVector2<int> vecFromCenter = make_vector(x,y)-make_vector(corner,corner);

@@ -30,7 +30,8 @@ public:
     float getWidth();
     float getHeight();
     HUDGraphic* getGraphic();
-
+    void setGraphic(HUDGraphic* graphic);
+    void updateGraphic();
 
 protected:
     float posX,posY,width,height;

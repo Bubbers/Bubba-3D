@@ -30,4 +30,5 @@ TEST_CASE("IsInsideRoundedSquare","[isInsideRoundedSquare]"){
     REQUIRE_FALSE(squareChecker->isInside(80+sin45*20,80+sin45*20));
     REQUIRE(squareChecker->isInside(25,75));
     REQUIRE_FALSE(squareChecker->isInside(10+30-(sin45*30),70+sin45*30));
+    REQUIRE(squareChecker->isInside(95,45));
 }

@@ -107,6 +107,35 @@ int* HUDGraphic::getRoundedCorners() {
     return roundedCorners;
 }
 
+HUDGraphic* HUDGraphic::setBorderSize(int top, int right, int bot, int left) {
+    if(top != -1)
+        this->borders[0] = top;
+    if(right != -1)
+        this->borders[1] = right;
+    if(bot != -1)
+        this->borders[2] = bot;
+    if(left != -1)
+        this->borders[3] = left;
+    return this;
+}
+
+HUDGraphic* HUDGraphic::setBorderColor(Color borderColor) {
+    this->borderColor = borderColor.getColor();
+    return this;
+}
+
+HUDGraphic* HUDGraphic::setBackground(Color color) {
+    textureElseColor = false;
+    this->color = color.getColor();
+    return this;
+}
+
+HUDGraphic* HUDGraphic::setBackground(Texture *texture) {
+    textureElseColor = true;
+    this->texture = texture;
+    return this;
+}
+
 HUDGraphic::Color::Color(int red, int green, int blue, float opacity)
         : Color(make_vector((float)red/255.0f,(float)green/255.0f,(float)blue/255.0f,opacity)){}
 

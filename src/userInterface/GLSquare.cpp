@@ -157,3 +157,14 @@ float GLSquare::getHeight() {
 HUDGraphic* GLSquare::getGraphic(){
     return graphic;
 }
+
+void GLSquare::updateGraphic() {
+    setCenterOffset(graphic->getCenterOffset(width,height));
+    glDeleteVertexArrays(1,&vao);
+    fillVertexBuffer();
+}
+
+void GLSquare::setGraphic(HUDGraphic *graphic) {
+    this->graphic = graphic;
+    updateGraphic();
+}

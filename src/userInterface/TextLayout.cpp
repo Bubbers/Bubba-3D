@@ -33,10 +33,12 @@ TextLayout* TextLayout::setTextId(string id) {
 
 TextLayout* TextLayout::setPadding(int pixels) {
     setPadding(pixels,pixels);
+    return this;
 }
 
 TextLayout* TextLayout::setPadding(int topAndBottom, int rightAndLeft) {
     setPadding(topAndBottom,rightAndLeft,topAndBottom,rightAndLeft);
+    return this;
 }
 
 TextLayout* TextLayout::setPadding(int top, int right, int bot, int left) {
@@ -44,6 +46,7 @@ TextLayout* TextLayout::setPadding(int top, int right, int bot, int left) {
     padding[1] = right;
     padding[2] = bot;
     padding[3] = left;
+    return this;
 }
 
 void TextLayout::getGLSquares(float layoutXPos, float layoutYPos, float layoutWidth, float layoutHeight,
