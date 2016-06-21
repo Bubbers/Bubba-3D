@@ -7,6 +7,8 @@
 
 #include <Dimension.h>
 #include <linmath/float2.h>
+#include <linmath/float3.h>
+#include <linmath/float4.h>
 
 using namespace chag;
 using namespace std;

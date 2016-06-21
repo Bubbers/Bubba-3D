@@ -74,10 +74,12 @@ void PositioningLayout::invokeListenersInternal(int x, int y, ListenerType liste
             child->child->invokeListenersInternal(x, y, listenerType, true);
         }
     }else if(*wasActive){
-        callListeners(x,y,listenerType,false);
+        if(listenerType == Layout::ON_HOVER_LISTENER || insideChecker->isInside(x,y))
+            callListeners(x,y,listenerType,false);
         *wasActive = false;
         for (PositionedLayout *child : children) {
             child->child->invokeListenersInternal(x, y, listenerType, false);
         }
+
     }
 }

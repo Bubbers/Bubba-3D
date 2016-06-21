@@ -18,9 +18,9 @@ public:
 	Scene();
 	~Scene();
 
-	CubeMapTexture *cubeMap;
+	CubeMapTexture *cubeMap = nullptr;
 
-	Camera *shadowMapCamera; //Will follow directional light
+	Camera *shadowMapCamera = nullptr; //Will follow directional light
 	DirectionalLight directionalLight;
 	std::vector<PointLight> pointLights;
 	std::vector<SpotLight> spotLights;

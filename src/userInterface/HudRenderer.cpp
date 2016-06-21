@@ -70,9 +70,9 @@ void HudRenderer::renderShadow(ShaderProgram *shaderProgram) {}
 void HudRenderer::update(float dt){
     int x = Globals::get(Globals::MOUSE_WINDOW_X);
     int y = Globals::get(Globals::MOUSE_WINDOW_Y);
-    rootLayout->invokeListeners(x,y,Layout::ON_HOVER_LISTENER);
     if(sf::Mouse::isButtonPressed(sf::Mouse::Left))
         rootLayout->invokeListenersInternal(x,y,Layout::ON_CLICK_LISTENER,true);
     else
         rootLayout->invokeListenersInternal(x,y,Layout::ON_CLICK_LISTENER,false);
+    rootLayout->invokeListeners(x,y,Layout::ON_HOVER_LISTENER);
 }

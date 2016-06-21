@@ -47,12 +47,21 @@ void Layout::invokeListeners(int x, int y, ListenerType listenerType) {
 void Layout::invokeListenersInternal(int x, int y, ListenerType listenerType, bool mayBeHit) {
 
     bool *wasActive = listenerType == Layout::ON_CLICK_LISTENER ? &mouseWasDown : &hoveredBackground;
-    if((insideChecker != nullptr && mayBeHit && insideChecker->isInside(x, y)) == !*wasActive) {
-        *wasActive = !*wasActive;
-        callListeners(x, y, listenerType, *wasActive);
+    if(insideChecker != nullptr && mayBeHit && insideChecker->isInside(x, y)){
+        if(!*wasActive)
+            callListeners(x,y,listenerType,true);
+        *wasActive = true;
         for (Layout *child : children) {
-            child->invokeListenersInternal(x, y, listenerType, *wasActive);
+            child->invokeListenersInternal(x, y, listenerType, true);
         }
+    }else if(*wasActive){
+        if(listenerType == Layout::ON_HOVER_LISTENER || insideChecker->isInside(x,y))
+            callListeners(x,y,listenerType,false);
+        *wasActive = false;
+        for (Layout *child : children) {
+            child->invokeListenersInternal(x, y, listenerType, false);
+        }
+
     }
 
 
