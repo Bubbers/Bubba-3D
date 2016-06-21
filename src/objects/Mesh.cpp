@@ -225,13 +225,29 @@ AABB* Mesh::getAABB() {
 
 void Mesh::createTriangles() {
     for (unsigned int i = 0; i < m_chunks.size(); i++) {
+
+        for (unsigned int j = 0; j + 2 < m_chunks[i].m_indices.size(); j += 3) {
+            triangles.push_back(createTriangleFromPositions(m_chunks[i].m_positions, m_chunks[i].m_indices, j));
+        }
+        /*
         for (unsigned int j = 0; j + 2 < m_chunks[i].m_positions.size(); j += 3) {
             triangles.push_back(createTriangleFromPositions(m_chunks[i].m_positions, j));
-        }
+        }*/
     }
 }
 
-Triangle* Mesh::createTriangleFromPositions(std::vector<chag::float3> positionBuffer, unsigned int startIndex) {
+Triangle* Mesh::createTriangleFromPositions(std::vector<chag::float3> positionBuffer, std::vector<unsigned int> indices, unsigned int startIndex) {
+
+    return new Triangle(make_vector(positionBuffer[indices[startIndex + 0]].x,
+                                    positionBuffer[indices[startIndex + 0]].y,
+                                    positionBuffer[indices[startIndex + 0]].z),
+                        make_vector(positionBuffer[indices[startIndex + 1]].x,
+                                    positionBuffer[indices[startIndex + 1]].y,
+                                    positionBuffer[indices[startIndex + 1]].z),
+                        make_vector(positionBuffer[indices[startIndex + 2]].x,
+                                    positionBuffer[indices[startIndex + 2]].y,
+                                    positionBuffer[indices[startIndex + 2]].z));
+    /*
     return new Triangle(make_vector(positionBuffer[startIndex + 0].x,
                                     positionBuffer[startIndex + 0].y,
                                     positionBuffer[startIndex + 0].z),
@@ -240,7 +256,7 @@ Triangle* Mesh::createTriangleFromPositions(std::vector<chag::float3> positionBu
                                     positionBuffer[startIndex + 1].z),
                         make_vector(positionBuffer[startIndex + 2].x,
                                     positionBuffer[startIndex + 2].y,
-                                    positionBuffer[startIndex + 2].z));
+                                    positionBuffer[startIndex + 2].z));*/
 }
 
 std::vector<Triangle*> Mesh::getTriangles() {

@@ -18,10 +18,7 @@ public:
     MoveComponent(GameObject* meshObject);
     MoveComponent(GameObject* meshObject,Quaternion rotationSpeed, float3 velocity,
                   float3 acceleration, float3 scaleSpeed);
-    void update(float dt);
-    void afterCollision();
-    void duringCollision();
-    void beforeCollision();
+    virtual void update(float dt);
     float3 getVelocity();
     float3 getAcceleration();
     Quaternion getRotationSpeed();

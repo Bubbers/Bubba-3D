@@ -21,8 +21,23 @@ public:
     void updateCollision(Scene *scene) override;
 
 private:
+    void triggerObjectEvent(GameObject* object1, GameObject* object2, EventType eventType);
+
+    void forgetCollidingPair(GameObject* object1, GameObject* object2);
+    void rememberCollidingPair(GameObject* object1, GameObject* object2);
+    bool wasCollidingPreviously(GameObject* object1, GameObject* object2);
+
+    GameObject* getMaxId(GameObject* object1, GameObject* object2);
+    GameObject* getMinId(GameObject* object1, GameObject* object2);
+
+    CollisionPairList collidingList;
+
     BroadPhaseCollider *broadPhaseCollider;
     ExactPhaseCollider *exactPhaseCollider;
+
+    void triggerObjectEvents(CollisionPairList vector);
+
+    void callEventsForObjectsThatNoLongerCollides(CollisionPairList exactCollisions);
 };
 
 
