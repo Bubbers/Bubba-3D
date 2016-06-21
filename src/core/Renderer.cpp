@@ -223,7 +223,6 @@ void Renderer::drawShadowMap(Fbo sbo, float4x4 viewProjectionMatrix, Scene *scen
 }
 
 void Renderer::setFog(ShaderProgram* shaderProgram) {
-    if (effects.fog.fEquation == FOG_EQ::NONE){ return; }
     shaderProgram->setUniform1i("fog.iEquation",	effects.fog.fEquation);
     shaderProgram->setUniform1f("fog.fDensity",	effects.fog.fDensity);
     shaderProgram->setUniform1f("fog.fEnd",		effects.fog.fEnd);
