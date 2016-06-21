@@ -20,9 +20,9 @@ struct Light
 };
 
 struct Attenuation {
-	float constant;
-	float linear;
-	float exp;
+	float constant = 1.5f;
+	float linear = 0.0f;
+	float exp = 0.0f;
 };
 
 struct DirectionalLight : public Light {

@@ -1,4 +1,4 @@
-#version 130
+#version 330
 // required by GLSL spec Sect 4.5.3 (though nvidia does not, amd does)
 precision highp float;
 
@@ -75,14 +75,15 @@ uniform vec3 viewPosition;
 out vec4 fragmentColor;
 
 // global uniforms, that are the same for the whole scene
+uniform int has_shadow_map;
 uniform sampler2DShadow shadowMap;
 
-uniform int has_cube_map;
+uniform bool hasCubeMap;
 uniform samplerCube cubeMap;
 
 // object specific uniforms, change once per object but are the same for all materials in object.
 uniform float object_alpha;
-uniform float object_reflectiveness = 0.0;
+uniform float object_reflectiveness;
 
 // matrial properties, changed when material changes.
 uniform float material_shininess;
@@ -136,18 +137,21 @@ void main()
 	vec3 foggedColor = calculateFog(color, abs(viewSpacePosition.z / viewSpacePosition.w));
 	vec3 emissive = material_emissive_color;
 
-        vec3 cubeMapSample = calculateCubeMapSample(directionToEye, normal);
+    vec3 cubeMapSample = vec3(0.0);
+    cubeMapSample = calculateCubeMapSample(directionToEye, normal);
 
 	fragmentColor = vec4(foggedColor + emissive + cubeMapSample, object_alpha);
 }
 
 vec3 calculateCubeMapSample(vec3 directionToEye, vec3 normal) {
-    if(has_cube_map == 1) {
+    vec3 result;
+    if(hasCubeMap ) {
         vec3 reflectionVector = normalize((inverseViewNormalMatrix * vec4(reflect(-directionToEye, normal), 0.0)).xyz);
-        vec3 cubeMapSample = texture(cubeMap, reflectionVector).rgb * object_reflectiveness;
+        result = texture(cubeMap, reflectionVector).rgb * object_reflectiveness;
     } else {
-        return vec3(0.0);
+        result =  vec3(0.0);
     }
+    return result;
 }
 
 Light calculateGeneralLight(Light colors, vec3 directionToLight, vec3 directionToEye, vec3 normal) {
@@ -204,11 +208,13 @@ vec3 calculateSpotLight(SpotLight light, vec3 normal, vec3 directionToEye){
 vec3 calculateDirectionalLight(DirectionalLight light, vec3 normal, vec3 directionToEye) {
 	Light lt =  calculateGeneralLight(light.colors, normalize(-light.direction), directionToEye, normal);
 
-	float visibility = textureProj(shadowMap, shadowTexCoord);
-	lt.specularColor *= visibility;
-	lt.diffuseColor *= visibility;
+    if(has_shadow_map == 1) {
+	    float visibility = textureProj(shadowMap, shadowTexCoord);
+	    lt.specularColor *= visibility;
+	    lt.diffuseColor *= visibility;
+	}
 
-	return lt.ambientColor +lt.diffuseColor + lt.specularColor;
+    return lt.ambientColor + lt.diffuseColor + lt.specularColor;
 }
 
 vec3 calculatePointLight(PointLight light, vec3 normal, vec3 directionToEye) {

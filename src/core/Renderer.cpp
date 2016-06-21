@@ -112,16 +112,21 @@ void Renderer::drawScene(Camera *camera, Scene *scene, float currentTime)
 
     //Set shadowmap
     if (scene->shadowMapCamera != NULL) {
+        shaderProgram->setUniform1i("has_shadow_map", 1);
         shaderProgram->setUniform1i("shadowMap", 1);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, sbo.texture);
     }
 
     //Set cube map
-    if (scene->cubeMap != NULL) {
-        shaderProgram->setUniform1i("has_cube_map", 1);
+    if (scene->cubeMap != nullptr) {
+        shaderProgram->setUniform1i("hasCubeMap", 1);
         shaderProgram->setUniform1i("cubeMap", 2);
+        glActiveTexture(GL_TEXTURE2);
         scene->cubeMap->bind(GL_TEXTURE2);
+    } else {
+        shaderProgram->setUniform1i("hasCubeMap", 0);
+        shaderProgram->setUniform1i("cubeMap", 2);
     }
 
     drawShadowCasters(shaderProgram, scene);
@@ -248,6 +253,9 @@ void Renderer::initGL()
     shaderProgram = ResourceManager::getShader(SIMPLE_SHADER_NAME);
     shaderProgram->setUniformBufferObjectBinding(UNIFORM_BUFFER_OBJECT_MATRICES_NAME, UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
     shaderProgram->initUniformBufferObject(UNIFORM_BUFFER_OBJECT_MATRICES_NAME, 3 * sizeof(float4x4), UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
+
+    CHECK_GL_ERROR();
+
 
 
     //*************************************************************************
