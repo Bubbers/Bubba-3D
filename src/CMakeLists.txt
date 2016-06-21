@@ -187,3 +187,8 @@ target_link_libraries(${LIBRARY_NAME}  ${ASSIMP_LIBRARIES})
 target_link_libraries(${LIBRARY_NAME}  ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${GLEW_LIBRARIES} ${IL_LIBRARIES} ${ILU_LIBRARIES} ${ILUT_LIBRARIES} ${ASSIMP_LIBRARY} ${SFML_LIBRARIES})
 
 target_link_libraries(${LIBRARY_NAME} ${FREETYPE_LIBRARIES})
+
+add_custom_command(TARGET Bubba3D POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_directory
+		${CMAKE_SOURCE_DIR}/Bubba-3D/shaders
+		$<TARGET_FILE_DIR:Bubba3D>/shaders)

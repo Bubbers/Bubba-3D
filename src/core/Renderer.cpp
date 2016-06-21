@@ -250,7 +250,7 @@ void Renderer::initGL()
     //*************************************************************************
     //	Load shaders
     //*************************************************************************
-    ResourceManager::loadShader("../shaders/simple.vert", "../shaders/simple.frag", SIMPLE_SHADER_NAME);
+    ResourceManager::loadShader("shaders/simple.vert", "shaders/simple.frag", SIMPLE_SHADER_NAME);
 
     shaderProgram = ResourceManager::getShader(SIMPLE_SHADER_NAME);
     shaderProgram->setUniformBufferObjectBinding(UNIFORM_BUFFER_OBJECT_MATRICES_NAME, UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
@@ -265,7 +265,7 @@ void Renderer::initGL()
     //*************************************************************************
     Logger::logInfo("Generating OpenGL data.");
 
-    ResourceManager::loadShader("../shaders/shadowMap.vert", "../shaders/shadowMap.frag", "SHADOW_SHADER");
+    ResourceManager::loadShader("shaders/shadowMap.vert", "shaders/shadowMap.frag", "SHADOW_SHADER");
     sbo.shaderProgram = ResourceManager::getShader("SHADOW_SHADER");
 
     sbo.width = SHADOW_MAP_RESOLUTION;
@@ -311,10 +311,10 @@ void Renderer::initGL()
     string hor_blur = "HORIZONTAL_BLUR_SHADER";
     string cutoff = "CUTOFF_SHADER";
 
-    ResourceManager::loadShader("../shaders/postFx.vert", "../shaders/postFx.frag", post_fx);
-    ResourceManager::loadShader("../shaders/postFx.vert", "../shaders/vertical_blur.frag", vert_blur);
-    ResourceManager::loadShader("../shaders/postFx.vert", "../shaders/horizontal_blur.frag", hor_blur);
-    ResourceManager::loadShader("../shaders/postFx.vert", "../shaders/cutoff.frag", cutoff);
+    ResourceManager::loadShader("shaders/postFx.vert", "shaders/postFx.frag", post_fx);
+    ResourceManager::loadShader("shaders/postFx.vert", "shaders/vertical_blur.frag", vert_blur);
+    ResourceManager::loadShader("shaders/postFx.vert", "shaders/horizontal_blur.frag", hor_blur);
+    ResourceManager::loadShader("shaders/postFx.vert", "shaders/cutoff.frag", cutoff);
 
     postFxShader = ResourceManager::getShader(post_fx);
     verticalBlurShader = ResourceManager::getShader(vert_blur);

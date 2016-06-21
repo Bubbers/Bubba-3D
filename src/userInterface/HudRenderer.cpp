@@ -16,7 +16,7 @@ using namespace std;
 
 HudRenderer::HudRenderer(){
 
-    ResourceManager::loadShader("../shaders/hud.vert", "../shaders/hud.frag", "hudShader");
+    ResourceManager::loadShader("shaders/hud.vert", "shaders/hud.frag", "hudShader");
     shaderProgram = ResourceManager::getShader("hudShader");
 
 }
