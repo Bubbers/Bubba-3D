@@ -67,6 +67,8 @@ void Renderer::drawScene(Camera *camera, Scene *scene, float currentTime)
 
     // enable back face culling.
     glEnable(GL_CULL_FACE);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     //*************************************************************************
     // Render shadow map

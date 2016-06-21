@@ -82,7 +82,7 @@ uniform bool hasCubeMap;
 uniform samplerCube cubeMap;
 
 // object specific uniforms, change once per object but are the same for all materials in object.
-uniform float object_alpha;
+float object_alpha;
 uniform float object_reflectiveness;
 
 // matrial properties, changed when material changes.
@@ -173,9 +173,12 @@ Light calculateGeneralLight(Light colors, vec3 directionToLight, vec3 directionT
 	// if we have a texture we modulate all of the color properties
 	if (has_diffuse_texture == 1)
 	{
-		vec3 tex_color = texture(diffuse_texture, texCoord.xy).xyz;
-		diffuse *= tex_color;
-		ambient *= tex_color;
+		vec4 tex_color = texture(diffuse_texture, texCoord.xy);
+		diffuse *= tex_color.xyz;
+		ambient *= tex_color.xyz;
+		object_alpha = tex_color.w;
+	} else {
+	    object_alpha = 1.0;
 	}
 
 	Light light;
