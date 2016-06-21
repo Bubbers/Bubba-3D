@@ -32,7 +32,7 @@ public:
 	std::vector<GameObject*> getShadowCasters();
 	std::vector<GameObject*> getTransparentObjects();
 
-	void update(float dt, std::vector<GameObject*> *toDelete);
+	virtual void update(float dt, std::vector<GameObject*> *toDelete);
 
 private:
 	std::vector<GameObject*> shadowCasters;
