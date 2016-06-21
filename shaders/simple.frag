@@ -76,6 +76,8 @@ out vec4 fragmentColor;
 
 // global uniforms, that are the same for the whole scene
 uniform sampler2DShadow shadowMap;
+
+uniform int has_cube_map;
 uniform samplerCube cubeMap;
 
 // object specific uniforms, change once per object but are the same for all materials in object.
@@ -104,6 +106,7 @@ vec3 calculateDiffuse(vec3 normal, vec3 directionToLight, vec3 materialLight, ve
 vec3 calculateSpecular(vec3 normal, vec3 directionToLight, vec3 directionToEye, vec3 materialSpecular, vec3 sceneLight, float materialShininess);
 vec3 calculateFresnel(vec3 directionToLight, vec3 directionToEye, vec3 materialSpecular);
 vec3 calculateFog(vec3 color, float distance);
+vec3 calculateCubeMapSample(vec3 directionToEye, vec3 normal);
 
 void main()
 {
@@ -133,10 +136,18 @@ void main()
 	vec3 foggedColor = calculateFog(color, abs(viewSpacePosition.z / viewSpacePosition.w));
 	vec3 emissive = material_emissive_color;
 
-	vec3 reflectionVector = normalize((inverseViewNormalMatrix * vec4(reflect(-directionToEye, normal), 0.0)).xyz);
-	vec3 cubeMapSample = texture(cubeMap, reflectionVector).rgb * object_reflectiveness;
+        vec3 cubeMapSample = calculateCubeMapSample(directionToEye, normal);
 
 	fragmentColor = vec4(foggedColor + emissive + cubeMapSample, object_alpha);
+}
+
+vec3 calculateCubeMapSample(vec3 directionToEye, vec3 normal) {
+    if(has_cube_map == 1) {
+        vec3 reflectionVector = normalize((inverseViewNormalMatrix * vec4(reflect(-directionToEye, normal), 0.0)).xyz);
+        vec3 cubeMapSample = texture(cubeMap, reflectionVector).rgb * object_reflectiveness;
+    } else {
+        return vec3(0.0);
+    }
 }
 
 Light calculateGeneralLight(Light colors, vec3 directionToLight, vec3 directionToEye, vec3 normal) {
@@ -217,9 +228,10 @@ vec3 calculatePointLight(PointLight light, vec3 normal, vec3 directionToEye) {
 }
 
 vec3 calculateFog(vec3 color, float dist) {
-	if(fog.iEquation == FOG_EQUATION_NONE) {
-	    return color;
-	}
+
+    if(fog.iEquation == FOG_EQUATION_NONE) {
+         return color;
+    }
 
 	float f = 1.0;
 	if (fog.iEquation == FOG_EQUATION_LINEAR) {
