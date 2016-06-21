@@ -18,7 +18,7 @@ public:
      * tests between them.
      *
      */
-    virtual void computeExactCollision(CollisionPairList possibleCollision) = 0;
+    virtual CollisionPairList computeExactCollision(CollisionPairList possibleCollision) = 0;
 
 };
 
