@@ -69,6 +69,8 @@ void Layout::invokeListenersInternal(int x, int y, ListenerType listenerType, bo
 
 void Layout::clearChildren() {
     children = vector<Layout*>();
+    mouseWasDown = false;
+    hoveredBackground = false;
 }
 
 Layout* Layout::setLayoutId(string id) {
