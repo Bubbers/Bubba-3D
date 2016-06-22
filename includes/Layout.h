@@ -35,6 +35,8 @@ public:
      */
     virtual void addChild(Layout* child);
 
+    virtual void clearChildren();
+
     /**
      * The function to fetch all GLSquares from this layout and its children
      * based on the position and dimensions given. The parent calculates

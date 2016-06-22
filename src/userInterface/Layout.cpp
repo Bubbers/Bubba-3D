@@ -67,6 +67,10 @@ void Layout::invokeListenersInternal(int x, int y, ListenerType listenerType, bo
 
 }
 
+void Layout::clearChildren() {
+    children = vector<Layout*>();
+}
+
 Layout* Layout::setLayoutId(string id) {
     this->id = id;
     return this;
