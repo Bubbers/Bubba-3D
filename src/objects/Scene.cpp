@@ -57,7 +57,6 @@ void Scene::removeDirty(std::vector<GameObject*> *v, std::vector<GameObject*> *t
         {
             toDelete->push_back(*i);
             i = v->erase(i);
-            printf("here");
 		}
 		else {
 			i++;
