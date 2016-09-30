@@ -1,9 +1,4 @@
-//
-// Created by simon on 2015-12-20.
-//
-
-#ifndef BUBBA_3D_INPUT_H
-#define BUBBA_3D_INPUT_H
+#pragma once
 
 #include <ControlStatus.h>
 
@@ -14,7 +9,7 @@
  */
 class Input {
 public:
-
+    virtual ~Input() = 0;
     virtual ControlStatus getStatus() = 0;
     virtual ControlStatus::Activator getActivator() = 0;
     bool isDual();
@@ -24,6 +19,3 @@ protected:
     bool dual;
 
 };
-
-
-#endif //BUBBA_3D_INPUT_H

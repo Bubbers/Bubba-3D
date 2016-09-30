@@ -5,13 +5,13 @@
 #include <windows.h>
 #endif
 
+#include "linmath/float4x4.h"
 #include "Utils.h"
 #include "Effects.h"
 
 #define CUBE_MAP_RESOLUTION	   512
 #define SHADOW_MAP_RESOLUTION  2048
 
-using namespace chag;
 
 class Camera;
 class Scene;
@@ -30,14 +30,14 @@ public:
 
     void resize(unsigned int width, unsigned int height);
 
-	void initRenderer(int width, int height);
+    void initRenderer(int width, int height);
 
     Effects effects;
 private:
     float currentTime;
 
     Fbo createPostProcessFbo(int width, int height);
-    void drawShadowMap(Fbo sbo, float4x4 viewProjectionMatrix, Scene *scene);
+    void drawShadowMap(Fbo sbo, chag::float4x4 viewProjectionMatrix, Scene *scene);
     void drawShadowCasters(ShaderProgram* shaderProgram, Scene *scene);
     void drawTransparent(ShaderProgram* shaderProgram, Scene *scene);
     void setFog(ShaderProgram* shaderProgram);

@@ -5,6 +5,7 @@
 #include <cstddef>
 #include <timer.h>
 #include <sstream>
+#include "GameObject.h"
 #include "TwoPhaseCollider.h"
 
 TwoPhaseCollider::TwoPhaseCollider(BroadPhaseCollider *broadPhaseCollider, ExactPhaseCollider *exactPhaseCollider) {
