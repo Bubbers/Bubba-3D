@@ -76,8 +76,16 @@ void ShaderProgram::setUniform3f(std::string name, float3 value){
     glUniform3fv(getUniformLocation(name),1, &value.x);
 }
 
+void ShaderProgram::setUniform4f(std::string name, float4 value) {
+    glUniform4fv(getUniformLocation(name),1,&value.x);
+}
+
 void ShaderProgram::setUniformMatrix4fv(std::string name, float4x4 matrix) {
     glUniformMatrix4fv(getUniformLocation(name), 1, false, &matrix.c1.x);
+}
+
+void ShaderProgram::setUniform2f(std::string name, float2 value) {
+    glUniform2fv(getUniformLocation(name),1,&value.x);
 }
 
 void ShaderProgram::setUniformBufferObjectBinding(std::string bufferName, int index) {

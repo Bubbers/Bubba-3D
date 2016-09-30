@@ -41,7 +41,7 @@ addons:
         - libxcb-randr0
         - libudev-dev
         - build-essential
-        - libcgmanager
+        - libcgmanager-dev
         - libudev1
 
 

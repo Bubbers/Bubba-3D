@@ -12,7 +12,7 @@ using namespace chag;
 ParticleGenerator::ParticleGenerator(Texture *texture, int amount, Camera *camera, float4x4 modelMatrix, ParticleConf *conf)
 	:  texture(texture), m_amount(amount), m_camera(camera), conf(conf)
 {
-	ResourceManager::loadShader("../shaders/particle.vert", "../shaders/particle.frag", "particleShader");
+	ResourceManager::loadShader("shaders/particle.vert", "shaders/particle.frag", "particleShader");
 	shaderProgram = ResourceManager::getShader("particleShader");
 	shaderProgram->setUniformBufferObjectBinding(UNIFORM_BUFFER_OBJECT_MATRICES_NAME,UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
 	GLfloat quad[] = { //POSITION3 TEXCOORD2

@@ -9,6 +9,7 @@
 #include <vector>
 #include "Chunk.h"
 #include <string>
+#include "Utils.h"
 
 using namespace chag;
 
@@ -28,7 +29,7 @@ void Mesh::loadMesh(const std::string &fileName) {
             fileName.c_str(), aiProcess_GenSmoothNormals | aiProcess_Triangulate | aiProcess_CalcTangentSpace);
 
     if (!pScene) {
-        Logger::logError("Error loading mesh for " + fileName);
+        Logger::logError("Error loading mesh for " + fileName + ". Error message: " + importer.GetErrorString());
     } else {
         initMesh(pScene, fileName);
     }
@@ -81,7 +82,7 @@ void Mesh::initVerticesFromAiMesh(const aiMesh *paiMesh, Chunk &chunk) {
             chunk.m_tangents.push_back(make_vector(pTangents.x, pTangents.y, pTangents.z));
         }
 
-        checkMinMax(pPos.x, pPos.y, pPos.z, &m_aabb.minV, &m_aabb.maxV);
+        updateMinAndMax(pPos.x, pPos.y, pPos.z, &m_aabb.minV, &m_aabb.maxV);
     }
 }
 
@@ -224,13 +225,29 @@ AABB* Mesh::getAABB() {
 
 void Mesh::createTriangles() {
     for (unsigned int i = 0; i < m_chunks.size(); i++) {
+
+        for (unsigned int j = 0; j + 2 < m_chunks[i].m_indices.size(); j += 3) {
+            triangles.push_back(createTriangleFromPositions(m_chunks[i].m_positions, m_chunks[i].m_indices, j));
+        }
+        /*
         for (unsigned int j = 0; j + 2 < m_chunks[i].m_positions.size(); j += 3) {
             triangles.push_back(createTriangleFromPositions(m_chunks[i].m_positions, j));
-        }
+        }*/
     }
 }
 
-Triangle* Mesh::createTriangleFromPositions(std::vector<chag::float3> positionBuffer, unsigned int startIndex) {
+Triangle* Mesh::createTriangleFromPositions(std::vector<chag::float3> positionBuffer, std::vector<unsigned int> indices, unsigned int startIndex) {
+
+    return new Triangle(make_vector(positionBuffer[indices[startIndex + 0]].x,
+                                    positionBuffer[indices[startIndex + 0]].y,
+                                    positionBuffer[indices[startIndex + 0]].z),
+                        make_vector(positionBuffer[indices[startIndex + 1]].x,
+                                    positionBuffer[indices[startIndex + 1]].y,
+                                    positionBuffer[indices[startIndex + 1]].z),
+                        make_vector(positionBuffer[indices[startIndex + 2]].x,
+                                    positionBuffer[indices[startIndex + 2]].y,
+                                    positionBuffer[indices[startIndex + 2]].z));
+    /*
     return new Triangle(make_vector(positionBuffer[startIndex + 0].x,
                                     positionBuffer[startIndex + 0].y,
                                     positionBuffer[startIndex + 0].z),
@@ -239,7 +256,7 @@ Triangle* Mesh::createTriangleFromPositions(std::vector<chag::float3> positionBu
                                     positionBuffer[startIndex + 1].z),
                         make_vector(positionBuffer[startIndex + 2].x,
                                     positionBuffer[startIndex + 2].y,
-                                    positionBuffer[startIndex + 2].z));
+                                    positionBuffer[startIndex + 2].z));*/
 }
 
 std::vector<Triangle*> Mesh::getTriangles() {

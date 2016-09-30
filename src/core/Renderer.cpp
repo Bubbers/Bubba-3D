@@ -68,6 +68,7 @@ void Renderer::drawScene(Camera *camera, Scene *scene, float currentTime)
     // enable back face culling.
     glEnable(GL_CULL_FACE);
 
+
     //*************************************************************************
     // Render shadow map
     //*************************************************************************
@@ -112,19 +113,29 @@ void Renderer::drawScene(Camera *camera, Scene *scene, float currentTime)
 
     //Set shadowmap
     if (scene->shadowMapCamera != NULL) {
+        shaderProgram->setUniform1i("has_shadow_map", 1);
         shaderProgram->setUniform1i("shadowMap", 1);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, sbo.texture);
     }
 
     //Set cube map
-    if (scene->cubeMap != NULL) {
+    if (scene->cubeMap != nullptr) {
+        shaderProgram->setUniform1i("hasCubeMap", 1);
         shaderProgram->setUniform1i("cubeMap", 2);
+        glActiveTexture(GL_TEXTURE2);
         scene->cubeMap->bind(GL_TEXTURE2);
+    } else {
+        shaderProgram->setUniform1i("hasCubeMap", 0);
+        shaderProgram->setUniform1i("cubeMap", 2);
     }
 
     drawShadowCasters(shaderProgram, scene);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     drawTransparent(shaderProgram, scene);
+    glDisable(GL_BLEND);
 
     renderPostProcess();
 
@@ -177,17 +188,19 @@ void Renderer::setLights(ShaderProgram* shaderProgram, Scene *scene) {
 */
 void Renderer::drawShadowCasters(ShaderProgram* shaderProgram, Scene *scene)
 {
-    for (unsigned int i = 0; i < scene->shadowCasters.size(); i++) {
-        shaderProgram->setUniform1f("object_reflectiveness", (*scene->shadowCasters[i]).shininess);
-        drawModel(*scene->shadowCasters[i], shaderProgram);
+    std::vector<GameObject*> shadowCasters = scene->getShadowCasters();
+    for (unsigned int i = 0; i < scene->getShadowCasters().size(); i++) {
+        shaderProgram->setUniform1f("object_reflectiveness", (*shadowCasters[i]).shininess);
+        drawModel(*shadowCasters[i], shaderProgram);
     }
 }
 
 void Renderer::drawTransparent(ShaderProgram* shaderProgram, Scene *scene)
 {
-    for (unsigned int i = 0; i < scene->transparentObjects.size(); i++) {
-        shaderProgram->setUniform1f("object_reflectiveness", (*scene->transparentObjects[i]).shininess);
-        drawModel(*scene->transparentObjects[i], shaderProgram);
+    std::vector<GameObject*> transparentObjects = scene->getTransparentObjects();
+    for (unsigned int i = 0; i < transparentObjects.size(); i++) {
+        shaderProgram->setUniform1f("object_reflectiveness", (*transparentObjects[i]).shininess);
+        drawModel(*transparentObjects[i], shaderProgram);
     }
 }
 
@@ -207,9 +220,10 @@ void Renderer::drawShadowMap(Fbo sbo, float4x4 viewProjectionMatrix, Scene *scen
     sbo.shaderProgram->use();
     sbo.shaderProgram->setUniformMatrix4fv("viewProjectionMatrix", viewProjectionMatrix);
 
-    for (unsigned int i = 0; i < scene->shadowCasters.size(); i++) {
-        sbo.shaderProgram->setUniform1f("object_reflectiveness", (*scene->shadowCasters[i]).shininess);
-        (*scene->shadowCasters[i]).renderShadow(sbo.shaderProgram);
+    std::vector<GameObject*> shadowCasters = scene->getShadowCasters();
+    for (unsigned int i = 0; i < shadowCasters.size(); i++) {
+        sbo.shaderProgram->setUniform1f("object_reflectiveness", (*shadowCasters[i]).shininess);
+        (*shadowCasters[i]).renderShadow(sbo.shaderProgram);
     }
 
     //CLEANUP
@@ -219,7 +233,6 @@ void Renderer::drawShadowMap(Fbo sbo, float4x4 viewProjectionMatrix, Scene *scen
 }
 
 void Renderer::setFog(ShaderProgram* shaderProgram) {
-    if (effects.fog.fEquation == FOG_EQ::NONE){ return; }
     shaderProgram->setUniform1i("fog.iEquation",	effects.fog.fEquation);
     shaderProgram->setUniform1f("fog.fDensity",	effects.fog.fDensity);
     shaderProgram->setUniform1f("fog.fEnd",		effects.fog.fEnd);
@@ -240,11 +253,14 @@ void Renderer::initGL()
     //*************************************************************************
     //	Load shaders
     //*************************************************************************
-    ResourceManager::loadShader("../shaders/simple.vert", "../shaders/simple.frag", SIMPLE_SHADER_NAME);
+    ResourceManager::loadShader("shaders/simple.vert", "shaders/simple.frag", SIMPLE_SHADER_NAME);
 
     shaderProgram = ResourceManager::getShader(SIMPLE_SHADER_NAME);
     shaderProgram->setUniformBufferObjectBinding(UNIFORM_BUFFER_OBJECT_MATRICES_NAME, UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
     shaderProgram->initUniformBufferObject(UNIFORM_BUFFER_OBJECT_MATRICES_NAME, 3 * sizeof(float4x4), UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
+
+    CHECK_GL_ERROR();
+
 
 
     //*************************************************************************
@@ -252,7 +268,7 @@ void Renderer::initGL()
     //*************************************************************************
     Logger::logInfo("Generating OpenGL data.");
 
-    ResourceManager::loadShader("../shaders/shadowMap.vert", "../shaders/shadowMap.frag", "SHADOW_SHADER");
+    ResourceManager::loadShader("shaders/shadowMap.vert", "shaders/shadowMap.frag", "SHADOW_SHADER");
     sbo.shaderProgram = ResourceManager::getShader("SHADOW_SHADER");
 
     sbo.width = SHADOW_MAP_RESOLUTION;
@@ -298,10 +314,10 @@ void Renderer::initGL()
     string hor_blur = "HORIZONTAL_BLUR_SHADER";
     string cutoff = "CUTOFF_SHADER";
 
-    ResourceManager::loadShader("../shaders/postFx.vert", "../shaders/postFx.frag", post_fx);
-    ResourceManager::loadShader("../shaders/postFx.vert", "../shaders/vertical_blur.frag", vert_blur);
-    ResourceManager::loadShader("../shaders/postFx.vert", "../shaders/horizontal_blur.frag", hor_blur);
-    ResourceManager::loadShader("../shaders/postFx.vert", "../shaders/cutoff.frag", cutoff);
+    ResourceManager::loadShader("shaders/postFx.vert", "shaders/postFx.frag", post_fx);
+    ResourceManager::loadShader("shaders/postFx.vert", "shaders/vertical_blur.frag", vert_blur);
+    ResourceManager::loadShader("shaders/postFx.vert", "shaders/horizontal_blur.frag", hor_blur);
+    ResourceManager::loadShader("shaders/postFx.vert", "shaders/cutoff.frag", cutoff);
 
     postFxShader = ResourceManager::getShader(post_fx);
     verticalBlurShader = ResourceManager::getShader(vert_blur);

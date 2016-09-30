@@ -18,19 +18,27 @@ public:
 	Scene();
 	~Scene();
 
-	CubeMapTexture *cubeMap;
+	CubeMapTexture *cubeMap = nullptr;
 
-	Camera *shadowMapCamera; //Will follow directional light
+	Camera *shadowMapCamera = nullptr; //Will follow directional light
 	DirectionalLight directionalLight;
 	std::vector<PointLight> pointLights;
 	std::vector<SpotLight> spotLights;
 
-	std::vector<GameObject*> shadowCasters;
-	std::vector<GameObject*> transparentObjects;
+	void addShadowCaster(GameObject* object);
+	void addTransparentObject(GameObject* object);
 
-	void update(float dt, std::vector<GameObject*> *toDelete);
+	std::vector<GameObject*> getGameObjects();
+	std::vector<GameObject*> getShadowCasters();
+	std::vector<GameObject*> getTransparentObjects();
+
+	virtual void update(float dt, std::vector<GameObject*> *toDelete);
 
 private:
+	std::vector<GameObject*> shadowCasters;
+	std::vector<GameObject*> transparentObjects;
+	std::vector<GameObject*> allObjects;
+
 	void removeDirty(std::vector<GameObject*> *v, std::vector<GameObject*> *toDelete);
 };
 

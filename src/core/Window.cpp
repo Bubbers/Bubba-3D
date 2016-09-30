@@ -11,11 +11,14 @@ Window::Window(int width, int height, std::string title) {
 
 	this->width = width;
 	this->height = height;
+
+	Globals::set(Globals::WINDOW_HEIGHT,height);
+	Globals::set(Globals::WINDOW_WIDTH,width);
 	
 	sf::ContextSettings settings = sf::ContextSettings(32, 8, 0, 3, 3);
 
-	settings.majorVersion = 3;
-	settings.minorVersion = 3;
+	settings.majorVersion = 4;
+	settings.minorVersion = 2;
 	settings.attributeFlags = sf::ContextSettings::Debug | sf::ContextSettings::Core;
 	window = new sf::Window(sf::VideoMode(width, height), title, sf::Style::Default, settings);
 	glEnable(GL_FRAMEBUFFER_SRGB);

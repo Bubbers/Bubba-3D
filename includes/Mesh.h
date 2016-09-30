@@ -141,7 +141,7 @@ public:
     void setupSphere(std::vector<float3> *positions);
 
     void createTriangles();
-    Triangle* createTriangleFromPositions(std::vector<chag::float3> positionBuffer, unsigned int startIndex);
+    Triangle* createTriangleFromPositions(std::vector<chag::float3> positionBuffer, std::vector<unsigned int> indices, unsigned int startIndex);
 
     std::vector<Triangle *> triangles;
     std::vector<Material> materials;
