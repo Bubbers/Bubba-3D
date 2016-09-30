@@ -1,14 +1,7 @@
-//
-// Created by simon on 2016-03-11.
-//
-
-#ifndef SUPER_BUBBA_AWESOME_SPACE_FONT_H
-#define SUPER_BUBBA_AWESOME_SPACE_FONT_H
-
+#pragma once
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-using namespace std;
 
 /**
  * A class that contains data about the characters of a font.
@@ -45,6 +38,3 @@ private:
     int pixelSize = 0;
 
 };
-
-
-#endif //SUPER_BUBBA_AWESOME_SPACE_FONT_H

@@ -1,17 +1,12 @@
-//
-// Created by simon on 2016-02-26.
-//
-
 #include <TextLayout.h>
 #include <IHudDrawable.h>
 #include <TextObject.h>
 
-TextLayout::TextLayout(string text, Font* font, Dimension width, Dimension height) {
-    this->text = text;
-    this->font = font;
-    this->width = width;
-    this->height = height;
-    padding;
+TextLayout::TextLayout(std::string text, Font* font, Dimension width, Dimension height): 
+    text(text),
+    font(font),
+    width(width),
+    height(height) {
 }
 
 Dimension TextLayout::getWidth() {
@@ -22,11 +17,11 @@ Dimension TextLayout::getHeight() {
     return height;
 }
 
-void TextLayout::setText(string text) {
+void TextLayout::setText(std::string text) {
     this->text = text;
 }
 
-TextLayout* TextLayout::setTextId(string id) {
+TextLayout* TextLayout::setTextId(std::string id) {
     this->textId = id;
     return this;
 }

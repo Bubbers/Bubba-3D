@@ -1,11 +1,9 @@
-#ifndef BUBBA_3D_CHUNK_H
-#define BUBBA_3D_CHUNK_H
+#pragma once
 
 #include <vector>
 #include "linmath/float2.h"
 #include "linmath/float3.h"
 #include <GL/glew.h>
-
 
 class Chunk {
 public:
@@ -20,9 +18,7 @@ public:
           unsigned int textureIndex);
 
     ~Chunk() {
-        ;
     }
-
 
     // Data on host
     std::vector<chag::float3> m_positions;
@@ -44,7 +40,3 @@ public:
 
     unsigned int materialIndex;
 };
-
-
-
-#endif  // BUBBA_3D_CHUNK_H
