@@ -1,8 +1,5 @@
-//
-// Created by johan on 2016-04-13.
-//
-
 #include <Collider.h>
+#include "GameObject.h"
 #include "ExactOctreeCollider.h"
 
 CollisionPairList ExactOctreeCollider::computeExactCollision(CollisionPairList possibleCollision) {

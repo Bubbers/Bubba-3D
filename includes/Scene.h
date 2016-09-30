@@ -1,6 +1,4 @@
-#ifndef __SCENE_H__
-#define __SCENE_H__
-
+#pragma once
 #define MAX_POINT_LIGHTS 2
 
 #include "Mesh.h"
@@ -15,31 +13,29 @@ class GameObject;
 class Scene
 {
 public:
-	Scene();
-	~Scene();
+    Scene();
+    ~Scene();
 
-	CubeMapTexture *cubeMap = nullptr;
+    CubeMapTexture *cubeMap = nullptr;
 
-	Camera *shadowMapCamera = nullptr; //Will follow directional light
-	DirectionalLight directionalLight;
-	std::vector<PointLight> pointLights;
-	std::vector<SpotLight> spotLights;
+    Camera *shadowMapCamera = nullptr; //Will follow directional light
+    DirectionalLight directionalLight;
+    std::vector<PointLight> pointLights;
+    std::vector<SpotLight> spotLights;
 
-	void addShadowCaster(GameObject* object);
-	void addTransparentObject(GameObject* object);
+    void addShadowCaster(GameObject* object);
+    void addTransparentObject(GameObject* object);
 
-	std::vector<GameObject*> getGameObjects();
-	std::vector<GameObject*> getShadowCasters();
-	std::vector<GameObject*> getTransparentObjects();
+    std::vector<GameObject*> getGameObjects();
+    std::vector<GameObject*> getShadowCasters();
+    std::vector<GameObject*> getTransparentObjects();
 
-	virtual void update(float dt, std::vector<GameObject*> *toDelete);
+    virtual void update(float dt, std::vector<GameObject*> *toDelete);
 
 private:
-	std::vector<GameObject*> shadowCasters;
-	std::vector<GameObject*> transparentObjects;
-	std::vector<GameObject*> allObjects;
+    std::vector<GameObject*> shadowCasters;
+    std::vector<GameObject*> transparentObjects;
+    std::vector<GameObject*> allObjects;
 
-	void removeDirty(std::vector<GameObject*> *v, std::vector<GameObject*> *toDelete);
+    void removeDirty(std::vector<GameObject*> *v, std::vector<GameObject*> *toDelete);
 };
-
-#endif // __SCENE_H__
