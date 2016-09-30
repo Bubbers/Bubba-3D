@@ -1,5 +1,4 @@
-#ifndef __SHADER_H__
-#define __SHADER_H__
+#pragma once
 
 #include <map>
 #include <string>
@@ -7,9 +6,6 @@
 #include "glutil/glutil.h"
 #include "linmath/float3.h"
 #include "IShader.h"
-
-using namespace chag;
-
 
 /**
  * \brief Class for maintaining OpenGL shader programs.
@@ -25,7 +21,7 @@ using namespace chag;
  * \endcode
  */
 class ShaderProgram {
- public:
+public:
     ShaderProgram();
 
     /**
@@ -52,16 +48,16 @@ class ShaderProgram {
 
     void setUniform1i(std::string name, int value);
     void setUniform1f(std::string name, float value);
-    void setUniform2f(std::string name, float2 value);
-    void setUniform3f(std::string name, float3 value);
-    void setUniform4f(std::string name, float4 value);
-    void setUniformMatrix4fv(std::string name, float4x4 matrix);
+    void setUniform2f(std::string name, chag::float2 value);
+    void setUniform3f(std::string name, chag::float3 value);
+    void setUniform4f(std::string name, chag::float4 value);
+    void setUniformMatrix4fv(std::string name, chag::float4x4 matrix);
 
     void setUniformBufferObjectBinding(std::string bufferName, int index);
     void initUniformBufferObject(std::string bufferName, int size, int index);
     void setUniformBufferSubData(std::string bufferName, int offset, int size, const GLvoid *data);
 
- private:
+private:
 
     void linkProgram();
     void checkLinkageErrors();
@@ -79,5 +75,3 @@ class ShaderProgram {
     GLint previousShaderProgram;
 
 };
-
-#endif //__SHADER__H

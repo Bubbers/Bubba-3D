@@ -1,14 +1,10 @@
-#ifndef __PARTICLE__
-#define __PARTICLE__
+#pragma once
 
 #include "linmath/float3.h"
 #include "linmath/Quaternion.h"
 
-
 #define PARTICLE_SPEED ((rand() % 6000) - 3000.0f) / 5000.0f
 #define PARTICLE_LIFE 1000.0f + (rand() % 1000)
-
-using namespace chag;
 
 class ParticleConf;
 
@@ -19,20 +15,20 @@ class ParticleConf;
 class Particle {
 
 public:
-	Particle(ParticleConf *conf, float4x4 modelMatrix);
+    Particle(ParticleConf *conf, chag::float4x4 modelMatrix);
 
     /**
      * Resets the particle according to the given ParticleConf.
      * This is used in order to reuse particles.
      * @param conf The ParticleConf to used by the ParticleGenerator.
      */
-	void reset(ParticleConf *conf, float4x4 modelMatrix);
+    void reset(ParticleConf *conf, chag::float4x4 modelMatrix);
 
     /**
      * @return If the Particle is alive, that is visible, or not.
      *         Dead Particles will can be reused by calling reset().
      */
-	bool isAlive();
+    bool isAlive();
 
     /**
      * @param deltaTime Time since last update in seconds.
@@ -40,14 +36,10 @@ public:
      * @param conf The ParticleConf used by the ParticleGenerator.
      */
     void update(float deltaTime, float distanceToCam, ParticleConf *conf);
-    float3 getPosition() { return position; }
+    chag::float3 getPosition();
 
 private:
     float life; //in ms
-    float3 position;
-    float3 velocity;
-    float3 color;
-    float3* generatorPos;
+    chag::float3 position;
+    chag::float3 velocity;
 };
-
-#endif

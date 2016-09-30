@@ -104,12 +104,13 @@ private:
     bool rayCastIntersectsAABB(float3 rayOrigin, float3 rayVector);
     void putTrianglesToList(std::vector<Triangle *> *triangleList);
 
+    float3 origin;
+    float3 halfVector;
+
     Octree *children[8];
     std::vector<Triangle*> ts;
     int depth;
 
-    float3 origin;
-    float3 halfVector;
 
     AABB aabb;
 };

@@ -438,15 +438,14 @@ void Renderer::drawFullScreenQuad()
     if (vertexArrayObject == 0)
     {
         glGenVertexArrays(1, &vertexArrayObject);
-        static const float2 positions[] = {
-                -1.0f, -1.0f,
-                1.0f,  1.0f,
-                -1.0f,  1.0f,
+        static const float2 positions[] = {{-1.0f, -1.0f},
+                                           { 1.0f,  1.0f},
+                                           {-1.0f,  1.0f},
 
-                -1.0f, -1.0f,
-                1.0f, -1.0f,
-                1.0f,  1.0f
-        };
+                                           {-1.0f, -1.0f},
+                                           { 1.0f, -1.0f},
+                                           { 1.0f,  1.0f}};
+
         createAddAttribBuffer(vertexArrayObject, positions, sizeof(positions), 0, 2, GL_FLOAT);
         GLuint pos_vbo;
         glGenBuffers(1, &pos_vbo);

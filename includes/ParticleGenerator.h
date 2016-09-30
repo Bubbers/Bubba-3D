@@ -1,5 +1,4 @@
-#ifndef __PARTICLE_GEN__
-#define __PARTICLE_GEN__
+#pragma once
 
 #include "linmath/float3.h"
 #include <vector>
@@ -8,9 +7,6 @@
 #define LINEAR_SCALE_FACTOR 50.0f
 #define LOD_FACTOR 25.0f
 
-
-using namespace chag;
-
 class Camera;
 class Particle;
 class ParticleConf;
@@ -18,41 +14,41 @@ class ParticleConf;
 class ParticleGenerator : public IRenderComponent
 {
 public:
-	ParticleGenerator(Texture *texture, int amount, Camera *camera, float4x4 modelMatrix, ParticleConf *conf);
-	~ParticleGenerator();
+    ParticleGenerator(Texture *texture, int amount,
+                      Camera *camera, float4x4 modelMatrix,
+                      ParticleConf *conf);
 
-	/**
-	 * Update the position of all spawned Particles.
-	 * @param dt The time in seconds since last update call.
-	 */
-	void update(float dt);
+    ~ParticleGenerator();
 
-	/**
-	 * Render shadows from the spawned Particles.
-	 * @param shaderProgram The ShaderProgram used to render the shadows.
-	 */
-	void renderShadow(ShaderProgram* shaderProgram) {};
+    /**
+     * Update the position of all spawned Particles.
+     * @param dt The time in seconds since last update call.
+     */
+    void update(float dt);
 
-	/**
-	 * Render all the spawned Particles.
-	 */
-	void render();
+    /**
+     * Render shadows from the spawned Particles.
+     * @param shaderProgram The ShaderProgram used to render the shadows.
+     */
+    void renderShadow(ShaderProgram* shaderProgram) {};
 
-	void setScaleLod(bool value);
+    /**
+     * Render all the spawned Particles.
+     */
+    void render();
 
-	Camera *m_camera;
+    void setScaleLod(bool value);
 
- 	void setLooping(bool value);
+    void setLooping(bool value);
 private:
-	std::vector<Particle*> m_particles;
-	GLuint m_vaob;
-	Texture *texture;
-	int m_amount = 0;
+    std::vector<Particle*> m_particles;
+    GLuint m_vaob;
+    Texture *texture;
+    int m_amount = 0;
+    Camera *m_camera;
 
-	ParticleConf *conf;
-	bool doScale = true;
+    ParticleConf *conf;
+    bool doScale = true;
 
-	float3x3 getModelMatrix3x3();
+    chag::float3x3 getModelMatrix3x3();
 };
-
-#endif

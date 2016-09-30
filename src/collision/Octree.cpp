@@ -16,15 +16,17 @@ Octree::~Octree() {
 
 }
 
-Octree::Octree(float3 origin, float3 halfVector)
-        : origin(origin), halfVector(halfVector) {
+Octree::Octree(chag::float3 origin, chag::float3 halfVector)
+        : origin(origin), halfVector(halfVector)
+{
     depth = 0;
     clearChildren();
     setupAABB(origin, halfVector);
 }
 
-Octree::Octree(float3 origin, float3 halfVector, int depth)
-        : origin(origin), halfVector(halfVector), depth(depth) {
+Octree::Octree(chag::float3 origin, chag::float3 halfVector, int depth)
+        : origin(origin), halfVector(halfVector), depth(depth)
+{
     clearChildren();
     setupAABB(origin, halfVector);
 }
@@ -35,16 +37,25 @@ void Octree::clearChildren() {
     }
 }
 
-void Octree::setupAABB(float3 origin, float3 halfVector) {
-    float3 p1 = origin + halfVector;
-    float3 p2 = origin - halfVector;
+void Octree::setupAABB(chag::float3 origin, chag::float3 halfVector) {
+    chag::float3 p1 = origin + halfVector;
+    chag::float3 p2 = origin - halfVector;
 
-    aabb.maxV = combineTwoPointsByComparator(p1,p2, [](float point1, float point2) { return point1 > point2; });
-    aabb.minV = combineTwoPointsByComparator(p1,p2, [](float point1, float point2) { return point1 < point2; });
+    aabb.maxV = combineTwoPointsByComparator(p1,p2, [](float point1, float point2)
+    {
+       return point1 > point2;
+    });
+    aabb.minV = combineTwoPointsByComparator(p1,p2, [](float point1, float point2)
+    {
+       return point1 < point2;
+    });
 }
 
-float3 Octree::combineTwoPointsByComparator(float3 p1, float3 p2, std::function<bool (float ,float)> comparator) {
-    float3 maxPoint;
+chag::float3 Octree::combineTwoPointsByComparator(
+    chag::float3 p1, chag::float3 p2,
+    std::function<bool (float ,float)> comparator)
+{
+    chag::float3 maxPoint;
 
     maxPoint.x = comparator(p1.x, p2.x) ? p1.x : p2.x;
     maxPoint.y = comparator(p1.y, p2.y) ? p1.y : p2.y;
@@ -84,11 +95,9 @@ void Octree::insertTriangle(Triangle *t) {
     }
 }
 
-
-
 void Octree::createChildren() {
     for (int i = 0; i < 8; ++i) {
-        float3 newOrigin = origin;
+        chag::float3 newOrigin = origin;
         newOrigin.x += halfVector.x * (i & 4 ? .5f : -.5f);
         newOrigin.y += halfVector.y * (i & 2 ? .5f : -.5f);
         newOrigin.z += halfVector.z * (i & 1 ? .5f : -.5f);
@@ -109,7 +118,7 @@ void Octree::getChildren(std::vector<Octree*> *octs) {
 }
 
 
-int Octree::getOctantContainingPoint(const float3 &point) {
+int Octree::getOctantContainingPoint(const chag::float3 &point) {
     int oct = 0;
     if (point.x >= origin.x) oct |= 4;
     if (point.y >= origin.y) oct |= 2;
@@ -182,9 +191,9 @@ bool testSlab(float rayO, float rayD, float minV, float maxV, float *tNear, floa
 }
 
 
-bool Octree::rayCastIntersectsAABB(float3 rayOrigin, float3 rayVector) {
-    float3 maxCorner = make_vector(origin.x + halfVector.x, origin.y + halfVector.y, origin.z + halfVector.z);
-    float3 minCorner = make_vector(origin.x - halfVector.x, origin.y - halfVector.y, origin.z - halfVector.z);
+bool Octree::rayCastIntersectsAABB(chag::float3 rayOrigin, chag::float3 rayVector) {
+    chag::float3 maxCorner = make_vector(origin.x + halfVector.x, origin.y + halfVector.y, origin.z + halfVector.z);
+    chag::float3 minCorner = make_vector(origin.x - halfVector.x, origin.y - halfVector.y, origin.z - halfVector.z);
 
     float tNear = -FLT_MAX, tFar = FLT_MAX;
 
@@ -194,7 +203,7 @@ bool Octree::rayCastIntersectsAABB(float3 rayOrigin, float3 rayVector) {
 }
 
 // TODO(Bubbad) Only add triangles if they are actually intersected
-void Octree::getTrianglesInsersectedByRayCast(float3 rayOrigin, float3 rayVector, std::vector<Triangle *> *triangleList) {
+void Octree::getTrianglesInsersectedByRayCast(chag::float3 rayOrigin, chag::float3 rayVector, std::vector<Triangle *> *triangleList) {
     if (!rayCastIntersectsAABB(rayOrigin, rayVector)) {
         return;
     }
