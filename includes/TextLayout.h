@@ -1,14 +1,7 @@
-//
-// Created by simon on 2016-02-26.
-//
-
-#ifndef SUPER_BUBBA_AWESOME_SPACE_TEXTLAYOUT_H
-#define SUPER_BUBBA_AWESOME_SPACE_TEXTLAYOUT_H
+#pragma once
 
 #include <Layout.h>
 #include <Font.h>
-
-using namespace std;
 
 /**
  * A layout used to present text.
@@ -16,6 +9,14 @@ using namespace std;
 class TextLayout : public Layout{
 
 public:
+
+    /**
+     * Creates a text layout. Create a font using FontManager::loadAndFetchFont()
+     */
+    TextLayout(std::string text, Font* font, Dimension width, Dimension height);
+
+
+    ~TextLayout() = default;
 
     /**
      * \internal
@@ -36,37 +37,30 @@ public:
                               float layoutHeight, map<string,IHudDrawable*>* list);
 
     /**
-     * Creates a text layout. Create a font using FontManager::loadAndFetchFont()
-     */
-    TextLayout(string text, Font* font, Dimension width, Dimension height);
-
-    /**
      * Changes the text of the TextLayout. If you want to change the text of
      * an already drawn text you should use TextObject::setText() instead.
      * You can get a hold of the TextObject by first setting an ID on this
      * object before adding it to the HUD using TextLayout::setTextId(). Then
      * call HudRenderer::getHudDrawableById() and typecast the result to a TextObject.
      */
-    void setText(string text);
+    void setText(std::string text);
 
     /**
      * Sets the id of the to-be-rendered TextObject. This object can be accessed by
      * HudRenderer::getHudDrawableById().
      */
-    TextLayout* setTextId(string id);
+    TextLayout* setTextId(std::string id);
 
     TextLayout* setPadding(int pixels);
     TextLayout* setPadding(int topAndBottom, int rightAndLeft);
     TextLayout* setPadding(int top, int right, int bot, int left);
 
 private:
-    Dimension width, height;
-    string text;
+    std::string text;
     Font* font;
-    string textId = "";
+    Dimension width;
+    Dimension height;
+    std::string textId = "";
     int padding[4] = {0,0,0,0};
 
 };
-
-
-#endif //SUPER_BUBBA_AWESOME_SPACE_TEXTLAYOUT_H

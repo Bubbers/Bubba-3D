@@ -16,7 +16,7 @@ using namespace chag;
 class Triangle;
 class aiScene;
 class aiMesh;
-class aiMaterial;
+struct aiMaterial;
 
 
 /**

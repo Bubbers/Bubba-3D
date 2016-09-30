@@ -1,7 +1,3 @@
-//
-// Created by simon on 2016-03-12.
-//
-
 #include <Font.h>
 #include <Globals.h>
 #include <GL/glew.h>
@@ -11,29 +7,26 @@
 #include <FontManager.h>
 #include <ResourceManager.h>
 
-TextObject::TextObject(string text, Font* font, int width, int height, int x, int y)
-        : text(text), font(font), width(width), height(height), x(x), y(-y){
-
+TextObject::TextObject(std::string text, Font* font, int width, int height, int x, int y)
+        : text(text), font(font), width(width), height(height), x(x), y(-y) {
     setText(text);
-
 }
 
-void TextObject::setText(string text) {
-
+void TextObject::setText(std::string text) {
     this->text = text;
-    vector<string> lines;
-    vector<int> linesOffsetX;
+    std::vector<std::string> lines;
+    std::vector<int> linesOffsetX;
     int numChars =0;
-    getLines(&lines,&linesOffsetX,&numChars);
+    getLines(&lines, &linesOffsetX, &numChars);
 
     init(lines,linesOffsetX, numChars);
 
 }
 
-void TextObject::getLines(vector<string>* lines, vector<int>* linesOffsetX, int* numChars){
+void TextObject::getLines(std::vector<std::string>* lines, std::vector<int>* linesOffsetX, int* numChars){
     int lineLength = 0;
-    string curLine = "";
-    string word = "";
+    std::string curLine = "";
+    std::string word = "";
     int wordLength = 0;
     for(unsigned char c : text){
         if(c > ' ' && c < 128){ // visible characters
@@ -87,17 +80,17 @@ int TextObject::getOffsetByLineLength(int lineLength) {
     return (width-lineLength)/2;
 }
 
-void TextObject::init(vector<string> lines, vector<int> linesOffsetX, int numChars) {
+void TextObject::init(std::vector<std::string> lines, std::vector<int> linesOffsetX, int numChars) {
 
     int x = -width/2;//this->x;
     int y = height/2 - font->getPixelSize();
-	std::vector<GLfloat> data;
+	  std::vector<GLfloat> data;
     int i = 0;
     float atlasWidth = Globals::get(Globals::FONT_TEXTURE_WIDTH),
             atlasHeight = Globals::get(Globals::FONT_TEXTURE_HEIGHT);
     Font::GlyphData gData;
     int l = 0;
-    for(string line : lines) {
+    for(std::string line : lines) {
         int lox = linesOffsetX[l++];
         for (unsigned char c : line) {
             if (c >= 32) {

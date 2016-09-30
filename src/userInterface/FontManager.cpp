@@ -37,7 +37,7 @@ bool FontManager::FontDefinition::operator== (FontDefinition fd) const {
     return fd.face == face && fd.pixelSize == pixelSize;
 }
 
-string FontManager::FontDefinition::getFace() const {
+std::string FontManager::FontDefinition::getFace() const {
     return face;
 }
 
@@ -53,9 +53,9 @@ FontManager* FontManager::getInstance() {
 
 }
 
-FontManager::FontDefinition::FontDefinition(string face, int pixelSize) : face(face), pixelSize(pixelSize){ }
+FontManager::FontDefinition::FontDefinition(std::string face, int pixelSize) : face(face), pixelSize(pixelSize){ }
 
-Font* FontManager::loadAndFetchFont(string fontFace, int pixelSize) {
+Font* FontManager::loadAndFetchFont(std::string fontFace, int pixelSize) {
     FontDefinition locate = FontDefinition(fontFace,pixelSize);
     auto it = loadedFonts.find(locate);
     if(it == loadedFonts.end()) {
@@ -65,7 +65,7 @@ Font* FontManager::loadAndFetchFont(string fontFace, int pixelSize) {
         return it->second;
 }
 
-void FontManager::loadFont(string fontFace, int pixelSize) {
+void FontManager::loadFont(std::string fontFace, int pixelSize) {
 
     FontDefinition newFont = FontDefinition(fontFace,pixelSize);
     loadedFonts.insert(std::pair<FontDefinition,Font*>(newFont,new Font(pixelSize)));
@@ -110,7 +110,7 @@ void FontManager::iterateGlyphs(FontDefinition def, unsigned int* width, unsigne
     FT_Face face = (FT_Face)malloc(sizeof(FT_Face));
 
     if(int error = FT_New_Face(*ft_library,def.face.c_str(),0,&face)){
-        Logger::logError("Failed loading face '" + def.face + "'. Error code: " + to_string(error));
+        Logger::logError("Failed loading face '" + def.face + "'. Error code: " + std::to_string(error));
         return;
     }
     FT_Set_Pixel_Sizes(face,0,def.pixelSize);
@@ -119,7 +119,7 @@ void FontManager::iterateGlyphs(FontDefinition def, unsigned int* width, unsigne
     for(unsigned char c = 32; c < 128; c++){
 
         if(int error = FT_Load_Char(face,c,FT_LOAD_RENDER)){
-            Logger::logError("Failed loading char '" + to_string(c) + "'. Error code: " + to_string(error));
+            Logger::logError("Failed loading char '" + std::to_string(c) + "'. Error code: " + std::to_string(error));
             continue;
         }
 
@@ -138,7 +138,8 @@ void FontManager::drawGlyphs() {
         Font* font = fontIt.second;
         FontDefinition fDef = fontIt.first;
         if(int error = FT_New_Face(*ft_library,fDef.face.c_str(),0,&face)){
-            Logger::logError("Failed loading face '" + fDef.face + "'. Error code: " + to_string(error));
+            Logger::logError("Failed loading face '" + fDef.face
+                             + "'. Error code: " + std::to_string(error));
             continue;
         }
         FT_Set_Pixel_Sizes(face,0,fDef.pixelSize);
@@ -147,32 +148,35 @@ void FontManager::drawGlyphs() {
         for(unsigned char c = 32; c < 128; c++){
 
             if(int error = FT_Load_Char(face,c,FT_LOAD_RENDER)){
-                Logger::logError("Failed loading char '" + to_string(c) + "'. Error code: " + to_string(error));
+                Logger::logError("Failed loading char '" + std::to_string(c)
+                                 + "'. Error code: " + std::to_string(error));
                 continue;
             }
 
-			if (glyph->bitmap.width > 0 && glyph->bitmap.rows > 0) {
-				glTexSubImage2D(GL_TEXTURE_2D, 0, x, 0, glyph->bitmap.width, glyph->bitmap.rows,
-					GL_RED, GL_UNSIGNED_BYTE, glyph->bitmap.buffer);
-				CHECK_GL_ERROR();
-			}
-            
+      if (glyph->bitmap.width > 0 && glyph->bitmap.rows > 0) {
+          glTexSubImage2D(GL_TEXTURE_2D, 0, x, 0, glyph->bitmap.width, glyph->bitmap.rows,
+          GL_RED, GL_UNSIGNED_BYTE, glyph->bitmap.buffer);
+          CHECK_GL_ERROR();
+      }
+
             font->addGlyph(glyph,x,c);
             x += glyph->bitmap.width;
 
         }
-
     }
-
-
 }
 
 FontManager::FontManager() {
 
-    int error;
     ft_library = (FT_Library*)malloc(sizeof(FT_Library));
-    if(error = FT_Init_FreeType(ft_library)){
-        throw new runtime_error("Could not initiate FreeType. Error code: " + error);
+    const int error = FT_Init_FreeType(ft_library);
+    if(error != 0) {
+        throw new runtime_error("Could not initiate FreeType. Error code: " + std::to_string(error));
     }
+}
 
+FontManager::~FontManager() {
+    if (ft_library != nullptr) {
+        free(ft_library);
+    }
 }

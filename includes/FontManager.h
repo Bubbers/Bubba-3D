@@ -2,8 +2,7 @@
 // Created by simon on 2016-03-11.
 //
 
-#ifndef SUPER_BUBBA_AWESOME_SPACE_FONTMANAGER_H
-#define SUPER_BUBBA_AWESOME_SPACE_FONTMANAGER_H
+#pragma once
 
 #include <unordered_map>
 #include <GL/glew.h>
@@ -12,7 +11,6 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-using namespace std;
 
 class Font;
 
@@ -30,7 +28,7 @@ public:
      * \warning Never dereference the returned font or copy it as the font
      * may change when other fonts are added.
      */
-    Font* loadAndFetchFont(string fontFace, int pixelSize);
+    Font* loadAndFetchFont(std::string fontFace, int pixelSize);
 
     /**
      * Returns the texture id used to store the font glyphs in.
@@ -50,23 +48,24 @@ protected:
     /**
      * Loads a font and caches it to the graphics card
      */
-    virtual void loadFont(string fontFace, int pixelSize);
+    virtual void loadFont(std::string fontFace, int pixelSize);
 
 private:
     FontManager();
+    ~FontManager();
 
     /**
      * An identifier for a font. Contains the file path to the font-face and
      * a font size.
      */
     struct FontDefinition{
-        string face;
+        std::string face;
         int pixelSize;
-        FontDefinition(string face, int pixelSize);
+        FontDefinition(std::string face, int pixelSize);
         FontDefinition(){}
         bool operator == (FontDefinition fd) const;
         size_t hash();
-        string getFace() const;
+        std::string getFace() const;
         int getPixelSize() const;
     };
 
@@ -86,7 +85,7 @@ private:
     /**
      * An unordered map mapping a font definition to a font
      */
-    typedef unordered_map<FontDefinition,Font*,FontDefHash> fontMap;
+    typedef std::unordered_map<FontDefinition,Font*,FontDefHash> fontMap;
 
     void iterateGlyphs(FontDefinition def, unsigned int* width, unsigned int* height);
     void drawGlyphs();
@@ -99,6 +98,3 @@ private:
     bool initiated = false;
 
 };
-
-
-#endif //SUPER_BUBBA_AWESOME_SPACE_FONTMANAGER_H
