@@ -38,7 +38,8 @@ void ShaderProgram::logLinkageError() {
     GLchar linkageLog[MAX_LOG_SIZE];
 
     glGetShaderInfoLog(this->shaderID, MAX_LOG_SIZE, NULL, linkageLog);
-    Logger::logError("Failed to compile shader of type PROGRAM\n" + *linkageLog);
+    Logger::logError("Failed to compile shader of type PROGRAM\n"
+                     + std::to_string(*linkageLog));
 }
 
 void ShaderProgram::use() {
@@ -72,19 +73,19 @@ void ShaderProgram::setUniform1f(std::string name, float value) {
     glUniform1f(getUniformLocation(name), value);
 }
 
-void ShaderProgram::setUniform3f(std::string name, float3 value){
+void ShaderProgram::setUniform3f(std::string name, chag::float3 value){
     glUniform3fv(getUniformLocation(name),1, &value.x);
 }
 
-void ShaderProgram::setUniform4f(std::string name, float4 value) {
+void ShaderProgram::setUniform4f(std::string name, chag::float4 value) {
     glUniform4fv(getUniformLocation(name),1,&value.x);
 }
 
-void ShaderProgram::setUniformMatrix4fv(std::string name, float4x4 matrix) {
+void ShaderProgram::setUniformMatrix4fv(std::string name, chag::float4x4 matrix) {
     glUniformMatrix4fv(getUniformLocation(name), 1, false, &matrix.c1.x);
 }
 
-void ShaderProgram::setUniform2f(std::string name, float2 value) {
+void ShaderProgram::setUniform2f(std::string name, chag::float2 value) {
     glUniform2fv(getUniformLocation(name),1,&value.x);
 }
 

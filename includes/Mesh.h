@@ -1,5 +1,4 @@
-#ifndef __MESH_H__
-#define __MESH_H__
+#pragma once
 
 #include <string>
 #include <vector>
@@ -11,11 +10,9 @@
 #include <Sphere.h>
 
 
-using namespace chag;
-
 class Triangle;
-class aiScene;
-class aiMesh;
+struct aiScene;
+struct aiMesh;
 struct aiMaterial;
 
 
@@ -83,7 +80,8 @@ public:
      * @param fileNameOfMesh The absolute/relative file path to the file containing the mesh
      */
     void initMaterials(const aiScene *pScene, const std::string &fileNameOfMesh);
-    void initMaterialTextures(Material *material, std::string fileNameOfMesh, const aiMaterial *loadedMaterial);
+    void initMaterialTextures(Material *material, std::string fileNameOfMesh,
+                              const aiMaterial *loadedMaterial);
     void initMaterialColors(Material *material, const aiMaterial *loadedMaterial);
     void initMaterialShininess(Material *material, const aiMaterial *loadedMaterial);
 
@@ -97,7 +95,8 @@ public:
      * @param loadedMaterial
      * @return A float3 containing the colors rgb
      */
-    float3 getColorFromMaterial(const char* colorTypeString, unsigned int type, unsigned int index, const aiMaterial &material);
+    float3 getColorFromMaterial(const char* colorTypeString, unsigned int type,
+                                unsigned int index, const aiMaterial &material);
 
     /**
      * Uses the file name of the mesh to calculate the absolute path to the specified texture
@@ -106,7 +105,8 @@ public:
      * @param textureName The path to the textureName relative to the mesh file
      * @return The path to the specified texture
      */
-    std::string getPathOfTexture(const std::string &fileNameOfMesh, std::string textureName);
+    std::string getPathOfTexture(const std::string &fileNameOfMesh,
+                                 std::string textureName);
 
     /**
      * Removes the file part from the path
@@ -130,7 +130,8 @@ public:
      * @param type A enum saying which texture type to load from the material
      * @return A pointer to the texture loaded
      */
-    Texture* getTexture(const aiMaterial *material, const std::string &fileNameOfMesh, aiTextureType type);
+    Texture* getTexture(const aiMaterial *material, const std::string &fileNameOfMesh,
+                        aiTextureType type);
 
     /**
      * Initiates OpenGL buffers and buffers the chunk data on to the graphics memory.
@@ -138,10 +139,12 @@ public:
      */
     void setupChunkForRendering(Chunk &chunk);
 
-    void setupSphere(std::vector<float3> *positions);
+    void setupSphere(std::vector<chag::float3> *positions);
 
     void createTriangles();
-    Triangle* createTriangleFromPositions(std::vector<chag::float3> positionBuffer, std::vector<unsigned int> indices, unsigned int startIndex);
+    Triangle* createTriangleFromPositions(std::vector<chag::float3> positionBuffer,
+                                          std::vector<unsigned int> indices,
+                                          unsigned int startIndex);
 
     std::vector<Triangle *> triangles;
     std::vector<Material> materials;
@@ -150,5 +153,3 @@ public:
     Sphere sphere;
     AABB m_aabb;
 };
-
-#endif // !__MESH_H__

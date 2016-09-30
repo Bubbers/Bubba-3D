@@ -1,18 +1,18 @@
 #include "particle/Particle.h"
 #include "ParticleConf.h"
 
-Particle::Particle(ParticleConf *conf, float4x4 modelMatrix) {
+Particle::Particle(ParticleConf *conf, chag::float4x4 modelMatrix) {
     reset(conf, modelMatrix);
 };
 
-void Particle::reset(ParticleConf *conf, float4x4 modelMatrix) {
+void Particle::reset(ParticleConf *conf, chag::float4x4 modelMatrix) {
     position = conf->initialPosition();
-	float4 vec = make_vector(position.x, position.y, position.z, 1.0f);
-	float4 mat = modelMatrix * vec;
-	position.x = mat.x;
-	position.y = mat.y;
-	position.z = mat.z;
-	velocity = conf->initialVelocity();
+    chag::float4 vec = make_vector(position.x, position.y, position.z, 1.0f);
+    chag::float4 mat = modelMatrix * vec;
+    position.x = mat.x;
+    position.y = mat.y;
+    position.z = mat.z;
+    velocity = conf->initialVelocity();
     life     = conf->calcLifetime();
 }
 
@@ -26,3 +26,6 @@ bool Particle::isAlive() {
     return life > 0.0f;
 }
 
+chag::float3 Particle::getPosition() {
+    return position;
+}
