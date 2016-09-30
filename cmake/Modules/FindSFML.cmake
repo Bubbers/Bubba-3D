@@ -72,6 +72,14 @@ set(FIND_SFML_PATHS
         /opt/local
         /opt/csw
         /opt
+        /usr/lib64
+        /usr/lib
+        /usr/lib/x86_64-linux-gnu
+        /usr/local/lib
+        /opt/local/lib
+        /usr/local/lib64
+        /usr/local/lib
+        /sw/lib
         ${PROJECT_SOURCE_DIR}/includes
         ${PROJECT_SOURCE_DIR}/lib)
 

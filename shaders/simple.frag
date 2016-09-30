@@ -1,10 +1,11 @@
-#version 130
+#version 330
 // required by GLSL spec Sect 4.5.3 (though nvidia does not, amd does)
 precision highp float;
 
 #define FOG_EQUATION_LINEAR 0
 #define FOG_EQUATION_EXP    1
 #define FOG_EQUATION_EXP2   2
+#define FOG_EQUATION_NONE   3
 
 uniform struct Fog {
 	vec3 vColor;
@@ -60,7 +61,7 @@ uniform DirectionalLight directionalLight;
 // inputs from vertex shader.
 in vec4 color;
 in vec2 texCoord;
-in vec4 viewSpacePosition; 
+in vec4 viewSpacePosition;
 in vec3 worldSpaceNormal;
 in vec4 worldSpacePosition;
 in vec4 shadowTexCoord;
@@ -74,19 +75,22 @@ uniform vec3 viewPosition;
 out vec4 fragmentColor;
 
 // global uniforms, that are the same for the whole scene
+uniform int has_shadow_map;
 uniform sampler2DShadow shadowMap;
-uniform samplerCube cubeMap; 
+
+uniform bool hasCubeMap;
+uniform samplerCube cubeMap;
 
 // object specific uniforms, change once per object but are the same for all materials in object.
-uniform float object_alpha; 
-uniform float object_reflectiveness = 0.0;
+float object_alpha;
+uniform float object_reflectiveness;
 
 // matrial properties, changed when material changes.
 uniform float material_shininess;
-uniform vec3 material_diffuse_color; 
-uniform vec3 material_specular_color; 
-uniform vec3 material_emissive_color; 
-uniform int has_diffuse_texture; 
+uniform vec3 material_diffuse_color;
+uniform vec3 material_specular_color;
+uniform vec3 material_emissive_color;
+uniform int has_diffuse_texture;
 uniform sampler2D diffuse_texture;
 uniform int has_normal_texture;
 uniform sampler2D normal_texture;
@@ -103,8 +107,9 @@ vec3 calculateDiffuse(vec3 normal, vec3 directionToLight, vec3 materialLight, ve
 vec3 calculateSpecular(vec3 normal, vec3 directionToLight, vec3 directionToEye, vec3 materialSpecular, vec3 sceneLight, float materialShininess);
 vec3 calculateFresnel(vec3 directionToLight, vec3 directionToEye, vec3 materialSpecular);
 vec3 calculateFog(vec3 color, float distance);
+vec3 calculateCubeMapSample(vec3 directionToEye, vec3 normal);
 
-void main() 
+void main()
 {
 	vec3 normal;
 	if (has_normal_texture == 1) {
@@ -112,7 +117,7 @@ void main()
 		normal = normalize(normal * 2.0 - 1.0);
 		normal = normalize(TBN * normal);
 	}
-	else { 
+	else {
 		normal = normalize(worldSpaceNormal);
 	};
 
@@ -124,18 +129,29 @@ void main()
 	for (int i = 0; i < nrPointLights; i++) {
 		color += calculatePointLight(pointLights[i], normal, directionToEye);
 	}
-	
+
 	for (int i = 0; i < nrSpotLights; i++) {
 		color += calculateSpotLight(spotLights[i], normal, directionToEye);
 	}
-	
+
 	vec3 foggedColor = calculateFog(color, abs(viewSpacePosition.z / viewSpacePosition.w));
 	vec3 emissive = material_emissive_color;
 
-	vec3 reflectionVector = normalize((inverseViewNormalMatrix * vec4(reflect(-directionToEye, normal), 0.0)).xyz);
-	vec3 cubeMapSample = texture(cubeMap, reflectionVector).rgb * object_reflectiveness;
-	
+    vec3 cubeMapSample = vec3(0.0);
+    cubeMapSample = calculateCubeMapSample(directionToEye, normal);
+
 	fragmentColor = vec4(foggedColor + emissive + cubeMapSample, object_alpha);
+}
+
+vec3 calculateCubeMapSample(vec3 directionToEye, vec3 normal) {
+    vec3 result;
+    if(hasCubeMap ) {
+        vec3 reflectionVector = normalize((inverseViewNormalMatrix * vec4(reflect(-directionToEye, normal), 0.0)).xyz);
+        result = texture(cubeMap, reflectionVector).rgb * object_reflectiveness;
+    } else {
+        result =  vec3(0.0);
+    }
+    return result;
 }
 
 Light calculateGeneralLight(Light colors, vec3 directionToLight, vec3 directionToEye, vec3 normal) {
@@ -157,9 +173,12 @@ Light calculateGeneralLight(Light colors, vec3 directionToLight, vec3 directionT
 	// if we have a texture we modulate all of the color properties
 	if (has_diffuse_texture == 1)
 	{
-		vec3 tex_color = texture(diffuse_texture, texCoord.xy).xyz;
-		diffuse *= tex_color;
-		ambient *= tex_color;
+		vec4 tex_color = texture(diffuse_texture, texCoord.xy);
+		diffuse *= tex_color.xyz;
+		ambient *= tex_color.xyz;
+		object_alpha = tex_color.w;
+	} else {
+	    object_alpha = 1.0;
 	}
 
 	Light light;
@@ -192,17 +211,19 @@ vec3 calculateSpotLight(SpotLight light, vec3 normal, vec3 directionToEye){
 vec3 calculateDirectionalLight(DirectionalLight light, vec3 normal, vec3 directionToEye) {
 	Light lt =  calculateGeneralLight(light.colors, normalize(-light.direction), directionToEye, normal);
 
-	float visibility = textureProj(shadowMap, shadowTexCoord);
-	lt.specularColor *= visibility;
-	lt.diffuseColor *= visibility;
+    if(has_shadow_map == 1) {
+	    float visibility = textureProj(shadowMap, shadowTexCoord);
+	    lt.specularColor *= visibility;
+	    lt.diffuseColor *= visibility;
+	}
 
-	return lt.ambientColor +lt.diffuseColor + lt.specularColor;
+    return lt.ambientColor + lt.diffuseColor + lt.specularColor;
 }
 
 vec3 calculatePointLight(PointLight light, vec3 normal, vec3 directionToEye) {
 
 	vec3 directionToLight = normalize(light.position - worldSpacePosition.xyz);
-	
+
 	Light lt = calculateGeneralLight(light.colors, directionToLight, directionToEye, normal);
 
 	float distance = length(light.position - worldSpacePosition.xyz);
@@ -212,10 +233,15 @@ vec3 calculatePointLight(PointLight light, vec3 normal, vec3 directionToEye) {
 	lt.specularColor *= attenuation;
 	lt.ambientColor  *= attenuation;
 
-	return lt.ambientColor + lt.diffuseColor + lt.specularColor;	
+	return lt.ambientColor + lt.diffuseColor + lt.specularColor;
 }
 
 vec3 calculateFog(vec3 color, float dist) {
+
+    if(fog.iEquation == FOG_EQUATION_NONE) {
+         return color;
+    }
+
 	float f = 1.0;
 	if (fog.iEquation == FOG_EQUATION_LINEAR) {
 		f = (fog.fEnd - dist) / (fog.fEnd - fog.fStart);
@@ -244,7 +270,7 @@ vec3 calculateSpecular(vec3 normal, vec3 directionToLight, vec3 directionToEye, 
 	vec3 h = normalize(directionToLight + directionToEye);
 	float normalizationFactor = ((materialShininess + 2.0) / 8.0);
 	return normalizationFactor * (dot(normal, directionToLight) < 0.0 ? vec3(0.0) : pow(max(0.0, dot(h, normal)), 4.0 * materialShininess) * materialSpecular * sceneLight);
-} 
+}
 
 vec3 calculateFresnel(vec3 normal, vec3 directionToEye, vec3 materialSpecular) {
 	float angle = dot(directionToEye, normal);

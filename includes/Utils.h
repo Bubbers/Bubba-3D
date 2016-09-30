@@ -4,6 +4,7 @@
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 #include "ShaderProgram.h"
+#include "GameObject.h"
 
 //*****************************************************************************
 //	Frame buffer objects
@@ -43,12 +44,20 @@ static T getRandomElem(const T (&ts)[S])
 		return NULL;
 	}
 }
+ static void updateMinAndMax(float x, float y, float z, chag::float3* minV, chag::float3* maxV) {
+	if (x < minV->x) { minV->x = x; };
+	if (y < minV->y) { minV->y = y; };
+	if (z < minV->z) { minV->z = z; };
+	if (x > maxV->x) { maxV->x = x; };
+	if (y > maxV->y) { maxV->y = y; };
+	if (z > maxV->z) { maxV->z = z; };
+}
 
 static float3 createRandomVector(float minValue, float maxValue){
 	return make_vector(getRand(minValue,maxValue),getRand(minValue,maxValue),getRand(minValue,maxValue));
 }
 
-enum State{Playing, Died, Start, Won, Credits};
-
+typedef std::pair<GameObject*, GameObject*> CollisionPair;
+typedef std::vector<CollisionPair> CollisionPairList;
 
 #endif

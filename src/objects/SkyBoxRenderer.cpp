@@ -13,7 +13,7 @@ SkyBoxRenderer::SkyBoxRenderer(Camera *camera, Mesh* skyMesh, GameObject* gameOb
 bool SkyBoxRenderer::init(const string &posXFilename, const string &negXFilename, const string &posYFilename,
                   const string &negYFilename, const string &posZFilename, const string &negZFilename) {
     m_pCubemap = new CubeMapTexture(posXFilename, negXFilename, posYFilename, negYFilename, posZFilename, negZFilename);
-    ResourceManager::loadShader("../shaders/skybox.vert", "../shaders/skybox.frag", SKYBOX_SHADER_NAME);
+    ResourceManager::loadShader("shaders/skybox.vert", "shaders/skybox.frag", SKYBOX_SHADER_NAME);
     shaderProgram = ResourceManager::getShader(SKYBOX_SHADER_NAME);
     shaderProgram->setUniformBufferObjectBinding(UNIFORM_BUFFER_OBJECT_MATRICES_NAME, UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
 

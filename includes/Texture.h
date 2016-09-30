@@ -2,7 +2,10 @@
 #define BUBBA_3D_TEXTURE_H
 
 #include <GL/glew.h>
+#include <FreeImage.h>
+#include <string>
 
+using namespace std;
 
 class Texture {
 public:
@@ -11,9 +14,14 @@ public:
     void bind(GLenum textureUnit);
     void loadTexture(std::string fileName);
     GLuint getID() {return textureID; };
+
+    int getHeight();
+    int getWidth();
+
 private:
 
     GLuint textureID;
+    int width,height;
 };
 
 #endif //BUBBA_3D_TEXTURE_H

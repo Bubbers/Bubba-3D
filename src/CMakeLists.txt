@@ -15,6 +15,7 @@ add_subdirectory(shader)
 add_subdirectory(sound)
 add_subdirectory(linmath)
 add_subdirectory(glutil)
+add_subdirectory(userInterface)
 
 
 set(HEADER_FILES
@@ -25,12 +26,13 @@ set(HEADER_FILES
 		  ${PROJECT_SOURCE_DIR}/includes/PerspectiveCamera.h 
 		  ${PROJECT_SOURCE_DIR}/includes/AudioManager.h 
 		  ${PROJECT_SOURCE_DIR}/includes/Input.h 
-		  ${PROJECT_SOURCE_DIR}/includes/Renderer.h 
-		  ${PROJECT_SOURCE_DIR}/includes/BFBroadPhase.h 
+		  ${PROJECT_SOURCE_DIR}/includes/Renderer.h
 		  ${PROJECT_SOURCE_DIR}/includes/JoystickAxis.h 
 		  ${PROJECT_SOURCE_DIR}/includes/ResourceManager.h 
-		  ${PROJECT_SOURCE_DIR}/includes/BroadPhase.h 
-		  ${PROJECT_SOURCE_DIR}/includes/JoystickButton.h 
+		  ${PROJECT_SOURCE_DIR}/includes/BroadPhaseCollider.h
+		  ${PROJECT_SOURCE_DIR}/includes/ExactPhaseCollider.h
+		  ${PROJECT_SOURCE_DIR}/includes/JoystickButton.h
+		  ${PROJECT_SOURCE_DIR}/includes/ColliderFactory.h
 		  ${PROJECT_SOURCE_DIR}/includes/Scene.h 
 		  ${PROJECT_SOURCE_DIR}/includes/Camera.h 
 		  ${PROJECT_SOURCE_DIR}/includes/JoystickTranslation.h 
@@ -166,6 +168,11 @@ if(NOT SFML_FOUND)
     message(ERROR " SFML not found!")
 endif(NOT SFML_FOUND)
 
+#########################################################
+# FIND FREETYPE
+#########################################################
+find_package(Freetype REQUIRED)
+include_directories(${FREETYPE_INCLUDE_DIRS})
 
 target_include_directories (${LIBRARY_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/includes")
 target_include_directories (${LIBRARY_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/lib")
@@ -178,3 +185,10 @@ target_link_libraries(${LIBRARY_NAME}  ${ASSIMP_LIBRARY})
 target_link_libraries(${LIBRARY_NAME}  ${ASSIMP_LIBRARIES})
 
 target_link_libraries(${LIBRARY_NAME}  ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${GLEW_LIBRARIES} ${IL_LIBRARIES} ${ILU_LIBRARIES} ${ILUT_LIBRARIES} ${ASSIMP_LIBRARY} ${SFML_LIBRARIES})
+
+target_link_libraries(${LIBRARY_NAME} ${FREETYPE_LIBRARIES})
+
+add_custom_command(TARGET Bubba3D POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_directory
+		${CMAKE_SOURCE_DIR}/Bubba-3D/shaders
+		$<TARGET_FILE_DIR:Bubba3D>/shaders)

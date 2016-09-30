@@ -75,7 +75,6 @@ bool checkGLError(const char *file, int line);
  */
 void startupGLDiagnostics();
 
-void checkMinMax(float x, float y, float z, chag::float3* minV, chag::float3* maxV);
 
 /** 
  * Initialize OpenGL debug messages.

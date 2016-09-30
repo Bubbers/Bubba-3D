@@ -21,3 +21,4 @@ install:
 	-sudo apt-get install freeglut3-dev libjpeg-dev libfreetype6-dev libxrandr-dev libglew-dev libsndfile1-dev libopenal-dev libudev-dev -y
 	-sudo apt-get install software-properties-common libfreeimage3 libfreeimage-dev libassimp-dev libglw1-mesa-dev libglew-dev libxmu-dev libxi-dev -y
 	-sudo apt-get install cmake -y
+	-sudo apt-get install libsfml-dev libcsfml-dev
