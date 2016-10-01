@@ -19,6 +19,7 @@
 //
 
 #include <linmath/float3.h>
+#include <linmath/SmallVector2.h>
 #include "IHudDrawable.h"
 
 void IHudDrawable::setRotation(float rotation) {
@@ -31,4 +32,8 @@ void IHudDrawable::setRelativePosition(float3 position) {
 
 void IHudDrawable::setCenterOffset(float3 offset) {
     center = offset;
+}
+
+void IHudDrawable::setScale(float2 scale) {
+    this->scale = make_vector(scale.x,scale.y,1.0f);
 }

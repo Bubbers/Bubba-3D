@@ -215,5 +215,5 @@ void TextObject::render(ShaderProgram *shaderProgram, float4x4 *projectionMatrix
 
 float4x4 TextObject::getModelMatrix() {
     float3 originalPosition = make_vector((float)x+width/2,(float)y-height/2,0.0f)-center;
-    return make_translation(originalPosition+relativePosition)*make_rotation_z<float4x4>(rotation)*make_translation(center)*make_identity<float4x4>();
+    return make_translation(originalPosition+relativePosition)*make_rotation_z<float4x4>(rotation)*make_scale<float4x4>(scale)*make_translation(center)*make_identity<float4x4>();
 }

@@ -87,7 +87,7 @@ void GLSquare::bindTextureAndDraw(ShaderProgram *shaderProgram, float4x4* projec
 }
 
 float4x4 GLSquare::getModelMatrix() {
-    return make_translation(originalPosition+relativePosition)*make_rotation_z<float4x4>(rotation)*make_translation(center)*make_identity<float4x4>();
+    return make_translation(originalPosition+relativePosition)*make_rotation_z<float4x4>(rotation)*make_scale<float4x4>(scale)*make_translation(center)*make_identity<float4x4>();
 }
 
 GLSquare::GLSquare(float posX, float posY, float width, float height, HUDGraphic *image) {
@@ -107,7 +107,7 @@ void GLSquare::init(float posX, float posY, float width, float height, HUDGraphi
 }
 
 void GLSquare::updateOriginalPosition() {
-    originalPosition = make_vector(posX+width/2.0f+center.x,-posY-height/2.0f-center.y,0.0f);
+    originalPosition = make_vector(posX+width/2.0f-center.x,-posY-height/2.0f-center.y,0.0f);
 }
 
 void GLSquare::setCenterOffset(float3 offset) {

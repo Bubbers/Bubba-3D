@@ -125,6 +125,7 @@ public:
     virtual void callListeners(int x, int y, ListenerType listenerType, bool enteringElseLeaving);
     virtual HUDGraphic* getGraphic();
     virtual void updateGraphic();
+    virtual IHudDrawable* getRenderedBackground();
 
 protected:
     vector<Layout*> children;

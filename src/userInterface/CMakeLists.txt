@@ -16,6 +16,7 @@ set(BUBBA3D_FILES_SOURCE userInterface/Dimension.cpp
         userInterface/InsideSquareChecker.cpp
         userInterface/InsideRoundedSquareChecker.h
         userInterface/InsideRoundedSquareChecker.cpp
+        userInterface/RelativeIHudDrawable.cpp
 
         ${BUBBA3D_FILES_SOURCE}
                          PARENT_SCOPE)
