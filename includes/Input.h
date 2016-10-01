@@ -25,7 +25,7 @@
  */
 class Input {
 public:
-    virtual ~Input() = 0;
+    virtual ~Input() {};
     virtual ControlStatus getStatus() = 0;
     virtual ControlStatus::Activator getActivator() = 0;
     bool isDual();

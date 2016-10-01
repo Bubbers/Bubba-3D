@@ -34,6 +34,8 @@ public:
      * A non-dual input activated if \p key is pressed.
      */
     KeyboardButton(sf::Keyboard::Key key);
+
+    ~KeyboardButton() = default;
     /**
      * Creates a dual button activated when either key is pressed. When \p keyNeg is
      * pressed the ControlStatus value is -100, when ±p keyPos is pressed the value is 100. If
