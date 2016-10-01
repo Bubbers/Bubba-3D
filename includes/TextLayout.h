@@ -50,7 +50,7 @@ public:
      * \internal
      */
     virtual void getGLSquares(float layoutXPos,float layoutYPos, float layoutWidth,
-                              float layoutHeight, map<string,IHudDrawable*>* list);
+                              float layoutHeight, std::map<std::string, IHudDrawable*> *map);
 
     /**
      * Changes the text of the TextLayout. If you want to change the text of

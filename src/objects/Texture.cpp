@@ -48,7 +48,8 @@ void Texture::loadTexture(std::string fileName)
 
     GLenum format = comp == 3 ? GL_RGB : GL_RGBA;
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB_ALPHA_EXT, width, height, 0, format, GL_UNSIGNED_BYTE, image);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB_ALPHA_EXT,
+                 width, height, 0, format, GL_UNSIGNED_BYTE, image);
 
     CHECK_GL_ERROR();
     glGenerateMipmap(GL_TEXTURE_2D);
@@ -74,3 +75,7 @@ int Texture::getHeight() {
 int Texture::getWidth() {
     return width;
 }
+
+GLuint Texture::getID() {
+    return textureID;
+};

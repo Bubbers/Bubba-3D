@@ -14,20 +14,18 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Bubba-3D. If not, see http://www.gnu.org/licenses/.
  */
-
-#ifndef BUBBAROGUEFORT_RELATIVEIHUDDRAWABLE_H
-#define BUBBAROGUEFORT_RELATIVEIHUDDRAWABLE_H
+#pragma once
 
 #include "IHudDrawable.h"
 
 class GameObject;
 class Camera;
 
-class RelativeIHudDrawable : public IHudDrawable{
+class RelativeIHudDrawable : public IHudDrawable {
 public:
 
     RelativeIHudDrawable(Camera* worldCamera, GameObject* relativeTo, IHudDrawable* toDraw);
-    virtual void render(ShaderProgram* shaderProgram, float4x4* projectionMatrix);
+    virtual void render(ShaderProgram* shaderProgram, chag::float4x4* projectionMatrix);
 
 protected:
     GameObject* relativeTo;
@@ -35,6 +33,3 @@ protected:
     Camera* worldCamera;
 
 };
-
-
-#endif //BUBBAROGUEFORT_RELATIVEIHUDDRAWABLE_H

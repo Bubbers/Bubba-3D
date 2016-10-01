@@ -14,47 +14,48 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Bubba-3D. If not, see http://www.gnu.org/licenses/.
  */
-#ifndef __EFFECTS_H__
-#define __EFFECTS_H__
+#pragma once
 
 #include "linmath/float3.h"
 
-using namespace chag;
 namespace FOG_EQ {
-  enum fog_equation { LINEAR = 0, EXP = 1, EXP2 = 2, NONE = 3 };
+    enum fog_equation {
+        LINEAR = 0,
+        EXP = 1,
+        EXP2 = 2,
+        NONE = 3
+    };
 };
 
 
 struct Fog {
-  float fDensity;
-  float fStart;
-  float fEnd;
-  float3 vColor;
-  FOG_EQ::fog_equation fEquation;
+    float fDensity;
+    float fStart;
+    float fEnd;
+    chag::float3 vColor;
+    FOG_EQ::fog_equation fEquation;
 
-  Fog() {
-    fDensity = 0.001f;
-    fStart = 50.0f;
-    fEnd = 900.0f;
-    vColor = make_vector(1.0f, 1.0f, 1.0f);
-    fEquation = FOG_EQ::NONE;
-  }
+    Fog() {
+        fDensity = 0.001f;
+        fStart = 50.0f;
+        fEnd = 900.0f;
+        vColor = chag::make_vector(1.0f, 1.0f, 1.0f);
+        fEquation = FOG_EQ::NONE;
+    }
 };
 
 struct Blur {
-  float cutOff;
-  bool active;
+    float cutOff;
+    bool active;
 
-  Blur() {
-    cutOff = 1.0f;
-    active = true;
-  }
+    Blur() {
+        cutOff = 1.0f;
+        active = true;
+    }
 };
 
 
 struct Effects {
-  Fog fog;
-  Blur blur;
+    Fog fog;
+    Blur blur;
 };
-
-#endif //__EFFECTS_H__

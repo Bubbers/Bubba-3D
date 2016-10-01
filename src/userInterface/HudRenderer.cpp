@@ -63,25 +63,25 @@ void HudRenderer::updateLayout() {
 
 void HudRenderer::render() {
 	
-    float4x4 orthographicProjection = createOrthographicProjection();
+    chag::float4x4 orthographicProjection = createOrthographicProjection();
     for(auto child : squares)
         child.second->render(shaderProgram,&orthographicProjection);
 		
 }
 
 IHudDrawable* HudRenderer::getHudDrawableById(string id) {
-    map<string,IHudDrawable*>::iterator it = squares.find(id);
+    std::map<string,IHudDrawable*>::iterator it = squares.find(id);
     return it == squares.end() ? nullptr : it->second;
 }
 
-float4x4 HudRenderer::createOrthographicProjection() {
+chag::float4x4 HudRenderer::createOrthographicProjection() {
     static int w = -1, h = -1;
-    static float4x4 orthoMatrix;
+    static chag::float4x4 orthoMatrix;
     if(Globals::get(Globals::WINDOW_WIDTH) != w || Globals::get(Globals::WINDOW_HEIGHT) != h){
         w = Globals::get(Globals::WINDOW_WIDTH);
         h = Globals::get(Globals::WINDOW_HEIGHT);
         float r = (float)w, l = 0.0f, b = -(float)h, t =  0.0f, f = 1.0f, n = -1.0f;
-        orthoMatrix = make_ortho(r,l,t,b,f,n);
+        orthoMatrix = chag::make_ortho(r, l, t, b, f, n);
     }
     return orthoMatrix;
 }
@@ -108,8 +108,6 @@ void HudRenderer::setWorldCamera(Camera *worldCamera) {
 }
 
 void HudRenderer::addRelativeLayout(GameObject *relativeTo, Layout *layout) {
-    this->relativeLayouts.push_back(pair<GameObject*,Layout*>(relativeTo,layout));
+    this->relativeLayouts.push_back(pair<GameObject*, Layout*>(relativeTo, layout));
     updateLayout();
 }
-
-

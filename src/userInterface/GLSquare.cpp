@@ -14,10 +14,6 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Bubba-3D. If not, see http://www.gnu.org/licenses/.
  */
-//
-// Created by simon on 2016-02-02.
-//
-
 #include <glutil/glutil.h>
 #include <GL/glew.h>
 #include <ShaderProgram.h>
@@ -29,7 +25,7 @@
 #include <ResourceManager.h>
 #include <Globals.h>
 
-void GLSquare::render(ShaderProgram* shaderProgram, float4x4* projectionMatrix) {
+void GLSquare::render(ShaderProgram* shaderProgram, chag::float4x4* projectionMatrix) {
 
     GLint currentDepthFunc;
     glGetIntegerv(GL_DEPTH_FUNC, &currentDepthFunc);
@@ -51,7 +47,7 @@ void GLSquare::render(ShaderProgram* shaderProgram, float4x4* projectionMatrix) 
     shaderProgram->restorePreviousShaderProgram();
 }
 
-void GLSquare::bindTextureAndDraw(ShaderProgram *shaderProgram, float4x4* projectionMatrix) {
+void GLSquare::bindTextureAndDraw(ShaderProgram *shaderProgram, chag::float4x4* projectionMatrix) {
     shaderProgram->use();
     glBindVertexArray(vao);
 
@@ -61,19 +57,24 @@ void GLSquare::bindTextureAndDraw(ShaderProgram *shaderProgram, float4x4* projec
     shaderProgram->setUniform1i("isFont",false);
 
     int* roundedCorners = graphic->getRoundedCorners();
-    float4 calcCorners = make_vector(roundedCorners[0]/height,roundedCorners[1]/height,
-                roundedCorners[2]/height,roundedCorners[3]/height);
+    chag::float4 calcCorners = chag::make_vector(roundedCorners[0] / height,
+                                                 roundedCorners[1] / height,
+                                                 roundedCorners[2] / height,
+                                                 roundedCorners[3] / height);
     shaderProgram->setUniform4f("roundedCorners",calcCorners);
 
     shaderProgram->setUniform1f("ratioWidthToHeight", width/height);
 
     int* borders = graphic->getBorders();
-    float4 calcBorders = make_vector(borders[0]/height,borders[1]/width,borders[2]/height,borders[3]/width);
+    chag::float4 calcBorders = chag::make_vector(borders[0] / height,
+                                                 borders[1] / width,
+                                                 borders[2] / height,
+                                                 borders[3] / width);
     shaderProgram->setUniform4f("border",calcBorders);
 
     shaderProgram->setUniform4f("borderColor",graphic->getBorderColor());
 
-	if(graphic->isTextureElseColor()) {
+    if(graphic->isTextureElseColor()) {
         graphic->getTexture()->bind(GL_TEXTURE0);
         shaderProgram->setUniform1i("isTexture",true);
         shaderProgram->setUniform1i("isColor",false);
@@ -86,8 +87,12 @@ void GLSquare::bindTextureAndDraw(ShaderProgram *shaderProgram, float4x4* projec
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }
 
-float4x4 GLSquare::getModelMatrix() {
-    return make_translation(originalPosition+relativePosition)*make_rotation_z<float4x4>(rotation)*make_scale<float4x4>(scale)*make_translation(center)*make_identity<float4x4>();
+chag::float4x4 GLSquare::getModelMatrix() {
+    return chag::make_translation(originalPosition + relativePosition)
+         * chag::make_rotation_z<chag::float4x4>(rotation)
+         * chag::make_scale<chag::float4x4>(scale)
+         * chag::make_translation(center)
+         * chag::make_identity<chag::float4x4>();
 }
 
 GLSquare::GLSquare(float posX, float posY, float width, float height, HUDGraphic *image) {
@@ -100,17 +105,19 @@ void GLSquare::init(float posX, float posY, float width, float height, HUDGraphi
     this->width = width;
     this->height = height;
     this->graphic = image;
-    IHudDrawable::setRelativePosition(make_vector(0.0f,0.0f,0.0f));
+    IHudDrawable::setRelativePosition(chag::make_vector(0.0f, 0.0f, 0.0f));
     center = image->getCenterOffset(width,height);
     updateOriginalPosition();
     fillVertexBuffer();
 }
 
 void GLSquare::updateOriginalPosition() {
-    originalPosition = make_vector(posX+width/2.0f-center.x,-posY-height/2.0f-center.y,0.0f);
+    originalPosition = chag::make_vector( posX + width  / 2.0f - center.x,
+                                         -posY - height / 2.0f - center.y,
+                                          0.0f);
 }
 
-void GLSquare::setCenterOffset(float3 offset) {
+void GLSquare::setCenterOffset(chag::float3 offset) {
     center = offset;
     updateOriginalPosition();
 }
@@ -137,13 +144,13 @@ void GLSquare::fillVertexBuffer() {
     glBufferData(GL_ARRAY_BUFFER, sizeof(quad), quad, GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 7*sizeof(float), 0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), 0);
 
     glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 7 * sizeof(float), ((char *)NULL + sizeof(float)*3));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 7 * sizeof(float), ((char *)NULL + sizeof(float) * 3));
 
     glEnableVertexAttribArray(2);
-    glVertexAttribPointer(2,2,GL_FLOAT,GL_FALSE,7*sizeof(float), ((char *)NULL + sizeof(float)*5));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 7 * sizeof(float), ((char *)NULL + sizeof(float) * 5));
 
     // CLEANUP
     glBindVertexArray(0);

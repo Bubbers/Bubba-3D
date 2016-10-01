@@ -14,22 +14,19 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Bubba-3D. If not, see http://www.gnu.org/licenses/.
  */
-#ifndef BUBBA_3D_TEXTURE_H
-#define BUBBA_3D_TEXTURE_H
+#pragma once
 
 #include <GL/glew.h>
 #include <FreeImage.h>
 #include <string>
 
-using namespace std;
-
 class Texture {
 public:
     Texture() {};
-    Texture(GLuint textureID) {this->textureID = textureID; };
+    Texture(GLuint textureID): textureID(textureID) {};
     void bind(GLenum textureUnit);
     void loadTexture(std::string fileName);
-    GLuint getID() {return textureID; };
+    GLuint getID();
 
     int getHeight();
     int getWidth();
@@ -39,5 +36,3 @@ private:
     GLuint textureID;
     int width,height;
 };
-
-#endif //BUBBA_3D_TEXTURE_H

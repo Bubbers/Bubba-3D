@@ -14,16 +14,9 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Bubba-3D. If not, see http://www.gnu.org/licenses/.
  */
-//
-// Created by simon on 2016-02-14.
-//
-
-#ifndef SUPER_BUBBA_AWESOME_SPACE_LISTLAYOUT_H
-#define SUPER_BUBBA_AWESOME_SPACE_LISTLAYOUT_H
+#pragma once
 
 #include <Layout.h>
-
-using namespace std;
 
 /**
  * A layout to create a list of other layouts.
@@ -46,9 +39,9 @@ public:
      * each other in the specified \p orientation
      */
     ListLayout(Orientation orientation, Dimension width, Dimension height);
-    virtual ~ListLayout(){}
+    virtual ~ListLayout() = default;
     virtual void getGLSquares(float layoutXPos,float layoutYPos, float layoutWidth,
-                              float layoutHeight, map<string,IHudDrawable*> *list);
+                              float layoutHeight, std::map<std::string, IHudDrawable*> *map);
 
 protected:
     Orientation orientation;
@@ -57,6 +50,3 @@ protected:
     unsigned int wrapSize(Orientation orientation);
     void checkChildCompatibility(Layout* child);
 };
-
-
-#endif //SUPER_BUBBA_AWESOME_SPACE_LISTLAYOUT_H

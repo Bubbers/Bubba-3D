@@ -14,19 +14,12 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Bubba-3D. If not, see http://www.gnu.org/licenses/.
  */
-//
-// Created by simon on 2016-02-06.
-//
-
-#ifndef SUPER_BUBBA_AWESOME_SPACE_LAYOUT_H
-#define SUPER_BUBBA_AWESOME_SPACE_LAYOUT_H
+#pragma once
 
 #include <vector>
 #include <map>
 #include <Dimension.h>
 #include <functional>
-
-using namespace std;
 
 class Texture;
 class HUDGraphic;
@@ -40,18 +33,15 @@ class GLSquare;
 class Layout {
 
 public:
+    Layout() = default;
+    virtual ~Layout() = default;
 
-    enum ListenerType {ON_CLICK_LISTENER,ON_HOVER_LISTENER};
+    enum ListenerType {
+        ON_CLICK_LISTENER,
+        ON_HOVER_LISTENER
+    };
 
-    typedef function<void (int x, int y, Layout* element, bool enteredElseLeaving)> EventFunction;
-
-    /**
-     * Add a sub-layout. How the child is positioned and its dimensions are
-     * decided by the implementing class.
-     */
-    virtual void addChild(Layout* child);
-
-    virtual void clearChildren();
+    typedef std::function<void (int x, int y, Layout* element, bool enteredElseLeaving)> EventFunction;
 
     /**
      * The function to fetch all GLSquares from this layout and its children
@@ -64,8 +54,8 @@ public:
      * float layoutYPos, float layoutWidth, float layoutHeight, map<string,IHudDrawable*>* list) must be
      * overridden.
      */
-    virtual map<string,IHudDrawable*> getGLSquares(float layoutXPos,float layoutYPos, float layoutWidth,
-                                           float layoutHeight);
+    virtual std::map<std::string, IHudDrawable*> getGLSquares(float layoutXPos,float layoutYPos,
+                                                              float layoutWidth, float layoutHeight);
 
     /**
      *
@@ -80,8 +70,6 @@ public:
      */
     virtual Dimension getHeight() = 0;
 
-    virtual ~Layout(){}
-
     /**
      * The function to fetch all GLSquares from this layout and its children
      * based on the position and dimensions given. The parent calculates
@@ -94,52 +82,62 @@ public:
      * before doing anything else. Otherwise Layout::setBackground() won't have an effect.
      */
     virtual void getGLSquares(float layoutXPos,float layoutYPos, float layoutWidth,
-                              float layoutHeight, map<string,IHudDrawable*>* list) = 0;
+                              float layoutHeight, std::map<std::string, IHudDrawable*> *map) = 0;
+
+    virtual HUDGraphic* getGraphic();
 
     /**
      * Sets the background of this Layout.
      */
-    virtual Layout* setBackground(HUDGraphic* graphic);
+    virtual Layout* setBackground(HUDGraphic *graphic);
 
     /**
      * Sets the layout id of this layout. This makes it possible to retrieve the
      * layout by HudRenderer::getLayoutById(). You can also get the rendering GLSquare
      * of the background using HudRenderer::getHudDrawableById().
      */
-    virtual Layout* setLayoutId(string id);
+    virtual Layout* setLayoutId(std::string id);
 
     /**
      * Searches through this object and all children after the
      * given ID and returns the first match found.
      * Returns {\code nullptr} if no child had the specified id.
      */
-    virtual Layout* findById(string id);
+    virtual Layout* findById(std::string id);
 
     virtual void invokeListeners(int x, int y, ListenerType listenerType);
     virtual void invokeListenersInternal(int x, int y, ListenerType listenerType, bool mayBeHit);
 
     virtual Layout* addClickListener(EventFunction eventFunction);
     virtual Layout* addHoverListener(EventFunction eventFunction);
+
+    /**
+     * Add a sub-layout. How the child is positioned and its dimensions are
+     * decided by the implementing class.
+     */
+    virtual void addChild(Layout* child);
+
+    virtual void clearChildren();
     virtual void clearHoverListeners();
     virtual void clearClickListeners();
+
     virtual void callListeners(int x, int y, ListenerType listenerType, bool enteringElseLeaving);
-    virtual HUDGraphic* getGraphic();
+
     virtual void updateGraphic();
     virtual IHudDrawable* getRenderedBackground();
 
 protected:
-    vector<Layout*> children;
+    std::vector<Layout*> children;
     HUDGraphic* graphic = nullptr;
-    string id = "";
+    std::string id = "";
     InsideChecker* insideChecker = nullptr;
-    vector<EventFunction>* hoverListeners = new vector<EventFunction>();
-    vector<EventFunction>* clickListeners = new vector<EventFunction>();
+
+    std::vector<EventFunction>* hoverListeners = new std::vector<EventFunction>();
+    std::vector<EventFunction>* clickListeners = new std::vector<EventFunction>();
     GLSquare* renderedBackground = nullptr;
+
     bool hoveredBackground = false;
     bool mouseWasDown = false;
 
-    string getNextRandId();
-
+    std::string getNextRandId();
 };
-
-#endif //SUPER_BUBBA_AWESOME_SPACE_LAYOUT_H

@@ -14,19 +14,12 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Bubba-3D. If not, see http://www.gnu.org/licenses/.
  */
-//
-// Created by johan on 2015-12-12.
-//
-
-#ifndef BUBBA_3D_HUDRENDERER_H
-#define BUBBA_3D_HUDRENDERER_H
+#pragma once
 
 #include "IRenderComponent.h"
 #include "GL/glew.h"
 #include "Utils.h"
 #include <map>
-
-using namespace std;
 
 class Texture;
 class Layout;
@@ -64,7 +57,7 @@ public:
      * Get any layout in the root layout added in HudRenderer::setLayout() by
      * its layout ID.
      */
-    virtual Layout* getLayoutById(string id);
+    virtual Layout* getLayoutById(std::string id);
 
     /**
      * Get the low-level drawable produced by any of the layout
@@ -81,19 +74,17 @@ public:
      * \see Layout::setLayoutId()
      * \see TextLayout::setTextId()
      */
-    virtual IHudDrawable* getHudDrawableById(string id);
+    virtual IHudDrawable* getHudDrawableById(std::string id);
 
     void setWorldCamera(Camera* worldCamera);
 
     void addRelativeLayout(GameObject* relativeTo, Layout* layout);
 
 protected:
-    float4x4 createOrthographicProjection();
-    map<string,IHudDrawable*> squares;
+    chag::float4x4 createOrthographicProjection();
+    std::map<std::string, IHudDrawable*> squares;
     Layout* rootLayout;
     Camera* worldCamera;
     std::vector<std::pair<GameObject*,Layout*>> relativeLayouts;
 
 };
-
-#endif //BUBBA_3D_HUDRENDERER_H

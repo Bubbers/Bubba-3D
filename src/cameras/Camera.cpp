@@ -16,14 +16,14 @@
  */
 #include "Camera.h"
 
-void Camera::setPosition(float3 position) {
-	this->m_vPosition = position;
+void Camera::setPosition(chag::float3 position) {
+    this->m_vPosition = position;
 }
 
-void Camera::setLookAt(float3 lookAt){
-	this->m_vLookAt = lookAt;
+void Camera::setLookAt(chag::float3 lookAt) {
+    this->m_vLookAt = lookAt;
 }
 
-void Camera::setUpVector(float3 up){
-	this->m_vUp = up;
+void Camera::setUpVector(chag::float3 up) {
+    this->m_vUp = up;
 }

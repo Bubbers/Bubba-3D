@@ -48,11 +48,11 @@ Renderer::~Renderer()
 }
 
 void Renderer::initRenderer(int width, int height) {
-	initGL();
-	resize(width, height);
+    initGL();
+    resize(width, height);
 
-	// clear the buffers
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    // clear the buffers
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void Renderer::resize(unsigned int width, unsigned int height) {
@@ -75,9 +75,9 @@ void Renderer::drawScene(Camera *camera, Scene *scene, float currentTime)
 {
     Renderer::currentTime = currentTime;
 
-    float4x4 viewMatrix = camera->getViewMatrix();
-    float4x4 projectionMatrix = camera->getProjectionMatrix();
-    float4x4 viewProjectionMatrix = projectionMatrix * viewMatrix;
+    chag::float4x4 viewMatrix           = camera->getViewMatrix();
+    chag::float4x4 projectionMatrix     = camera->getProjectionMatrix();
+    chag::float4x4 viewProjectionMatrix = projectionMatrix * viewMatrix;
 
 
 
@@ -88,14 +88,17 @@ void Renderer::drawScene(Camera *camera, Scene *scene, float currentTime)
     //*************************************************************************
     // Render shadow map
     //*************************************************************************
-    float4x4 lightMatrix = make_identity<float4x4>();
+    chag::float4x4 lightMatrix = chag::make_identity<chag::float4x4>();
 
     if (scene->shadowMapCamera != NULL) {
-        float4x4 lightViewMatrix = scene->shadowMapCamera->getViewMatrix();
-        float4x4 lightProjectionMatrix = scene->shadowMapCamera->getProjectionMatrix();
-        float4x4 lightViewProjectionMatrix = lightProjectionMatrix * lightViewMatrix;
+        chag::float4x4 lightViewMatrix           = scene->shadowMapCamera->getViewMatrix();
+        chag::float4x4 lightProjectionMatrix     = scene->shadowMapCamera->getProjectionMatrix();
+        chag::float4x4 lightViewProjectionMatrix = lightProjectionMatrix * lightViewMatrix;
 
-        lightMatrix = make_translation(make_vector( 0.5f, 0.5f, 0.5f )) * make_scale<float4x4>(make_vector(0.5f, 0.5f, 0.5f)) * lightViewProjectionMatrix * inverse(viewMatrix);
+        lightMatrix = chag::make_translation(chag::make_vector( 0.5f, 0.5f, 0.5f ))
+                    * chag::make_scale<chag::float4x4>(chag::make_vector(0.5f, 0.5f, 0.5f))
+                    * lightViewProjectionMatrix
+                    * inverse(viewMatrix);
 
         drawShadowMap(sbo, lightViewProjectionMatrix, scene);
     }
@@ -113,9 +116,9 @@ void Renderer::drawScene(Camera *camera, Scene *scene, float currentTime)
     // Use shader and set up uniforms
     shaderProgram->use();
 
-    shaderProgram->setUniformBufferSubData( UNIFORM_BUFFER_OBJECT_MATRICES_NAME, 0 * sizeof(float4x4), sizeof(float4x4), &(viewMatrix.c1.x));
-    shaderProgram->setUniformBufferSubData( UNIFORM_BUFFER_OBJECT_MATRICES_NAME, 1 * sizeof(float4x4), sizeof(float4x4), &(projectionMatrix.c1.x));
-    shaderProgram->setUniformBufferSubData( UNIFORM_BUFFER_OBJECT_MATRICES_NAME, 2 * sizeof(float4x4), sizeof(float4x4), &(viewProjectionMatrix.c1.x));
+    shaderProgram->setUniformBufferSubData( UNIFORM_BUFFER_OBJECT_MATRICES_NAME, 0 * sizeof(chag::float4x4), sizeof(chag::float4x4), &(viewMatrix.c1.x));
+    shaderProgram->setUniformBufferSubData( UNIFORM_BUFFER_OBJECT_MATRICES_NAME, 1 * sizeof(chag::float4x4), sizeof(chag::float4x4), &(projectionMatrix.c1.x));
+    shaderProgram->setUniformBufferSubData( UNIFORM_BUFFER_OBJECT_MATRICES_NAME, 2 * sizeof(chag::float4x4), sizeof(chag::float4x4), &(viewProjectionMatrix.c1.x));
 
     //Sets matrices
     shaderProgram->setUniformMatrix4fv("lightMatrix", lightMatrix);
@@ -171,7 +174,7 @@ void Renderer::setLights(ShaderProgram* shaderProgram, Scene *scene) {
 
     shaderProgram->setUniform1i("nrPointLights", (int)scene->pointLights.size());
     for (int i = 0; i < (int)scene->pointLights.size(); i++) {
-        string name = std::string("pointLights[") + patch::to_string(i).c_str() + "]";
+        std::string name = std::string("pointLights[") + patch::to_string(i).c_str() + "]";
         shaderProgram->setUniform3f((name + ".position").c_str(), scene->pointLights[i].position);
         shaderProgram->setUniform3f((name + ".colors.ambientColor").c_str(), scene->pointLights[i].ambientColor);
         shaderProgram->setUniform3f((name + ".colors.diffuseColor").c_str(), scene->pointLights[i].diffuseColor);
@@ -184,7 +187,7 @@ void Renderer::setLights(ShaderProgram* shaderProgram, Scene *scene) {
     //set spotLights
     shaderProgram->setUniform1i("nrSpotLights", (int)scene->spotLights.size());
     for (int i = 0; i < (int)scene->spotLights.size(); i++) {
-        string name = std::string("spotLights[") + patch::to_string(i).c_str() + "]";
+        std::string name = std::string("spotLights[") + patch::to_string(i).c_str() + "]";
         shaderProgram->setUniform3f((name + ".position").c_str(), scene->spotLights[i].position);
         shaderProgram->setUniform3f((name + ".colors.ambientColor").c_str(), scene->spotLights[i].ambientColor);
         shaderProgram->setUniform3f((name + ".colors.diffuseColor").c_str(), scene->spotLights[i].diffuseColor);
@@ -220,7 +223,7 @@ void Renderer::drawTransparent(ShaderProgram* shaderProgram, Scene *scene)
     }
 }
 
-void Renderer::drawShadowMap(Fbo sbo, float4x4 viewProjectionMatrix, Scene *scene) {
+void Renderer::drawShadowMap(Fbo sbo, chag::float4x4 viewProjectionMatrix, Scene *scene) {
     glBindFramebuffer(GL_FRAMEBUFFER, sbo.id);
     glViewport(0, 0, SHADOW_MAP_RESOLUTION, SHADOW_MAP_RESOLUTION);
 
@@ -249,11 +252,11 @@ void Renderer::drawShadowMap(Fbo sbo, float4x4 viewProjectionMatrix, Scene *scen
 }
 
 void Renderer::setFog(ShaderProgram* shaderProgram) {
-    shaderProgram->setUniform1i("fog.iEquation",	effects.fog.fEquation);
-    shaderProgram->setUniform1f("fog.fDensity",	effects.fog.fDensity);
-    shaderProgram->setUniform1f("fog.fEnd",		effects.fog.fEnd);
+    shaderProgram->setUniform1i("fog.iEquation",    effects.fog.fEquation);
+    shaderProgram->setUniform1f("fog.fDensity",    effects.fog.fDensity);
+    shaderProgram->setUniform1f("fog.fEnd",        effects.fog.fEnd);
     shaderProgram->setUniform1f("fog.fStart",    effects.fog.fStart);
-    shaderProgram->setUniform3f("fog.vColor",	effects.fog.vColor);
+    shaderProgram->setUniform3f("fog.vColor",    effects.fog.vColor);
 }
 
 void Renderer::initGL()
@@ -267,13 +270,13 @@ void Renderer::initGL()
     }
 
     //*************************************************************************
-    //	Load shaders
+    //    Load shaders
     //*************************************************************************
     ResourceManager::loadShader("shaders/simple.vert", "shaders/simple.frag", SIMPLE_SHADER_NAME);
 
     shaderProgram = ResourceManager::getShader(SIMPLE_SHADER_NAME);
     shaderProgram->setUniformBufferObjectBinding(UNIFORM_BUFFER_OBJECT_MATRICES_NAME, UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
-    shaderProgram->initUniformBufferObject(UNIFORM_BUFFER_OBJECT_MATRICES_NAME, 3 * sizeof(float4x4), UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
+    shaderProgram->initUniformBufferObject(UNIFORM_BUFFER_OBJECT_MATRICES_NAME, 3 * sizeof(chag::float4x4), UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
 
     CHECK_GL_ERROR();
 
@@ -304,7 +307,7 @@ void Renderer::initGL()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 
-    float4 zeros = { 1.0f, 1.0f, 1.0f, 1.0f };
+    chag::float4 zeros = { 1.0f, 1.0f, 1.0f, 1.0f };
     glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, &zeros.x);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
@@ -325,10 +328,10 @@ void Renderer::initGL()
     // Create post process Fbo
     //*************************************************************************
 
-    string post_fx = "POST_FX_SHADER";
-    string vert_blur = "VERTICAL_BLUR_SHADER";
-    string hor_blur = "HORIZONTAL_BLUR_SHADER";
-    string cutoff = "CUTOFF_SHADER";
+    std::string post_fx = "POST_FX_SHADER";
+    std::string vert_blur = "VERTICAL_BLUR_SHADER";
+    std::string hor_blur = "HORIZONTAL_BLUR_SHADER";
+    std::string cutoff = "CUTOFF_SHADER";
 
     ResourceManager::loadShader("shaders/postFx.vert", "shaders/postFx.frag", post_fx);
     ResourceManager::loadShader("shaders/postFx.vert", "shaders/vertical_blur.frag", vert_blur);
@@ -454,13 +457,13 @@ void Renderer::drawFullScreenQuad()
     if (vertexArrayObject == 0)
     {
         glGenVertexArrays(1, &vertexArrayObject);
-        static const float2 positions[] = {{-1.0f, -1.0f},
-                                           { 1.0f,  1.0f},
-                                           {-1.0f,  1.0f},
+        static const chag::float2 positions[] = {{-1.0f, -1.0f},
+                                                 { 1.0f,  1.0f},
+                                                 {-1.0f,  1.0f},
 
-                                           {-1.0f, -1.0f},
-                                           { 1.0f, -1.0f},
-                                           { 1.0f,  1.0f}};
+                                                 {-1.0f, -1.0f},
+                                                 { 1.0f, -1.0f},
+                                                 { 1.0f,  1.0f}};
 
         createAddAttribBuffer(vertexArrayObject, positions, sizeof(positions), 0, 2, GL_FLOAT);
         GLuint pos_vbo;

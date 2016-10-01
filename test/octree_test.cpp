@@ -25,6 +25,7 @@
 #include "catch.hpp"
 #include "Octree.h"
 
+using namespace chag;
 
 TEST_CASE("OctreeTriangleLargerThanOctantCount", "[Collision]") {
     Octree octree = Octree();

@@ -14,28 +14,25 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Bubba-3D. If not, see http://www.gnu.org/licenses/.
  */
-#ifndef __CUBEMAP_H__
-#define __CUBEMAP_H__
+#pragma once
 
 #include <string>
 #include <GL/glew.h>
 
-using namespace std;
-
 class CubeMapTexture
 {
 public:
-	CubeMapTexture(const string& posXFilename, const string& negXFilename, const string& posYFilename, const string& negYFilename, const string& posZFilename, const string& negZFilename);
-	~CubeMapTexture();
+    CubeMapTexture(const std::string& posXFilename, const std::string& negXFilename,
+                   const std::string& posYFilename, const std::string& negYFilename,
+                   const std::string& posZFilename, const std::string& negZFilename);
 
-	void load();
-	void bind(GLenum textureUnit);
+    ~CubeMapTexture();
+
+    void load();
+    void bind(GLenum textureUnit);
 
 private:
-	GLuint m_texture;
+    GLuint m_texture;
 
-	void loadCubeMapFace(std::string filename, GLenum face);
-	
+    void loadCubeMapFace(std::string filename, GLenum face);
 };
-
-#endif // !__CUBEMAP_H__

@@ -39,6 +39,7 @@ bool isTrianglesIntersecting(Octree *object1Octree,
                              Octree *object2Octree,
                              chag::float4x4 *object2ModelMatrix);
 
+bool rayTriangle(chag::float3 r_o, chag::float3 r_d, chag::float3 v1, chag::float3 v2, chag::float3 v3, float *ins);
 
 /**
  * Class responsible for dynamic collision tests in a scene.

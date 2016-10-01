@@ -18,8 +18,8 @@
 #include "Triangle.h"
 #include "Octree.h"
 
-#define DEFAULT_ORIGIN make_vector(0.0f, 0.0f, 0.0f)
-#define DEFAULT_HALFVECTOR make_vector(1.0f, 1.0f, 1.0f)
+#define DEFAULT_ORIGIN chag::make_vector(0.0f, 0.0f, 0.0f)
+#define DEFAULT_HALFVECTOR chag::make_vector(1.0f, 1.0f, 1.0f)
 
 Octree::Octree() {
     clearChildren();
@@ -184,7 +184,7 @@ bool testSlab(float rayO, float rayD, float minV, float maxV, float *tNear, floa
         float t2 = (maxV - rayO) * rayD;
 
         if (t1 > t2) {
-            swap(t1, t2);
+            std::swap(t1, t2);
         }
 
         if (t1 > *tNear) {
@@ -208,8 +208,8 @@ bool testSlab(float rayO, float rayD, float minV, float maxV, float *tNear, floa
 
 
 bool Octree::rayCastIntersectsAABB(chag::float3 rayOrigin, chag::float3 rayVector) {
-    chag::float3 maxCorner = make_vector(origin.x + halfVector.x, origin.y + halfVector.y, origin.z + halfVector.z);
-    chag::float3 minCorner = make_vector(origin.x - halfVector.x, origin.y - halfVector.y, origin.z - halfVector.z);
+    chag::float3 maxCorner = chag::make_vector(origin.x + halfVector.x, origin.y + halfVector.y, origin.z + halfVector.z);
+    chag::float3 minCorner = chag::make_vector(origin.x - halfVector.x, origin.y - halfVector.y, origin.z - halfVector.z);
 
     float tNear = -FLT_MAX, tFar = FLT_MAX;
 

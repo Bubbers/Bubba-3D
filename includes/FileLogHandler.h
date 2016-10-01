@@ -15,30 +15,25 @@
  * along with Bubba-3D. If not, see http://www.gnu.org/licenses/.
  */
 
-#ifndef SUPER_BUBBA_AWESOME_SPACE_STDOUTLOGHANDLER_H
-#define SUPER_BUBBA_AWESOME_SPACE_STDOUTLOGHANDLER_H
+#pragma once
 
 #include "LogHandler.h"
 #include <fstream>
 #include <string>
-using namespace std;
 
 class FileLogHandler : public LogHandler {
 public:
-    FileLogHandler(string fileName) {
+    FileLogHandler(std::string fileName) {
         logFile.open(fileName.c_str());
     };
     ~FileLogHandler() {
         logFile.close();
     };
 
-    virtual void log(string msg) {
+    virtual void log(std::string msg) {
         logFile << msg;
     };
 
 private:
     ofstream logFile;
 };
-
-
-#endif //SUPER_BUBBA_AWESOME_SPACE_STDOUTLOGHANDLER_H

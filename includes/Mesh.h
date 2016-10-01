@@ -111,8 +111,8 @@ public:
      * @param loadedMaterial
      * @return A float3 containing the colors rgb
      */
-    float3 getColorFromMaterial(const char* colorTypeString, unsigned int type,
-                                unsigned int index, const aiMaterial &material);
+    chag::float3 getColorFromMaterial(const char* colorTypeString, unsigned int type,
+                                      unsigned int index, const aiMaterial &material);
 
     /**
      * Uses the file name of the mesh to calculate the absolute path to the specified texture

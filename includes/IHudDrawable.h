@@ -14,17 +14,10 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Bubba-3D. If not, see http://www.gnu.org/licenses/.
  */
-//
-// Created by simon on 2016-03-12.
-//
-
-#ifndef SUPER_BUBBA_AWESOME_SPACE_IHUDDRAWABLE_H
-#define SUPER_BUBBA_AWESOME_SPACE_IHUDDRAWABLE_H
+#pragma once
 
 #include <linmath/float3.h>
 #include <linmath/float4x4.h>
-
-using namespace chag;
 
 class ShaderProgram;
 
@@ -34,29 +27,25 @@ class ShaderProgram;
  */
 class IHudDrawable {
 public:
-    virtual void render(ShaderProgram* shaderProgram, float4x4* projectionMatrix) = 0;
+    virtual void render(ShaderProgram* shaderProgram, chag::float4x4* projectionMatrix) = 0;
 
     /**
      * Sets a position relative to the original position calculated
      * by Layout implementations.
      */
-    virtual void setRelativePosition(float3 position);
+    virtual void setRelativePosition(chag::float3 position);
     /**
      * Sets the rotation center offset. The original center is the actual center
      * of the drawn object.
      */
-    virtual void setCenterOffset(float3 offset);
+    virtual void setCenterOffset(chag::float3 offset);
     virtual void setRotation(float rotation);
-    virtual void setScale(float2 scale);
-    float3 relativePosition = make_vector(0.0f, 0.0f, 0.0f);
+    virtual void setScale(chag::float2 scale);
+    chag::float3 relativePosition = chag::make_vector(0.0f, 0.0f, 0.0f);
 
 protected:
-    float3 center = make_vector(0.0f, 0.0f, 0.0f);
+    chag::float3 center = chag::make_vector(0.0f, 0.0f, 0.0f);
     float rotation = 0.0f;
-    float3 originalPosition = make_vector(0.0f, 0.0f, 0.0f);
-    float3 scale = make_vector(1.0f,1.0f,1.0f);
-
+    chag::float3 originalPosition = chag::make_vector(0.0f, 0.0f, 0.0f);
+    chag::float3 scale = chag::make_vector(1.0f,1.0f,1.0f);
 };
-
-
-#endif //SUPER_BUBBA_AWESOME_SPACE_IHUDDRAWABLE_H

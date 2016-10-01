@@ -14,9 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Bubba-3D. If not, see http://www.gnu.org/licenses/.
  */
-#ifndef __GAMEOBJECT_H__
-#define __GAMEOBJECT_H__
-
+#pragma once
 
 #include "IDrawable.h"
 #include "AABB2.h"
@@ -25,9 +23,6 @@
 #include <linmath/Quaternion.h>
 #include <Sphere.h>
 #include "ShaderProgram.h"
-
-using namespace chag;
-using namespace std;
 
 enum EventType {BeforeCollision, DuringCollision, AfterCollision};
 
@@ -72,7 +67,7 @@ class Octree;
 class GameObject : public IDrawable {
 public:
     GameObject();
-	GameObject(GameObject* parent);
+    GameObject(GameObject* parent);
 
     /**
      * Initiates the GameObject with the same mesh for rendering and collision
@@ -88,8 +83,8 @@ public:
      */
     GameObject(Mesh *mesh, Mesh *colliderMesh);
 
-	GameObject(Mesh *mesh, GameObject* parent);
-	GameObject(Mesh *mesh, Mesh *colliderMesh, GameObject* parent);
+    GameObject(Mesh *mesh, GameObject* parent);
+    GameObject(Mesh *mesh, Mesh *colliderMesh, GameObject* parent);
 
     virtual ~GameObject();
 
@@ -119,39 +114,39 @@ public:
     void callEvent(EventType type, GameObject* data);
 
 
-    float4x4 getModelMatrix();
+    chag::float4x4 getModelMatrix();
     /**
      * Replaces the old model matrix completely
      *
      * @param modelMatrix The new model matrix
      */
-    void move(float4x4 model_matrix);
+    void move(chag::float4x4 model_matrix);
     /**
      * Multiplies the old model matrix with the specified
      *
      * @param updateMatrix The matrix to multiply with
      */
-    void update(float4x4 update_matrix);
+    void update(chag::float4x4 update_matrix);
 
-    float3 getRelativeScale();
-	float3 getAbsoluteScale();
-	void setScale(float3 s);
+    chag::float3 getRelativeScale();
+    chag::float3 getAbsoluteScale();
+    void setScale(chag::float3 s);
 
-    Quaternion getRelativeRotation();
-	Quaternion getAbsoluteRotation();
-    void setRotation(Quaternion r);
-    void updateRotation(Quaternion r);
+    chag::Quaternion getRelativeRotation();
+    chag::Quaternion getAbsoluteRotation();
+    void setRotation(chag::Quaternion r);
+    void updateRotation(chag::Quaternion r);
 
-    float3 getRelativeLocation();
-	float3 getAbsoluteLocation();
-    void setLocation(float3 l);
+    chag::float3 getRelativeLocation();
+    chag::float3 getAbsoluteLocation();
+    void setLocation(chag::float3 l);
 
-	void addChild(GameObject* child);
+    void addChild(GameObject* child);
 
     TypeIdentifier getIdentifier();
     void setIdentifier(TypeIdentifier identifier);
     void addCollidesWith(TypeIdentifier colliderID);
-    void addCollidesWith(initializer_list<TypeIdentifier> colliderIDs);
+    void addCollidesWith(std::initializer_list<TypeIdentifier> colliderIDs);
     void clearCollidesWithList();
     bool collidesWith(TypeIdentifier id);
 
@@ -187,7 +182,7 @@ public:
 private:
     void initGameObject(Mesh *mesh, Mesh *colliderMesh);
 
-    float4x4 getFullMatrix();
+    chag::float4x4 getFullMatrix();
 
     /**
      * Returns a fresh id number.
@@ -207,16 +202,18 @@ private:
     /* Mesh */
     Mesh *mesh;
     chag::float4x4 m_modelMatrix;
-    float3 scale = make_vector(1.0f, 1.0f, 1.0f);
-    Quaternion rotation = Quaternion();
-    Quaternion rotationPointReference = Quaternion();
+    chag::float3 scale = chag::make_vector(1.0f, 1.0f, 1.0f);
+    chag::Quaternion rotation;
+    chag::Quaternion rotationPointReference;
     bool hasRotation = false;
-    float3 location = make_vector(0.0f, 0.0f, 0.0f);
+
+    chag::float3 location = chag::make_vector(0.0f, 0.0f, 0.0f);
+
     bool changed = false;
 
-	/* Hierarchy */
-	GameObject* parent = nullptr;
-	std::vector<GameObject*> children;
+    /* Hierarchy */
+    GameObject* parent = nullptr;
+    std::vector<GameObject*> children;
 
     /* Collision */
     Mesh *collisionMesh;
@@ -233,6 +230,3 @@ private:
 
     bool dirty = false;
 };
-
-
-#endif

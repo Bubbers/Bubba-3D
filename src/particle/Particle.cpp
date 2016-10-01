@@ -23,7 +23,7 @@ Particle::Particle(ParticleConf *conf, chag::float4x4 modelMatrix) {
 
 void Particle::reset(ParticleConf *conf, chag::float4x4 modelMatrix) {
     position = conf->initialPosition();
-    chag::float4 vec = make_vector(position.x, position.y, position.z, 1.0f);
+    chag::float4 vec = chag::make_vector(position.x, position.y, position.z, 1.0f);
     chag::float4 mat = modelMatrix * vec;
     position.x = mat.x;
     position.y = mat.y;
