@@ -18,5 +18,10 @@
 
 
 Chunk::Chunk() {
+    numBones = 0;
+    numAnimations = 0;
+}
 
+bool Chunk::hasAnimations() {
+    return numAnimations != 0;
 }
