@@ -21,6 +21,7 @@
 #include "linmath/float3.h"
 #include <GL/glew.h>
 #include <map>
+#include <BoneInfo.h>
 #include "VertexBoneData.h"
 
 class Chunk {
@@ -30,6 +31,8 @@ public:
     ~Chunk() {
     }
 
+    bool hasAnimations();
+
     // Data on host
     std::vector<chag::float3> m_positions;
     std::vector<chag::float3> m_normals;
@@ -38,6 +41,8 @@ public:
     std::vector<chag::float3> m_tangents;
     std::vector<chag::float3> m_bittangents;
     std::vector<VertexBoneData> bones;
+    std::map<std::string, uint> boneNameToIndexMapping;
+    std::vector<BoneInfo> boneInfos;
 
     // Data on GPU
     GLuint m_positions_bo;
@@ -51,4 +56,7 @@ public:
     GLuint m_vaob;
 
     unsigned int materialIndex;
+
+    int numBones;
+    unsigned int numAnimations;
 };

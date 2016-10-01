@@ -94,7 +94,7 @@ public:
     void initVerticesFromAiMesh(const aiMesh *paiMesh, Chunk &chunk);
     void initIndicesFromAiMesh(const aiMesh *paiMesh, Chunk &chunk);
 
-    void initBonesFromAiMesh(const aiMesh *paiMesh, std::vector<VertexBoneData> &bones);
+    void initBonesFromAiMesh(const aiMesh *paiMesh, Chunk &bones);
 
     void readNodeHierarchy(float currentAnimationTick, aiNode *currentAssimpNode, float4x4 parentMatrix);
 
@@ -179,13 +179,8 @@ public:
     Assimp::Importer importer;
     const aiScene *assimpScene;
 
-    map<string, uint> boneNameToIndexMapping;
-    vector<BoneInfo> boneInfos;
-
     Sphere sphere;
     AABB m_aabb;
-    int numBones;
-    unsigned int numAnimations;
 
 
 };

@@ -50,6 +50,7 @@ void Mesh::loadMesh(const std::string &fileName) {
             fileName.c_str(), aiProcess_GenSmoothNormals | aiProcess_Triangulate | aiProcess_CalcTangentSpace);
     assimpScene = importer.GetOrphanedScene();
 
+
     if (!assimpScene) {
         Logger::logError("Error loading mesh for " + fileName + ". Error message: " + importer.GetErrorString());
     } else {
@@ -68,8 +69,6 @@ void Mesh::initMesh(const aiScene *assimpScene, const std::string &fileNameOfMes
 
     initMaterials(assimpScene, fileNameOfMesh);
     createTriangles();
-
-    numAnimations = assimpScene->mNumAnimations;
 }
 
 
@@ -84,7 +83,7 @@ void Mesh::initChunkFromAiMesh(const aiMesh *paiMesh, Chunk &chunk) {
     initVerticesFromAiMesh(paiMesh, chunk);
     initIndicesFromAiMesh(paiMesh, chunk);
 
-    initBonesFromAiMesh(paiMesh, chunk.bones);
+    initBonesFromAiMesh(paiMesh, chunk);
 
     chunk.materialIndex = paiMesh->mMaterialIndex;
 
@@ -125,39 +124,39 @@ void Mesh::initIndicesFromAiMesh(const aiMesh *paiMesh, Chunk &chunk) {
     }
 }
 
-void Mesh::initBonesFromAiMesh(const aiMesh *paiMesh, std::vector<VertexBoneData> &bones) {
-    bones.resize(paiMesh->mNumVertices);
+void Mesh::initBonesFromAiMesh(const aiMesh *paiMesh, Chunk &chunk) {
+    chunk.bones.resize(paiMesh->mNumVertices);
 
     int numBonesSoFar = 0;
     for(uint i = 0; i < paiMesh->mNumBones; i++) {
         uint boneIndex = 0;
         string boneName(paiMesh->mBones[i]->mName.data);
 
-        if(boneNameToIndexMapping.find(boneName) == boneNameToIndexMapping.end()) {
+        if(chunk.boneNameToIndexMapping.find(boneName) == chunk.boneNameToIndexMapping.end()) {
             boneIndex = numBonesSoFar;
             numBonesSoFar++;
             BoneInfo boneInfo;
-            boneInfos.push_back(boneInfo);
+            chunk.boneInfos.push_back(boneInfo);
         } else {
-            boneIndex = boneNameToIndexMapping[boneName];
+            boneIndex = chunk.boneNameToIndexMapping[boneName];
         }
 
-        boneNameToIndexMapping[boneName] = boneIndex;
-        boneInfos[boneIndex].boneOffset = convertAiMatrixToFloat4x4(paiMesh->mBones[i]->mOffsetMatrix);
+        chunk.boneNameToIndexMapping[boneName] = boneIndex;
+        chunk.boneInfos[boneIndex].boneOffset = convertAiMatrixToFloat4x4(paiMesh->mBones[i]->mOffsetMatrix);
 
         for (unsigned int j = 0; j < paiMesh->mBones[i]->mNumWeights; j++) {
             auto aiWeight = paiMesh->mBones[i]->mWeights[j];
             uint vertexId = aiWeight.mVertexId;
-            float weight = 1;//aiWeight.mWeight;
+            float weight = aiWeight.mWeight;
 
-            bones[vertexId].addBoneData(boneIndex, weight);
+            chunk.bones[vertexId].addBoneData(boneIndex, weight);
         }
     }
-    numBones = numBonesSoFar;
+    chunk.numBones = numBonesSoFar;
 }
 
 void Mesh::calculateBoneTransforms(float elapsedTimeInSeconds, std::vector<float4x4>& boneTransformMatrices) {
-    float4x4 rootMatrix = make_identity<float4x4>();
+    /*float4x4 rootMatrix = make_identity<float4x4>();
 
     float ticksPerSecond = assimpScene->mAnimations[0]->mTicksPerSecond;
     ticksPerSecond = ticksPerSecond == 0 ? 25 : ticksPerSecond;
@@ -172,7 +171,7 @@ void Mesh::calculateBoneTransforms(float elapsedTimeInSeconds, std::vector<float
     for (int bone = 0; bone < numBones; bone++) {
         //boneTransformMatrices[bone] = boneInfos[bone].finalTransformation;
         boneTransformMatrices[bone] = make_identity<float4x4>();
-    }
+    }*/
 }
 
 void Mesh::readNodeHierarchy(float currentAnimationTick, aiNode *currentAssimpNode, float4x4 parentMatrix) {
@@ -352,9 +351,3 @@ std::vector<Chunk>* Mesh::getChunks() {
 std::vector<Material>* Mesh::getMaterials() {
     return &materials;
 }
-
-
-bool Mesh::hasAnimations(){
-    return numAnimations != 0;
-}
-
