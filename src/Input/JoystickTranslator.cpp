@@ -151,7 +151,7 @@ JoystickTranslation::valueRetriever JoystickTranslator::decideOnAxisRetriever(Va
         throw "Unknown type: " + type + " when deciding axis retriever.";
 }
 
-int JoystickTranslator::getJoystick(int devId, int vendId, unsigned int startAt = 0) {
+int JoystickTranslator::getJoystick(unsigned int devId, unsigned int vendId, unsigned int startAt = 0) {
     for (unsigned int i = startAt; i < sf::Joystick::Count; i++) {
         sf::Joystick::Identification id = sf::Joystick::getIdentification(i);
         if (id.productId == devId && id.vendorId == vendId)
