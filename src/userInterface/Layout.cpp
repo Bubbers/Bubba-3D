@@ -168,3 +168,7 @@ void Layout::updateGraphic() {
     if(renderedBackground != nullptr)
         renderedBackground->updateGraphic();
 }
+
+IHudDrawable* Layout::getRenderedBackground() {
+    return renderedBackground;
+}

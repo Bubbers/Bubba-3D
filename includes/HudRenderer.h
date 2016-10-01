@@ -32,6 +32,7 @@ class Texture;
 class Layout;
 class GLSquare;
 class IHudDrawable;
+class Camera;
 
 /**
  * The main class used to render a HUD or other types of UI
@@ -82,10 +83,16 @@ public:
      */
     virtual IHudDrawable* getHudDrawableById(string id);
 
+    void setWorldCamera(Camera* worldCamera);
+
+    void addRelativeLayout(GameObject* relativeTo, Layout* layout);
+
 protected:
     float4x4 createOrthographicProjection();
     map<string,IHudDrawable*> squares;
     Layout* rootLayout;
+    Camera* worldCamera;
+    std::vector<std::pair<GameObject*,Layout*>> relativeLayouts;
 
 };
 

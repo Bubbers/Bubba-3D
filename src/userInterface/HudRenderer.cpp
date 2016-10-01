@@ -27,6 +27,8 @@
 #include <IHudDrawable.h>
 #include <HUDGraphic.h>
 #include <SFML/Window/Mouse.hpp>
+#include <RelativeIHudDrawable.h>
+#include "Dimension.h"
 
 using namespace std;
 
@@ -47,8 +49,16 @@ Layout* HudRenderer::getLayoutById(string id) {
 }
 
 void HudRenderer::updateLayout() {
+
     int w = Globals::get(Globals::WINDOW_WIDTH), h = Globals::get(Globals::WINDOW_HEIGHT);
-    squares = rootLayout->getGLSquares(0,0,(float)w,(float)h);
+    squares = map<string,IHudDrawable*>();
+    for(auto relLayout : relativeLayouts){
+        map<string,IHudDrawable*> tempSquares = relLayout.second->getGLSquares(0,0,relLayout.second->getWidth().getSize(w),relLayout.second->getHeight().getSize(h));
+        for(auto square : tempSquares)
+            squares.insert(squares.end(),pair<string,IHudDrawable*>(square.first,new RelativeIHudDrawable(worldCamera,relLayout.first,square.second)));
+    }
+    rootLayout->getGLSquares(0,0,(float)w,(float)h, &squares);
+
 }
 
 void HudRenderer::render() {
@@ -92,3 +102,14 @@ void HudRenderer::update(float dt){
         rootLayout->invokeListenersInternal(x,y,Layout::ON_CLICK_LISTENER,false);
     rootLayout->invokeListeners(x,y,Layout::ON_HOVER_LISTENER);
 }
+
+void HudRenderer::setWorldCamera(Camera *worldCamera) {
+    this->worldCamera = worldCamera;
+}
+
+void HudRenderer::addRelativeLayout(GameObject *relativeTo, Layout *layout) {
+    this->relativeLayouts.push_back(pair<GameObject*,Layout*>(relativeTo,layout));
+    updateLayout();
+}
+
+

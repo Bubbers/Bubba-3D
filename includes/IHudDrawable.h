@@ -47,11 +47,14 @@ public:
      */
     virtual void setCenterOffset(float3 offset);
     virtual void setRotation(float rotation);
+    virtual void setScale(float2 scale);
+    float3 relativePosition = make_vector(0.0f, 0.0f, 0.0f);
 
 protected:
-    float3 relativePosition = make_vector(0.0f, 0.0f, 0.0f), center = make_vector(0.0f, 0.0f, 0.0f);
+    float3 center = make_vector(0.0f, 0.0f, 0.0f);
     float rotation = 0.0f;
     float3 originalPosition = make_vector(0.0f, 0.0f, 0.0f);
+    float3 scale = make_vector(1.0f,1.0f,1.0f);
 
 };
 
