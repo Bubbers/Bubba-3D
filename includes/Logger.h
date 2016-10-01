@@ -24,7 +24,7 @@
 
 using namespace std;
 
-enum LogLevel {INFO, DEBUG, WARNING, SEVERE};
+enum LogLevel {DEBUG, INFO, WARNING, SEVERE};
 
 class Logger
 {
