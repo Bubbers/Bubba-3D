@@ -26,6 +26,7 @@
 #include <assimp/scene.h>
 #include <map>
 #include <BoneInfo.h>
+#include <assimp/Importer.hpp>
 
 
 class Triangle;
@@ -72,6 +73,10 @@ public:
     std::vector<Chunk>* getChunks();
     std::vector<Material>* getMaterials();
 
+    void calculateBoneTransforms(float timeInSeconds, std::vector<float4x4>& boneTransformMatrices);
+
+    bool hasAnimations();
+
  private:
     /**
      * NOTE: This will only load the first mesh in the scene. If you have
@@ -90,6 +95,8 @@ public:
     void initIndicesFromAiMesh(const aiMesh *paiMesh, Chunk &chunk);
 
     void initBonesFromAiMesh(const aiMesh *paiMesh, std::vector<VertexBoneData> &bones);
+
+    void readNodeHierarchy(float currentAnimationTick, aiNode *currentAssimpNode, float4x4 parentMatrix);
 
     /**
      * Loads all materials from the loaded aiScene.
@@ -169,9 +176,16 @@ public:
     std::vector<Chunk> m_chunks;
     aiMatrix4x4 globalInverseTransform;
 
+    Assimp::Importer importer;
+    const aiScene *assimpScene;
+
     map<string, uint> boneNameToIndexMapping;
     vector<BoneInfo> boneInfos;
 
     Sphere sphere;
     AABB m_aabb;
+    int numBones;
+    unsigned int numAnimations;
+
+
 };

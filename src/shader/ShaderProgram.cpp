@@ -35,6 +35,7 @@ void ShaderProgram::createProgram(GLuint vertexShader, GLuint fragmentShader) {
     this->shaderID = glCreateProgram();
     glAttachShader(this->shaderID, vertexShader);
     glAttachShader(this->shaderID, fragmentShader);
+
 }
 
 void ShaderProgram::linkProgram() {

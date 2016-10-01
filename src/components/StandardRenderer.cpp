@@ -16,6 +16,7 @@
  */
 #include <GameObject.h>
 #include <ShaderProgram.h>
+#include <SFML/System/Clock.hpp>
 #include "StandardRenderer.h"
 #include "Mesh.h"
 #include "ShaderProgram.h"
@@ -62,6 +63,20 @@ void StandardRenderer::render() {
         if (material.bumpMapTexture != NULL) {
             shaderProgram->setUniform1i("normal_texture", NORMAL_TEXTURE_LOCATION);
             material.bumpMapTexture->bind(GL_TEXTURE3);
+        }
+
+        if(mesh->hasAnimations()) {
+            std::vector<float4x4> boneTransforms;
+            long currentTimeInSeconds =  sf::Clock().getElapsedTime().asSeconds();
+            mesh->calculateBoneTransforms(currentTimeInSeconds, boneTransforms);
+            shaderProgram->setUniform1i("has_animations", 1);
+
+            for (unsigned int j = 0; j < boneTransforms.size(); j++) {
+                shaderProgram->setUniformMatrix4fv("bones[" + std::to_string(j) + "]", boneTransforms[j]);
+            }
+
+        } else {
+            shaderProgram->setUniform1i("has_animations", 0);
         }
 
         shaderProgram->setUniform1i("has_diffuse_texture", material.diffuseTexture != NULL);

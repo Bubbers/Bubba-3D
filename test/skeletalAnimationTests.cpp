@@ -56,3 +56,5 @@ TEST_CASE("CheckZeroInitiatedWeights", "[Skeletal]") {
         REQUIRE(boneData.weights[i] == 0);
     }
 }
+
+
