@@ -130,7 +130,7 @@ void Mesh::initBonesFromAiMesh(const aiMesh *paiMesh, Chunk &chunk) {
     int numBonesSoFar = 0;
     for(uint i = 0; i < paiMesh->mNumBones; i++) {
         uint boneIndex = 0;
-        string boneName(paiMesh->mBones[i]->mName.data);
+        std::string boneName(paiMesh->mBones[i]->mName.data);
 
         if(chunk.boneNameToIndexMapping.find(boneName) == chunk.boneNameToIndexMapping.end()) {
             boneIndex = numBonesSoFar;

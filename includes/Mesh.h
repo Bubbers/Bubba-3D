@@ -73,7 +73,7 @@ public:
     std::vector<Chunk>* getChunks();
     std::vector<Material>* getMaterials();
 
-    void calculateBoneTransforms(float timeInSeconds, std::vector<float4x4>& boneTransformMatrices);
+    void calculateBoneTransforms(float timeInSeconds, std::vector<chag::float4x4>& boneTransformMatrices);
 
     bool hasAnimations();
 
@@ -96,7 +96,7 @@ public:
 
     void initBonesFromAiMesh(const aiMesh *paiMesh, Chunk &bones);
 
-    void readNodeHierarchy(float currentAnimationTick, aiNode *currentAssimpNode, float4x4 parentMatrix);
+    void readNodeHierarchy(float currentAnimationTick, aiNode *currentAssimpNode, chag::float4x4 parentMatrix);
 
     /**
      * Loads all materials from the loaded aiScene.
