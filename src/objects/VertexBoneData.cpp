@@ -15,9 +15,9 @@ VertexBoneData::VertexBoneData(int maxNumBones) : maxNumBones(maxNumBones){
 }
 void VertexBoneData::addBoneData(int boneId, float weight) {
     if(numUsedBones < maxNumBones) {
+        ids[numUsedBones] = boneId;
+        weights[numUsedBones] = weight;
         numUsedBones++;
-        ids.push_back(boneId);
-        weights.push_back(weight);
         return;
     }
 

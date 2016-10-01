@@ -29,7 +29,7 @@ TEST_CASE("AddingMoreThanMaxBones", "[Skeletal]") {
     const int maxNumBones = 4;
     VertexBoneData boneData(maxNumBones);
     try {
-        for (int i = 0; i < maxNumBones + 1; ++i) {
+        for (int i = 0; i < maxNumBones + 1; i++) {
             boneData.addBoneData(i, i);
         }
     } catch (const std::exception& exception) {
@@ -39,13 +39,20 @@ TEST_CASE("AddingMoreThanMaxBones", "[Skeletal]") {
     REQUIRE(false);
 }
 
-
 TEST_CASE("AddingManyBones", "[Skeletal]") {
     const int maxNumBones = 4;
     VertexBoneData boneData(maxNumBones);
-    for (int i = 0; i < maxNumBones; ++i) {
+    for (int i = 0; i < maxNumBones; i++) {
         boneData.addBoneData(i, i);
-        REQUIRE(boneData.ids.size() == i + 1);
-        REQUIRE(boneData.weights.size() == i + 1);
+        REQUIRE(boneData.ids[i] == i );
+        REQUIRE(boneData.weights[i] == i);
+    }
+}
+
+TEST_CASE("CheckZeroInitiatedWeights", "[Skeletal]") {
+    const int maxNumBones = 4;
+    VertexBoneData boneData(maxNumBones);
+    for (int i = 0; i < maxNumBones; i++) {
+        REQUIRE(boneData.weights[i] == 0);
     }
 }
