@@ -159,7 +159,7 @@ Texture *Mesh::getTexture(const aiMaterial *material, const std::string &fileNam
         return NULL;
     }
 
-    std::string absolutePath = getPathOfTexture(fileNameOfMesh, string(texturePath.data));
+    std::string absolutePath = getPathOfTexture(fileNameOfMesh, std::string(texturePath.data));
     return ResourceManager::loadAndFetchTexture(absolutePath);
 }
 

@@ -42,7 +42,7 @@ void StandardRenderer::render() {
     shaderProgram->use();
     CHECK_GL_ERROR();
 
-    float4x4 modelMatrix = gameObject->getModelMatrix();
+    chag::float4x4 modelMatrix = gameObject->getModelMatrix();
 
     chag::float4x4 normalMatrix = chag::inverse(chag::transpose(modelMatrix));
     shaderProgram->setUniformMatrix4fv("modelMatrix", modelMatrix);
@@ -83,7 +83,7 @@ void StandardRenderer::render() {
 
 void StandardRenderer::renderShadow(ShaderProgram *shaderProgram) {
 
-    float4x4 modelMatrix = gameObject->getModelMatrix();
+    chag::float4x4 modelMatrix = gameObject->getModelMatrix();
     shaderProgram->setUniformMatrix4fv("modelMatrix", modelMatrix);
 
     for (size_t i = 0; i < mesh->getChunks()->size(); i++) {

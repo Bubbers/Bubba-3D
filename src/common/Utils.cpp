@@ -44,14 +44,31 @@ T getRandomElem(const T (&ts)[S])
 }
 
 void updateMinAndMax(const float x, const float y, const float z, chag::float3* minV, chag::float3* maxV) {
-    if (x < minV->x) { minV->x = x; };
-    if (y < minV->y) { minV->y = y; };
-    if (z < minV->z) { minV->z = z; };
-    if (x > maxV->x) { maxV->x = x; };
-    if (y > maxV->y) { maxV->y = y; };
-    if (z > maxV->z) { maxV->z = z; };
+    if (x < minV->x) {
+        minV->x = x;
+    }
+
+    if (y < minV->y) {
+       minV->y = y;
+    }
+
+    if (z < minV->z) {
+       minV->z = z;
+    }
+
+    if (x > maxV->x) {
+       maxV->x = x;
+    }
+
+    if (y > maxV->y) {
+       maxV->y = y;
+    }
+
+    if (z > maxV->z) {
+       maxV->z = z;
+    }
 }
 
-float3 createRandomVector(const float minValue, const float maxValue){
-    return make_vector(getRand(minValue,maxValue), getRand(minValue,maxValue), getRand(minValue,maxValue));
+chag::float3 createRandomVector(const float minValue, const float maxValue){
+    return chag::make_vector(getRand(minValue,maxValue), getRand(minValue,maxValue), getRand(minValue,maxValue));
 }

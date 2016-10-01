@@ -15,14 +15,11 @@
  * along with Bubba-3D. If not, see http://www.gnu.org/licenses/.
  */
 
-#ifndef __LOGGER__
-#define __LOGGER__
+#pragma once
 
 #include <vector>
 #include <string>
 #include "LogHandler.h"
-
-using namespace std;
 
 enum LogLevel {DEBUG, INFO, WARNING, SEVERE};
 
@@ -33,23 +30,21 @@ public:
 	static void setDebug(bool debug);
 	static void setFileSave(bool saveToFile);
 
-	static void logDebug(string msg);
-	static void logError(string msg);
-	static void logWarning(string msg);
-	static void logInfo(string msg);
+	static void logDebug(std::string msg);
+	static void logError(std::string msg);
+	static void logWarning(std::string msg);
+	static void logInfo(std::string msg);
 
 	static void setLogLevel(unsigned int level);
 	static void addLogHandler(LogHandler* logHandler);
 
 private:
-	~Logger();
 	Logger();
+	~Logger();
 
 	static unsigned int currentLogLevel;
-    static std::vector<LogHandler*> logHandlers;
-	static string levelToString(unsigned int level);
-	static void log(unsigned int level, string msg);
-	static string getTime();
+  static std::vector<LogHandler*> logHandlers;
+	static std::string levelToString(unsigned int level);
+	static void log(unsigned int level, std::string msg);
+	static std::string getTime();
 };
-
-#endif

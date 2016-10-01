@@ -14,8 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Bubba-3D. If not, see http://www.gnu.org/licenses/.
  */
-#ifndef __PESRPECTIVECAMERA_H__
-#define __PESRPECTIVECAMERA_H__
+#pragma once
 
 #include "Camera.h"
 
@@ -24,22 +23,20 @@
  *
  * Provides a perspective projection.
  */
-class PerspectiveCamera : public Camera{
- public:
-    PerspectiveCamera(float3 position, float3 lookAt, float3 up,
+class PerspectiveCamera : public Camera {
+public:
+    PerspectiveCamera(chag::float3 position, chag::float3 lookAt, chag::float3 up,
                       float fov, float ratio, float nearPlane, float farPlane);
     ~PerspectiveCamera();
 
-    float4x4 getViewMatrix();
-    float4x4 getProjectionMatrix();
+    chag::float4x4 getViewMatrix();
+    chag::float4x4 getProjectionMatrix();
 
     void update(float dt);
-    void setPosition(float3 position);
-    void setLookAt(float3 lookAt);
-    void setUpVector(float3 up);
- private:
-    float4x4 lookAt(const float3 &eye, const float3 &center, const float3 &up);
-    float4x4 perspectiveMatrix(float fov, float aspectRatio, float n, float f);
+    void setPosition(chag::float3 position);
+    void setLookAt(chag::float3 lookAt);
+    void setUpVector(chag::float3 up);
+private:
+    chag::float4x4 lookAt(const chag::float3 &eye, const chag::float3 &center, const chag::float3 &up);
+    chag::float4x4 perspectiveMatrix(float fov, float aspectRatio, float n, float f);
 };
-
-#endif //__PESRPECTIVECAMERA_H__

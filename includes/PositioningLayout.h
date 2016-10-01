@@ -14,16 +14,9 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Bubba-3D. If not, see http://www.gnu.org/licenses/.
  */
-//
-// Created by simon on 2016-02-21.
-//
-
-#ifndef SUPER_BUBBA_AWESOME_SPACE_POSITIONINGLAYOUT_H
-#define SUPER_BUBBA_AWESOME_SPACE_POSITIONINGLAYOUT_H
+#pragma once
 
 #include <Layout.h>
-
-using namespace std;
 
 class PositioningLayout : public Layout {
 public:
@@ -41,13 +34,13 @@ public:
     virtual Dimension getHeight();
 
     virtual void getGLSquares(float layoutXPos,float layoutYPos, float layoutWidth,
-                              float layoutHeight, map<string,IHudDrawable*>* list);
+                              float layoutHeight, std::map<std::string, IHudDrawable*> *map);
 
     PositioningLayout(Dimension width, Dimension height);
 
     void checkChildCompatibility(Layout* child);
 
-    virtual Layout* findById(string id);
+    virtual Layout* findById(std::string id);
 
     virtual void invokeListenersInternal(int x, int y, ListenerType listenerType, bool mayBeHit);
 
@@ -56,12 +49,10 @@ protected:
         Layout* child;
         Dimension x;
         Dimension y;
-        PositionedLayout(Layout* child, Dimension x, Dimension y) : child(child),x(x),y(y){}
+        PositionedLayout(Layout* child, Dimension x, Dimension y) : child(child), x(x), y(y){
+        }
     };
 
     Dimension width,height;
-    vector<PositionedLayout*> children;
+    std::vector<PositionedLayout*> children;
 };
-
-
-#endif //SUPER_BUBBA_AWESOME_SPACE_POSITIONINGLAYOUT_H

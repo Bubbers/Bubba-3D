@@ -26,14 +26,14 @@ void IHudDrawable::setRotation(float rotation) {
     this->rotation = rotation;
 }
 
-void IHudDrawable::setRelativePosition(float3 position) {
+void IHudDrawable::setRelativePosition(chag::float3 position) {
     this->relativePosition = position;
 }
 
-void IHudDrawable::setCenterOffset(float3 offset) {
+void IHudDrawable::setCenterOffset(chag::float3 offset) {
     center = offset;
 }
 
-void IHudDrawable::setScale(float2 scale) {
-    this->scale = make_vector(scale.x,scale.y,1.0f);
+void IHudDrawable::setScale(chag::float2 scale) {
+    this->scale = chag::make_vector(scale.x, scale.y, 1.0f);
 }

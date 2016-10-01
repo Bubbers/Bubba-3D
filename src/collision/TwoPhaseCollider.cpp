@@ -38,7 +38,7 @@ void TwoPhaseCollider::updateCollision(Scene *scene) {
     triggerObjectEvents(exactCollisions);
 
     timer.stop();
-    stringstream timeMessage;
+    std::stringstream timeMessage;
     timeMessage << "Tested " << possibleCollision.size() <<" possible collision in : " << timer.getElapsedTime() << " ms";
     Logger::logDebug(timeMessage.str());
 }
@@ -126,10 +126,3 @@ GameObject* TwoPhaseCollider::getMinId(GameObject* object1, GameObject* object2)
 GameObject* TwoPhaseCollider::getMaxId(GameObject* object1, GameObject* object2) {
     return object1->getId() > object2->getId() ? object1 : object2;
 }
-
-
-
-
-
-
-

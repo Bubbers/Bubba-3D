@@ -14,8 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Bubba-3D. If not, see http://www.gnu.org/licenses/.
  */
-#ifndef __Octree_h_
-#define __Octree_h_
+#pragma once
 
 #include <functional>
 #include <linmath/float3.h>
@@ -24,9 +23,6 @@
 #include <ctime>
 #include <math.h>
 #include "AABB2.h"
-
-using namespace std;
-using namespace chag;
 
 class Triangle;
 
@@ -41,6 +37,7 @@ public:
      * // TODO(Bubbad) Make Octree resize after insertions to make this constructor useful
      */
     Octree();
+
     /**
      * Initiates a Octree that can contain triangles that
      * are at within the cube of size 2*halfVector that
@@ -49,7 +46,7 @@ public:
      * @param origin The center position of the Octree
      * @param halfVector Half the length of the surrounding cube
      */
-    Octree(float3 origin, float3 halfVector);
+    Octree(chag::float3 origin, chag::float3 halfVector);
 
     ~Octree();
 
@@ -71,7 +68,7 @@ public:
      */
     void clearChildren();
 
-    int getOctantContainingPoint(const float3& point);
+    int getOctantContainingPoint(const chag::float3& point);
     int getTriangleCount();
     /**
      * @return The triangle count of this Octree + the triangle count of all its child Octrees
@@ -93,7 +90,8 @@ public:
      *
      * @param triangleList A list to be filled with all intersected triangles
      */
-    void getTrianglesInsersectedByRayCast(float3 rayOrigin, float3 rayVector, std::vector<Triangle*> *triangleList);
+    void getTrianglesInsersectedByRayCast(chag::float3 rayOrigin, chag::float3 rayVector,
+                                          std::vector<Triangle*> *triangleList);
 
     /**
      * NOTE: The AABB is not transformed.
@@ -101,9 +99,9 @@ public:
     AABB* getAABB();
 
 private:
-    Octree(float3 origin, float3 halfVector, int depth);
+    Octree(chag::float3 origin, chag::float3 halfVector, int depth);
 
-    void setupAABB(float3 origin, float3 halfVector);
+    void setupAABB(chag::float3 origin, chag::float3 halfVector);
 
     /**
      * Allocates memory for 8 children.
@@ -115,13 +113,14 @@ private:
      * it takes the element from p1, else p2.
      * Useful for eg creating a vector containing the max or min elements of two vectors.
      */
-    float3 combineTwoPointsByComparator(float3 p1, float3 p2, std::function<bool(float, float)> comparator);
+    chag::float3 combineTwoPointsByComparator(chag::float3 p1, chag::float3 p2,
+                                              std::function<bool(float, float)> comparator);
 
-    bool rayCastIntersectsAABB(float3 rayOrigin, float3 rayVector);
+    bool rayCastIntersectsAABB(chag::float3 rayOrigin, chag::float3 rayVector);
     void putTrianglesToList(std::vector<Triangle *> *triangleList);
 
-    float3 origin;
-    float3 halfVector;
+    chag::float3 origin;
+    chag::float3 halfVector;
 
     Octree *children[8];
     std::vector<Triangle*> ts;
@@ -130,6 +129,3 @@ private:
 
     AABB aabb;
 };
-
-
-#endif

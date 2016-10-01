@@ -14,20 +14,14 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Bubba-3D. If not, see http://www.gnu.org/licenses/.
  */
-#ifndef SUPER_BUBBA_AWESOME_SPACE_LOGHANDLER_H
-#define SUPER_BUBBA_AWESOME_SPACE_LOGHANDLER_H
+#pragma once
 
 #include <string>
 
-using namespace std;
-
 class LogHandler {
 public:
-    LogHandler() { };
-    ~LogHandler() { };
+    LogHandler() = default;
+    ~LogHandler() = default;
 
-    virtual void log(string msg) = 0;
+    virtual void log(std::string msg) = 0;
 };
-
-
-#endif //SUPER_BUBBA_AWESOME_SPACE_LOGHANDLER_H

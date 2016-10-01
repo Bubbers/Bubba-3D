@@ -45,29 +45,29 @@ void TextObject::getLines(std::vector<std::string>* lines, std::vector<int>* lin
     std::string word = "";
     int wordLength = 0;
     for(unsigned char c : text){
-        if(c > ' ' && c < 128){ // visible characters
+        if (c > ' ' && c < 128){ // visible characters
             wordLength += font->getCharacter(c).advanceX/64;
             word += c;
             (*numChars)++;
-        }else if(c == ' '){
-            if(lineLength + wordLength > width){
+        } else if (c == ' '){
+            if (lineLength + wordLength > width){
                 lines->push_back(curLine);
                 linesOffsetX->push_back(getOffsetByLineLength(lineLength));
                 curLine = word;
                 lineLength = wordLength;
-            }else{
+            } else {
                 curLine += " " + word;
                 lineLength += font->getCharacter(' ').advanceX/64 + wordLength;
             }
             word = "";
             wordLength = 0;
-        } else if(c == '\r'){
-            if(lineLength + wordLength > width){
+        } else if (c == '\r'){
+            if (lineLength + wordLength > width){
                 lines->push_back(curLine);
                 linesOffsetX->push_back(getOffsetByLineLength(lineLength));
                 curLine = word;
                 lineLength = wordLength;
-            }else{
+            } else {
                 curLine += " " + word;
                 lineLength += font->getCharacter(' ').advanceX/64 + wordLength;
             }
@@ -79,12 +79,12 @@ void TextObject::getLines(std::vector<std::string>* lines, std::vector<int>* lin
             wordLength = 0;
         }
     }
-    if(lineLength + wordLength > width){
+    if (lineLength + wordLength > width){
         lines->push_back(curLine);
         linesOffsetX->push_back(getOffsetByLineLength(lineLength));
         curLine = word;
         lineLength = wordLength;
-    }else{
+    } else {
         curLine += " " + word;
         lineLength += font->getCharacter(' ').advanceX/64 + wordLength;
     }
@@ -100,7 +100,7 @@ void TextObject::init(std::vector<std::string> lines, std::vector<int> linesOffs
 
     int x = -width/2;//this->x;
     int y = height/2 - font->getPixelSize();
-	  std::vector<GLfloat> data;
+      std::vector<GLfloat> data;
     int i = 0;
     float atlasWidth = Globals::get(Globals::FONT_TEXTURE_WIDTH),
             atlasHeight = Globals::get(Globals::FONT_TEXTURE_HEIGHT);
@@ -155,19 +155,18 @@ void TextObject::init(std::vector<std::string> lines, std::vector<int> linesOffs
 
 }
 
-void TextObject::addPoints(std::vector<GLfloat> *data, initializer_list<float> elems) {
-
-    for(float elem : elems)
+void TextObject::addPoints(std::vector<GLfloat> *data, std::initializer_list<float> elems) {
+    for(float elem : elems) {
         data->push_back(elem);
-
+    }
 }
 
 void TextObject::initAndBindBuffers() {
 
-    if(buffersInitiated){
+    if (buffersInitiated){
         glBindVertexArray(vao);
         glBindBuffer(GL_ARRAY_BUFFER,vbo);
-    }else{
+    } else {
         glGenVertexArrays(1, &vao);
         glBindVertexArray(vao);
 
@@ -177,7 +176,7 @@ void TextObject::initAndBindBuffers() {
 
 }
 
-void TextObject::render(ShaderProgram *shaderProgram, float4x4 *projectionMatrix) {
+void TextObject::render(ShaderProgram *shaderProgram, chag::float4x4 *projectionMatrix) {
 
     GLint currentDepthFunc;
     glGetIntegerv(GL_DEPTH_FUNC, &currentDepthFunc);
@@ -213,7 +212,11 @@ void TextObject::render(ShaderProgram *shaderProgram, float4x4 *projectionMatrix
 
 }
 
-float4x4 TextObject::getModelMatrix() {
-    float3 originalPosition = make_vector((float)x+width/2,(float)y-height/2,0.0f)-center;
-    return make_translation(originalPosition+relativePosition)*make_rotation_z<float4x4>(rotation)*make_scale<float4x4>(scale)*make_translation(center)*make_identity<float4x4>();
+chag::float4x4 TextObject::getModelMatrix() {
+    chag::float3 originalPosition = chag::make_vector((float)x + width / 2, (float)y - height /2, 0.0f) - center;
+    return chag::make_translation(originalPosition + relativePosition)
+         * chag::make_rotation_z<chag::float4x4>(rotation)
+         * chag::make_scale<chag::float4x4>(scale)
+         * chag::make_translation(center)
+         * chag::make_identity<chag::float4x4>();
 }

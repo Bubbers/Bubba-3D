@@ -61,13 +61,13 @@ TextLayout* TextLayout::setPadding(int top, int right, int bot, int left) {
 }
 
 void TextLayout::getGLSquares(float layoutXPos, float layoutYPos, float layoutWidth, float layoutHeight,
-                              map<string, IHudDrawable *> *list) {
+                              std::map<std::string, IHudDrawable *> *map) {
 
-    Layout::getGLSquares(layoutXPos,layoutYPos,layoutWidth,layoutHeight,list);
+    Layout::getGLSquares(layoutXPos, layoutYPos, layoutWidth, layoutHeight, map);
 
     TextObject* textDrawer = new TextObject(text,font,layoutWidth-(padding[1]+padding[3]),
                                                       layoutHeight-(padding[0]+padding[2]),
                                                       layoutXPos + padding[3],padding[0]+layoutYPos);
-    list->insert(pair<string,IHudDrawable*>(textId == "" ? getNextRandId() : textId,textDrawer));
 
+    map->insert(std::pair<std::string, IHudDrawable*>(textId == "" ? getNextRandId() : textId,textDrawer));
 }

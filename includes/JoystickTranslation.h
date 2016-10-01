@@ -14,12 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Bubba-3D. If not, see http://www.gnu.org/licenses/.
  */
-//
-// Created by simon on 2016-01-14.
-//
-
-#ifndef BUBBA_3D_JOYSTICKTRANSLATION_H
-#define BUBBA_3D_JOYSTICKTRANSLATION_H
+#pragma once
 
 #include <SFML/Window.hpp>
 #include <map>
@@ -57,6 +52,3 @@ private:
     std::map<Axis,valueRetriever> xboxToGenericAxis;
 
 };
-
-
-#endif //BUBBA_3D_JOYSTICKTRANSLATION_H

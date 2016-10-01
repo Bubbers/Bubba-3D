@@ -3,7 +3,6 @@ set(BUBBA3D_FILES_SOURCE userInterface/Dimension.cpp
         userInterface/FontManager.cpp
         userInterface/GLSquare.cpp
         userInterface/HUDGraphic.cpp
-        userInterface/HudRenderComponent.cpp
         userInterface/HudRenderer.cpp
         userInterface/IHudDrawable.cpp
         userInterface/Layout.cpp

@@ -20,35 +20,39 @@
 #include "Octree.h"
 
 #define EPSILON 0.00001f
-bool rayTriangle(float3 r_o, float3 r_d, float3 v1, float3 v2, float3 v3, float *ins);
+
+using namespace chag;
+
+bool rayTriangle(chag::float3 r_o, chag::float3 r_d,
+                 chag::float3 v1, chag::float3 v2,
+                 chag::float3 v3, float *ins) {
+    chag::float3 e2 = v3 - v1;       // second edge
+    chag::float3 e1 = v2 - v1;       // first edge
 
 
-
-bool rayTriangle(float3 r_o, float3 r_d, float3 v1, float3 v2, float3 v3, float *ins) {
-    float3 e2 = v3 - v1;       // second edge
-    float3 e1 = v2 - v1;       // first edge
-
-
-    float3 r = cross(r_d, e2);  // (d X e2) is used two times in the formula
+    chag::float3 r = chag::cross(r_d, e2);  // (d X e2) is used two times in the formula
     // so we store it in an appropriate vector
-    float3 s = r_o - v1;       // translated ray origin
+
+    chag::float3 s = r_o - v1;       // translated ray origin
     float a = dot(e1, r);    // a=(d X e2)*e1
     float f = 1.0f / a;           // slow division*
-    float3 q = cross(s, e1);
-    float u = dot(s, r);
+
+    chag::float3 q = chag::cross(s, e1);
+    float u = chag::dot(s, r);
     float eps = 0.0001f;
+
     if (a > eps) { // Front facing triangle...
         if ((u < 0) || (u > a)) return false;
-        float v = dot(r_d, q);
+        float v = chag::dot(r_d, q);
         if ((v < 0) || (u + v > a)) return false;
     }
     else if (a < -eps) { // Back facing triangle...
         if ((u > 0) || (u < a)) return false;
-        float v = dot(r_d, q);
+        float v = chag::dot(r_d, q);
         if ((v > 0) || (u + v < a)) return false;
     }
     else return false; // Ray parallel to triangle plane
-    float t = f * dot(e2, q);
+    float t = f * chag::dot(e2, q);
 
     *ins = t;
 

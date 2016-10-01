@@ -14,20 +14,12 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Bubba-3D. If not, see http://www.gnu.org/licenses/.
  */
-//
-// Created by simon on 2016-02-21.
-//
-
-#ifndef SUPER_BUBBA_AWESOME_SPACE_HUDGRAPHIC_H
-#define SUPER_BUBBA_AWESOME_SPACE_HUDGRAPHIC_H
+#pragma once
 
 #include <Dimension.h>
 #include <linmath/float2.h>
 #include <linmath/float3.h>
 #include <linmath/float4.h>
-
-using namespace chag;
-using namespace std;
 
 class Texture;
 
@@ -41,7 +33,7 @@ public:
     /**
      * Represents a color
      */
-    class Color{
+    class Color {
     public:
         /**
          * Create a color from its hex value.
@@ -49,7 +41,7 @@ public:
          * \param hexString May or may not star with '#'. The size of the string
          * excluding the '#' sign should be 3 or 6.
          */
-        Color(string hexString);
+        Color(std::string hexString);
         /**
          * Create a color from its hex value and opacity.
          *
@@ -57,7 +49,7 @@ public:
          * excluding the '#' sign should be 3 or 6.
          * \param opacity A value between 0.0 and 1.0 specifying the opacity of the color
          */
-        Color(string hexString, float opacity);
+        Color(std::string hexString, float opacity);
 
         /**
          * Create a color from its color values. The values are expected to be
@@ -75,16 +67,16 @@ public:
         /**
          * Create the color from a raw vector. All values should be in the range 0.0-1.0
          */
-        Color(float4 rawColor);
+        Color(chag::float4 rawColor);
 
         /**
          * Get the calculated raw color.
          */
-        float4 getColor();
+        chag::float4 getColor();
 
     private:
-        float4 color;
-        void hexStringToFloat(string hexString,unsigned int pos, unsigned int len, float* target);
+        chag::float4 color;
+        void hexStringToFloat(std::string hexString,unsigned int pos, unsigned int len, float* target);
     };
 
     template <typename T>
@@ -92,8 +84,8 @@ public:
         T botLeftX, botLeftY,topRightX,topRightY;
         bool empty = true;
         TexturePosition(T botLeftX, T botLeftY, T topRightX, T topRightY)
-                : botLeftX(botLeftX), botLeftY(botLeftY), topRightX(topRightX), topRightY(topRightY), empty(false){}
-        TexturePosition(){}
+                : botLeftX(botLeftX), botLeftY(botLeftY), topRightX(topRightX), topRightY(topRightY), empty(false) {}
+        TexturePosition() {}
         bool isEmpty();
     };
 
@@ -126,7 +118,7 @@ public:
     /**
      * \internal
      */
-    float3 getCenterOffset(float width, float height);
+    chag::float3 getCenterOffset(float width, float height);
 
     /**
      * Returns the texture of this graphic, or throws a runtime_error
@@ -138,7 +130,7 @@ public:
      * Returns the color of this graphic, or throws a runtime_error
      * if it only contains a texture.
      */
-    float4 getColor();
+    chag::float4 getColor();
 
     /**
      * Returns true if this contains a texture
@@ -160,13 +152,13 @@ public:
     /**
      * Returns the raw color of the border in RGBA
      */
-    float4 getBorderColor();
+    chag::float4 getBorderColor();
 
     HUDGraphic* setRoundedCorners(int pixels);
-    HUDGraphic* setRoundedCorners(int topLeft,int topRight, int botRight, int botLeft);
+    HUDGraphic* setRoundedCorners(int topLeft, int topRight, int botRight, int botLeft);
     HUDGraphic* setBorder(int pixels, Color borderColor);
-    HUDGraphic* setBorder(int botAndTop,int leftAndRight, Color borderColor);
-    HUDGraphic* setBorder(int top, int right, int bot,int left, Color borderColor);
+    HUDGraphic* setBorder(int botAndTop, int leftAndRight, Color borderColor);
+    HUDGraphic* setBorder(int top, int right, int bot, int left, Color borderColor);
     HUDGraphic* setBorderSize(int top, int right, int bot, int left);
     HUDGraphic* setBorderColor(Color borderColor);
     HUDGraphic* setBackground(Color color);
@@ -176,15 +168,10 @@ protected:
 
     Dimension offsetX, offsetY;
     Texture* texture = nullptr;
-    float4 color;
+    chag::float4 color;
     TexturePosition<int> texturePosition;
     bool textureElseColor;
-    int roundedCorners[4] = {0,0,0,0};
-    int borders[4] = {0,0,0,0};
-    float4 borderColor;
-
-private:
+    int roundedCorners[4] = {0, 0, 0, 0};
+    int borders[4] = {0, 0, 0, 0};
+    chag::float4 borderColor;
 };
-
-
-#endif //SUPER_BUBBA_AWESOME_SPACE_HUDGRAPHIC_H

@@ -24,7 +24,7 @@
 
 
 ParticleGenerator::ParticleGenerator(Texture *texture, int amount,
-                                     Camera *camera, float4x4 modelMatrix,
+                                     Camera *camera, chag::float4x4 modelMatrix,
                                      ParticleConf *conf)
                                    : texture(texture), m_amount(amount),
                                      m_camera(camera), conf(conf)
@@ -87,10 +87,10 @@ void ParticleGenerator::render() {
     
     texture->bind(GL_TEXTURE0);
     
-    shaderProgram->setUniform3f("color", make_vector(1.0f, 1.0f, 1.0f));
+    shaderProgram->setUniform3f("color", chag::make_vector(1.0f, 1.0f, 1.0f));
     shaderProgram->setUniform1i("sprite", 0);
     
-    float3x3 modelMatrix3x3 = getModelMatrix3x3();
+    chag::float3x3 modelMatrix3x3 = getModelMatrix3x3();
     
     
     float distance = length(this->m_camera->getPosition() - this->owner->getAbsoluteLocation());
@@ -110,14 +110,14 @@ void ParticleGenerator::render() {
         if (iterations > maxParticles) { break; }
         iterations++;
     
-        float3 scale;
+        chag::float3 scale;
         if (particle->isAlive()) {
             if(doScale) {
                 scale = conf->calcParticleScale() * (1.0 + distance / LINEAR_SCALE_FACTOR);
             } else {
-                scale = make_vector(1.0f, 1.0f, 1.0f);
+                scale = chag::make_vector(1.0f, 1.0f, 1.0f);
             }
-            float4x4 modelMatrix4x4 = make_matrix(modelMatrix3x3, particle->getPosition()) * make_scale<float4x4>(scale);
+            chag::float4x4 modelMatrix4x4 = make_matrix(modelMatrix3x3, particle->getPosition()) * chag::make_scale<chag::float4x4>(scale);
     
             shaderProgram->setUniformMatrix4fv("modelMatrix", modelMatrix4x4);
     
@@ -147,14 +147,14 @@ void ParticleGenerator::update(float dt) {
     }
 }
 
-float3x3 ParticleGenerator::getModelMatrix3x3() {
-    float3 u = normalize(m_camera->getUp());
-    float3 n = normalize(-(m_camera->getPosition() - m_camera->getLookAt()));
-    float3 r = normalize(cross(u, n));
+chag::float3x3 ParticleGenerator::getModelMatrix3x3() {
+    chag::float3 u = chag::normalize(m_camera->getUp());
+    chag::float3 n = chag::normalize(m_camera->getLookAt() - m_camera->getPosition());
+    chag::float3 r = chag::normalize(chag::cross(u, n));
 
-    float3 uprim = cross(n, r);
+    chag::float3 uprim = chag::cross(n, r);
     
-    return make_matrix(r,uprim,n);
+    return make_matrix(r, uprim, n);
 }
 
 
