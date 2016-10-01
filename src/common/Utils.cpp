@@ -14,9 +14,20 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Bubba-3D. If not, see http://www.gnu.org/licenses/.
  */
+#include "assimp/material.h"
 #include "Utils.h"
 #include "ShaderProgram.h"
 #include "GameObject.h"
+
+
+float4x4 convertAiMatrixToFloat4x4(aiMatrix4x4 fromMatrix) {
+    float4x4 newMatrix;
+    newMatrix.c1 = make_vector(fromMatrix.a1, fromMatrix.b1, fromMatrix.c1, fromMatrix.d1);
+    newMatrix.c2 = make_vector(fromMatrix.a2, fromMatrix.b2, fromMatrix.c2, fromMatrix.d2);
+    newMatrix.c3 = make_vector(fromMatrix.a3, fromMatrix.b3, fromMatrix.c3, fromMatrix.d3);
+    newMatrix.c4 = make_vector(fromMatrix.a4, fromMatrix.b4, fromMatrix.c4, fromMatrix.d4);
+    return newMatrix;
+}
 
 float degreeToRad(const float degree) {
     return (float) (degree * M_PI / 180);
