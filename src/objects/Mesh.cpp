@@ -34,7 +34,6 @@ using namespace chag;
 
 #define BONE_ID_LOCATION_GPU 6
 #define BONE_WEIGHT_LOCATION_GPU 7
-#define MAX_NUM_BONES 45
 
 Mesh::Mesh() {
 
@@ -46,29 +45,31 @@ Mesh::~Mesh() {
 
 void Mesh::loadMesh(const std::string &fileName) {
     Logger::logInfo("Loading mesh " + fileName);
-    Assimp::Importer importer;
 
-    const aiScene *pScene = importer.ReadFile(
+    importer.ReadFile(
             fileName.c_str(), aiProcess_GenSmoothNormals | aiProcess_Triangulate | aiProcess_CalcTangentSpace);
+    assimpScene = importer.GetOrphanedScene();
 
-    if (!pScene) {
+    if (!assimpScene) {
         Logger::logError("Error loading mesh for " + fileName + ". Error message: " + importer.GetErrorString());
     } else {
-        globalInverseTransform = pScene->mRootNode->mTransformation;
+        globalInverseTransform = assimpScene->mRootNode->mTransformation;
         globalInverseTransform.Inverse();
 
-        initMesh(pScene, fileName);
+        initMesh(assimpScene, fileName);
     }
 }
 
-void Mesh::initMesh(const aiScene *pScene, const std::string &fileNameOfMesh) {
-    for (unsigned int i = 0; i < pScene->mNumMeshes; i++) {
-        const aiMesh *paiMesh = pScene->mMeshes[i];
+void Mesh::initMesh(const aiScene *assimpScene, const std::string &fileNameOfMesh) {
+    for (unsigned int i = 0; i < assimpScene->mNumMeshes; i++) {
+        const aiMesh *paiMesh = assimpScene->mMeshes[i];
         initMeshFromAiMesh(i, paiMesh);
     }
 
-    initMaterials(pScene, fileNameOfMesh);
+    initMaterials(assimpScene, fileNameOfMesh);
     createTriangles();
+
+    numAnimations = assimpScene->mNumAnimations;
 }
 
 
@@ -82,6 +83,7 @@ void Mesh::initMeshFromAiMesh(unsigned int index, const aiMesh *paiMesh) {
 void Mesh::initChunkFromAiMesh(const aiMesh *paiMesh, Chunk &chunk) {
     initVerticesFromAiMesh(paiMesh, chunk);
     initIndicesFromAiMesh(paiMesh, chunk);
+
     initBonesFromAiMesh(paiMesh, chunk.bones);
 
     chunk.materialIndex = paiMesh->mMaterialIndex;
@@ -146,11 +148,35 @@ void Mesh::initBonesFromAiMesh(const aiMesh *paiMesh, std::vector<VertexBoneData
         for (unsigned int j = 0; j < paiMesh->mBones[i]->mNumWeights; j++) {
             auto aiWeight = paiMesh->mBones[i]->mWeights[j];
             uint vertexId = aiWeight.mVertexId;
-            float weight = aiWeight.mWeight;
+            float weight = 1;//aiWeight.mWeight;
 
             bones[vertexId].addBoneData(boneIndex, weight);
         }
     }
+    numBones = numBonesSoFar;
+}
+
+void Mesh::calculateBoneTransforms(float elapsedTimeInSeconds, std::vector<float4x4>& boneTransformMatrices) {
+    float4x4 rootMatrix = make_identity<float4x4>();
+
+    float ticksPerSecond = assimpScene->mAnimations[0]->mTicksPerSecond;
+    ticksPerSecond = ticksPerSecond == 0 ? 25 : ticksPerSecond;
+
+    float elapsedTimeInTicks = elapsedTimeInSeconds * ticksPerSecond;
+    float animationDurationInTicks = assimpScene->mAnimations[0]->mDuration;
+    float currentAnimationTick = fmod(elapsedTimeInTicks, animationDurationInTicks);
+
+    readNodeHierarchy(currentAnimationTick, assimpScene->mRootNode, rootMatrix);
+
+    boneTransformMatrices.resize(numBones);
+    for (int bone = 0; bone < numBones; bone++) {
+        //boneTransformMatrices[bone] = boneInfos[bone].finalTransformation;
+        boneTransformMatrices[bone] = make_identity<float4x4>();
+    }
+}
+
+void Mesh::readNodeHierarchy(float currentAnimationTick, aiNode *currentAssimpNode, float4x4 parentMatrix) {
+
 }
 
 
@@ -326,3 +352,9 @@ std::vector<Chunk>* Mesh::getChunks() {
 std::vector<Material>* Mesh::getMaterials() {
     return &materials;
 }
+
+
+bool Mesh::hasAnimations(){
+    return numAnimations != 0;
+}
+
