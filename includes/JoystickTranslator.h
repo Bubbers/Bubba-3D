@@ -42,7 +42,7 @@ private:
 
     void readDocument(rapidjson::Document *doc);
     void check(bool, std::string);
-    int getJoystick(int devId, int vendId, unsigned int startAt);
+    int getJoystick(unsigned int devId, unsigned int vendId, unsigned int startAt);
     void readMappings(rapidjson::Value* mappings, unsigned int joystickID, bool defaultMapping);
 
     JoystickTranslation::valueRetriever decideOnButtonRetriever(rapidjson::Value* mapData);

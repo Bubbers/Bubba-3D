@@ -66,7 +66,7 @@ void StandardRenderer::render() {
         }
 
         if(chunk.hasAnimations()) {
-            std::vector<float4x4> boneTransforms;
+            std::vector<chag::float4x4> boneTransforms;
             long currentTimeInSeconds =  sf::Clock().getElapsedTime().asSeconds();
             mesh->calculateBoneTransforms(currentTimeInSeconds, boneTransforms);
             shaderProgram->setUniform1i("has_animations", 1);
