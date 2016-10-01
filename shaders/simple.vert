@@ -2,32 +2,35 @@
 
 #extension GL_ARB_explicit_attrib_location : enable
 
+layout(location = 0) in vec3 position;
+in vec3 colorIn;
+layout(location = 2) in vec2 texCoordIn; // incoming texcoord from the texcoord array
+layout(location = 1) in vec3 normalIn;
+in vec3 tangent;
+in vec3 bittangent;
+layout(location = 6) in ivec4 boneIds;
+layout(location = 7) in vec4 boneWeights;
 
-layout(location = 0) in vec3		position;
-in vec3		colorIn;
-layout(location = 2) in	vec2	texCoordIn;	// incoming texcoord from the texcoord array
-layout(location = 1) in  vec3	normalIn;
-in	vec3	tangent;
-in  vec3	bittangent;
-
-out vec4	viewSpacePosition; 
-out vec3	worldSpaceNormal;
-out vec4    worldSpacePosition;
-out vec4	color;
-out	vec2	texCoord;	// outgoing interpolated texcoord to fragshader
-out vec4    shadowTexCoord;
-out mat3    TBN;
+out vec4 viewSpacePosition;
+out vec3 worldSpaceNormal;
+out vec4 worldSpacePosition;
+out vec4 color;
+out	vec2 texCoord; // outgoing interpolated texcoord to fragshader
+out vec4 shadowTexCoord;
+out mat3 TBN;
 
 uniform mat4 modelMatrix;
 uniform mat4 normalMatrix;
 uniform mat4 lightMatrix;
+
+const int MAX_NUM_BONES = 100;
+uniform mat4 bones[MAX_NUM_BONES];
 
 layout(std140) uniform Matrices {
     mat4 viewMatrix;
     mat4 projectionMatrix;
     mat4 viewProjectionMatrix;
 };
-
 
 void main() 
 {

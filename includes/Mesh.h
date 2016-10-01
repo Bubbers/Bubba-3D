@@ -23,13 +23,14 @@
 #include "AABB2.h"
 #include "assimp/material.h"
 #include <Sphere.h>
+#include <assimp/scene.h>
+#include <map>
+#include <BoneInfo.h>
 
 
 class Triangle;
-struct aiScene;
-struct aiMesh;
-struct aiMaterial;
-
+class Chunk;
+struct VertexBoneData;
 
 /**
  * A class for containing all triangle and material of a mesh.
@@ -87,6 +88,8 @@ public:
     void initChunkFromAiMesh(const aiMesh *paiMesh, Chunk &chunk);
     void initVerticesFromAiMesh(const aiMesh *paiMesh, Chunk &chunk);
     void initIndicesFromAiMesh(const aiMesh *paiMesh, Chunk &chunk);
+
+    void initBonesFromAiMesh(const aiMesh *paiMesh, std::vector<VertexBoneData> &bones);
 
     /**
      * Loads all materials from the loaded aiScene.
@@ -164,6 +167,10 @@ public:
     std::vector<Triangle *> triangles;
     std::vector<Material> materials;
     std::vector<Chunk> m_chunks;
+    aiMatrix4x4 globalInverseTransform;
+
+    map<string, uint> boneNameToIndexMapping;
+    vector<BoneInfo> boneInfos;
 
     Sphere sphere;
     AABB m_aabb;

@@ -26,8 +26,15 @@
 #include "Chunk.h"
 #include <string>
 #include "Utils.h"
+#include "GL/glew.h"
+#include "BoneInfo.h"
+#include "Utils.h"
 
 using namespace chag;
+
+#define BONE_ID_LOCATION_GPU 6
+#define BONE_WEIGHT_LOCATION_GPU 7
+#define MAX_NUM_BONES 45
 
 Mesh::Mesh() {
 
@@ -47,6 +54,9 @@ void Mesh::loadMesh(const std::string &fileName) {
     if (!pScene) {
         Logger::logError("Error loading mesh for " + fileName + ". Error message: " + importer.GetErrorString());
     } else {
+        globalInverseTransform = pScene->mRootNode->mTransformation;
+        globalInverseTransform.Inverse();
+
         initMesh(pScene, fileName);
     }
 }
@@ -72,6 +82,7 @@ void Mesh::initMeshFromAiMesh(unsigned int index, const aiMesh *paiMesh) {
 void Mesh::initChunkFromAiMesh(const aiMesh *paiMesh, Chunk &chunk) {
     initVerticesFromAiMesh(paiMesh, chunk);
     initIndicesFromAiMesh(paiMesh, chunk);
+    initBonesFromAiMesh(paiMesh, chunk.bones);
 
     chunk.materialIndex = paiMesh->mMaterialIndex;
 
@@ -91,6 +102,7 @@ void Mesh::initVerticesFromAiMesh(const aiMesh *paiMesh, Chunk &chunk) {
         chunk.m_positions.push_back(make_vector(pPos.x, pPos.y, pPos.z));
         chunk.m_normals.push_back(make_vector(pNormal.x, pNormal.y, pNormal.z));
         chunk.m_uvs.push_back(make_vector(pTexCoord.x, pTexCoord.y));
+
         if (paiMesh->HasTangentsAndBitangents()) {
             const aiVector3D pBitTangents = paiMesh->mBitangents[i];
             const aiVector3D pTangents = paiMesh->mTangents[i];
@@ -108,6 +120,36 @@ void Mesh::initIndicesFromAiMesh(const aiMesh *paiMesh, Chunk &chunk) {
         chunk.m_indices.push_back(face.mIndices[0]);
         chunk.m_indices.push_back(face.mIndices[1]);
         chunk.m_indices.push_back(face.mIndices[2]);
+    }
+}
+
+void Mesh::initBonesFromAiMesh(const aiMesh *paiMesh, std::vector<VertexBoneData> &bones) {
+    bones.resize(paiMesh->mNumVertices);
+
+    int numBonesSoFar = 0;
+    for(uint i = 0; i < paiMesh->mNumBones; i++) {
+        uint boneIndex = 0;
+        string boneName(paiMesh->mBones[i]->mName.data);
+
+        if(boneNameToIndexMapping.find(boneName) == boneNameToIndexMapping.end()) {
+            boneIndex = numBonesSoFar;
+            numBonesSoFar++;
+            BoneInfo boneInfo;
+            boneInfos.push_back(boneInfo);
+        } else {
+            boneIndex = boneNameToIndexMapping[boneName];
+        }
+
+        boneNameToIndexMapping[boneName] = boneIndex;
+        boneInfos[boneIndex].boneOffset = convertAiMatrixToFloat4x4(paiMesh->mBones[i]->mOffsetMatrix);
+
+        for (unsigned int j = 0; j < paiMesh->mBones[i]->mNumWeights; j++) {
+            auto aiWeight = paiMesh->mBones[i]->mWeights[j];
+            uint vertexId = aiWeight.mVertexId;
+            float weight = aiWeight.mWeight;
+
+            bones[vertexId].addBoneData(boneIndex, weight);
+        }
     }
 }
 
@@ -207,11 +249,11 @@ void Mesh::setupSphere(std::vector<float3> *positions) {
 // TODO(Bubbad) Remove all GL dependencies directly in mesh
 template <typename T>
 void setupGlBuffer(std::vector<T> buffer, GLuint *bufferGLObject, GLuint vertexAttibute, int numbersPerObject,
-                   const void* firstObject, GLenum type) {
+                   const void* firstObject, GLenum bufferType, GLuint dataType) {
     glGenBuffers(1, bufferGLObject);
-    glBindBuffer(type, *bufferGLObject);
-    glBufferData(type, buffer.size() * sizeof(buffer[0]), firstObject, GL_STATIC_DRAW);
-    glVertexAttribPointer(vertexAttibute, numbersPerObject, GL_FLOAT, GL_FALSE, 0, 0);
+    glBindBuffer(bufferType, *bufferGLObject);
+    glBufferData(bufferType, buffer.size() * sizeof(buffer[0]), firstObject, GL_STATIC_DRAW);
+    glVertexAttribPointer(vertexAttibute, numbersPerObject, dataType, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(vertexAttibute);
 }
 
@@ -219,20 +261,32 @@ void Mesh::setupChunkForRendering(Chunk &chunk) {
     glGenVertexArrays(1, &chunk.m_vaob);
     glBindVertexArray(chunk.m_vaob);
 
-    setupGlBuffer(chunk.m_positions, &chunk.m_positions_bo, 0, 3 , &chunk.m_positions[0].x, GL_ARRAY_BUFFER_ARB);
-    setupGlBuffer(chunk.m_normals, &chunk.m_normals_bo, 1, 3, &chunk.m_normals[0].x, GL_ARRAY_BUFFER_ARB);
+    setupGlBuffer(chunk.m_positions, &chunk.m_positions_bo, 0, 3 , &chunk.m_positions[0].x, GL_ARRAY_BUFFER_ARB, GL_FLOAT);
+    setupGlBuffer(chunk.m_normals, &chunk.m_normals_bo, 1, 3, &chunk.m_normals[0].x, GL_ARRAY_BUFFER_ARB, GL_FLOAT);
 
     if (chunk.m_uvs.size() > 0) {
-        setupGlBuffer(chunk.m_uvs, &chunk.m_uvs_bo, 2, 2, &chunk.m_uvs[0].x, GL_ARRAY_BUFFER_ARB);
+        setupGlBuffer(chunk.m_uvs, &chunk.m_uvs_bo, 2, 2, &chunk.m_uvs[0].x, GL_ARRAY_BUFFER_ARB, GL_FLOAT);
     }
 
-    setupGlBuffer(chunk.m_indices, &chunk.m_ind_bo, 3, 3, &chunk.m_indices[0], GL_ELEMENT_ARRAY_BUFFER_ARB);
+    setupGlBuffer(chunk.m_indices, &chunk.m_ind_bo, 3, 3, &chunk.m_indices[0], GL_ELEMENT_ARRAY_BUFFER_ARB, GL_FLOAT);
 
     if (chunk.m_bittangents.size() > 0) {
-        setupGlBuffer(chunk.m_tangents, &chunk.m_tangents_bo, 4, 3, &chunk.m_tangents[0].x, GL_ARRAY_BUFFER_ARB);
+        setupGlBuffer(chunk.m_tangents, &chunk.m_tangents_bo, 4, 3, &chunk.m_tangents[0].x, GL_ARRAY_BUFFER_ARB, GL_FLOAT);
         setupGlBuffer(chunk.m_bittangents, &chunk.m_bittangents_bo, 5, 3,
-                      &chunk.m_bittangents[0].x, GL_ARRAY_BUFFER_ARB);
+                      &chunk.m_bittangents[0].x, GL_ARRAY_BUFFER_ARB, GL_FLOAT);
     }
+
+    glGenBuffers(1, &chunk.bonesBufferObject);
+    glBindBuffer(GL_ARRAY_BUFFER, chunk.bonesBufferObject);
+    glBufferData(GL_ARRAY_BUFFER, chunk.bones.size() * sizeof(chunk.bones[0]), &chunk.bones[0], GL_STATIC_DRAW);
+
+    const int boneIdsPerObject = 4;
+    glVertexAttribIPointer(BONE_ID_LOCATION_GPU, boneIdsPerObject, GL_INT, sizeof(VertexBoneData), 0);
+    glEnableVertexAttribArray(BONE_ID_LOCATION_GPU);
+
+    const int boneWeightsPerObject = 4;
+    glVertexAttribPointer(BONE_WEIGHT_LOCATION_GPU, boneWeightsPerObject, GL_FLOAT, GL_FALSE, sizeof(VertexBoneData), (const GLvoid*)16);
+    glEnableVertexAttribArray(BONE_WEIGHT_LOCATION_GPU);
 }
 
 AABB* Mesh::getAABB() {
@@ -245,10 +299,6 @@ void Mesh::createTriangles() {
         for (unsigned int j = 0; j + 2 < m_chunks[i].m_indices.size(); j += 3) {
             triangles.push_back(createTriangleFromPositions(m_chunks[i].m_positions, m_chunks[i].m_indices, j));
         }
-        /*
-        for (unsigned int j = 0; j + 2 < m_chunks[i].m_positions.size(); j += 3) {
-            triangles.push_back(createTriangleFromPositions(m_chunks[i].m_positions, j));
-        }*/
     }
 }
 
@@ -263,16 +313,6 @@ Triangle* Mesh::createTriangleFromPositions(std::vector<chag::float3> positionBu
                         make_vector(positionBuffer[indices[startIndex + 2]].x,
                                     positionBuffer[indices[startIndex + 2]].y,
                                     positionBuffer[indices[startIndex + 2]].z));
-    /*
-    return new Triangle(make_vector(positionBuffer[startIndex + 0].x,
-                                    positionBuffer[startIndex + 0].y,
-                                    positionBuffer[startIndex + 0].z),
-                        make_vector(positionBuffer[startIndex + 1].x,
-                                    positionBuffer[startIndex + 1].y,
-                                    positionBuffer[startIndex + 1].z),
-                        make_vector(positionBuffer[startIndex + 2].x,
-                                    positionBuffer[startIndex + 2].y,
-                                    positionBuffer[startIndex + 2].z));*/
 }
 
 std::vector<Triangle*> Mesh::getTriangles() {
