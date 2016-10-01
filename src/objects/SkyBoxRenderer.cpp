@@ -20,6 +20,7 @@
 #include "Camera.h"
 #include "CubeMapTexture.h"
 #include "GameObject.h"
+#include "Chunk.h"
 
 #define SKYBOX_SHADER_NAME "skybox_shader"
 

@@ -19,9 +19,12 @@
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 #include "linmath/float3.h"
+#include "linmath/float4x4.h"
+#include "assimp/material.h"
 
 class ShaderProgram;
 class GameObject;
+
 
 struct Fbo {
     GLuint id;
@@ -44,6 +47,8 @@ T getRandomElem(const T (&ts)[S]);
 void updateMinAndMax(const float x, const float y, const float z, chag::float3* minV, chag::float3* maxV);
 
 chag::float3 createRandomVector(const float minValue, const float maxValue);
+
+chag::float4x4 convertAiMatrixToFloat4x4(aiMatrix4x4 fromMatrix) ;
 
 typedef std::pair<GameObject*, GameObject*> CollisionPair;
 typedef std::vector<CollisionPair> CollisionPairList;

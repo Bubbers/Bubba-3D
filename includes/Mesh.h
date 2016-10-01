@@ -20,7 +20,6 @@
 #include <vector>
 #include "linmath/float3.h"
 #include "Material.h"
-#include "Chunk.h"
 #include "AABB2.h"
 #include "assimp/material.h"
 #include <Sphere.h>

@@ -37,8 +37,7 @@ set(HEADER_FILES
 		  ${PROJECT_SOURCE_DIR}/includes/Scene.h 
 		  ${PROJECT_SOURCE_DIR}/includes/Camera.h 
 		  ${PROJECT_SOURCE_DIR}/includes/JoystickTranslation.h 
- 		  ${PROJECT_SOURCE_DIR}/includes/ShaderProgram.h 
-		  ${PROJECT_SOURCE_DIR}/includes/Chunk.h 
+ 		  ${PROJECT_SOURCE_DIR}/includes/ShaderProgram.h
 		  ${PROJECT_SOURCE_DIR}/includes/JoystickTranslator.h 
 		  ${PROJECT_SOURCE_DIR}/includes/SkyBoxRenderer.h 
 		  ${PROJECT_SOURCE_DIR}/includes/Collider.h 

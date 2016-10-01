@@ -24,6 +24,7 @@
 class Mesh;
 class ShaderProgram;
 class GameObject;
+class Chunk;
 
 /**
  * \brief Renders meshes with the default shader

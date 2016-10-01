@@ -20,6 +20,7 @@
 #include <ShaderProgram.h>
 #include <shader/VertexShader.h>
 #include <shader/FragmentShader.h>
+#include "objects/Chunk.h"
 
 std::map<std::string, ShaderProgram> ResourceManager::shaders;
 std::map<std::string, Texture> ResourceManager::textures;
