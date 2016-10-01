@@ -19,6 +19,7 @@
 #include "StandardRenderer.h"
 #include "Mesh.h"
 #include "ShaderProgram.h"
+#include "objects/Chunk.h"
 
 #define NORMAL_TEXTURE_LOCATION 3
 #define DIFFUSE_TEXTURE_LOCATION 0
