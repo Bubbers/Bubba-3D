@@ -24,6 +24,7 @@
 #define LOD_FACTOR 25.0f
 
 class Camera;
+class Texture;
 class Particle;
 class ParticleConf;
 
