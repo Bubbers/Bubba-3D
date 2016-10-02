@@ -66,6 +66,7 @@ void Texture::loadTexture(std::string fileName)
     textureID = texid;
 
     stbi_image_free(image);
+    printf("Loaded texture: %s\n", fileName.c_str());
 }
 
 int Texture::getHeight() {

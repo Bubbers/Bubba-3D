@@ -17,20 +17,19 @@
 
 #define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
 
-#include <objects/VertexBoneData.h>
+#include <objects/BoneInfluenceOnVertex.h>
 #include "catch.hpp"
 
 TEST_CASE("SmokeTestAddingBones", "[Skeletal]") {
-    VertexBoneData boneData;
+    BoneInfluenceOnVertex boneData;
     boneData.addBoneData(1, 3);
 }
 
 TEST_CASE("AddingMoreThanMaxBones", "[Skeletal]") {
-    const int maxNumBones = 4;
-    VertexBoneData boneData(maxNumBones);
+    BoneInfluenceOnVertex boneData;
     try {
-        for (int i = 0; i < maxNumBones + 1; i++) {
-            boneData.addBoneData(i, i);
+        for (int i = 0; i < MAX_NUM_BONES + 1; i++) {
+            boneData.addBoneData(i, i + 1);
         }
     } catch (const std::exception& exception) {
         REQUIRE(true);
@@ -40,19 +39,17 @@ TEST_CASE("AddingMoreThanMaxBones", "[Skeletal]") {
 }
 
 TEST_CASE("AddingManyBones", "[Skeletal]") {
-    const int maxNumBones = 4;
-    VertexBoneData boneData(maxNumBones);
-    for (int i = 0; i < maxNumBones; i++) {
-        boneData.addBoneData(i, i);
+    BoneInfluenceOnVertex boneData;
+    for (int i = 0; i < MAX_NUM_BONES; i++) {
+        boneData.addBoneData(i , i + 1);
         REQUIRE(boneData.ids[i] == i );
-        REQUIRE(boneData.weights[i] == i);
+        REQUIRE(boneData.weights[i] == i + 1);
     }
 }
 
 TEST_CASE("CheckZeroInitiatedWeights", "[Skeletal]") {
-    const int maxNumBones = 4;
-    VertexBoneData boneData(maxNumBones);
-    for (int i = 0; i < maxNumBones; i++) {
+    BoneInfluenceOnVertex boneData;
+    for (int i = 0; i < MAX_NUM_BONES; i++) {
         REQUIRE(boneData.weights[i] == 0);
     }
 }

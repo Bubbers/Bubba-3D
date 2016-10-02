@@ -15,12 +15,20 @@
  * along with Bubba-3D. If not, see http://www.gnu.org/licenses/.
  */
 #pragma once
+#include <vector>
+#include "stdint.h"
+#include <stdexcept>
 
-#include "linmath/float4x4.h"
+#define MAX_NUM_BONES 4
 
-struct BoneInfo
-    {
-        chag::float4x4 boneOffset = chag::make_identity<chag::float4x4>();
-        chag::float4x4 finalTransformation = chag::make_identity<chag::float4x4>();
-    };
+struct BoneInfluenceOnVertex {
+    uint ids[MAX_NUM_BONES];
+    float weights[MAX_NUM_BONES];
 
+    BoneInfluenceOnVertex();
+
+    /**
+     * Adds bone data to the next free bone slot
+     */
+    void addBoneData(int boneId, float weight) ;
+};

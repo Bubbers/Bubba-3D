@@ -65,9 +65,9 @@ void StandardRenderer::render() {
             material.bumpMapTexture->bind(GL_TEXTURE3);
         }
 
-        if(chunk.hasAnimations()) {
+       if(mesh->hasAnimations()) {
             std::vector<chag::float4x4> boneTransforms;
-            long currentTimeInSeconds =  sf::Clock().getElapsedTime().asSeconds();
+            float currentTimeInSeconds = clock.getElapsedTime().asSeconds();
             mesh->calculateBoneTransforms(currentTimeInSeconds, boneTransforms);
             shaderProgram->setUniform1i("has_animations", 1);
 
@@ -80,6 +80,7 @@ void StandardRenderer::render() {
 
         shaderProgram->setUniform1i("has_diffuse_texture", material.diffuseTexture != NULL);
         shaderProgram->setUniform3f("material_diffuse_color", material.diffuseColor);
+        //shaderProgram->setUniform3f("material_diffuse_color", chag::make_vector(0.5f, 0.5f, 0.5f));
         shaderProgram->setUniform3f("material_specular_color", material.specularColor);
         shaderProgram->setUniform3f("material_ambient_color", material.ambientColor);
         shaderProgram->setUniform3f("material_emissive_color", material.emissiveColor);

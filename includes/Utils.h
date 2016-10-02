@@ -35,6 +35,9 @@ struct Fbo {
     int width, height;
 };
 
+
+bool fequals(double a, double b);
+
 float degreeToRad(const float degree);
 
 float radToDegree(const float rad);
@@ -49,6 +52,7 @@ void updateMinAndMax(const float x, const float y, const float z, chag::float3* 
 chag::float3 createRandomVector(const float minValue, const float maxValue);
 
 chag::float4x4 convertAiMatrixToFloat4x4(aiMatrix4x4 fromMatrix) ;
+chag::float3x3 convertAiMatrixToFloat3x3(aiMatrix3x3 fromMatrix) ;
 
 typedef std::pair<GameObject*, GameObject*> CollisionPair;
 typedef std::vector<CollisionPair> CollisionPairList;

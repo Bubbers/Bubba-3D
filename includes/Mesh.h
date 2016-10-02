@@ -31,7 +31,7 @@
 
 class Triangle;
 class Chunk;
-struct VertexBoneData;
+struct BoneInfluenceOnVertex;
 
 /**
  * A class for containing all triangle and material of a mesh.
@@ -95,8 +95,11 @@ public:
     void initIndicesFromAiMesh(const aiMesh *paiMesh, Chunk &chunk);
 
     void initBonesFromAiMesh(const aiMesh *paiMesh, Chunk &bones);
+    void assertAllVertexWeightsSumToOne(Chunk &chunk);
 
-    void readNodeHierarchy(float currentAnimationTick, aiNode *currentAssimpNode, chag::float4x4 parentMatrix);
+    void readNodeHierarchyAndUpdateBoneTransformations(float currentAnimationTick, aiNode *currentAssimpNode,
+                                                       chag::float4x4 parentMatrix);
+    const aiNodeAnim* findNodeAnim(const aiAnimation* animation, const std::string nodeName);
 
     /**
      * Loads all materials from the loaded aiScene.
@@ -174,7 +177,11 @@ public:
     std::vector<Triangle *> triangles;
     std::vector<Material> materials;
     std::vector<Chunk> m_chunks;
-    aiMatrix4x4 globalInverseTransform;
+    chag::float4x4 globalInverseTransform;
+
+    int numberOfBones;
+    std::map<std::string, int> boneNameToIndexMapping;
+    std::vector<BoneInfo*> boneInfos;
 
     Assimp::Importer importer;
     const aiScene *assimpScene;
@@ -182,5 +189,30 @@ public:
     Sphere sphere;
     AABB m_aabb;
 
+    unsigned int numAnimations;
 
+    aiVector3D calculateTranslationInterpolation(float currentAnimationTick, const aiNodeAnim *nodeAnimation);
+    aiVector3D calculateScalingInterpolation(float currentAnimationTick, const aiNodeAnim *nodeAnimation);
+    aiQuaternion calculateRotationInterpolation(float currentAnimationTick, const aiNodeAnim *nodeAnimation);
+
+    unsigned int findScalingIndexRightBeforeTick(float currentAnimationTick, const aiNodeAnim *nodeAnimation);
+    unsigned int findTranslationIndexRightBeforeTick(float currentAnimationTick, const aiNodeAnim *nodeAnimation);
+    unsigned int findRotationIndexRightBeforeTick(float currentAnimationTick, const aiNodeAnim *nodeAnimation);
+
+    const aiNodeAnim *getAnimationNode(const std::string &nodeName);
+
+    chag::float4x4 getCurrentNodeTransformation(float currentAnimationTick, const aiNode *currentAssimpNode,
+                                                const std::string nodeName);
+
+    chag::float4x4 getInterpolatedScalingMatrix(float currentAnimationTick, const aiNodeAnim *nodeAnimation);
+
+    chag::float4x4 getInterpolatedRotationMatrix(float currentAnimationTick, const aiNodeAnim *nodeAnimation);
+
+    chag::float4x4 getInterpolatedTranslationMatrix(float currentAnimationTick, const aiNodeAnim *nodeAnimation);
+
+    chag::float4x4 getInterpolatedAnimationMatrix(float currentAnimationTick, const aiNodeAnim *nodeAnimation);
+
+    bool nodeIsABone(const std::string &nodeName) const;
+
+    void updateBoneTransformation(const std::string &nodeName, const chag::float4x4 &globalTransformation);
 };
