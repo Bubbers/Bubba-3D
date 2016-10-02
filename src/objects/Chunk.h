@@ -22,7 +22,7 @@
 #include <GL/glew.h>
 #include <map>
 #include <BoneInfo.h>
-#include "VertexBoneData.h"
+#include "BoneInfluenceOnVertex.h"
 
 class Chunk {
 public:
@@ -31,8 +31,6 @@ public:
     ~Chunk() {
     }
 
-    bool hasAnimations();
-
     // Data on host
     std::vector<chag::float3> m_positions;
     std::vector<chag::float3> m_normals;
@@ -40,9 +38,7 @@ public:
     std::vector<unsigned int> m_indices;
     std::vector<chag::float3> m_tangents;
     std::vector<chag::float3> m_bittangents;
-    std::vector<VertexBoneData> bones;
-    std::map<std::string, uint> boneNameToIndexMapping;
-    std::vector<BoneInfo> boneInfos;
+    std::vector<BoneInfluenceOnVertex> bones;
 
     // Data on GPU
     GLuint m_positions_bo;
@@ -56,7 +52,4 @@ public:
     GLuint m_vaob;
 
     unsigned int materialIndex;
-
-    int numBones;
-    unsigned int numAnimations;
 };

@@ -29,6 +29,7 @@
 #include "GL/glew.h"
 #include "BoneInfo.h"
 #include "Utils.h"
+#include "linmath/float3x3.h"
 
 using namespace chag;
 
@@ -36,7 +37,8 @@ using namespace chag;
 #define BONE_WEIGHT_LOCATION_GPU 7
 
 Mesh::Mesh() {
-
+    numberOfBones = 0;
+    numAnimations = 0;
 }
 
 Mesh::~Mesh() {
@@ -54,8 +56,7 @@ void Mesh::loadMesh(const std::string &fileName) {
     if (!assimpScene) {
         Logger::logError("Error loading mesh for " + fileName + ". Error message: " + importer.GetErrorString());
     } else {
-        globalInverseTransform = assimpScene->mRootNode->mTransformation;
-        globalInverseTransform.Inverse();
+        globalInverseTransform = convertAiMatrixToFloat4x4(assimpScene->mRootNode->mTransformation.Inverse());
 
         initMesh(assimpScene, fileName);
     }
@@ -69,6 +70,8 @@ void Mesh::initMesh(const aiScene *assimpScene, const std::string &fileNameOfMes
 
     initMaterials(assimpScene, fileNameOfMesh);
     createTriangles();
+
+    numAnimations = assimpScene->mNumAnimations;
 }
 
 
@@ -85,10 +88,24 @@ void Mesh::initChunkFromAiMesh(const aiMesh *paiMesh, Chunk &chunk) {
 
     initBonesFromAiMesh(paiMesh, chunk);
 
+
     chunk.materialIndex = paiMesh->mMaterialIndex;
 
     setupChunkForRendering(chunk);
     m_chunks.push_back(chunk);
+}
+
+
+void Mesh::assertAllVertexWeightsSumToOne(Chunk &chunk) {
+    for(unsigned int i = 0; i < chunk.bones.size(); i++) {
+        BoneInfluenceOnVertex boneInfluenceOnVertex = chunk.bones[i];
+        float sum = 0.0f;
+        for (int boneIndex = 0; boneIndex < MAX_NUM_BONES; boneIndex++) {
+            sum += boneInfluenceOnVertex.weights[boneIndex];
+        }
+
+        assert(fequals(sum, 1.0f));
+    }
 }
 
 
@@ -125,24 +142,30 @@ void Mesh::initIndicesFromAiMesh(const aiMesh *paiMesh, Chunk &chunk) {
 }
 
 void Mesh::initBonesFromAiMesh(const aiMesh *paiMesh, Chunk &chunk) {
+    if(paiMesh->mNumBones == 0) {
+        return;
+    }
+
     chunk.bones.resize(paiMesh->mNumVertices);
 
-    int numBonesSoFar = 0;
-    for(uint i = 0; i < paiMesh->mNumBones; i++) {
-        uint boneIndex = 0;
+    int boneIndex = 0;
+    for(unsigned int i = 0; i < paiMesh->mNumBones; i++) {
+
         std::string boneName(paiMesh->mBones[i]->mName.data);
 
-        if(chunk.boneNameToIndexMapping.find(boneName) == chunk.boneNameToIndexMapping.end()) {
-            boneIndex = numBonesSoFar;
-            numBonesSoFar++;
-            BoneInfo boneInfo;
-            chunk.boneInfos.push_back(boneInfo);
-        } else {
-            boneIndex = chunk.boneNameToIndexMapping[boneName];
-        }
+        if(boneNameToIndexMapping.find(boneName) == boneNameToIndexMapping.end()) {
 
-        chunk.boneNameToIndexMapping[boneName] = boneIndex;
-        chunk.boneInfos[boneIndex].boneOffset = convertAiMatrixToFloat4x4(paiMesh->mBones[i]->mOffsetMatrix);
+            boneNameToIndexMapping.insert(std::pair<std::string, int>(boneName, numberOfBones));
+
+            BoneInfo* boneInfo = new BoneInfo();
+            boneInfos.push_back(boneInfo);
+            boneInfo->boneOffset = convertAiMatrixToFloat4x4(paiMesh->mBones[i]->mOffsetMatrix);
+
+            boneIndex = numberOfBones;
+            numberOfBones++;
+        } else {
+            boneIndex = boneNameToIndexMapping[boneName];
+        }
 
         for (unsigned int j = 0; j < paiMesh->mBones[i]->mNumWeights; j++) {
             auto aiWeight = paiMesh->mBones[i]->mWeights[j];
@@ -152,32 +175,146 @@ void Mesh::initBonesFromAiMesh(const aiMesh *paiMesh, Chunk &chunk) {
             chunk.bones[vertexId].addBoneData(boneIndex, weight);
         }
     }
-    chunk.numBones = numBonesSoFar;
+
+    assertAllVertexWeightsSumToOne(chunk);
 }
 
 void Mesh::calculateBoneTransforms(float elapsedTimeInSeconds, std::vector<float4x4>& boneTransformMatrices) {
-    /*float4x4 rootMatrix = make_identity<float4x4>();
+    float4x4 rootMatrix = make_identity<float4x4>();
 
-    float ticksPerSecond = assimpScene->mAnimations[0]->mTicksPerSecond;
+    double ticksPerSecond = assimpScene->mAnimations[0]->mTicksPerSecond;
     ticksPerSecond = ticksPerSecond == 0 ? 25 : ticksPerSecond;
 
-    float elapsedTimeInTicks = elapsedTimeInSeconds * ticksPerSecond;
-    float animationDurationInTicks = assimpScene->mAnimations[0]->mDuration;
-    float currentAnimationTick = fmod(elapsedTimeInTicks, animationDurationInTicks);
+    double elapsedTimeInTicks = elapsedTimeInSeconds * ticksPerSecond;
+    double animationDurationInTicks = assimpScene->mAnimations[0]->mDuration;
+    double currentAnimationTick = fmod(elapsedTimeInTicks, animationDurationInTicks);
 
-    readNodeHierarchy(currentAnimationTick, assimpScene->mRootNode, rootMatrix);
+    readNodeHierarchyAndUpdateBoneTransformations((float)currentAnimationTick, assimpScene->mRootNode, rootMatrix);
 
-    boneTransformMatrices.resize(numBones);
-    for (int bone = 0; bone < numBones; bone++) {
-        //boneTransformMatrices[bone] = boneInfos[bone].finalTransformation;
-        boneTransformMatrices[bone] = make_identity<float4x4>();
-    }*/
+    boneTransformMatrices.resize(numberOfBones);
+    for (int bone = 0; bone < numberOfBones; bone++) {
+        boneTransformMatrices[bone] = boneInfos[bone]->finalTransformation;
+        //boneTransformMatrices[bone] = make_identity<float4x4>();
+    }
 }
 
-void Mesh::readNodeHierarchy(float currentAnimationTick, aiNode *currentAssimpNode, float4x4 parentMatrix) {
+/**
+ * Reads the entire (animation) node hierarchy and updates
+ * the bone transformations in {@code boneInfos} accordingly.
+ */
+void Mesh::readNodeHierarchyAndUpdateBoneTransformations(float currentAnimationTick,
+                                                         aiNode *currentAssimpNode,
+                                                         float4x4 parentMatrix) {
+    std::string nodeName(currentAssimpNode->mName.data);
 
+    float4x4 nodeTransformationMatrix = getCurrentNodeTransformation(currentAnimationTick, currentAssimpNode, nodeName);
+    float4x4 globalTransformation = parentMatrix * nodeTransformationMatrix;
+
+    // If the node isn't a bone we dont need to update any bones
+    if(nodeIsABone(nodeName)) {
+        updateBoneTransformation(nodeName, globalTransformation);
+    }
+
+    for (unsigned int i = 0; i < currentAssimpNode->mNumChildren; i++) {
+        readNodeHierarchyAndUpdateBoneTransformations(currentAnimationTick, currentAssimpNode->mChildren[i],
+                                                      globalTransformation);
+    }
 }
 
+/**
+ * Updates the transformation of the bone corresponding to @{code nodeName}
+ */
+void Mesh::updateBoneTransformation(const std::string &nodeName, const float4x4 &globalTransformation) {
+    uint boneIndex = boneNameToIndexMapping[nodeName];
+
+    boneInfos[boneIndex]->finalTransformation = globalInverseTransform * globalTransformation * boneInfos[boneIndex]->boneOffset;
+}
+
+/**
+ * A node is a bone if there is a bone named exactly the same as the node
+ */
+bool Mesh::nodeIsABone(const std::string &nodeName) const {
+    return boneNameToIndexMapping.find(nodeName) != boneNameToIndexMapping.end();
+}
+
+float4x4 Mesh::getCurrentNodeTransformation(float currentAnimationTick,
+                                            const aiNode *currentAssimpNode,
+                                            const std::string nodeName) {
+    const aiNodeAnim *nodeAnimation = getAnimationNode(nodeName);
+    if(nodeAnimation == nullptr) {
+        /**
+         * If we can't find a nodeAnimation, there is no corresponding bone.
+         * Then the current node is only used for applying a transformation matrix to
+         * the hierarchy. No interpolation needed.
+         */
+        return convertAiMatrixToFloat4x4(currentAssimpNode->mTransformation);
+    } else {
+        return getInterpolatedAnimationMatrix(currentAnimationTick, nodeAnimation);
+
+    }
+}
+
+/**
+ * Interpolates the two animation matrices nearest the current tick
+ */
+float4x4 Mesh::getInterpolatedAnimationMatrix(float currentAnimationTick, const aiNodeAnim *nodeAnimation) {
+    float4x4 scalingMatrix = getInterpolatedScalingMatrix(currentAnimationTick, nodeAnimation);
+    float4x4 rotationMatrix = getInterpolatedRotationMatrix(currentAnimationTick, nodeAnimation);
+    float4x4 translationMatrix = getInterpolatedTranslationMatrix(currentAnimationTick, nodeAnimation);
+
+    float4x4 interpolatedMatrix = translationMatrix * rotationMatrix * scalingMatrix;
+    return interpolatedMatrix;
+}
+
+float4x4 Mesh::getInterpolatedTranslationMatrix(float currentAnimationTick, const aiNodeAnim *nodeAnimation) {
+    aiVector3D translation = calculateTranslationInterpolation(currentAnimationTick, nodeAnimation);
+    float4x4 translationMatrix =
+                make_translation(make_vector(
+                        translation.x,
+                        translation.y,
+                        translation.z));
+    return translationMatrix;
+}
+
+float4x4 Mesh::getInterpolatedRotationMatrix(float currentAnimationTick, const aiNodeAnim *nodeAnimation) {
+    aiQuaternion rotationQuaternion = calculateRotationInterpolation(currentAnimationTick, nodeAnimation);
+    float4x4 rotationMatrix = make_matrix(
+                convertAiMatrixToFloat3x3(rotationQuaternion.GetMatrix()),
+                make_vector(0.0f, 0.0f, 0.0f)
+        );
+    return rotationMatrix;
+}
+
+float4x4 Mesh::getInterpolatedScalingMatrix(float currentAnimationTick, const aiNodeAnim *nodeAnimation) {
+    aiVector3D scaling = calculateScalingInterpolation(currentAnimationTick, nodeAnimation);
+    float4x4 scalingMatrix = make_scale<float4x4>(make_vector(scaling.x, scaling.y, scaling.z));
+    return scalingMatrix;
+}
+
+/**
+ * Given the name of a node, fetches the corresponding animation node.
+ *
+ */
+const aiNodeAnim *Mesh::getAnimationNode(const std::string &nodeName) {
+    const aiAnimation* animation = assimpScene->mAnimations[0];
+
+    const aiNodeAnim* nodeAnimation = findNodeAnim(animation, nodeName);
+    return nodeAnimation;
+}
+
+/**
+ * Searches through an animations channels for the animation node
+ */
+const aiNodeAnim* Mesh::findNodeAnim(const aiAnimation* animation, const std::string nodeName) {
+    for (unsigned int i = 0; i < animation->mNumChannels; i++) {
+        const aiNodeAnim* nodeAnimation = animation->mChannels[i];
+        if(std::string(nodeAnimation->mNodeName.data) == nodeName) {
+            return nodeAnimation;
+        }
+    }
+
+    return nullptr;
+}
 
 void Mesh::initMaterials(const aiScene *pScene, const std::string &fileNameOfMesh) {
     for (unsigned int i = 0; i < pScene->mNumMaterials; i++) {
@@ -301,17 +438,19 @@ void Mesh::setupChunkForRendering(Chunk &chunk) {
                       &chunk.m_bittangents[0].x, GL_ARRAY_BUFFER_ARB, GL_FLOAT);
     }
 
-    glGenBuffers(1, &chunk.bonesBufferObject);
-    glBindBuffer(GL_ARRAY_BUFFER, chunk.bonesBufferObject);
-    glBufferData(GL_ARRAY_BUFFER, chunk.bones.size() * sizeof(chunk.bones[0]), &chunk.bones[0], GL_STATIC_DRAW);
+    if(chunk.bones.size() > 0 ) {
+        glGenBuffers(1, &chunk.bonesBufferObject);
+        glBindBuffer(GL_ARRAY_BUFFER, chunk.bonesBufferObject);
+        glBufferData(GL_ARRAY_BUFFER, chunk.bones.size() * sizeof(chunk.bones[0]), &chunk.bones[0], GL_STATIC_DRAW);
 
-    const int boneIdsPerObject = 4;
-    glVertexAttribIPointer(BONE_ID_LOCATION_GPU, boneIdsPerObject, GL_INT, sizeof(VertexBoneData), 0);
-    glEnableVertexAttribArray(BONE_ID_LOCATION_GPU);
+        const int boneIdsPerObject = 4;
+        glVertexAttribIPointer(BONE_ID_LOCATION_GPU, boneIdsPerObject, GL_INT, sizeof(BoneInfluenceOnVertex), 0);
+        glEnableVertexAttribArray(BONE_ID_LOCATION_GPU);
 
-    const int boneWeightsPerObject = 4;
-    glVertexAttribPointer(BONE_WEIGHT_LOCATION_GPU, boneWeightsPerObject, GL_FLOAT, GL_FALSE, sizeof(VertexBoneData), (const GLvoid*)16);
-    glEnableVertexAttribArray(BONE_WEIGHT_LOCATION_GPU);
+        const int boneWeightsPerObject = 4;
+        glVertexAttribPointer(BONE_WEIGHT_LOCATION_GPU, boneWeightsPerObject, GL_FLOAT, GL_FALSE, sizeof(BoneInfluenceOnVertex), (const GLvoid*)16);
+        glEnableVertexAttribArray(BONE_WEIGHT_LOCATION_GPU);
+    }
 }
 
 AABB* Mesh::getAABB() {
@@ -351,3 +490,103 @@ std::vector<Chunk>* Mesh::getChunks() {
 std::vector<Material>* Mesh::getMaterials() {
     return &materials;
 }
+
+aiVector3D Mesh::calculateScalingInterpolation(float currentAnimationTick, const aiNodeAnim *nodeAnimation) {
+    if(nodeAnimation->mNumScalingKeys <= 1) {
+        return nodeAnimation->mScalingKeys[0].mValue;
+    }
+    
+    unsigned int currentScalingIndex = findScalingIndexRightBeforeTick(currentAnimationTick, nodeAnimation);
+    unsigned int nextScalingIndex = currentScalingIndex + 1;
+    assert(nextScalingIndex < nodeAnimation->mNumScalingKeys);
+
+    double deltaTimeBetweenAnimations = nodeAnimation->mScalingKeys[nextScalingIndex].mTime -
+                                       nodeAnimation->mScalingKeys[currentScalingIndex].mTime;
+    double deltaFactor = (currentAnimationTick - nodeAnimation->mScalingKeys[currentScalingIndex].mTime) /
+                         deltaTimeBetweenAnimations;
+    assert(deltaFactor >= 0.0f && deltaFactor <= 1.0f);
+    const aiVector3D &currentScalingVector = nodeAnimation->mScalingKeys[currentScalingIndex].mValue;
+    const aiVector3D &nextScalingVector = nodeAnimation->mScalingKeys[nextScalingIndex].mValue;
+
+    return (nextScalingVector - currentScalingVector) * (float)deltaFactor;
+}
+
+aiQuaternion Mesh::calculateRotationInterpolation(float currentAnimationTick, const aiNodeAnim *nodeAnimation) {
+    if(nodeAnimation->mNumRotationKeys <= 1) {
+        return nodeAnimation->mRotationKeys[0].mValue;
+    }
+
+    unsigned int currentRotationIndex = findRotationIndexRightBeforeTick(currentAnimationTick, nodeAnimation);
+    unsigned int nextRotationIndex = currentRotationIndex + 1;
+    assert(nextRotationIndex < nodeAnimation->mNumRotationKeys);
+
+    double deltaTimeBetweenAnimations = nodeAnimation->mRotationKeys[nextRotationIndex].mTime -
+                                       nodeAnimation->mRotationKeys[currentRotationIndex].mTime;
+    double deltaFactor = (currentAnimationTick - nodeAnimation->mRotationKeys[currentRotationIndex].mTime) /
+                         deltaTimeBetweenAnimations;
+    assert(deltaFactor >= 0.0f && deltaFactor <= 1.0f);
+    const aiQuaternion &currentRotationQuaternion = nodeAnimation->mRotationKeys[currentRotationIndex].mValue;
+    const aiQuaternion &nextRotationQuaternion = nodeAnimation->mRotationKeys[nextRotationIndex].mValue;
+    aiQuaternion interpolatedQuaternion;
+    aiQuaternion::Interpolate(interpolatedQuaternion, currentRotationQuaternion, nextRotationQuaternion, deltaFactor);
+
+    return interpolatedQuaternion;
+}
+
+aiVector3D Mesh::calculateTranslationInterpolation(float currentAnimationTick, const aiNodeAnim *nodeAnimation) {
+    if(nodeAnimation->mNumPositionKeys <= 1) {
+        return nodeAnimation->mPositionKeys[0].mValue;
+    }
+
+    unsigned int currentTranslationIndex = findTranslationIndexRightBeforeTick(currentAnimationTick, nodeAnimation);
+    unsigned int nextTranslationIndex = currentTranslationIndex + 1;
+    assert(nextTranslationIndex < nodeAnimation->mNumPositionKeys);
+
+    double deltaTimeBetweenAnimations = nodeAnimation->mPositionKeys[nextTranslationIndex].mTime -
+                                       nodeAnimation->mPositionKeys[currentTranslationIndex].mTime;
+    double deltaFactor = (currentAnimationTick - nodeAnimation->mPositionKeys[currentTranslationIndex].mTime) /
+                         deltaTimeBetweenAnimations;
+    assert(deltaFactor >= 0.0f && deltaFactor <= 1.0f);
+    const aiVector3D &currentTranslationVector = nodeAnimation->mPositionKeys[currentTranslationIndex].mValue;
+    const aiVector3D &nextTranslationVector = nodeAnimation->mPositionKeys[nextTranslationIndex].mValue;
+
+    return currentTranslationVector + ((nextTranslationVector - currentTranslationVector) * (float)deltaFactor);
+
+}
+
+unsigned int Mesh::findScalingIndexRightBeforeTick(float currentAnimationTick, const aiNodeAnim *nodeAnimation) {
+    for (unsigned int i = 0; i < nodeAnimation->mNumScalingKeys - 1; i++) {
+        if(currentAnimationTick < nodeAnimation->mScalingKeys[i + 1].mTime) {
+            return i;
+        }
+    }
+
+    throw std::invalid_argument("Tried to find a scaling index in an animation, but couldn't find it");
+}
+
+unsigned int Mesh::findRotationIndexRightBeforeTick(float currentAnimationTick, const aiNodeAnim *nodeAnimation) {
+    for (unsigned int i = 0; i < nodeAnimation->mNumRotationKeys - 1; i++) {
+        if(currentAnimationTick < nodeAnimation->mRotationKeys[i + 1].mTime) {
+            return i;
+        }
+    }
+
+    throw std::invalid_argument("Tried to find a rotation index in an animation, but couldn't find it");
+}
+
+unsigned int Mesh::findTranslationIndexRightBeforeTick(float currentAnimationTick, const aiNodeAnim *nodeAnimation) {
+    for (unsigned int i = 0; i < nodeAnimation->mNumPositionKeys - 1; i++) {
+        if(currentAnimationTick < nodeAnimation->mPositionKeys[i + 1].mTime) {
+            return i;
+        }
+    }
+
+    throw std::invalid_argument("Tried to find a translation index in an animation, but couldn't find it");
+}
+ bool Mesh::hasAnimations() {
+     return numAnimations != 0;
+ }
+
+
+
+

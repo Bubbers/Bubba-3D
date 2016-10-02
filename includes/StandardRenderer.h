@@ -19,6 +19,7 @@
 
 
 #include "IRenderComponent.h"
+#include "SFML/Window.hpp"
 
 
 class Mesh;
@@ -45,6 +46,7 @@ public:
 private:
     Mesh* mesh;
     GameObject *gameObject;
+    sf::Clock clock;
 };
 
 

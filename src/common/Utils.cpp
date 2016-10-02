@@ -14,19 +14,33 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Bubba-3D. If not, see http://www.gnu.org/licenses/.
  */
+#include <linmath/float3x3.h>
 #include "assimp/material.h"
 #include "Utils.h"
 #include "ShaderProgram.h"
 #include "GameObject.h"
 
 
+
 chag::float4x4 convertAiMatrixToFloat4x4(aiMatrix4x4 fromMatrix) {
-    chag::float4x4 newMatrix;
+    chag::float4x4 newMatrix = chag::make_identity<chag::float4x4>();
     newMatrix.c1 = chag::make_vector(fromMatrix.a1, fromMatrix.b1, fromMatrix.c1, fromMatrix.d1);
     newMatrix.c2 = chag::make_vector(fromMatrix.a2, fromMatrix.b2, fromMatrix.c2, fromMatrix.d2);
     newMatrix.c3 = chag::make_vector(fromMatrix.a3, fromMatrix.b3, fromMatrix.c3, fromMatrix.d3);
     newMatrix.c4 = chag::make_vector(fromMatrix.a4, fromMatrix.b4, fromMatrix.c4, fromMatrix.d4);
     return newMatrix;
+}
+
+chag::float3x3 convertAiMatrixToFloat3x3(aiMatrix3x3 fromMatrix) {
+    chag::float3x3 newMatrix;
+    newMatrix.c1 = chag::make_vector(fromMatrix.a1, fromMatrix.b1, fromMatrix.c1);
+    newMatrix.c2 = chag::make_vector(fromMatrix.a2, fromMatrix.b2, fromMatrix.c2);
+    newMatrix.c3 = chag::make_vector(fromMatrix.a3, fromMatrix.b3, fromMatrix.c3);
+    return newMatrix;
+}
+
+bool fequals(double a, double b) {
+    return fabs(a - b) < 0.01f;
 }
 
 float degreeToRad(const float degree) {

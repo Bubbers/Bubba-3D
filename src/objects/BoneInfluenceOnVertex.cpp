@@ -14,22 +14,27 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Bubba-3D. If not, see http://www.gnu.org/licenses/.
  */
-#pragma once
-#include <vector>
-#include "stdint.h"
-#include <stdexcept>
 
-struct VertexBoneData {
-    const unsigned int maxNumBones;
-    unsigned int numUsedBones;
-    std::vector<int> ids;
-    std::vector<float> weights;
+#include "BoneInfluenceOnVertex.h"
 
-    VertexBoneData();
-    VertexBoneData(int maxNumBones);
 
-    /**
-     * Adds bone data to the next free bone slot
-     */
-    void addBoneData(int boneId, float weight) ;
-};
+
+BoneInfluenceOnVertex::BoneInfluenceOnVertex() {
+    for (int i = 0; i < MAX_NUM_BONES; i++) {
+        ids[i] = 0;
+        weights[i] = 0.0;
+    }
+}
+
+
+void BoneInfluenceOnVertex::addBoneData(int boneId, float weight) {
+    for (int i = 0; i < MAX_NUM_BONES ; i++) {
+        if(weights[i] == 0.0) {
+            ids[i] = boneId;
+            weights[i] = weight;
+            return;
+        }
+    }
+
+    throw std::invalid_argument  ("Tried to add more than maxNumBones to a mesh");
+}

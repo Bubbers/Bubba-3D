@@ -33,19 +33,29 @@ layout(std140) uniform Matrices {
     mat4 viewProjectionMatrix;
 };
 
+bool fequals(float a, float b) {
+    return abs(a - b) < 0.01f;
+}
+
+float getBoneWeightSum() {
+    return boneWeights.x + boneWeights.y + boneWeights.z + boneWeights.w;
+}
+
 void main()
 {
     vec3 positionInWorldSpace = position;
     vec3 normalVectorInWorldSpace = normalIn;
 
-    if(has_animations == 1) {
-        mat4 boneTransform = bones[boneIds.x] * boneWeights[0];
-        boneTransform =+ bones[boneIds.y] * boneWeights[1];
-        boneTransform =+ bones[boneIds.z] * boneWeights[2];
-        boneTransform =+ bones[boneIds.w] * boneWeights[3];
+    float boneWeightSum = getBoneWeightSum();
+
+    if(has_animations == 1 && fequals(boneWeightSum, 1.0f)) {
+        mat4 boneTransform = bones[boneIds.x] * boneWeights.x;
+        boneTransform += bones[boneIds.y] * boneWeights.y;
+        boneTransform += bones[boneIds.z] * boneWeights.z;
+        boneTransform += bones[boneIds.w] * boneWeights.w;
 
         positionInWorldSpace = (boneTransform * vec4(position, 1.0)).xyz;
-        normalVectorInWorldSpace = (boneTransform * vec4(position, 1.0)).xyz;
+        normalVectorInWorldSpace = (boneTransform * vec4(normalIn, 1.0)).xyz;
     }
 
 	mat4 modelViewMatrix = viewMatrix * modelMatrix;
@@ -66,3 +76,4 @@ void main()
 	shadowTexCoord = lightMatrix *vec4(viewSpacePosition.xyz, 1.0);
 	gl_Position = modelViewProjectionMatrix * vec4(positionInWorldSpace,1.0);
 }
+
