@@ -35,7 +35,8 @@ void RelativeIHudDrawable::render(ShaderProgram *shaderProgram, chag::float4x4 *
     float x =     (screenPos.c4.x / screenPos.c4.w + 1.0f) * w / 2.0f;
     float y = h - (screenPos.c4.y / screenPos.c4.w + 1.0f) * h / 2.0f;
 
-    chag::float3 tempRelativeVector = drawableRelativePosition + chag::make_vector(x, -y, 0.0f);
+    chag::float3 tempRelativeVector = drawableRelativePosition + chag::make_vector(roundf(x), -roundf(y), 0.0f);
+
     toDraw->relativePosition = tempRelativeVector;
     toDraw->render(shaderProgram, projectionMatrix);
     toDraw->relativePosition = drawableRelativePosition;
