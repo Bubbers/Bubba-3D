@@ -48,9 +48,12 @@ addons:
 
 
 before_script:
-        - mkdir -p build
-        - cd build
-        - cmake -DCMAKE_BUILD_TYPE:STRING=Debug -Wdev -Werror=dev -D CMAKE_CXX_FLAGS="-Werror" ..
+    - mkdir -p build
+    - cd build
+    - cmake -DCMAKE_BUILD_TYPE:STRING=Debug -Wdev -Werror=dev -D CMAKE_CXX_FLAGS="-Werror" ..
 
 
-script: make -j8  && make test
+script: make -j8 all  && make test
+
+after_success:
+    - ./publish_docs.sh

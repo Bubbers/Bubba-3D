@@ -11,3 +11,5 @@ Thumbs.db
 
 *.blender
 *.blender1
+
+doxygen.conf
