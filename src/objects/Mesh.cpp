@@ -27,7 +27,7 @@
 #include <string>
 #include "Utils.h"
 #include "GL/glew.h"
-#include "BoneInfo.h"
+#include "BoneMatrices.h"
 #include "Utils.h"
 #include "linmath/float3x3.h"
 #include "BoneTransformer.h"
@@ -51,8 +51,6 @@ void Mesh::loadMesh(const std::string &fileName) {
     importer.ReadFile(
             fileName.c_str(), aiProcess_GenSmoothNormals | aiProcess_Triangulate | aiProcess_CalcTangentSpace);
     aiScene* aiScene = importer.GetOrphanedScene();
-
-
 
     if (!aiScene) {
         Logger::logError("Error loading mesh for " + fileName + ". Error message: " + importer.GetErrorString());
@@ -151,7 +149,7 @@ void Mesh::initBonesFromAiMesh(const aiMesh *paiMesh, Chunk &chunk) {
     int boneIndex = 0;
     for(unsigned int i = 0; i < paiMesh->mNumBones; i++) {
 
-        boneIndex = boneTransformer->createOrGetBoneIndex(paiMesh, i);
+        boneIndex = boneTransformer->createBoneIndexIfAbsent(paiMesh->mBones[i]);
 
         for (unsigned int j = 0; j < paiMesh->mBones[i]->mNumWeights; j++) {
             auto aiWeight = paiMesh->mBones[i]->mWeights[j];

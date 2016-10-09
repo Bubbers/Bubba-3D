@@ -21,7 +21,7 @@
 #include "linmath/float3.h"
 #include <GL/glew.h>
 #include <map>
-#include <BoneInfo.h>
+#include <BoneMatrices.h>
 #include "BoneInfluenceOnVertex.h"
 
 class Chunk {
