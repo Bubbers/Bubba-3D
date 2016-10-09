@@ -33,29 +33,20 @@ layout(std140) uniform Matrices {
     mat4 viewProjectionMatrix;
 };
 
-bool fequals(float a, float b) {
-    return abs(a - b) < 0.01f;
-}
-
-float getBoneWeightSum() {
-    return boneWeights.x + boneWeights.y + boneWeights.z + boneWeights.w;
-}
 
 void main()
 {
     vec3 positionInWorldSpace = position;
     vec3 normalVectorInWorldSpace = normalIn;
 
-    float boneWeightSum = getBoneWeightSum();
-
-    if(has_animations == 1 && fequals(boneWeightSum, 1.0f)) {
+    if(has_animations == 1) {
         mat4 boneTransform = bones[boneIds.x] * boneWeights.x;
         boneTransform += bones[boneIds.y] * boneWeights.y;
         boneTransform += bones[boneIds.z] * boneWeights.z;
         boneTransform += bones[boneIds.w] * boneWeights.w;
 
         positionInWorldSpace = (boneTransform * vec4(position, 1.0)).xyz;
-        normalVectorInWorldSpace = (boneTransform * vec4(normalIn, 1.0)).xyz;
+        normalVectorInWorldSpace = (boneTransform * vec4(normalIn, 0.0)).xyz;
     }
 
 	mat4 modelViewMatrix = viewMatrix * modelMatrix;
@@ -66,7 +57,7 @@ void main()
 	vec3 N = normalize(normalMatrix * vec4(normalIn, 0.0)).xyz;
 	TBN = mat3(T, B, N);
 
-	color = vec4(colorIn,1);
+	color = vec4(colorIn, 1);
 	texCoord = texCoordIn;
 
 	viewSpacePosition = modelViewMatrix * vec4(positionInWorldSpace, 1.0);
