@@ -79,15 +79,15 @@ private:
     /**
      * Updates the transformation of the bone corresponding to @{code nodeName}
      */
-    void updateBoneTransformation(const std::__cxx11::string &nodeName, const chag::float4x4 &globalTransformation);
+    void updateBoneTransformation(const std::string &nodeName, const chag::float4x4 &globalTransformation);
 
     /**
      * A node is a bone if there is a bone named exactly the same as the node
      */
-    bool nodeIsABone(const std::__cxx11::string &nodeName) const;
+    bool nodeIsABone(const std::string &nodeName) const;
 
     chag::float4x4 getCurrentNodeTransformation(float currentAnimationTick, const aiNode *currentAssimpNode,
-                                                const std::__cxx11::string nodeName);
+                                                const std::string nodeName);
 
 
     /**
@@ -101,12 +101,12 @@ private:
     /**
      * Given the name of a node, fetches the corresponding animation node.
      */
-    const aiNodeAnim *getAnimationNode(const std::__cxx11::string &nodeName);
+    const aiNodeAnim *getAnimationNode(const std::string &nodeName);
 
     /**
      * Searches through an animations channels for the animation node
      */
-    const aiNodeAnim* findNodeAnim(const aiAnimation* animation, const std::__cxx11::string nodeName);
+    const aiNodeAnim* findNodeAnim(const aiAnimation* animation, const std::string nodeName);
 
     aiVector3D calculateScalingInterpolation(float currentAnimationTick, const aiNodeAnim *nodeAnimation);
     aiQuaternion calculateRotationInterpolation(float currentAnimationTick, const aiNodeAnim *nodeAnimation);
