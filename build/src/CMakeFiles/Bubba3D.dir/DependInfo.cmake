@@ -1,0 +1,95 @@
+# The set of languages for which implicit dependencies are needed:
+set(CMAKE_DEPENDS_LANGUAGES
+  "CXX"
+  )
+# The set of files for implicit dependencies of each language:
+set(CMAKE_DEPENDS_CHECK_CXX
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/Input/ControlStatus.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/Input/ControlStatus.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/Input/ControlsManager.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/Input/ControlsManager.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/Input/Input.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/Input/Input.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/Input/JoystickAxis.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/Input/JoystickAxis.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/Input/JoystickButton.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/Input/JoystickButton.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/Input/JoystickTranslation.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/Input/JoystickTranslation.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/Input/JoystickTranslator.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/Input/JoystickTranslator.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/Input/KeyboardButton.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/Input/KeyboardButton.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/Input/MouseAxis.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/Input/MouseAxis.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/Input/MouseButton.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/Input/MouseButton.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/Input/MousePosition.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/Input/MousePosition.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/Input/MouseWarp.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/Input/MouseWarp.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/Misc/CubeMapTexture.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/Misc/CubeMapTexture.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/Misc/ResourceManager.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/Misc/ResourceManager.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/cameras/Camera.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/cameras/Camera.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/cameras/PerspectiveCamera.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/cameras/PerspectiveCamera.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/collision/BFBroadPhase.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/collision/BFBroadPhase.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/collision/Collider.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/collision/Collider.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/collision/ColliderFactory.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/collision/ColliderFactory.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/collision/ExactOctreeCollider.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/collision/ExactOctreeCollider.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/collision/Octree.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/collision/Octree.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/collision/TwoPhaseCollider.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/collision/TwoPhaseCollider.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/common/Timer.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/common/Timer.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/common/Utils.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/common/Utils.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/components/MoveComponent.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/components/MoveComponent.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/components/StandardRenderer.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/components/StandardRenderer.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/core/Globals.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/core/Globals.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/core/Renderer.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/core/Renderer.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/core/Window.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/core/Window.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/glutil/glutil.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/glutil/glutil.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/linmath/Quaternion.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/linmath/Quaternion.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/linmath/float2.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/linmath/float2.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/linmath/float3.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/linmath/float3.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/linmath/float3x3.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/linmath/float3x3.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/linmath/float4.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/linmath/float4.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/linmath/float4x4.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/linmath/float4x4.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/linmath/int2.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/linmath/int2.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/linmath/int3.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/linmath/int3.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/linmath/int4.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/linmath/int4.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/logging/Logger.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/logging/Logger.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/objects/BoneInfluenceOnVertex.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/objects/BoneInfluenceOnVertex.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/objects/BoneTransformer.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/objects/BoneTransformer.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/objects/Chunk.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/objects/Chunk.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/objects/GameObject.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/objects/GameObject.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/objects/Mesh.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/objects/Mesh.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/objects/Scene.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/objects/Scene.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/objects/SkyBoxRenderer.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/objects/SkyBoxRenderer.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/objects/Texture.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/objects/Texture.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/objects/Triangle.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/objects/Triangle.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/particle/Particle.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/particle/Particle.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/particle/ParticleGenerator.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/particle/ParticleGenerator.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/shader/FragmentShader.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/shader/FragmentShader.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/shader/ShaderProgram.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/shader/ShaderProgram.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/shader/VertexShader.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/shader/VertexShader.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/sound/AudioManager.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/sound/AudioManager.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/userInterface/Dimension.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/userInterface/Dimension.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/userInterface/Font.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/userInterface/Font.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/userInterface/FontManager.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/userInterface/FontManager.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/userInterface/GLSquare.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/userInterface/GLSquare.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/userInterface/HUDGraphic.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/userInterface/HUDGraphic.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/userInterface/HudRenderer.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/userInterface/HudRenderer.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/userInterface/IHudDrawable.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/userInterface/IHudDrawable.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/userInterface/InsideRoundedSquareChecker.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/userInterface/InsideRoundedSquareChecker.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/userInterface/InsideSquareChecker.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/userInterface/InsideSquareChecker.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/userInterface/Layout.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/userInterface/Layout.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/userInterface/ListLayout.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/userInterface/ListLayout.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/userInterface/PositioningLayout.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/userInterface/PositioningLayout.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/userInterface/RelativeIHudDrawable.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/userInterface/RelativeIHudDrawable.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/userInterface/TextLayout.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/userInterface/TextLayout.cpp.o"
+  "/home/roffe/workspace/bubbaroguefort/Bubba-3D/src/userInterface/TextObject.cpp" "/home/roffe/workspace/bubbaroguefort/Bubba-3D/build/src/CMakeFiles/Bubba3D.dir/userInterface/TextObject.cpp.o"
+  )
+set(CMAKE_CXX_COMPILER_ID "Clang")
+
+# The include file search paths:
+set(CMAKE_CXX_TARGET_INCLUDE_PATH
+  "../src"
+  "/usr/include/freetype2"
+  "/usr/include/x86_64-linux-gnu/freetype2"
+  "../includes"
+  "../lib"
+  "../lib/freeimage"
+  )
+
+# Targets to which this target links.
+set(CMAKE_TARGET_LINKED_INFO_FILES
+  )
+
+# Fortran module output directory.
+set(CMAKE_Fortran_TARGET_MODULE_DIR "")
