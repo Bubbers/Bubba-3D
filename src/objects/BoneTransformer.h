@@ -21,12 +21,28 @@
 #include <vector>
 #include <assimp/scene.h>
 #include <map>
-#include <BoneInfo.h>
+#include <BoneMatrices.h>
 #include <assimp/Importer.hpp>
 #include "linmath/float3.h"
 #include "AABB2.h"
 #include "assimp/material.h"
 
+/**
+ * Class for calculating the transform of all bones at a certain tick in a mesh.
+ *
+ * Usage:
+ * \code{.cpp}
+ * aiScene assimpScene;
+ * BoneTransformer boneTransformer(assimpScene->mMeshes[0]);
+ *
+ * for(unsigned int i = 0; i < assimpScene->mMeshes[0]->mNumBones; i++) {
+ *     int boneIndex = boneTransformer->createBoneIndexIfAbsent(paiMesh->mBones[i]);
+ * }
+ *
+ * std::vector<chag::float4x4> boneTransforms = boneTransformer.calculateBoneTransforms(elapsedTimeInSeconds);
+ * //boneTransforms will now contain the transformation of each bone. Each index corresponds the boneIndex calculated in the for loop.
+ * \endcode
+ */
 class BoneTransformer {
 
 public:
@@ -41,26 +57,33 @@ public:
     */
     std::vector<chag::float4x4> calculateBoneTransforms(float totalElapsedTimeInSeconds);
 
-    int createOrGetBoneIndex(const aiMesh *paiMesh, unsigned int i);
+    /**
+     * Updates the bonetransformer to include the bone if not already present.
+     *
+     * @param bone The bone to add
+     * @return The index of the bone
+     */
+    int createBoneIndexIfAbsent(const aiBone *bone);
+
 
 private:
     double getCurrentAnimationTick(float totalElapsedTimeInSeconds) const;
 
     /**
-         * Reads the entire (animation) node hierarchy and updates
-         * the bone transformations in {@code boneInfos} accordingly.
-         */
+     * Reads the entire (animation) node hierarchy and updates
+     * the bone transformations in {@code boneInfos} accordingly.
+     */
     void readNodeHierarchyAndUpdateBoneTransformations(float currentAnimationTick, aiNode *currentAssimpNode,
                                                        chag::float4x4 parentMatrix);
 
     /**
-         * Updates the transformation of the bone corresponding to @{code nodeName}
-         */
+     * Updates the transformation of the bone corresponding to @{code nodeName}
+     */
     void updateBoneTransformation(const std::__cxx11::string &nodeName, const chag::float4x4 &globalTransformation);
 
     /**
-         * A node is a bone if there is a bone named exactly the same as the node
-         */
+     * A node is a bone if there is a bone named exactly the same as the node
+     */
     bool nodeIsABone(const std::__cxx11::string &nodeName) const;
 
     chag::float4x4 getCurrentNodeTransformation(float currentAnimationTick, const aiNode *currentAssimpNode,
@@ -68,43 +91,35 @@ private:
 
 
     /**
-         * Interpolates the two animation matrices nearest the current tick
-         */
+     * Interpolates the two animation matrices nearest the current tick
+     */
     chag::float4x4 getInterpolatedAnimationMatrix(float currentAnimationTick, const aiNodeAnim *nodeAnimation);
-
-
-
     chag::float4x4 getInterpolatedTranslationMatrix(float currentAnimationTick, const aiNodeAnim *nodeAnimation);
-
     chag::float4x4 getInterpolatedRotationMatrix(float currentAnimationTick, const aiNodeAnim *nodeAnimation);
-
     chag::float4x4 getInterpolatedScalingMatrix(float currentAnimationTick, const aiNodeAnim *nodeAnimation);
 
     /**
-         * Given the name of a node, fetches the corresponding animation node.
-         */
+     * Given the name of a node, fetches the corresponding animation node.
+     */
     const aiNodeAnim *getAnimationNode(const std::__cxx11::string &nodeName);
 
     /**
-         * Searches through an animations channels for the animation node
-         */
+     * Searches through an animations channels for the animation node
+     */
     const aiNodeAnim* findNodeAnim(const aiAnimation* animation, const std::__cxx11::string nodeName);
 
     aiVector3D calculateScalingInterpolation(float currentAnimationTick, const aiNodeAnim *nodeAnimation);
-
     aiQuaternion calculateRotationInterpolation(float currentAnimationTick, const aiNodeAnim *nodeAnimation);
-
     aiVector3D calculateTranslationInterpolation(float currentAnimationTick, const aiNodeAnim *nodeAnimation);
 
     unsigned int findScalingIndexRightBeforeTick(float currentAnimationTick, const aiNodeAnim *nodeAnimation);
-
     unsigned int findRotationIndexRightBeforeTick(float currentAnimationTick, const aiNodeAnim *nodeAnimation);
-
     unsigned int findTranslationIndexRightBeforeTick(float currentAnimationTick, const aiNodeAnim *nodeAnimation);
 
+    //Matrix for transforming FROM bone space TO world space
     chag::float4x4 globalInverseTransform;
     std::map<std::string, int> boneNameToIndexMapping;
-    std::vector<BoneInfo*> boneInfos;
+    std::vector<BoneMatrices*> boneInfos;
     const aiScene *assimpScene;
     int numberOfBones;
 };

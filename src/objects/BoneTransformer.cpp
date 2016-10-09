@@ -17,9 +17,7 @@
 #include "linmath/float3x3.h"
 #include <ResourceManager.h>
 #include <Utils.h>
-#include "Mesh.h"
 #include "BoneTransformer.h"
-#include "linmath/float4x4.h"
 
 BoneTransformer::BoneTransformer(aiScene *aiScene){
     numberOfBones = 0;
@@ -30,7 +28,7 @@ BoneTransformer::BoneTransformer(aiScene *aiScene){
 void BoneTransformer::readNodeHierarchyAndUpdateBoneTransformations(float currentAnimationTick,
                                                                     aiNode *currentAssimpNode,
                                                                     chag::float4x4 parentMatrix) {
-    std::__cxx11::string nodeName(currentAssimpNode->mName.data);
+    std::string nodeName(currentAssimpNode->mName.data);
 
     chag::float4x4 nodeTransformationMatrix = getCurrentNodeTransformation(currentAnimationTick, currentAssimpNode, nodeName);
     chag::float4x4 globalTransformation = parentMatrix * nodeTransformationMatrix;
@@ -46,19 +44,19 @@ void BoneTransformer::readNodeHierarchyAndUpdateBoneTransformations(float curren
     }
 }
 
-void BoneTransformer::updateBoneTransformation(const std::__cxx11::string &nodeName, const chag::float4x4 &globalTransformation) {
+void BoneTransformer::updateBoneTransformation(const std::string &nodeName, const chag::float4x4 &globalTransformation) {
     uint boneIndex = boneNameToIndexMapping[nodeName];
 
     boneInfos[boneIndex]->finalTransformation = globalInverseTransform * globalTransformation * boneInfos[boneIndex]->boneOffset;
 }
 
-bool BoneTransformer::nodeIsABone(const std::__cxx11::string &nodeName) const {
+bool BoneTransformer::nodeIsABone(const std::string &nodeName) const {
     return boneNameToIndexMapping.find(nodeName) != boneNameToIndexMapping.end();
 }
 
 chag::float4x4 BoneTransformer::getCurrentNodeTransformation(float currentAnimationTick,
                                                              const aiNode *currentAssimpNode,
-                                                             const std::__cxx11::string nodeName) {
+                                                             const std::string nodeName) {
     const aiNodeAnim *nodeAnimation = getAnimationNode(nodeName);
     if(nodeAnimation == nullptr) {
         /**
@@ -107,17 +105,17 @@ chag::float4x4 BoneTransformer::getInterpolatedScalingMatrix(float currentAnimat
     return scalingMatrix;
 }
 
-const aiNodeAnim *BoneTransformer::getAnimationNode(const std::__cxx11::string &nodeName) {
+const aiNodeAnim *BoneTransformer::getAnimationNode(const std::string &nodeName) {
     const aiAnimation* animation = assimpScene->mAnimations[0];
 
     const aiNodeAnim* nodeAnimation = findNodeAnim(animation, nodeName);
     return nodeAnimation;
 }
 
-const aiNodeAnim* BoneTransformer::findNodeAnim(const aiAnimation* animation, const std::__cxx11::string nodeName) {
+const aiNodeAnim* BoneTransformer::findNodeAnim(const aiAnimation* animation, const std::string nodeName) {
     for (unsigned int i = 0; i < animation->mNumChannels; i++) {
         const aiNodeAnim* nodeAnimation = animation->mChannels[i];
-        if(std::__cxx11::string(nodeAnimation->mNodeName.data) == nodeName) {
+        if(std::string(nodeAnimation->mNodeName.data) == nodeName) {
             return nodeAnimation;
         }
     }
@@ -161,7 +159,7 @@ aiQuaternion BoneTransformer::calculateRotationInterpolation(float currentAnimat
     const aiQuaternion &currentRotationQuaternion = nodeAnimation->mRotationKeys[currentRotationIndex].mValue;
     const aiQuaternion &nextRotationQuaternion = nodeAnimation->mRotationKeys[nextRotationIndex].mValue;
     aiQuaternion interpolatedQuaternion;
-    ::aiQuaterniont<float>::Interpolate(interpolatedQuaternion, currentRotationQuaternion, nextRotationQuaternion, deltaFactor);
+    aiQuaterniont<float>::Interpolate(interpolatedQuaternion, currentRotationQuaternion, nextRotationQuaternion, deltaFactor);
 
     return interpolatedQuaternion;
 }
@@ -233,17 +231,17 @@ std::vector<chag::float4x4> BoneTransformer::calculateBoneTransforms(float total
     return boneTransformMatrices;
 }
 
-int BoneTransformer::createOrGetBoneIndex(const aiMesh *paiMesh, unsigned int i) {
+int BoneTransformer::createBoneIndexIfAbsent(const aiBone *bone) {
     int boneIndex;
-    std::string boneName(paiMesh->mBones[i]->mName.data);
+    std::string boneName(bone->mName.data);
 
     if(this->boneNameToIndexMapping.find(boneName) == this->boneNameToIndexMapping.end()) {
 
             this->boneNameToIndexMapping.insert(std::pair<std::string, int>(boneName, this->numberOfBones));
 
-            BoneInfo* boneInfo = new BoneInfo();
+            BoneMatrices* boneInfo = new BoneMatrices();
             this->boneInfos.push_back(boneInfo);
-            boneInfo->boneOffset = convertAiMatrixToFloat4x4(paiMesh->mBones[i]->mOffsetMatrix);
+            boneInfo->boneOffset = convertAiMatrixToFloat4x4(bone->mOffsetMatrix);
 
             boneIndex = this->numberOfBones;
             this->numberOfBones++;
@@ -262,3 +260,4 @@ double BoneTransformer::getCurrentAnimationTick(float totalElapsedTimeInSeconds)
     double currentAnimationTick = fmod(elapsedTimeInTicks, animationDurationInTicks);
     return currentAnimationTick;
 }
+

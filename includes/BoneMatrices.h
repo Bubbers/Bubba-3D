@@ -18,9 +18,9 @@
 
 #include "linmath/float4x4.h"
 
-struct BoneInfo
-    {
-        chag::float4x4 boneOffset = chag::make_identity<chag::float4x4>();
-        chag::float4x4 finalTransformation = chag::make_identity<chag::float4x4>();
-    };
+struct BoneMatrices
+{
+    chag::float4x4 boneOffset = chag::make_identity<chag::float4x4>();
+    chag::float4x4 finalTransformation = chag::make_identity<chag::float4x4>();
+};
 

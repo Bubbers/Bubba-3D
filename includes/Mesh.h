@@ -75,13 +75,17 @@ public:
 
     bool hasAnimations();
 
+    /**
+    * Calculates the transform to be applied to each bone at the current time.
+    *
+    * @param totalElapsedTimeInSeconds The time since the application was started
+    * @return A vector containing the transforms of each bone. The index in the vector corresponds to the bones index. The index of a bone can be found in boneNameToIndexMapping.
+    *
+    */
     std::vector<chag::float4x4> getBoneTransforms(float totalElapsedTimeInSeconds);
 
 private:
     /**
-     * NOTE: This will only load the first mesh in the scene. If you have
-     * several meshes in a single loaded object please implement support for it!
-     *
      * Loads all the chunks, materials, triangles and collision details of the mesh
      * in the loaded aiScene.
      *
