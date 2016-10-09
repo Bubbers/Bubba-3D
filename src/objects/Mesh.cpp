@@ -345,9 +345,3 @@ bool Mesh::hasAnimations() {
 std::vector<float4x4> Mesh::getBoneTransforms(float totalElapsedTimeInSeconds) {
     return boneTransformer->calculateBoneTransforms(totalElapsedTimeInSeconds);
 }
-
-
-
-
-
-

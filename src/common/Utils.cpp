@@ -23,7 +23,7 @@
 
 
 chag::float4x4 convertAiMatrixToFloat4x4(aiMatrix4x4 fromMatrix) {
-    chag::float4x4 newMatrix = chag::make_identity<chag::float4x4>();
+    chag::float4x4 newMatrix;
     newMatrix.c1 = chag::make_vector(fromMatrix.a1, fromMatrix.b1, fromMatrix.c1, fromMatrix.d1);
     newMatrix.c2 = chag::make_vector(fromMatrix.a2, fromMatrix.b2, fromMatrix.c2, fromMatrix.d2);
     newMatrix.c3 = chag::make_vector(fromMatrix.a3, fromMatrix.b3, fromMatrix.c3, fromMatrix.d3);
