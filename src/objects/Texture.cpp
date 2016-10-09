@@ -16,11 +16,13 @@
  */
 #include "glutil/glutil.h"
 #include <Logger.h>
+#include <StdOutLogHandler.h>
 #include "Texture.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 
 #include "stb_image.h"
+
 
 void Texture::bind(GLenum textureUnit){
     glActiveTexture(textureUnit);
@@ -66,7 +68,7 @@ void Texture::loadTexture(std::string fileName)
     textureID = texid;
 
     stbi_image_free(image);
-    printf("Loaded texture: %s\n", fileName.c_str()); // TODO Use logger instead
+    Logger::logInfo("Loaded image: " + fileName);
 }
 
 int Texture::getHeight() {

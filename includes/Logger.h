@@ -43,7 +43,7 @@ private:
 	~Logger();
 
 	static unsigned int currentLogLevel;
-  static std::vector<LogHandler*> logHandlers;
+    static std::vector<LogHandler*> logHandlers;
 	static std::string levelToString(unsigned int level);
 	static void log(unsigned int level, std::string msg);
 	static std::string getTime();
