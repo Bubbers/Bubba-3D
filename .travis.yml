@@ -53,7 +53,8 @@ before_script:
     - cmake -DCMAKE_BUILD_TYPE:STRING=Debug -Wdev -Werror=dev -D CMAKE_CXX_FLAGS="-Werror" ..
 
 
-script: make -j8 all  && make test
+script: make -j8 all && make test
 
 after_success:
+    - cd ../
     - ./publish_docs.sh
