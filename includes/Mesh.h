@@ -25,12 +25,12 @@
 #include <Sphere.h>
 #include <assimp/scene.h>
 #include <map>
-#include <BoneInfo.h>
 #include <assimp/Importer.hpp>
 
 
 class Triangle;
 class Chunk;
+class BoneTransformer;
 struct BoneInfluenceOnVertex;
 
 /**
@@ -73,18 +73,11 @@ public:
     std::vector<Chunk>* getChunks();
     std::vector<Material>* getMaterials();
 
-    /**
-     * Calculates the transform to be applied to each bone at the current time.
-     *
-     * @param totalElapsedTimeInSeconds The time since the application was started
-     * @return A vector containing the transforms of each bone. The index in the vector corresponds to the bones index. The index of a bone can be found in boneNameToIndexMapping.
-     *
-     */
-    std::vector<chag::float4x4> calculateBoneTransforms(float totalElapsedTimeInSeconds);
-
     bool hasAnimations();
 
- private:
+    std::vector<chag::float4x4> getBoneTransforms(float totalElapsedTimeInSeconds);
+
+private:
     /**
      * NOTE: This will only load the first mesh in the scene. If you have
      * several meshes in a single loaded object please implement support for it!
@@ -104,57 +97,6 @@ public:
     void initBonesFromAiMesh(const aiMesh *paiMesh, Chunk &bones);
     void assertAllVertexWeightsSumToOne(Chunk &chunk);
 
-    /**
-     * Reads the entire (animation) node hierarchy and updates
-     * the bone transformations in {@code boneInfos} accordingly.
-     */
-    void readNodeHierarchyAndUpdateBoneTransformations(float currentAnimationTick, aiNode *currentAssimpNode,
-                                                       chag::float4x4 parentMatrix);
-
-
-    double getCurrentAnimationTick(float totalElapsedTimeInSeconds) const;
-
-    /**
-     * Given the name of a node, fetches the corresponding animation node.
-     */
-    const aiNodeAnim *getAnimationNode(const std::string &nodeName);
-
-    /**
-     * Searches through an animations channels for the animation node
-     */
-    const aiNodeAnim* findNodeAnim(const aiAnimation* animation, const std::string nodeName);
-
-    /**
-     * Interpolates the two animation matrices nearest the current tick
-     */
-    chag::float4x4 getInterpolatedAnimationMatrix(float currentAnimationTick, const aiNodeAnim *nodeAnimation);
-    chag::float4x4 getInterpolatedScalingMatrix(float currentAnimationTick, const aiNodeAnim *nodeAnimation);
-    chag::float4x4 getInterpolatedRotationMatrix(float currentAnimationTick, const aiNodeAnim *nodeAnimation);
-    chag::float4x4 getInterpolatedTranslationMatrix(float currentAnimationTick, const aiNodeAnim *nodeAnimation);
-
-    aiVector3D calculateTranslationInterpolation(float currentAnimationTick, const aiNodeAnim *nodeAnimation);
-    aiVector3D calculateScalingInterpolation(float currentAnimationTick, const aiNodeAnim *nodeAnimation);
-    aiQuaternion calculateRotationInterpolation(float currentAnimationTick, const aiNodeAnim *nodeAnimation);
-
-    unsigned int findScalingIndexRightBeforeTick(float currentAnimationTick, const aiNodeAnim *nodeAnimation);
-    unsigned int findTranslationIndexRightBeforeTick(float currentAnimationTick, const aiNodeAnim *nodeAnimation);
-    unsigned int findRotationIndexRightBeforeTick(float currentAnimationTick, const aiNodeAnim *nodeAnimation);
-
-
-
-    chag::float4x4 getCurrentNodeTransformation(float currentAnimationTick, const aiNode *currentAssimpNode,
-                                                const std::string nodeName);
-
-
-    /**
-     * A node is a bone if there is a bone named exactly the same as the node
-     */
-    bool nodeIsABone(const std::string &nodeName) const;
-
-    /**
-     * Updates the transformation of the bone corresponding to @{code nodeName}
-     */
-    void updateBoneTransformation(const std::string &nodeName, const chag::float4x4 &globalTransformation);
 
     /**
      * Loads all materials from the loaded aiScene.
@@ -232,14 +174,9 @@ public:
     std::vector<Triangle *> triangles;
     std::vector<Material> materials;
     std::vector<Chunk> m_chunks;
-    chag::float4x4 globalInverseTransform;
 
-    int numberOfBones;
-    std::map<std::string, int> boneNameToIndexMapping;
-    std::vector<BoneInfo*> boneInfos;
-
+    BoneTransformer *boneTransformer;
     Assimp::Importer importer;
-    const aiScene *assimpScene;
 
     Sphere sphere;
     AABB m_aabb;
