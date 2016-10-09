@@ -46,6 +46,7 @@
 class BoneTransformer {
 
 public:
+    BoneTransformer() = default;
     BoneTransformer(aiScene *aiScene);
 
     /**
@@ -67,6 +68,9 @@ public:
 
 
 private:
+    /**
+     * Gives the number of ticks that have passed since the animations start
+     */
     double getCurrentAnimationTick(float totalElapsedTimeInSeconds) const;
 
     /**
@@ -92,11 +96,25 @@ private:
 
     /**
      * Interpolates the two animation matrices nearest the current tick
+     *
+     * @param currentAnimationTick The ticks that have passed since animation started
+     * @param nodeAnimation The animation node that is currently 'playing'
+     * @return A matrix in bone space that has interpolated translation, rotation and scaling between the two nearest animations matrices.
      */
     chag::float4x4 getInterpolatedAnimationMatrix(float currentAnimationTick, const aiNodeAnim *nodeAnimation);
+
+    //@{
+    /**
+     * Retrieves the interpolation of the two animation matrices nearest the current tick
+     *
+     * @param currentAnimationTick The ticks that have passed since animation started
+     * @param nodeAnimation The animation node that is currently 'playing'
+     * @return A matrix in bone space that has interpolated the two nearest animations matrices.
+     */
     chag::float4x4 getInterpolatedTranslationMatrix(float currentAnimationTick, const aiNodeAnim *nodeAnimation);
     chag::float4x4 getInterpolatedRotationMatrix(float currentAnimationTick, const aiNodeAnim *nodeAnimation);
     chag::float4x4 getInterpolatedScalingMatrix(float currentAnimationTick, const aiNodeAnim *nodeAnimation);
+    //@}
 
     /**
      * Given the name of a node, fetches the corresponding animation node.
@@ -108,13 +126,31 @@ private:
      */
     const aiNodeAnim* findNodeAnim(const aiAnimation* animation, const std::string nodeName);
 
+    //@{
+    /**
+     * Calculates the interpolation of the two animations nearest the current tick
+     *
+     * @param currentAnimationTick The ticks that have passed since animation started
+     * @param nodeAnimation The animation node that is currently 'playing'
+     * @return An interpolated assimp object
+     */
     aiVector3D calculateScalingInterpolation(float currentAnimationTick, const aiNodeAnim *nodeAnimation);
     aiQuaternion calculateRotationInterpolation(float currentAnimationTick, const aiNodeAnim *nodeAnimation);
     aiVector3D calculateTranslationInterpolation(float currentAnimationTick, const aiNodeAnim *nodeAnimation);
+    //@}
 
+    //@{
+    /**
+     * Gets the index of the nearest previous key in the animation node
+     *
+     * @param currentAnimationTick The ticks that have passed since animation started
+     * @param nodeAnimation The animation node that is currently 'playing'
+     * @return The index of the nearest previous key
+     */
     unsigned int findScalingIndexRightBeforeTick(float currentAnimationTick, const aiNodeAnim *nodeAnimation);
     unsigned int findRotationIndexRightBeforeTick(float currentAnimationTick, const aiNodeAnim *nodeAnimation);
     unsigned int findTranslationIndexRightBeforeTick(float currentAnimationTick, const aiNodeAnim *nodeAnimation);
+    //@}
 
     //Matrix for transforming FROM bone space TO world space
     chag::float4x4 globalInverseTransform;

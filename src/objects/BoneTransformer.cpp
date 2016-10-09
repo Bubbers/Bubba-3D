@@ -19,6 +19,7 @@
 #include <Utils.h>
 #include "BoneTransformer.h"
 
+
 BoneTransformer::BoneTransformer(aiScene *aiScene){
     numberOfBones = 0;
     globalInverseTransform = convertAiMatrixToFloat4x4(aiScene->mRootNode->mTransformation.Inverse());
@@ -235,18 +236,18 @@ int BoneTransformer::createBoneIndexIfAbsent(const aiBone *bone) {
     int boneIndex;
     std::string boneName(bone->mName.data);
 
-    if(this->boneNameToIndexMapping.find(boneName) == this->boneNameToIndexMapping.end()) {
+    if(boneNameToIndexMapping.find(boneName) == boneNameToIndexMapping.end()) {
 
-            this->boneNameToIndexMapping.insert(std::pair<std::string, int>(boneName, this->numberOfBones));
+            boneNameToIndexMapping.insert(std::pair<std::string, int>(boneName, numberOfBones));
 
             BoneMatrices* boneInfo = new BoneMatrices();
-            this->boneInfos.push_back(boneInfo);
+            boneInfos.push_back(boneInfo);
             boneInfo->boneOffset = convertAiMatrixToFloat4x4(bone->mOffsetMatrix);
 
-            boneIndex = this->numberOfBones;
-            this->numberOfBones++;
+            boneIndex = numberOfBones;
+            numberOfBones++;
         } else {
-            boneIndex = this->boneNameToIndexMapping[boneName];
+            boneIndex = boneNameToIndexMapping[boneName];
         }
     return boneIndex;
 }

@@ -18,9 +18,15 @@
 
 #include "linmath/float4x4.h"
 
+/**
+ * Struct for containing different matrices related to a bone.
+ * Used for transforming vertices connected to a bone.
+ */
 struct BoneMatrices
 {
+    //BoneOffset transforms a vertex from local space to bone space
     chag::float4x4 boneOffset = chag::make_identity<chag::float4x4>();
+    //finalTransformation transforms a vertex connected to the bone in bone space to its new position relative the bone.
     chag::float4x4 finalTransformation = chag::make_identity<chag::float4x4>();
 };
 
