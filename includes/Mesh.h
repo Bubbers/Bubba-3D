@@ -26,11 +26,12 @@
 #include <assimp/scene.h>
 #include <map>
 #include <assimp/Importer.hpp>
+#include <memory>
 
 
+class BoneTransformer;
 class Triangle;
 class Chunk;
-class BoneTransformer;
 struct BoneInfluenceOnVertex;
 
 /**
@@ -45,7 +46,7 @@ class Mesh {
 public:
     Mesh();
 
-    ~Mesh();
+    ~Mesh() = default;
 
     void loadMesh(const std::string &fileName);
 
@@ -179,7 +180,7 @@ private:
     std::vector<Material> materials;
     std::vector<Chunk> m_chunks;
 
-    BoneTransformer *boneTransformer;
+    std::shared_ptr<BoneTransformer> boneTransformer;
     Assimp::Importer importer;
 
     Sphere sphere;

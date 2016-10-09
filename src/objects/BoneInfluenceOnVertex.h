@@ -21,6 +21,19 @@
 
 #define MAX_NUM_BONES 4
 
+/**
+ * \brief Struct for maintaining information of how a bone affects a vertex
+ *
+ * A vertex can be affected by at most {@code MAX_NUM_BONES} and each bone affects
+ * the vertex by a certain weight. The sum of all weights must equal 1.0.
+ *
+ * Usage:
+ * \code{.cpp}
+ * BoneInfluenceOnVertex boneInfluence;
+ * boneInfluence.addBoneData(firstBoneConnectedToVertex, firstBonesWeightOnVertex);
+ * boneInfluence.addBoneData(secondBoneConnectedToVertex, secondBonesWeightOnVertex);
+ * \endcode
+ */
 struct BoneInfluenceOnVertex {
     uint ids[MAX_NUM_BONES];
     float weights[MAX_NUM_BONES];

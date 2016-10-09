@@ -41,10 +41,6 @@ Mesh::Mesh() {
     numAnimations = 0;
 }
 
-Mesh::~Mesh() {
-
-}
-
 void Mesh::loadMesh(const std::string &fileName) {
     Logger::logInfo("Loading mesh " + fileName);
 
@@ -55,7 +51,7 @@ void Mesh::loadMesh(const std::string &fileName) {
     if (!aiScene) {
         Logger::logError("Error loading mesh for " + fileName + ". Error message: " + importer.GetErrorString());
     } else {
-        boneTransformer = new BoneTransformer(aiScene);
+        boneTransformer = std::make_shared<BoneTransformer>(BoneTransformer(aiScene));
         initMesh(aiScene, fileName);
     }
 }
@@ -339,8 +335,8 @@ std::vector<Material>* Mesh::getMaterials() {
 }
 
 bool Mesh::hasAnimations() {
-     return numAnimations != 0;
- }
+    return numAnimations != 0;
+}
 
 std::vector<float4x4> Mesh::getBoneTransforms(float totalElapsedTimeInSeconds) {
     return boneTransformer->calculateBoneTransforms(totalElapsedTimeInSeconds);
