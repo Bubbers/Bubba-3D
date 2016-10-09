@@ -67,7 +67,7 @@ void StandardRenderer::render() {
 
         if(mesh->hasAnimations()) {
             float currentTimeInSeconds = clock.getElapsedTime().asSeconds();
-            std::vector<chag::float4x4> boneTransforms = mesh->calculateBoneTransforms(currentTimeInSeconds);
+            std::vector<chag::float4x4> boneTransforms = mesh->getBoneTransforms(currentTimeInSeconds);
             shaderProgram->setUniform1i("has_animations", 1);
 
             for (unsigned int j = 0; j < boneTransforms.size(); j++) {
