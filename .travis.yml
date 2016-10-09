@@ -50,7 +50,7 @@ addons:
 before_script:
         - mkdir -p build
         - cd build
-        - cmake -DCMAKE_BUILD_TYPE:STRING=Debug -D CMAKE_CXX_FLAGS="-g -Wall -Werror ..
+        - cmake -DCMAKE_BUILD_TYPE:STRING=Debug -Wdev -Werror=dev -D CMAKE_CXX_FLAGS="-g -Wall -Werror" ..
 
 
 script: make -j8  && make test
