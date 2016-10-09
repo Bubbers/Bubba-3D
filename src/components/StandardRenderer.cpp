@@ -65,10 +65,9 @@ void StandardRenderer::render() {
             material.bumpMapTexture->bind(GL_TEXTURE3);
         }
 
-       if(mesh->hasAnimations()) {
-            std::vector<chag::float4x4> boneTransforms;
+        if(mesh->hasAnimations()) {
             float currentTimeInSeconds = clock.getElapsedTime().asSeconds();
-            mesh->calculateBoneTransforms(currentTimeInSeconds, boneTransforms);
+            std::vector<chag::float4x4> boneTransforms = mesh->calculateBoneTransforms(currentTimeInSeconds);
             shaderProgram->setUniform1i("has_animations", 1);
 
             for (unsigned int j = 0; j < boneTransforms.size(); j++) {
