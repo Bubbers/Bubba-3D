@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 if [[ "${TRAVIS_BRANCH}" != "master" ]]
 then
@@ -6,39 +7,32 @@ then
     exit 0
 fi
 
-function teardown {
-    git checkout master
-}
+# Fetch the gh-pages branch and switch to it
+git fetch origin gh-pages
+git checkout -qf FETCH_HEAD
+git checkout -b gh-pages
 
-git checkout gh-pages
-BRANCH_CHECKOUT=$?
+# Setting git author
+git config user.email "noreply@travis-ci.org"
+git config user.name "Travis CI"
 
-if [[  "${BRANCH_CHECKOUT}" != "0" ]]
-then
-    echo "Failed to switch to branch 'gh-pages', aborting..."
-    exit 1
-fi
-
+# Moving docs to root directory and committing
 cp -r build/docs/html/* .
-COPY_DOCS=$?
-
-if [[ "${COPY_DOCS}" != "0" ]]
-then
-    echo "Filed to copy docs, aborting..."
-    teardown
-    exit 1
-fi
-
 git add .
+
 git commit -m "Built new docs on master"
+
+# Adding deploy key
+ENCRYPTION_LABEL="773359cabcfc"
+ENCRYPTED_KEY_VAR="encrypted_${ENCRYPTION_LABEL}_key"
+ENCRYPTED_IV_VAR="encrypted_${ENCRYPTION_LABEL}_iv"
+ENCRYPTED_KEY=${!ENCRYPTED_KEY_VAR}
+ENCRYPTED_IV=${!ENCRYPTED_IV_VAR}
+
+openssl aes-256-cbc -K $ENCRYPTED_KEY -iv $ENCRYPTED_IV -in deploy_key.enc -out deploy_key -d
+chmod 600 deploy_key
+eval `ssh-agent -s`
+ssh-add deploy_key
+
+# Pushing to github
 git push "git@github.com:Bubbers/Bubba-3D.git" gh-pages -f
-PAGES_PUSH=$?
-
-if [[ "${PAGES_PUSH}" != "0" ]]
-then
-    echo "Failed to push gh-pages to github"
-    teardown
-    exit 1
-fi
-
-teardown
