@@ -179,29 +179,32 @@ void Mesh::initBonesFromAiMesh(const aiMesh *paiMesh, Chunk &chunk) {
     assertAllVertexWeightsSumToOne(chunk);
 }
 
-void Mesh::calculateBoneTransforms(float elapsedTimeInSeconds, std::vector<float4x4>& boneTransformMatrices) {
+std::vector<chag::float4x4> Mesh::calculateBoneTransforms(float totalElapsedTimeInSeconds) {
+
     float4x4 rootMatrix = make_identity<float4x4>();
 
-    double ticksPerSecond = assimpScene->mAnimations[0]->mTicksPerSecond;
-    ticksPerSecond = ticksPerSecond == 0 ? 25 : ticksPerSecond;
-
-    double elapsedTimeInTicks = elapsedTimeInSeconds * ticksPerSecond;
-    double animationDurationInTicks = assimpScene->mAnimations[0]->mDuration;
-    double currentAnimationTick = fmod(elapsedTimeInTicks, animationDurationInTicks);
+    double currentAnimationTick = getCurrentAnimationTick(totalElapsedTimeInSeconds);
 
     readNodeHierarchyAndUpdateBoneTransformations((float)currentAnimationTick, assimpScene->mRootNode, rootMatrix);
 
+    std::vector<chag::float4x4> boneTransformMatrices;
     boneTransformMatrices.resize(numberOfBones);
     for (int bone = 0; bone < numberOfBones; bone++) {
         boneTransformMatrices[bone] = boneInfos[bone]->finalTransformation;
-        //boneTransformMatrices[bone] = make_identity<float4x4>();
     }
+    return boneTransformMatrices;
 }
 
-/**
- * Reads the entire (animation) node hierarchy and updates
- * the bone transformations in {@code boneInfos} accordingly.
- */
+double Mesh::getCurrentAnimationTick(float totalElapsedTimeInSeconds) const {
+    double ticksPerSecond = assimpScene->mAnimations[0]->mTicksPerSecond;
+    ticksPerSecond = ticksPerSecond == 0 ? 25 : ticksPerSecond;
+
+    double elapsedTimeInTicks = totalElapsedTimeInSeconds * ticksPerSecond;
+    double animationDurationInTicks = assimpScene->mAnimations[0]->mDuration;
+    double currentAnimationTick = fmod(elapsedTimeInTicks, animationDurationInTicks);
+    return currentAnimationTick;
+}
+
 void Mesh::readNodeHierarchyAndUpdateBoneTransformations(float currentAnimationTick,
                                                          aiNode *currentAssimpNode,
                                                          float4x4 parentMatrix) {
@@ -210,7 +213,7 @@ void Mesh::readNodeHierarchyAndUpdateBoneTransformations(float currentAnimationT
     float4x4 nodeTransformationMatrix = getCurrentNodeTransformation(currentAnimationTick, currentAssimpNode, nodeName);
     float4x4 globalTransformation = parentMatrix * nodeTransformationMatrix;
 
-    // If the node isn't a bone we dont need to update any bones
+    // If the node isn't a bone we dont need to update any bones (duuuh)
     if(nodeIsABone(nodeName)) {
         updateBoneTransformation(nodeName, globalTransformation);
     }
@@ -221,18 +224,12 @@ void Mesh::readNodeHierarchyAndUpdateBoneTransformations(float currentAnimationT
     }
 }
 
-/**
- * Updates the transformation of the bone corresponding to @{code nodeName}
- */
 void Mesh::updateBoneTransformation(const std::string &nodeName, const float4x4 &globalTransformation) {
     uint boneIndex = boneNameToIndexMapping[nodeName];
 
     boneInfos[boneIndex]->finalTransformation = globalInverseTransform * globalTransformation * boneInfos[boneIndex]->boneOffset;
 }
 
-/**
- * A node is a bone if there is a bone named exactly the same as the node
- */
 bool Mesh::nodeIsABone(const std::string &nodeName) const {
     return boneNameToIndexMapping.find(nodeName) != boneNameToIndexMapping.end();
 }
@@ -254,9 +251,6 @@ float4x4 Mesh::getCurrentNodeTransformation(float currentAnimationTick,
     }
 }
 
-/**
- * Interpolates the two animation matrices nearest the current tick
- */
 float4x4 Mesh::getInterpolatedAnimationMatrix(float currentAnimationTick, const aiNodeAnim *nodeAnimation) {
     float4x4 scalingMatrix = getInterpolatedScalingMatrix(currentAnimationTick, nodeAnimation);
     float4x4 rotationMatrix = getInterpolatedRotationMatrix(currentAnimationTick, nodeAnimation);
@@ -291,10 +285,6 @@ float4x4 Mesh::getInterpolatedScalingMatrix(float currentAnimationTick, const ai
     return scalingMatrix;
 }
 
-/**
- * Given the name of a node, fetches the corresponding animation node.
- *
- */
 const aiNodeAnim *Mesh::getAnimationNode(const std::string &nodeName) {
     const aiAnimation* animation = assimpScene->mAnimations[0];
 
@@ -302,9 +292,6 @@ const aiNodeAnim *Mesh::getAnimationNode(const std::string &nodeName) {
     return nodeAnimation;
 }
 
-/**
- * Searches through an animations channels for the animation node
- */
 const aiNodeAnim* Mesh::findNodeAnim(const aiAnimation* animation, const std::string nodeName) {
     for (unsigned int i = 0; i < animation->mNumChannels; i++) {
         const aiNodeAnim* nodeAnimation = animation->mChannels[i];
@@ -312,7 +299,6 @@ const aiNodeAnim* Mesh::findNodeAnim(const aiAnimation* animation, const std::st
             return nodeAnimation;
         }
     }
-
     return nullptr;
 }
 
