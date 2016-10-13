@@ -9,6 +9,8 @@ Originally implemented as a school project, now extended for fun!
 Usage
 -----
 Tutorials can be found on the [wiki](https://github.com/Bubbers/Bubba-3D/wiki)
+
+How the various classes work can be found in the
 [API documentation](http://bubbers.github.io/Bubba-3D/)
 
 Installation
