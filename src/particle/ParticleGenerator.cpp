@@ -24,14 +24,14 @@
 
 
 ParticleGenerator::ParticleGenerator(Texture *texture, int amount,
-                                     Camera *camera, chag::float4x4 modelMatrix,
-                                     ParticleConf *conf)
+                                     Camera *camera, ParticleConf *conf)
                                    : texture(texture), m_amount(amount),
                                      m_camera(camera), conf(conf)
 {
     ResourceManager::loadShader("shaders/particle.vert", "shaders/particle.frag", "particleShader");
     shaderProgram = ResourceManager::getShader("particleShader");
-    shaderProgram->setUniformBufferObjectBinding(UNIFORM_BUFFER_OBJECT_MATRICES_NAME, UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
+    shaderProgram->setUniformBufferObjectBinding(UNIFORM_BUFFER_OBJECT_MATRICES_NAME,
+                                                 UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
     GLfloat quad[] = { //POSITION3 TEXCOORD2
         0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
         1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
@@ -59,10 +59,6 @@ ParticleGenerator::ParticleGenerator(Texture *texture, int amount,
     /* CLEANUP */
     glBindVertexArray(0);
     
-    for (int i = 0; i < amount; i++) {
-        Particle *part = new Particle(conf, modelMatrix);
-        this->m_particles.push_back(part);
-    }
 }
 
 
@@ -92,21 +88,24 @@ void ParticleGenerator::render() {
     
     chag::float3x3 modelMatrix3x3 = getModelMatrix3x3();
     
-    
-    float distance = length(this->m_camera->getPosition() - this->owner->getAbsoluteLocation());
+    float distance = length(m_camera->getPosition() - owner->getAbsoluteLocation());
     int maxParticles = (int)(m_amount * LOD_FACTOR / distance );
     glBindVertexArray(m_vaob);
     
-    std::vector<Particle*> particles = this->m_particles;
-    std::sort(particles.begin(), particles.end(), [this](Particle* p1, Particle* p2) {
-        float l1 = length(this->m_camera->getPosition() - p1->getPosition());
-        float l2 = length(this->m_camera->getPosition() - p2->getPosition());
+
+    // Sort the particles
+    std::sort(m_particles.begin(), m_particles.end(), [this] (const std::unique_ptr<Particle> &p1,
+                                                              const std::unique_ptr<Particle> &p2)
+    {
+        float l1 = length(m_camera->getPosition() - p1->getPosition());
+        float l2 = length(m_camera->getPosition() - p2->getPosition());
     
         return l1 > l2;
     });
-    
+
+    // Render the particles
     int iterations = 0;
-    for (Particle *particle : particles) {
+    for (std::unique_ptr<Particle> &particle : m_particles) {
         if (iterations > maxParticles) { break; }
         iterations++;
     
@@ -117,7 +116,8 @@ void ParticleGenerator::render() {
             } else {
                 scale = chag::make_vector(1.0f, 1.0f, 1.0f);
             }
-            chag::float4x4 modelMatrix4x4 = make_matrix(modelMatrix3x3, particle->getPosition()) * chag::make_scale<chag::float4x4>(scale);
+            chag::float4x4 modelMatrix4x4 = make_matrix(modelMatrix3x3, particle->getPosition())
+                                                      * chag::make_scale<chag::float4x4>(scale);
     
             shaderProgram->setUniformMatrix4fv("modelMatrix", modelMatrix4x4);
     
@@ -135,14 +135,21 @@ void ParticleGenerator::render() {
 }
 
 void ParticleGenerator::update(float dt) {
+    if (m_particles.empty() && owner != nullptr) {
+        for (int i = 0; i < m_amount; i++) {
+            std::unique_ptr<Particle> part(new Particle(*conf, owner->getModelMatrix()));
+            m_particles.push_back(std::move(part));
+        }
+    }
+
     float distance = length(m_camera->getPosition() - owner->getAbsoluteLocation());
 
-    for (Particle *particle : m_particles) {
+    for (std::unique_ptr<Particle> &particle : m_particles) {
         if (particle->isAlive()){
-            particle->update(dt, distance, conf);
+            particle->update(dt, distance, *conf);
         }
         else if(conf->loop(dt)){
-            particle->reset(conf, owner->getModelMatrix());
+            particle->reset(*conf, owner->getModelMatrix());
         }
     }
 }
@@ -155,9 +162,4 @@ chag::float3x3 ParticleGenerator::getModelMatrix3x3() {
     chag::float3 uprim = chag::cross(n, r);
     
     return make_matrix(r, uprim, n);
-}
-
-
-void ParticleGenerator::setLooping(bool value) {
-    conf->setLooping(value);
 }
