@@ -19,35 +19,25 @@
 #include <memory>
 #include <vector>
 
-#include "linmath/float3.h"
 #include "IRenderComponent.h"
 
-#define LINEAR_SCALE_FACTOR 50.0f
-#define LOD_FACTOR 25.0f
 
 class Camera;
-class Texture;
 class Particle;
 class ParticleConf;
+class ParticleRenderer;
 
 
 /**
  * \brief Component that generates, handles and renders particles.
  *
- * ParticleGenerator has three main responsabilities:
- *
- * 1. Generating particles
- * 2. Updating particles
- * 3. Rendering particles
+ * ParticleGenerator manages spawns and updates particles.
  *
  * All particles are spawned at a position relative to the GameObject
  * that the ParticleGenerator is attached to.
  *
  * Each particle is updated via a ParticleConf. The ParticleGenerator does
  * not interfere in the calculations but handles what ParticleConf to use.
- *
- * If the camera is far away the ParticleGenerator adapts by not spawning
- * as many particles.
  */
 class ParticleGenerator : public IRenderComponent
 {
@@ -56,16 +46,17 @@ public:
     /**
      * \brief Creates a ParticleGenerator that spawns particles with a given Texture
      *
-     * @param texture The texture that each particle will use while rendering.
-     * @param amount  The maximum amount of particles to spawn (less particles are spawned
-     *                when the camera is far away).
-     * @param camera  A reference to the active Camera in the scene. Used to rotate particles
-     *                towards the camera and compensate for camera distance.
-     * @param conf    The ParticleConf that will be used while updating the particles.
+     * @param maxParticles  The maximum amount of particles to spawn (less particles are spawned
+     *                     when the camera is far away).
+     * @param renderer     The ParticleRenderer that will be used to render particles.
+     * @param conf         The ParticleConf that will be used while updating the particles.
+     * @param camera       A reference to the active Camera in the scene. Used to compensate for
+     *                     camera distance when updating Particles.
      */
-    ParticleGenerator(Texture *texture, int amount,
-                      Camera *camera,
-                      ParticleConf *conf);
+    ParticleGenerator(int maxParticles,
+                      std::shared_ptr<ParticleRenderer> renderer,
+                      std::shared_ptr<ParticleConf> conf,
+                      std::shared_ptr<Camera> camera);
 
     ~ParticleGenerator();
 
@@ -86,22 +77,14 @@ public:
      */
     void render();
 
-    /**
-     * Set how much the level of detail scales with distance to camera
-     */
-    void setScaleLod(bool value);
-
 private:
-    GLuint m_vaob;
-    Texture *texture;
 
-    int m_amount = 0;
-    Camera *m_camera;
+    int maxParticles = 0;
 
-    std::vector<std::unique_ptr<Particle>> m_particles;
+    std::vector<std::unique_ptr<Particle>> particles;
 
-    std::unique_ptr<ParticleConf> conf;
-    bool doScale = true;
+    std::shared_ptr<ParticleRenderer> renderer;
+    std::shared_ptr<ParticleConf> conf;
+    std::shared_ptr<Camera> camera;
 
-    chag::float3x3 getModelMatrix3x3();
 };
