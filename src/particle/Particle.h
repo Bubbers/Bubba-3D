@@ -31,14 +31,14 @@ class ParticleConf;
 class Particle {
 
 public:
-    Particle(ParticleConf *conf, chag::float4x4 modelMatrix);
+    Particle(ParticleConf &conf, chag::float4x4 modelMatrix);
 
     /**
      * Resets the particle according to the given ParticleConf.
      * This is used in order to reuse particles.
      * @param conf The ParticleConf to used by the ParticleGenerator.
      */
-    void reset(ParticleConf *conf, chag::float4x4 modelMatrix);
+    void reset( ParticleConf &conf, chag::float4x4 modelMatrix);
 
     /**
      * @return If the Particle is alive, that is visible, or not.
@@ -51,7 +51,7 @@ public:
      * @param distanceToCam The distance from camera in units.
      * @param conf The ParticleConf used by the ParticleGenerator.
      */
-    void update(float deltaTime, float distanceToCam, ParticleConf *conf);
+    void update(float deltaTime, float distanceToCam, ParticleConf &conf);
     chag::float3 getPosition();
 
 private:
