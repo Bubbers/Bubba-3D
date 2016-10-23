@@ -46,6 +46,8 @@ private:
     std::shared_ptr<Mesh> mesh;
     GameObject *gameObject;
     sf::Clock clock;
+
+    void setBones(std::shared_ptr<ShaderProgram> &temp) const;
 };
 
 

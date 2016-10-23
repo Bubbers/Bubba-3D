@@ -69,17 +69,7 @@ void StandardRenderer::render() {
             material.emissiveTexture->bind(GL_TEXTURE4);
         }
 
-        if(mesh->hasAnimations()) {
-            float currentTimeInSeconds = clock.getElapsedTime().asSeconds();
-            std::vector<chag::float4x4> boneTransforms = mesh->getBoneTransforms(currentTimeInSeconds);
-            shaderProgram->setUniform1i("has_animations", 1);
-
-            for (unsigned int j = 0; j < boneTransforms.size(); j++) {
-                shaderProgram->setUniformMatrix4fv("bones[" + std::to_string(j) + "]", boneTransforms[j]);
-            }
-        } else {
-            shaderProgram->setUniform1i("has_animations", 0);
-        }
+        setBones(shaderProgram);
 
         shaderProgram->setUniform1i("has_diffuse_texture", material.diffuseTexture != NULL);
         shaderProgram->setUniform1i("has_emissive_texture", material.emissiveTexture != NULL);
@@ -99,6 +89,20 @@ void StandardRenderer::render() {
         CHECK_GL_ERROR();
     }
     CHECK_GL_ERROR();
+}
+
+void StandardRenderer::setBones(std::shared_ptr<ShaderProgram> &temp) const {
+    if(mesh->hasAnimations()) {
+        float currentTimeInSeconds = clock.getElapsedTime().asSeconds();
+        std::vector<chag::float4x4> boneTransforms = mesh->getBoneTransforms(currentTimeInSeconds);
+        temp->setUniform1i("has_animations", 1);
+
+        for (unsigned int j = 0; j < boneTransforms.size(); j++) {
+            temp->setUniformMatrix4fv("bones[" + std::__cxx11::to_string(j) + "]", boneTransforms[j]);
+        }
+    } else {
+        temp->setUniform1i("has_animations", 0);
+    }
 }
 
 void StandardRenderer::renderShadow(std::shared_ptr<ShaderProgram> &shaderProgram) {
@@ -139,6 +143,8 @@ void StandardRenderer::renderEmissive(std::shared_ptr<ShaderProgram> &shaderProg
             shaderProgram->setUniform1i("emissive_texture", 4);
             material.emissiveTexture->bind(GL_TEXTURE4);
         }
+
+        setBones(shaderProgram);
 
         shaderProgram->setUniform1i("has_emissive_texture", material.emissiveTexture != NULL);
         shaderProgram->setUniform3f("material_emissive_color", material.emissiveColor);
