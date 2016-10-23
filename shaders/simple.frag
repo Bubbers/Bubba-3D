@@ -94,6 +94,8 @@ uniform int has_diffuse_texture;
 uniform sampler2D diffuse_texture;
 uniform int has_normal_texture;
 uniform sampler2D normal_texture;
+uniform int has_emissive_texture;
+uniform sampler2D emissive_texture;
 
 
 // FUNCTIONS DECLARATION
@@ -136,6 +138,12 @@ void main()
 
 	vec3 foggedColor = calculateFog(color, abs(viewSpacePosition.z / viewSpacePosition.w));
 	vec3 emissive = material_emissive_color;
+	if(has_emissive_texture == 1){
+	    vec3 texEmissive = texture(emissive_texture,texCoord.xy).xyz;
+	    emissive.x *= texEmissive.x;
+	    emissive.y *= texEmissive.y;
+	    emissive.z *= texEmissive.z;
+	}
 
     vec3 cubeMapSample = vec3(0.0);
     cubeMapSample = calculateCubeMapSample(directionToEye, normal);

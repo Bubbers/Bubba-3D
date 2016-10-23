@@ -179,6 +179,9 @@ void Mesh::initMaterialTextures(Material *material, std::string fileNameOfMesh, 
     if (loadedMaterial->GetTextureCount(aiTextureType_HEIGHT) > 0) {
         material->bumpMapTexture = getTexture(loadedMaterial, fileNameOfMesh, aiTextureType_HEIGHT);
     }
+    if(loadedMaterial->GetTextureCount(aiTextureType_EMISSIVE) > 0){
+        material->emissiveTexture = getTexture(loadedMaterial, fileNameOfMesh, aiTextureType_EMISSIVE);
+    }
 }
 
 void Mesh::initMaterialColors(Material *material, const aiMaterial *loadedMaterial) {
