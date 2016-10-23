@@ -64,6 +64,10 @@ void StandardRenderer::render() {
             shaderProgram->setUniform1i("normal_texture", NORMAL_TEXTURE_LOCATION);
             material.bumpMapTexture->bind(GL_TEXTURE3);
         }
+        if(material.emissiveTexture != NULL) {
+            shaderProgram->setUniform1i("emissive_texture", 4);
+            material.emissiveTexture->bind(GL_TEXTURE4);
+        }
 
         if(mesh->hasAnimations()) {
             float currentTimeInSeconds = clock.getElapsedTime().asSeconds();
@@ -78,6 +82,7 @@ void StandardRenderer::render() {
         }
 
         shaderProgram->setUniform1i("has_diffuse_texture", material.diffuseTexture != NULL);
+        shaderProgram->setUniform1i("has_emissive_texture", material.emissiveTexture != NULL);
         shaderProgram->setUniform3f("material_diffuse_color", material.diffuseColor);
         shaderProgram->setUniform3f("material_diffuse_color", chag::make_vector(0.5f, 0.5f, 0.5f));
         shaderProgram->setUniform3f("material_specular_color", material.specularColor);
@@ -130,12 +135,12 @@ void StandardRenderer::renderEmissive(std::shared_ptr<ShaderProgram> &shaderProg
         Chunk &chunk = (*mesh->getChunks())[i];
         Material &material = (*mesh->getMaterials())[chunk.materialIndex];
 
-        if (material.diffuseTexture != NULL) {
-            shaderProgram->setUniform1i("diffuse_texture", DIFFUSE_TEXTURE_LOCATION);
-            material.diffuseTexture->bind(GL_TEXTURE0);
+        if (material.emissiveTexture != NULL) {
+            shaderProgram->setUniform1i("emissive_texture", 4);
+            material.emissiveTexture->bind(GL_TEXTURE4);
         }
 
-        shaderProgram->setUniform1i("has_diffuse_texture", material.diffuseTexture != NULL);
+        shaderProgram->setUniform1i("has_emissive_texture", material.emissiveTexture != NULL);
         shaderProgram->setUniform3f("material_emissive_color", material.emissiveColor);
         CHECK_GL_ERROR();
 

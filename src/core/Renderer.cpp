@@ -259,6 +259,7 @@ void Renderer::drawBloom(std::shared_ptr<ShaderProgram> &shaderProgram, Scene *s
     horizontalBlurShader->use();
 
     horizontalBlurShader->setUniform1i("frameBufferTexture", 0);
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_RECTANGLE_ARB, verticalBlurFbo.texture);
     drawFullScreenQuad();
 

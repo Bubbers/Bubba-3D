@@ -28,4 +28,5 @@ struct Material {
     float specularExponent;
     std::shared_ptr<Texture> diffuseTexture = NULL;
     std::shared_ptr<Texture> bumpMapTexture = NULL;
+    std::shared_ptr<Texture> emissiveTexture = NULL;
 };

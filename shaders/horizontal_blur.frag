@@ -30,4 +30,5 @@ void main()
 	}
 	
 	fragmentColor = result;
+
 }
