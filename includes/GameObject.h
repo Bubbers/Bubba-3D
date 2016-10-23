@@ -98,6 +98,8 @@ public:
      */
     virtual void renderShadow(std::shared_ptr<ShaderProgram> &shaderProgram);
 
+    void renderEmissive(std::shared_ptr<ShaderProgram> &shaderProgram);
+
     void addRenderComponent(IRenderComponent* renderer);
     void addComponent(IComponent* newComponent);
     /**

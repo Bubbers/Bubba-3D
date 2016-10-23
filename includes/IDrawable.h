@@ -28,6 +28,7 @@ public:
 
   virtual void render() = 0;
   virtual void renderShadow(std::shared_ptr<ShaderProgram> &shaderProgram) = 0;
+	virtual void renderEmissive(std::shared_ptr<ShaderProgram> &shaderProgram) = 0;
   
   float shininess;
 };

@@ -153,6 +153,11 @@ chag::float4x4 GameObject::getModelMatrix() {
     return m_modelMatrix;
 }
 
+void GameObject::renderEmissive(std::shared_ptr<ShaderProgram> &shaderProgram){
+    if(renderComponent != nullptr){
+        renderComponent->renderEmissive(shaderProgram);
+    }
+}
 
 void GameObject::renderShadow(std::shared_ptr<ShaderProgram> &shaderProgram) {
     renderComponent->renderShadow(shaderProgram);

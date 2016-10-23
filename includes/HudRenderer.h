@@ -38,6 +38,7 @@ public:
 
     virtual void render();
     virtual void renderShadow(std::shared_ptr<ShaderProgram> &shaderProgram);
+    virtual void renderEmissive(std::shared_ptr<ShaderProgram> &shaderProgram){};
     virtual void update(float dt);
 
     /**

@@ -150,6 +150,7 @@ void Renderer::drawScene(Camera *camera, Scene *scene, float currentTime)
 
     drawShadowCasters(shaderProgram, scene);
 
+    drawBloom(emissiveShader, scene, w, h, viewProjectionMatrix);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     drawTransparent(shaderProgram, scene);
@@ -215,11 +216,66 @@ void Renderer::drawShadowCasters(std::shared_ptr<ShaderProgram> &shaderProgram, 
 
 void Renderer::drawTransparent(std::shared_ptr<ShaderProgram> &shaderProgram, Scene *scene)
 {
+    shaderProgram->use();
     std::vector<GameObject*> transparentObjects = scene->getTransparentObjects();
     for (unsigned int i = 0; i < transparentObjects.size(); i++) {
         shaderProgram->setUniform1f("object_reflectiveness", (*transparentObjects[i]).shininess);
         drawModel(*transparentObjects[i], shaderProgram);
     }
+}
+
+void Renderer::drawBloom(std::shared_ptr<ShaderProgram> &shaderProgram, Scene *scene, int w, int h, chag::float4x4 &viewProjectionMatrix) {
+
+    if(!effects.bloom.active){ return; }
+
+    glDisable(GL_BLEND);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, verticalBlurFbo.id);
+    glActiveTexture(GL_TEXTURE0);
+    glViewport(0,0,w,h);
+    glClearColor(1.0, 1.0, 1.0, 0.0);
+    glClearDepth(1.0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    GLint currentProgram;
+    glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
+    shaderProgram->use();
+
+    shaderProgram->setUniformMatrix4fv("viewProjectionMatrix", viewProjectionMatrix);
+
+    std::vector<GameObject*> shadowCasters = scene->getShadowCasters();
+    for (unsigned int i = 0; i < scene->getShadowCasters().size(); i++) {
+        shadowCasters[i]->renderEmissive(shaderProgram);
+    }
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    //HORIZONTAL
+    glBindFramebuffer(GL_FRAMEBUFFER, horizontalBlurFbo.id);
+    glClearColor(0.0, 0.0, 0.0, 0.0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    horizontalBlurShader->use();
+
+    horizontalBlurShader->setUniform1i("frameBufferTexture", 0);
+    glBindTexture(GL_TEXTURE_RECTANGLE_ARB, verticalBlurFbo.texture);
+    drawFullScreenQuad();
+
+    //VERTICAL
+    glBindFramebuffer(GL_FRAMEBUFFER, postProcessFbo.id);
+
+    verticalBlurShader->use();
+
+    verticalBlurShader->setUniform1i("frameBufferTexture", 0);
+    glBindTexture(GL_TEXTURE_RECTANGLE_ARB, horizontalBlurFbo.texture);
+    drawFullScreenQuad();
+
+    //cleanup
+    glBindFramebuffer(GL_FRAMEBUFFER, postProcessFbo.id);
+    glUseProgram(currentProgram);
+    glDisable(GL_BLEND);
+
 }
 
 void Renderer::drawShadowMap(Fbo sbo, chag::float4x4 viewProjectionMatrix, Scene *scene) {
@@ -272,6 +328,8 @@ void Renderer::initGL()
     //    Load shaders
     //*************************************************************************
     shaderProgram = ResourceManager::loadAndFetchShaderProgram(SIMPLE_SHADER_NAME, "shaders/simple.vert", "shaders/simple.frag");
+
+    emissiveShader = ResourceManager::loadAndFetchShaderProgram("shaders/emissive.vert","shaders/emissive.frag",EMISSIVE_SHADER_NAME);
 
     shaderProgram->setUniformBufferObjectBinding(UNIFORM_BUFFER_OBJECT_MATRICES_NAME, UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
     shaderProgram->initUniformBufferObject(UNIFORM_BUFFER_OBJECT_MATRICES_NAME, 3 * sizeof(chag::float4x4), UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
