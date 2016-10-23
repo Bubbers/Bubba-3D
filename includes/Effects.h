@@ -54,8 +54,16 @@ struct Blur {
     }
 };
 
+struct Bloom {
+    bool active;
+
+    Bloom(){
+        active = true;
+    }
+};
 
 struct Effects {
     Fog fog;
     Blur blur;
+    Bloom bloom;
 };

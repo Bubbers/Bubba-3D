@@ -41,6 +41,7 @@ public:
 
     void render();
     void renderShadow(std::shared_ptr<ShaderProgram> &shaderProgram);
+    void renderEmissive(std::shared_ptr<ShaderProgram> &shaderProgram);
 private:
     std::shared_ptr<Mesh> mesh;
     GameObject *gameObject;

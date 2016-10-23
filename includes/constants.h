@@ -22,6 +22,7 @@
 
 
 #define SIMPLE_SHADER_NAME "simple_shader"
+#define EMISSIVE_SHADER_NAME "emissive_shader"
 
 
 

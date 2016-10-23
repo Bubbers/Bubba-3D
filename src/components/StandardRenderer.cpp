@@ -115,3 +115,35 @@ void StandardRenderer::renderShadow(std::shared_ptr<ShaderProgram> &shaderProgra
 
     CHECK_GL_ERROR();
 }
+
+void StandardRenderer::renderEmissive(std::shared_ptr<ShaderProgram> &shaderProgram) {
+    shaderProgram->use();
+    CHECK_GL_ERROR();
+
+    chag::float4x4 modelMatrix = gameObject->getModelMatrix();
+
+    shaderProgram->setUniformMatrix4fv("modelMatrix", modelMatrix);
+
+    for (size_t i = 0; i < mesh->getChunks()->size(); i++) {
+        CHECK_GL_ERROR();
+
+        Chunk &chunk = (*mesh->getChunks())[i];
+        Material &material = (*mesh->getMaterials())[chunk.materialIndex];
+
+        if (material.diffuseTexture != NULL) {
+            shaderProgram->setUniform1i("diffuse_texture", DIFFUSE_TEXTURE_LOCATION);
+            material.diffuseTexture->bind(GL_TEXTURE0);
+        }
+
+        shaderProgram->setUniform1i("has_diffuse_texture", material.diffuseTexture != NULL);
+        shaderProgram->setUniform3f("material_emissive_color", material.emissiveColor);
+        CHECK_GL_ERROR();
+
+        glBindVertexArray(chunk.m_vaob);
+        glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, chunk.m_ind_bo);
+
+        glDrawElements(GL_TRIANGLES, chunk.m_indices.size(), GL_UNSIGNED_INT, 0);
+        CHECK_GL_ERROR();
+    }
+    CHECK_GL_ERROR();
+}
