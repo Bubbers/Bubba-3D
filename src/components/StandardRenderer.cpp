@@ -29,7 +29,7 @@ StandardRenderer::StandardRenderer(){
 
 }
 
-StandardRenderer::StandardRenderer(Mesh* mesh, GameObject* gameObject, std::shared_ptr<ShaderProgram> shaderProgram)
+StandardRenderer::StandardRenderer(std::shared_ptr<Mesh> mesh, GameObject* gameObject, std::shared_ptr<ShaderProgram> shaderProgram)
                                  : mesh(mesh), gameObject(gameObject)
 {
     this->shaderProgram = shaderProgram;

@@ -35,14 +35,14 @@ class Chunk;
 class StandardRenderer : public IRenderComponent {
 public:
     StandardRenderer();
-    StandardRenderer(Mesh*, GameObject*, std::shared_ptr<ShaderProgram>);
+    StandardRenderer(std::shared_ptr<Mesh> mesh, GameObject* gob, std::shared_ptr<ShaderProgram> shader);
 
     void update(float dt);
 
     void render();
     void renderShadow(std::shared_ptr<ShaderProgram> &shaderProgram);
 private:
-    Mesh* mesh;
+    std::shared_ptr<Mesh> mesh;
     GameObject *gameObject;
     sf::Clock clock;
 };

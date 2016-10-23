@@ -63,20 +63,20 @@ void ResourceManager::loadShader(const std::string &vertexShader,
                                  const std::string &fragmentShader,
                                  const std::string &name)
 {
-    std::shared_ptr<ShaderProgram> shaderProgram;
+    std::shared_ptr<ShaderProgram> shaderProgram = std::make_shared<ShaderProgram>();
     shaderProgram->loadShader(new VertexShader(vertexShader), new FragmentShader(fragmentShader));
     shaders.insert(std::pair<std::string, std::shared_ptr<ShaderProgram>>
                             (name, std::move(shaderProgram)));
 }
 
 void ResourceManager::loadTexture(const std::string &fileName) {
-    std::shared_ptr<Texture> texture;
+    std::shared_ptr<Texture> texture = std::make_shared<Texture>();
     texture->loadTexture(fileName);
     textures.insert(std::pair<std::string, std::shared_ptr<Texture>>(fileName, std::move(texture)));
 }
 
 void ResourceManager::loadMesh(const std::string &fileName) {
-    std::shared_ptr<Mesh> mesh;
+    std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>();
     mesh->loadMesh(fileName);
     meshes.insert(std::pair<std::string, std::shared_ptr<Mesh>>(fileName, std::move(mesh)));
 }
