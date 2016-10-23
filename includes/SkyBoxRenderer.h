@@ -18,6 +18,7 @@
 
 #include "IRenderComponent.h"
 #include <string>
+#include <memory>
 
 class Camera;
 class CubeMapTexture;
@@ -35,7 +36,7 @@ public:
               const std::string& posYFilename, const std::string& negYFilename,
               const std::string& posZFilename, const std::string& negZFilename);
 
-    void renderShadow(ShaderProgram* shaderProgram) {};
+    void renderShadow(std::shared_ptr<ShaderProgram> &shaderProgram) {};
     void render();
     void update(float dt);
 private:

@@ -14,13 +14,11 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Bubba-3D. If not, see http://www.gnu.org/licenses/.
  */
-#ifndef BUBBA_3D_STANDARDRENDERER_H
-#define BUBBA_3D_STANDARDRENDERER_H
-
+#pragma once
 
 #include "IRenderComponent.h"
 #include "SFML/Window.hpp"
-
+#include <memory>
 
 class Mesh;
 class ShaderProgram;
@@ -37,12 +35,12 @@ class Chunk;
 class StandardRenderer : public IRenderComponent {
 public:
     StandardRenderer();
-    StandardRenderer(Mesh*, GameObject*, ShaderProgram*);
+    StandardRenderer(Mesh*, GameObject*, std::shared_ptr<ShaderProgram>);
 
     void update(float dt);
 
     void render();
-    void renderShadow(ShaderProgram *shaderProgram);
+    void renderShadow(std::shared_ptr<ShaderProgram> &shaderProgram);
 private:
     Mesh* mesh;
     GameObject *gameObject;
@@ -50,4 +48,3 @@ private:
 };
 
 
-#endif //BUBBA_3D_STANDARDRENDERER_H

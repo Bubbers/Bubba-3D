@@ -31,6 +31,7 @@
 #include "Utils.h"
 #include "linmath/float3x3.h"
 #include "BoneTransformer.h"
+#include "Texture.h"
 
 using namespace chag;
 
@@ -200,7 +201,10 @@ float3 Mesh::getColorFromMaterial(const char* colorTypeString, unsigned int type
     return make_vector(color.r, color.g, color.b);
 }
 
-Texture *Mesh::getTexture(const aiMaterial *material, const std::string &fileNameOfMesh, aiTextureType type) {
+std::shared_ptr<Texture> Mesh::getTexture(const aiMaterial *material,
+                                          const std::string &fileNameOfMesh,
+                                          aiTextureType type)
+{
     aiString texturePath;
     if (material->GetTexture(type, 0, &texturePath, NULL, NULL, NULL, NULL, NULL) != AI_SUCCESS) {
         return NULL;

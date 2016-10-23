@@ -24,8 +24,7 @@
 #include "Logger.h"
 #include "Camera.h"
 #include "Scene.h"
-
-
+#include "ShaderProgram.h"
 
 
 namespace patch
@@ -65,7 +64,7 @@ void Renderer::resize(unsigned int width, unsigned int height) {
     cutOffFbo = createPostProcessFbo(width, height);
 }
 
-void Renderer::drawModel(IDrawable &model, ShaderProgram* shaderProgram)
+void Renderer::drawModel(IDrawable &model, std::shared_ptr<ShaderProgram> &shaderProgram)
 {
     shaderProgram->use();
     model.render();
@@ -163,7 +162,7 @@ void Renderer::drawScene(Camera *camera, Scene *scene, float currentTime)
 
 }
 
-void Renderer::setLights(ShaderProgram* shaderProgram, Scene *scene) {
+void Renderer::setLights(std::shared_ptr<ShaderProgram> &shaderProgram, Scene *scene) {
     //set dirlights
     shaderProgram->setUniform3f("directionalLight.colors.ambientColor", scene->directionalLight.ambientColor);
     shaderProgram->setUniform3f("directionalLight.colors.diffuseColor", scene->directionalLight.diffuseColor);
@@ -205,7 +204,7 @@ void Renderer::setLights(ShaderProgram* shaderProgram, Scene *scene) {
 * In this function, add all scene elements that should cast shadow, that way
 * there is only one draw call to each of these, as this function is called twice.
 */
-void Renderer::drawShadowCasters(ShaderProgram* shaderProgram, Scene *scene)
+void Renderer::drawShadowCasters(std::shared_ptr<ShaderProgram> &shaderProgram, Scene *scene)
 {
     std::vector<GameObject*> shadowCasters = scene->getShadowCasters();
     for (unsigned int i = 0; i < scene->getShadowCasters().size(); i++) {
@@ -214,7 +213,7 @@ void Renderer::drawShadowCasters(ShaderProgram* shaderProgram, Scene *scene)
     }
 }
 
-void Renderer::drawTransparent(ShaderProgram* shaderProgram, Scene *scene)
+void Renderer::drawTransparent(std::shared_ptr<ShaderProgram> &shaderProgram, Scene *scene)
 {
     std::vector<GameObject*> transparentObjects = scene->getTransparentObjects();
     for (unsigned int i = 0; i < transparentObjects.size(); i++) {
@@ -251,7 +250,7 @@ void Renderer::drawShadowMap(Fbo sbo, chag::float4x4 viewProjectionMatrix, Scene
     glUseProgram(currentProgram);
 }
 
-void Renderer::setFog(ShaderProgram* shaderProgram) {
+void Renderer::setFog(std::shared_ptr<ShaderProgram> &shaderProgram) {
     shaderProgram->setUniform1i("fog.iEquation",    effects.fog.fEquation);
     shaderProgram->setUniform1f("fog.fDensity",    effects.fog.fDensity);
     shaderProgram->setUniform1f("fog.fEnd",        effects.fog.fEnd);
@@ -272,9 +271,8 @@ void Renderer::initGL()
     //*************************************************************************
     //    Load shaders
     //*************************************************************************
-    ResourceManager::loadShader("shaders/simple.vert", "shaders/simple.frag", SIMPLE_SHADER_NAME);
+    shaderProgram = ResourceManager::loadAndFetchShaderProgram(SIMPLE_SHADER_NAME, "shaders/simple.vert", "shaders/simple.frag");
 
-    shaderProgram = ResourceManager::getShader(SIMPLE_SHADER_NAME);
     shaderProgram->setUniformBufferObjectBinding(UNIFORM_BUFFER_OBJECT_MATRICES_NAME, UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
     shaderProgram->initUniformBufferObject(UNIFORM_BUFFER_OBJECT_MATRICES_NAME, 3 * sizeof(chag::float4x4), UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
 
@@ -287,8 +285,7 @@ void Renderer::initGL()
     //*************************************************************************
     Logger::logInfo("Generating OpenGL data.");
 
-    ResourceManager::loadShader("shaders/shadowMap.vert", "shaders/shadowMap.frag", "SHADOW_SHADER");
-    sbo.shaderProgram = ResourceManager::getShader("SHADOW_SHADER");
+    sbo.shaderProgram = ResourceManager::loadAndFetchShaderProgram("SHADOW_SHADER", "shaders/shadowMap.vert", "shaders/shadowMap.frag");
 
     sbo.width = SHADOW_MAP_RESOLUTION;
     sbo.height = SHADOW_MAP_RESOLUTION;
@@ -333,16 +330,10 @@ void Renderer::initGL()
     std::string hor_blur = "HORIZONTAL_BLUR_SHADER";
     std::string cutoff = "CUTOFF_SHADER";
 
-    ResourceManager::loadShader("shaders/postFx.vert", "shaders/postFx.frag", post_fx);
-    ResourceManager::loadShader("shaders/postFx.vert", "shaders/vertical_blur.frag", vert_blur);
-    ResourceManager::loadShader("shaders/postFx.vert", "shaders/horizontal_blur.frag", hor_blur);
-    ResourceManager::loadShader("shaders/postFx.vert", "shaders/cutoff.frag", cutoff);
-
-    postFxShader = ResourceManager::getShader(post_fx);
-    verticalBlurShader = ResourceManager::getShader(vert_blur);
-    horizontalBlurShader = ResourceManager::getShader(hor_blur);
-    cutoffShader = ResourceManager::getShader(cutoff);
-
+    postFxShader         = ResourceManager::loadAndFetchShaderProgram(post_fx,   "shaders/postFx.vert", "shaders/postFx.frag");
+    verticalBlurShader   = ResourceManager::loadAndFetchShaderProgram(vert_blur, "shaders/postFx.vert", "shaders/vertical_blur.frag");
+    horizontalBlurShader = ResourceManager::loadAndFetchShaderProgram(hor_blur,  "shaders/postFx.vert", "shaders/horizontal_blur.frag");
+    cutoffShader         = ResourceManager::loadAndFetchShaderProgram(cutoff,    "shaders/postFx.vert", "shaders/cutoff.frag");
 
     //Cleanup
     glBindFramebuffer(GL_FRAMEBUFFER, 0);

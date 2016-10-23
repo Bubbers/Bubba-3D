@@ -17,15 +17,15 @@
 #pragma once
 
 #include "IComponent.h"
-#include "ShaderProgram.h"
+#include <memory>
 
 
 class IRenderComponent : public IComponent {
 public:
     virtual void render() = 0;
-    virtual void renderShadow(ShaderProgram *shaderProgram) = 0;
+    virtual void renderShadow(std::shared_ptr<ShaderProgram> &shaderProgram) = 0;
 
 protected:
-    ShaderProgram *shaderProgram;
+    std::shared_ptr<ShaderProgram> shaderProgram;
 
 };

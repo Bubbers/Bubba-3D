@@ -25,6 +25,7 @@
 #include "Particle.h"
 #include "ParticleRenderer.h"
 #include "ParticleConf.h"
+#include "Texture.h"
 
 
 ParticleRenderer::ParticleRenderer(std::shared_ptr<Texture> texture,
@@ -69,8 +70,7 @@ ParticleRenderer::~ParticleRenderer()
 
 std::shared_ptr<ShaderProgram> ParticleRenderer::defaultShader()
 {
-    ResourceManager::loadShader("shaders/particle.vert", "shaders/particle.frag", "particleShader");
-    std::shared_ptr<ShaderProgram> shaderProgram(ResourceManager::getShader("particleShader"));
+    std::shared_ptr<ShaderProgram> shaderProgram = ResourceManager::loadAndFetchShaderProgram( "particleShader", "shaders/particle.vert", "shaders/particle.frag");
 
     shaderProgram->setUniformBufferObjectBinding(UNIFORM_BUFFER_OBJECT_MATRICES_NAME,
                                                  UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);

@@ -18,6 +18,7 @@
 
 #include <linmath/float3.h>
 #include <linmath/float4x4.h>
+#include <memory>
 
 class ShaderProgram;
 
@@ -27,7 +28,7 @@ class ShaderProgram;
  */
 class IHudDrawable {
 public:
-    virtual void render(ShaderProgram* shaderProgram, chag::float4x4* projectionMatrix) = 0;
+    virtual void render(std::shared_ptr<ShaderProgram> shaderProgram, chag::float4x4* projectionMatrix) = 0;
 
     /**
      * Sets a position relative to the original position calculated

@@ -25,7 +25,7 @@
 #include <ResourceManager.h>
 #include <Globals.h>
 
-void GLSquare::render(ShaderProgram* shaderProgram, chag::float4x4* projectionMatrix) {
+void GLSquare::render(std::shared_ptr<ShaderProgram> shaderProgram, chag::float4x4* projectionMatrix) {
 
     GLint currentDepthFunc;
     glGetIntegerv(GL_DEPTH_FUNC, &currentDepthFunc);
@@ -47,7 +47,7 @@ void GLSquare::render(ShaderProgram* shaderProgram, chag::float4x4* projectionMa
     shaderProgram->restorePreviousShaderProgram();
 }
 
-void GLSquare::bindTextureAndDraw(ShaderProgram *shaderProgram, chag::float4x4* projectionMatrix) {
+void GLSquare::bindTextureAndDraw(std::shared_ptr<ShaderProgram> shaderProgram, chag::float4x4* projectionMatrix) {
     shaderProgram->use();
     glBindVertexArray(vao);
 

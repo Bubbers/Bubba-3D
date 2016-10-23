@@ -32,6 +32,7 @@
 class BoneTransformer;
 class Triangle;
 class Chunk;
+class Texture;
 struct BoneInfluenceOnVertex;
 
 /**
@@ -160,8 +161,9 @@ private:
      * @param type A enum saying which texture type to load from the material
      * @return A pointer to the texture loaded
      */
-    Texture* getTexture(const aiMaterial *material, const std::string &fileNameOfMesh,
-                        aiTextureType type);
+    std::shared_ptr<Texture> getTexture(const aiMaterial *material,
+                                        const std::string &fileNameOfMesh,
+                                        aiTextureType type);
 
     /**
      * Initiates OpenGL buffers and buffers the chunk data on to the graphics memory.

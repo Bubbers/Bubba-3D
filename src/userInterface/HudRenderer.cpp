@@ -34,8 +34,7 @@ using namespace std;
 
 HudRenderer::HudRenderer(){
 
-    ResourceManager::loadShader("shaders/hud.vert", "shaders/hud.frag", "hudShader");
-    shaderProgram = ResourceManager::getShader("hudShader");
+    shaderProgram = ResourceManager::loadAndFetchShaderProgram("hudShader", "shaders/hud.vert", "shaders/hud.frag");
 
 }
 
@@ -91,7 +90,7 @@ HudRenderer::~HudRenderer(){
 }
 
 
-void HudRenderer::renderShadow(ShaderProgram *shaderProgram) {}
+void HudRenderer::renderShadow(std::shared_ptr<ShaderProgram> &shaderProgram) {}
 
 void HudRenderer::update(float dt){
     int x = Globals::get(Globals::MOUSE_WINDOW_X);

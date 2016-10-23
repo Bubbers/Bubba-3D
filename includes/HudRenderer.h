@@ -37,7 +37,7 @@ public:
     ~HudRenderer();
 
     virtual void render();
-    virtual void renderShadow(ShaderProgram *shaderProgram);
+    virtual void renderShadow(std::shared_ptr<ShaderProgram> &shaderProgram);
     virtual void update(float dt);
 
     /**

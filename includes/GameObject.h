@@ -22,7 +22,7 @@
 #include <vector>
 #include <linmath/Quaternion.h>
 #include <Sphere.h>
-#include "ShaderProgram.h"
+#include <memory>
 
 enum EventType {BeforeCollision, DuringCollision, AfterCollision};
 
@@ -33,6 +33,7 @@ class Triangle;
 class IRenderComponent;
 class IComponent;
 class Octree;
+class ShaderProgram;
 
 /**
  * \brief A class for containing all information about a object in the game world.
@@ -95,7 +96,7 @@ public:
     /**
      * Renders the GameObject shadows using the GameObjects RenderComponent, if any.
      */
-    virtual void renderShadow(ShaderProgram* shaderProgram);
+    virtual void renderShadow(std::shared_ptr<ShaderProgram> &shaderProgram);
 
     void addRenderComponent(IRenderComponent* renderer);
     void addComponent(IComponent* newComponent);

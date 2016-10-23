@@ -14,8 +14,9 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Bubba-3D. If not, see http://www.gnu.org/licenses/.
  */
-#ifndef __IDRAWABLE_H__
-#define __IDRAWABLE_H__
+#pragma once
+
+#include <memory>
 
 class ShaderProgram;
 
@@ -26,10 +27,7 @@ public:
 	virtual ~IDrawable(){};
 
   virtual void render() = 0;
-  virtual void renderShadow(ShaderProgram* shaderProgram) = 0;
+  virtual void renderShadow(std::shared_ptr<ShaderProgram> &shaderProgram) = 0;
   
   float shininess;
 };
-
-
-#endif
