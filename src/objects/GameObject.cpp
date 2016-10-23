@@ -154,7 +154,7 @@ chag::float4x4 GameObject::getModelMatrix() {
 }
 
 
-void GameObject::renderShadow(ShaderProgram *shaderProgram) {
+void GameObject::renderShadow(std::shared_ptr<ShaderProgram> &shaderProgram) {
     renderComponent->renderShadow(shaderProgram);
     for (GameObject *child : children) {
         child->renderShadow(shaderProgram);

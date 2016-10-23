@@ -21,6 +21,8 @@
 #include "CubeMapTexture.h"
 #include "GameObject.h"
 #include "Chunk.h"
+#include "ShaderProgram.h"
+#include "Mesh.h"
 
 #define SKYBOX_SHADER_NAME "skybox_shader"
 
@@ -32,8 +34,7 @@ bool SkyBoxRenderer::init(const std::string &posXFilename, const std::string &ne
                           const std::string &posZFilename, const std::string &negZFilename)
 {
     m_pCubemap = new CubeMapTexture(posXFilename, negXFilename, posYFilename, negYFilename, posZFilename, negZFilename);
-    ResourceManager::loadShader("shaders/skybox.vert", "shaders/skybox.frag", SKYBOX_SHADER_NAME);
-    shaderProgram = ResourceManager::getShader(SKYBOX_SHADER_NAME);
+    shaderProgram = ResourceManager::loadAndFetchShaderProgram(SKYBOX_SHADER_NAME, "shaders/skybox.vert", "shaders/skybox.frag");
     shaderProgram->setUniformBufferObjectBinding(UNIFORM_BUFFER_OBJECT_MATRICES_NAME, UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
 
     return true;

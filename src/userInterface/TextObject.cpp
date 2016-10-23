@@ -176,7 +176,7 @@ void TextObject::initAndBindBuffers() {
 
 }
 
-void TextObject::render(ShaderProgram *shaderProgram, chag::float4x4 *projectionMatrix) {
+void TextObject::render(std::shared_ptr<ShaderProgram> shaderProgram, chag::float4x4 *projectionMatrix) {
 
     GLint currentDepthFunc;
     glGetIntegerv(GL_DEPTH_FUNC, &currentDepthFunc);

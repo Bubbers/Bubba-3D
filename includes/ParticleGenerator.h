@@ -70,7 +70,7 @@ public:
      * Render shadows from the spawned Particles.
      * @param shaderProgram The ShaderProgram used to render the shadows.
      */
-    void renderShadow(ShaderProgram* shaderProgram) {};
+    void renderShadow(std::shared_ptr<ShaderProgram> &shaderProgram) {};
 
     /**
      * Render all the spawned Particles.

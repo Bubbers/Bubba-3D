@@ -19,6 +19,7 @@
 #include <IHudDrawable.h>
 #include <GL/glew.h>
 #include <vector>
+#include <memory>
 
 /**
  * A low-level OpenGL object that renders text within the specified dimensions.
@@ -38,7 +39,7 @@ public:
      * matrix. The shader should have the same variables as the default hud.vert
      * and hud.frag.
      */
-    void virtual render(ShaderProgram* shaderProgram, chag::float4x4* projectionMatrix);
+    void virtual render(std::shared_ptr<ShaderProgram> shaderProgram, chag::float4x4* projectionMatrix);
 
     /**
      * Changes the text of the TextObject.

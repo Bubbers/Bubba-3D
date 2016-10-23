@@ -14,23 +14,23 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Bubba-3D. If not, see http://www.gnu.org/licenses/.
  */
-#ifndef __RENDERER_H__
-#define __RENDERER_H__
+#pragma once
 
 #ifdef WIN32
 #include <windows.h>
 #endif
 
 #include "linmath/float4x4.h"
-#include "Utils.h"
 #include "Effects.h"
+#include "Utils.h"
+#include <memory>
 
 #define CUBE_MAP_RESOLUTION	   512
 #define SHADOW_MAP_RESOLUTION  2048
 
-
 class Camera;
 class Scene;
+class ShaderProgram;
 class IDrawable;
 
 class Renderer {
@@ -54,29 +54,26 @@ private:
 
     Fbo createPostProcessFbo(int width, int height);
     void drawShadowMap(Fbo sbo, chag::float4x4 viewProjectionMatrix, Scene *scene);
-    void drawShadowCasters(ShaderProgram* shaderProgram, Scene *scene);
-    void drawTransparent(ShaderProgram* shaderProgram, Scene *scene);
-    void setFog(ShaderProgram* shaderProgram);
-    void setLights(ShaderProgram* shaderProgram, Scene *scene);
+    void drawShadowCasters(std::shared_ptr<ShaderProgram> &shaderProgram, Scene *scene);
+    void drawTransparent(std::shared_ptr<ShaderProgram> &shaderProgram, Scene *scene);
+    void setFog(std::shared_ptr<ShaderProgram> &shaderProgram);
+    void setLights(std::shared_ptr<ShaderProgram> &shaderProgram, Scene *scene);
 
-    ShaderProgram* shaderProgram;
+    std::shared_ptr<ShaderProgram> shaderProgram;
 
     Fbo sbo;
     Camera *cubeMapCameras[6];
 
     // Drawing
-    void drawModel(IDrawable &model, ShaderProgram* shaderProgram);
+    void drawModel(IDrawable &model, std::shared_ptr<ShaderProgram> &shaderProgram);
     void drawFullScreenQuad();
     void renderPostProcess();
     void blurImage();
 
     // Postprocess
-    ShaderProgram* postFxShader;
-    ShaderProgram* horizontalBlurShader;
-    ShaderProgram* verticalBlurShader;
-    ShaderProgram* cutoffShader;
+    std::shared_ptr<ShaderProgram> postFxShader;
+    std::shared_ptr<ShaderProgram> horizontalBlurShader;
+    std::shared_ptr<ShaderProgram> verticalBlurShader;
+    std::shared_ptr<ShaderProgram> cutoffShader;
     Fbo postProcessFbo, horizontalBlurFbo, verticalBlurFbo, cutOffFbo;
 };
-
-
-#endif // __RENDERER_H__

@@ -21,6 +21,7 @@
 #include "linmath/float3.h"
 #include "linmath/float4x4.h"
 #include "assimp/material.h"
+#include <memory>
 
 class ShaderProgram;
 class GameObject;
@@ -29,7 +30,7 @@ class GameObject;
 struct Fbo {
     GLuint id;
     GLuint texture;
-    ShaderProgram* shaderProgram;
+    std::shared_ptr<ShaderProgram> shaderProgram;
     GLuint depthbuffer;
 
     int width, height;

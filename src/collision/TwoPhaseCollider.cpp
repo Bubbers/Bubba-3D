@@ -23,6 +23,7 @@
 #include <sstream>
 #include "GameObject.h"
 #include "TwoPhaseCollider.h"
+#include "Logger.h"
 
 TwoPhaseCollider::TwoPhaseCollider(BroadPhaseCollider *broadPhaseCollider, ExactPhaseCollider *exactPhaseCollider) {
     this->broadPhaseCollider = broadPhaseCollider;

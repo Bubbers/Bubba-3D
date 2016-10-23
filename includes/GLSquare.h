@@ -19,6 +19,7 @@
 #include <GL/glew.h>
 #include <linmath/float4x4.h>
 #include <IHudDrawable.h>
+#include <memory>
 
 class ShaderProgram;
 class HUDGraphic;
@@ -44,7 +45,7 @@ public:
 
     void updateGraphic();
 
-    virtual void render(ShaderProgram* shaderProgram, chag::float4x4* projectionMatrix);
+    virtual void render(std::shared_ptr<ShaderProgram> shaderProgram, chag::float4x4* projectionMatrix);
 
 protected:
     float posX;
@@ -55,7 +56,7 @@ protected:
     HUDGraphic* graphic;
     GLuint vao;
 
-    ShaderProgram* shaderProgram;
+    std::shared_ptr<ShaderProgram> shaderProgram;
     chag::float4x4* projectionMatrix;
     chag::float3 originalPosition;
 
@@ -63,6 +64,6 @@ protected:
 
     void init(float posX, float posY, float width, float height, HUDGraphic* image);
     void fillVertexBuffer();
-    void bindTextureAndDraw(ShaderProgram* shaderProgram, chag::float4x4* projectionMatrix);
+    void bindTextureAndDraw(std::shared_ptr<ShaderProgram> shaderProgram, chag::float4x4* projectionMatrix);
     void updateOriginalPosition();
 };

@@ -29,8 +29,8 @@ StandardRenderer::StandardRenderer(){
 
 }
 
-StandardRenderer::StandardRenderer(Mesh* mesh, GameObject* gameObject, ShaderProgram* shaderProgram):
-        mesh(mesh), gameObject(gameObject)
+StandardRenderer::StandardRenderer(Mesh* mesh, GameObject* gameObject, std::shared_ptr<ShaderProgram> shaderProgram)
+                                 : mesh(mesh), gameObject(gameObject)
 {
     this->shaderProgram = shaderProgram;
 }
@@ -96,7 +96,7 @@ void StandardRenderer::render() {
     CHECK_GL_ERROR();
 }
 
-void StandardRenderer::renderShadow(ShaderProgram *shaderProgram) {
+void StandardRenderer::renderShadow(std::shared_ptr<ShaderProgram> &shaderProgram) {
 
     chag::float4x4 modelMatrix = gameObject->getModelMatrix();
     shaderProgram->setUniformMatrix4fv("modelMatrix", modelMatrix);
