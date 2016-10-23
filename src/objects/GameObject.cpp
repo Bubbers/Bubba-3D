@@ -58,29 +58,29 @@ GameObject::GameObject(GameObject* parent) {
     id = getUniqueId();
 }
 
-GameObject::GameObject(Mesh *mesh) {
+GameObject::GameObject(std::shared_ptr<Mesh> mesh) {
     m_modelMatrix = chag::make_identity<chag::float4x4>();
     initGameObject(mesh, mesh);
 }
 
-GameObject::GameObject(Mesh *mesh, Mesh *colliderMesh) {
+GameObject::GameObject(std::shared_ptr<Mesh> mesh, std::shared_ptr<Mesh> colliderMesh) {
     m_modelMatrix = chag::make_identity<chag::float4x4>();
     initGameObject(mesh, colliderMesh);
 }
 
-GameObject::GameObject(Mesh *mesh, GameObject* parent) {
+GameObject::GameObject(std::shared_ptr<Mesh> mesh, GameObject* parent) {
     this->parent = parent;
     m_modelMatrix = chag::make_identity<chag::float4x4>();
     initGameObject(mesh, mesh);
 }
 
-GameObject::GameObject(Mesh *mesh, Mesh *colliderMesh, GameObject* parent) {
+GameObject::GameObject(std::shared_ptr<Mesh> mesh, std::shared_ptr<Mesh> colliderMesh, GameObject* parent) {
     this->parent = parent;
     m_modelMatrix = chag::make_identity<chag::float4x4>();
     initGameObject(mesh, colliderMesh);
 }
 
-void GameObject::initGameObject(Mesh *mesh, Mesh *colliderMesh) {
+void GameObject::initGameObject(std::shared_ptr<Mesh> &mesh, std::shared_ptr<Mesh> &colliderMesh) {
     this->mesh = mesh;
     this->collisionMesh = colliderMesh;
     this->m_modelMatrix = chag::make_identity<chag::float4x4>();
@@ -98,7 +98,7 @@ int GameObject::getUniqueId() {
     return ++uniqueId;
 }
 
-Octree* GameObject::createOctree(Mesh* mesh) {
+Octree* GameObject::createOctree(std::shared_ptr<Mesh> &mesh) {
     AABB* aabb = mesh->getAABB();
     chag::float3 halfVector = (aabb->maxV - aabb->minV) / 2;
     chag::float3 origin = aabb->maxV - halfVector;

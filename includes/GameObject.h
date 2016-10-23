@@ -75,17 +75,17 @@ public:
      *
      * @param mesh The mesh to render and perform collisions with
      */
-    explicit GameObject(Mesh *mesh);
+    explicit GameObject(std::shared_ptr<Mesh> mesh);
     /**
      * Initiates the GameObject with different meshes for rendering and collisions
      *
      * @param mesh The mesh to use for rendering
      * @param colliderMesh The mesh to use for collision
      */
-    GameObject(Mesh *mesh, Mesh *colliderMesh);
+    GameObject(std::shared_ptr<Mesh> mesh, std::shared_ptr<Mesh> colliderMesh);
 
-    GameObject(Mesh *mesh, GameObject* parent);
-    GameObject(Mesh *mesh, Mesh *colliderMesh, GameObject* parent);
+    GameObject(std::shared_ptr<Mesh> mesh, GameObject* parent);
+    GameObject(std::shared_ptr<Mesh> mesh, std::shared_ptr<Mesh> colliderMesh, GameObject* parent);
 
     virtual ~GameObject();
 
@@ -181,7 +181,7 @@ public:
 
 
 private:
-    void initGameObject(Mesh *mesh, Mesh *colliderMesh);
+    void initGameObject(std::shared_ptr<Mesh> &mesh, std::shared_ptr<Mesh> &colliderMesh);
 
     chag::float4x4 getFullMatrix();
 
@@ -195,13 +195,13 @@ private:
      *
      * @param Mesh to build an octree from
      */
-    Octree* createOctree(Mesh* mesh);
+    Octree* createOctree(std::shared_ptr<Mesh> &mesh);
 
     static int uniqueId;
     int id;
 
     /* Mesh */
-    Mesh *mesh;
+    std::shared_ptr<Mesh> mesh;
     chag::float4x4 m_modelMatrix;
     chag::float3 scale = chag::make_vector(1.0f, 1.0f, 1.0f);
     chag::Quaternion rotation;
@@ -217,7 +217,7 @@ private:
     std::vector<GameObject*> children;
 
     /* Collision */
-    Mesh *collisionMesh;
+    std::shared_ptr<Mesh> collisionMesh;
     AABB aabb;
     Sphere sphere;
     Octree *octree;
