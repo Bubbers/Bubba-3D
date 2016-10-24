@@ -330,7 +330,7 @@ void Renderer::initGL()
     //*************************************************************************
     shaderProgram = ResourceManager::loadAndFetchShaderProgram(SIMPLE_SHADER_NAME, "shaders/simple.vert", "shaders/simple.frag");
 
-    emissiveShader = ResourceManager::loadAndFetchShaderProgram("shaders/emissive.vert","shaders/emissive.frag",EMISSIVE_SHADER_NAME);
+    emissiveShader = ResourceManager::loadAndFetchShaderProgram(EMISSIVE_SHADER_NAME,"shaders/emissive.vert","shaders/emissive.frag");
 
     shaderProgram->setUniformBufferObjectBinding(UNIFORM_BUFFER_OBJECT_MATRICES_NAME, UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
     shaderProgram->initUniformBufferObject(UNIFORM_BUFFER_OBJECT_MATRICES_NAME, 3 * sizeof(chag::float4x4), UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);

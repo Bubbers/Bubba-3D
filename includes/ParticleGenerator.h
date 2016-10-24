@@ -77,6 +77,8 @@ public:
      */
     void render();
 
+    void renderEmissive(std::shared_ptr<ShaderProgram> &shaderProgram) {}
+
 private:
 
     int maxParticles = 0;
