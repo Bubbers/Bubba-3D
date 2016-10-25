@@ -22,11 +22,11 @@ MoveComponent::MoveComponent(){
 
 }
 
-MoveComponent::MoveComponent(GameObject* meshObject) {
+MoveComponent::MoveComponent(std::shared_ptr<GameObject> meshObject) {
     this->meshObject = meshObject;
 }
 
-MoveComponent::MoveComponent(GameObject* meshObject, chag::Quaternion rotationSpeed,
+MoveComponent::MoveComponent(std::shared_ptr<GameObject> meshObject, chag::Quaternion rotationSpeed,
                              chag::float3 velocity, chag::float3 acceleration,
                              chag::float3 scaleSpeed) : MoveComponent (meshObject)
 {
@@ -44,8 +44,6 @@ void MoveComponent::update(float dt){
     chag::Quaternion q = slerp(chag::Quaternion(), rotationSpeed, dt);
     meshObject->updateRotation(q);
     meshObject->setScale(meshObject->getRelativeScale()+scaleSpeed*dt);
-
-
 }
 
 chag::float3 MoveComponent::getVelocity(){ return velocity; }

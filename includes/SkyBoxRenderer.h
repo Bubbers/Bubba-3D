@@ -30,7 +30,7 @@ class SkyBoxRenderer : public IRenderComponent
 {
 public:
     SkyBoxRenderer(Camera* camera, Mesh* skyMesh, GameObject* gameObject);
-    ~SkyBoxRenderer();
+    virtual ~SkyBoxRenderer();
 
     bool init(const std::string& posXFilename, const std::string& negXFilename,
               const std::string& posYFilename, const std::string& negYFilename,

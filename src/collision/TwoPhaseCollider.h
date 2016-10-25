@@ -14,16 +14,15 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Bubba-3D. If not, see http://www.gnu.org/licenses/.
  */
-//
-// Created by johan on 2016-04-13.
-//
-
-#ifndef SUPER_BUBBA_AWESOME_SPACE_TWOPHASECOLLIDER_H
-#define SUPER_BUBBA_AWESOME_SPACE_TWOPHASECOLLIDER_H
+#pragma once
 
 #include <BroadPhaseCollider.h>
 #include <ExactPhaseCollider.h>
-#include "../../includes/Collider.h"
+#include "Collider.h"
+#include "GameObject.h" // Required to get EventType
+
+class GameObject;
+class Scene;
 
 /**
  * Class responsible for maintaining a two phase collider, ie
@@ -37,24 +36,20 @@ public:
     void updateCollision(Scene *scene) override;
 
 private:
-    void triggerObjectEvent(GameObject* object1, GameObject* object2, EventType eventType);
+    void triggerObjectEvent(CollisionPair &pair, EventType eventType);
 
-    void forgetCollidingPair(GameObject* object1, GameObject* object2);
-    void rememberCollidingPair(GameObject* object1, GameObject* object2);
-    bool wasCollidingPreviously(GameObject* object1, GameObject* object2);
-
-    GameObject* getMaxId(GameObject* object1, GameObject* object2);
-    GameObject* getMinId(GameObject* object1, GameObject* object2);
+    bool wasCollidingPreviously(CollisionPair &pair);
 
     CollisionPairList collidingList;
 
     BroadPhaseCollider *broadPhaseCollider;
     ExactPhaseCollider *exactPhaseCollider;
 
+    void sortPair(CollisionPair &pair);
+
     void triggerObjectEvents(CollisionPairList vector);
 
     void callEventsForObjectsThatNoLongerCollides(CollisionPairList exactCollisions);
+
+    bool findPairInList(CollisionPair &pair, CollisionPairList &list);
 };
-
-
-#endif //SUPER_BUBBA_AWESOME_SPACE_TWOPHASECOLLIDER_H

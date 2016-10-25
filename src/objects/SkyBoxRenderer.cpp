@@ -29,6 +29,9 @@
 SkyBoxRenderer::SkyBoxRenderer(Camera *camera, Mesh* skyMesh, GameObject* gameObject) : m_camera(camera), m_skyMesh(skyMesh), gameObject(gameObject) {
 }
 
+SkyBoxRenderer::~SkyBoxRenderer() {
+}
+
 bool SkyBoxRenderer::init(const std::string &posXFilename, const std::string &negXFilename,
                           const std::string &posYFilename, const std::string &negYFilename,
                           const std::string &posZFilename, const std::string &negZFilename)
@@ -79,8 +82,4 @@ void SkyBoxRenderer::renderChunk(Chunk& chunk) {
 
     glDrawElements(GL_TRIANGLES, chunk.m_indices.size(), GL_UNSIGNED_INT, 0);
     CHECK_GL_ERROR();
-}
-
-SkyBoxRenderer::~SkyBoxRenderer(){
-
 }

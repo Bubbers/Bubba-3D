@@ -25,11 +25,13 @@ class Camera;
 class RelativeIHudDrawable : public IHudDrawable {
 public:
 
-    RelativeIHudDrawable(Camera* worldCamera, GameObject* relativeTo, IHudDrawable* toDraw);
+    RelativeIHudDrawable(Camera* worldCamera,
+                         std::shared_ptr<GameObject> relativeTo,
+                         IHudDrawable* toDraw);
     virtual void render(std::shared_ptr<ShaderProgram> shaderProgram, chag::float4x4* projectionMatrix);
 
 protected:
-    GameObject* relativeTo;
+    std::shared_ptr<GameObject> relativeTo;
     IHudDrawable* toDraw;
     Camera* worldCamera;
 

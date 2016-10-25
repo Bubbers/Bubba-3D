@@ -129,12 +129,12 @@ void GameObject::renderShadow(std::shared_ptr<ShaderProgram> &shaderProgram) {
 void GameObject::addRenderComponent(IRenderComponent* renderer) {
     this->renderComponent = renderer;
     components.push_back(renderer);
-    renderer->bind(this);
+    renderer->bind(shared_from_this());
 }
 
 void GameObject::addComponent(IComponent* newComponent) {
     components.push_back(newComponent);
-    newComponent->bind(this);
+    newComponent->bind(shared_from_this());
 }
 
 chag::float4x4 GameObject::getFullMatrix() {
@@ -169,7 +169,7 @@ void GameObject::update(float dt) {
     }
 }
 
-void GameObject::callEvent(EventType type, GameObject* data) {
+void GameObject::callEvent(EventType type, std::shared_ptr<GameObject> &data) {
     switch (type) {
     case EventType::BeforeCollision:
         for (IComponent *component : components) {
