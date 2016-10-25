@@ -14,22 +14,6 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Bubba-3D. If not, see http://www.gnu.org/licenses/.
  */
-/*
-* This file is part of Bubba-3D.
-*
-* Bubba-3D is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Lesser General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* Bubba-3D is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Lesser General Public License for more details.
-*
-* You should have received a copy of the GNU Lesser General Public License
-* along with Bubba-3D. If not, see http://www.gnu.org/licenses/.
-*/
 
 #include <algorithm>
 #include "linmath/Quaternion.h"
@@ -52,30 +36,12 @@ GameObject::GameObject() {
     id = getUniqueId();
 }
 
-GameObject::GameObject(GameObject* parent) {
-    this->parent = parent;
-    m_modelMatrix = chag::make_identity<chag::float4x4>();
-    id = getUniqueId();
-}
-
 GameObject::GameObject(std::shared_ptr<Mesh> mesh) {
     m_modelMatrix = chag::make_identity<chag::float4x4>();
     initGameObject(mesh, mesh);
 }
 
 GameObject::GameObject(std::shared_ptr<Mesh> mesh, std::shared_ptr<Mesh> colliderMesh) {
-    m_modelMatrix = chag::make_identity<chag::float4x4>();
-    initGameObject(mesh, colliderMesh);
-}
-
-GameObject::GameObject(std::shared_ptr<Mesh> mesh, GameObject* parent) {
-    this->parent = parent;
-    m_modelMatrix = chag::make_identity<chag::float4x4>();
-    initGameObject(mesh, mesh);
-}
-
-GameObject::GameObject(std::shared_ptr<Mesh> mesh, std::shared_ptr<Mesh> colliderMesh, GameObject* parent) {
-    this->parent = parent;
     m_modelMatrix = chag::make_identity<chag::float4x4>();
     initGameObject(mesh, colliderMesh);
 }
@@ -91,7 +57,6 @@ void GameObject::initGameObject(std::shared_ptr<Mesh> &mesh, std::shared_ptr<Mes
 }
 
 GameObject::~GameObject() {
-    mesh = nullptr;
 }
 
 int GameObject::getUniqueId() {
@@ -139,7 +104,7 @@ void GameObject::render() {
         renderComponent->render();
     }
     if (children.size() != 0) {
-        for (GameObject *child : children) {
+        for (std::shared_ptr<GameObject> &child : children) {
             child->render();
         }
     }
@@ -156,7 +121,7 @@ chag::float4x4 GameObject::getModelMatrix() {
 
 void GameObject::renderShadow(std::shared_ptr<ShaderProgram> &shaderProgram) {
     renderComponent->renderShadow(shaderProgram);
-    for (GameObject *child : children) {
+    for (std::shared_ptr<GameObject> &child : children) {
         child->renderShadow(shaderProgram);
     }
 }
@@ -198,7 +163,7 @@ void GameObject::update(float dt) {
 
         move(getFullMatrix());
     }
-    for (GameObject *child : children) {
+    for (std::shared_ptr<GameObject> &child : children) {
         child->changed = true;
         child->update(dt);
     }
@@ -222,7 +187,7 @@ void GameObject::callEvent(EventType type, GameObject* data) {
         }
         break;
     }
-    for (GameObject *child : children) {
+    for (std::shared_ptr<GameObject> &child : children) {
         child->callEvent(type, data);
     }
 }
@@ -280,7 +245,7 @@ int GameObject::getId() {
 }
 
 chag::float3 GameObject::getAbsoluteScale() {
-    if (parent != nullptr) {
+    if (parent) {
         return scale * parent->getAbsoluteScale();
     }
     return scale;
@@ -291,7 +256,7 @@ chag::float3 GameObject::getRelativeScale() {
 }
 
 chag::Quaternion GameObject::getAbsoluteRotation() {
-    if (parent != nullptr) {
+    if (parent) {
         return rotation * parent->getAbsoluteRotation();
     }
     return rotation;
@@ -332,7 +297,12 @@ void GameObject::setRotation(chag::Quaternion r) {
     hasRotation = changed = true;
 }
 
-void GameObject::addChild(GameObject* child) {
+void GameObject::addChild(std::shared_ptr<GameObject> child) {
+    if (child->parent) {
+        throw std::invalid_argument("Given child already has a parent");
+    } else {
+        child->parent = shared_from_this();
+    }
     children.push_back(child);
 }
 
