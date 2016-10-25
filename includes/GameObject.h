@@ -207,13 +207,45 @@ public:
      */
     void addChild(std::shared_ptr<GameObject> child);
 
+    /**
+     * Get the type of the GameObject.
+     *
+     * \see GameObject::addCollidesWith(TypeIdentifier identifier)
+     */
     TypeIdentifier getIdentifier();
+
+    /**
+     * Set what type the GameObject has. This is used to filter collisions.
+     *
+     * \see GameObject::addCollidesWith(TypeIdentifier identifier)
+     */
     void setIdentifier(TypeIdentifier identifier);
 
+    /**
+     * Make the GameObject collide with other GameObjects of a given type.
+     *
+     * @param colliderID The type that the GameObject should collide with.
+     */
     void addCollidesWith(TypeIdentifier colliderID);
+
+    /**
+     * Make the GameObject collide with other GameObjects that match any of the given types.
+     *
+     * @param colliderIDs A list of types that the GameObject should collide with.
+     */
     void addCollidesWith(std::initializer_list<TypeIdentifier> colliderIDs);
 
+    /**
+     * Clear the list of type that the GameObject collides with.
+     * This will result in the GameObject not colliding with any other GameObject.
+     */
     void clearCollidesWithList();
+
+    /**
+     * Check if the GameObject collides with a given type.
+     *
+     * @param id The type id to check if the GameObject collides with.
+     */
     bool collidesWith(TypeIdentifier id);
 
     /**
@@ -230,12 +262,33 @@ public:
      */
     std::vector<Triangle*> getTriangles();
 
+    /**
+     * Get a AABB fitting the GameObjects Mesh.
+     * The AABB is transformed by the GameObjects model matrix.
+     */
     AABB getTransformedAABB();
+
+    /**
+     * Get the minimal boundng sphere that contains the Mesh of the GameObject.
+     * The returned sphere is transformed by the model matrix of the GameObject.
+     */
     Sphere getTransformedSphere();
 
+    /**
+     * Check if this GameObject is dynamic, meaning that it is possible to move
+     * the GameObject.
+     */
     bool isDynamicObject();
+
+    /**
+     * Set if the GameObject is dynamic or not.
+     * \see GameObject::isDynamicObject()
+     */
     void setDynamic(bool isDynamic);
 
+    /**
+     * @returns An integer representing an unique id for the GameObject.
+     */
     int getId();
 
     /**
