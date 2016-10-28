@@ -21,6 +21,7 @@
 #include "Mesh.h"
 #include "ShaderProgram.h"
 #include "objects/Chunk.h"
+#include <string>
 
 #define NORMAL_TEXTURE_LOCATION 3
 #define DIFFUSE_TEXTURE_LOCATION 0
@@ -91,17 +92,17 @@ void StandardRenderer::render() {
     CHECK_GL_ERROR();
 }
 
-void StandardRenderer::setBones(std::shared_ptr<ShaderProgram> &temp) const {
+void StandardRenderer::setBones(std::shared_ptr<ShaderProgram> &shaderProgram) const {
     if(mesh->hasAnimations()) {
         float currentTimeInSeconds = clock.getElapsedTime().asSeconds();
         std::vector<chag::float4x4> boneTransforms = mesh->getBoneTransforms(currentTimeInSeconds);
-        temp->setUniform1i("has_animations", 1);
+        shaderProgram->setUniform1i("has_animations", 1);
 
         for (unsigned int j = 0; j < boneTransforms.size(); j++) {
-            temp->setUniformMatrix4fv("bones[" + std::__cxx11::to_string(j) + "]", boneTransforms[j]);
+            shaderProgram->setUniformMatrix4fv("bones[" + std::to_string(j) + "]", boneTransforms[j]);
         }
     } else {
-        temp->setUniform1i("has_animations", 0);
+        shaderProgram->setUniform1i("has_animations", 0);
     }
 }
 
