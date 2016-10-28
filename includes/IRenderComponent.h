@@ -24,6 +24,13 @@ class IRenderComponent : public IComponent {
 public:
     virtual void render() = 0;
     virtual void renderShadow(std::shared_ptr<ShaderProgram> &shaderProgram) = 0;
+
+    /**
+     * Renders only the emissive colors of the object. Look at the implementation
+     * of StandardRender::renderEmissive for implementation example.
+     *
+     * @param shaderProgram
+     */
     virtual void renderEmissive(std::shared_ptr<ShaderProgram> &shaderProgram) = 0;
 
 protected:

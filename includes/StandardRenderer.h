@@ -47,7 +47,7 @@ private:
     GameObject *gameObject;
     sf::Clock clock;
 
-    void setBones(std::shared_ptr<ShaderProgram> &temp) const;
+    void setBones(std::shared_ptr<ShaderProgram> &shaderProgram) const;
 };
 
 
