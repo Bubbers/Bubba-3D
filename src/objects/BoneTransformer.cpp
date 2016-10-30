@@ -139,8 +139,9 @@ aiVector3D BoneTransformer::calculateScalingInterpolation(float currentAnimation
     assert(deltaFactor >= 0.0f && deltaFactor <= 1.0f);
     const aiVector3D &currentScalingVector = nodeAnimation->mScalingKeys[currentScalingIndex].mValue;
     const aiVector3D &nextScalingVector = nodeAnimation->mScalingKeys[nextScalingIndex].mValue;
+    aiVector3D deltaScalingVector = (nextScalingVector - currentScalingVector) * (float)deltaFactor;
 
-    return currentScalingVector + (nextScalingVector - currentScalingVector) * (float)deltaFactor;
+    return currentScalingVector + deltaScalingVector;
 }
 
 aiQuaternion BoneTransformer::calculateRotationInterpolation(float currentAnimationTick, const aiNodeAnim *nodeAnimation) {
@@ -181,8 +182,9 @@ aiVector3D BoneTransformer::calculateTranslationInterpolation(float currentAnima
     assert(deltaFactor >= 0.0f && deltaFactor <= 1.0f);
     const aiVector3D &currentTranslationVector = nodeAnimation->mPositionKeys[currentTranslationIndex].mValue;
     const aiVector3D &nextTranslationVector = nodeAnimation->mPositionKeys[nextTranslationIndex].mValue;
+    const aiVector3D deltaTranslationVector = ((nextTranslationVector - currentTranslationVector) * (float)deltaFactor);
 
-    return currentTranslationVector + ((nextTranslationVector - currentTranslationVector) * (float)deltaFactor);
+    return currentTranslationVector + deltaTranslationVector;
 
 }
 
