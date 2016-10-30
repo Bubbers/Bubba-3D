@@ -140,7 +140,7 @@ aiVector3D BoneTransformer::calculateScalingInterpolation(float currentAnimation
     const aiVector3D &currentScalingVector = nodeAnimation->mScalingKeys[currentScalingIndex].mValue;
     const aiVector3D &nextScalingVector = nodeAnimation->mScalingKeys[nextScalingIndex].mValue;
 
-    return (nextScalingVector - currentScalingVector) * (float)deltaFactor;
+    return currentScalingVector + (nextScalingVector - currentScalingVector) * (float)deltaFactor;
 }
 
 aiQuaternion BoneTransformer::calculateRotationInterpolation(float currentAnimationTick, const aiNodeAnim *nodeAnimation) {
