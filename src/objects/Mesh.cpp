@@ -45,14 +45,13 @@ Mesh::Mesh() {
 void Mesh::loadMesh(const std::string &fileName) {
     Logger::logInfo("Loading mesh " + fileName);
 
-    importer.ReadFile(
+    const aiScene* aiScene = importer.ReadFile(
             fileName.c_str(), aiProcess_GenSmoothNormals | aiProcess_Triangulate | aiProcess_CalcTangentSpace);
-    aiScene* aiScene = importer.GetOrphanedScene();
 
     if (!aiScene) {
         Logger::logError("Error loading mesh for " + fileName + ". Error message: " + importer.GetErrorString());
     } else {
-        boneTransformer = std::make_shared<BoneTransformer>(BoneTransformer(aiScene));
+        boneTransformer = std::make_shared<BoneTransformer>(BoneTransformer(importer.GetOrphanedScene()));
         initMesh(aiScene, fileName);
     }
 }
