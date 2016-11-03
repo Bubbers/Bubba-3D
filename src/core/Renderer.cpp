@@ -15,8 +15,11 @@
  * along with Bubba-3D. If not, see http://www.gnu.org/licenses/.
  */
 #include "Renderer.h"
+
 #include <sstream>
 #include <Globals.h>
+#include <memory>
+
 #include "ResourceManager.h"
 #include "constants.h"
 #include "GameObject.h"
@@ -64,7 +67,8 @@ void Renderer::resize(unsigned int width, unsigned int height) {
     cutOffFbo = createPostProcessFbo(width, height);
 }
 
-void Renderer::drawModel(IDrawable &model, std::shared_ptr<ShaderProgram> &shaderProgram)
+void Renderer::drawModel(IDrawable &model,
+                         std::shared_ptr<ShaderProgram> &shaderProgram)
 {
     shaderProgram->use();
     model.render();
@@ -206,19 +210,17 @@ void Renderer::setLights(std::shared_ptr<ShaderProgram> &shaderProgram, Scene *s
 */
 void Renderer::drawShadowCasters(std::shared_ptr<ShaderProgram> &shaderProgram, Scene *scene)
 {
-    std::vector<GameObject*> shadowCasters = scene->getShadowCasters();
-    for (unsigned int i = 0; i < scene->getShadowCasters().size(); i++) {
-        shaderProgram->setUniform1f("object_reflectiveness", (*shadowCasters[i]).shininess);
-        drawModel(*shadowCasters[i], shaderProgram);
+    for (std::shared_ptr<GameObject> &gob : scene->getShadowCasters()) {
+        shaderProgram->setUniform1f("object_reflectiveness", gob->shininess);
+        drawModel(*gob, shaderProgram);
     }
 }
 
 void Renderer::drawTransparent(std::shared_ptr<ShaderProgram> &shaderProgram, Scene *scene)
 {
-    std::vector<GameObject*> transparentObjects = scene->getTransparentObjects();
-    for (unsigned int i = 0; i < transparentObjects.size(); i++) {
-        shaderProgram->setUniform1f("object_reflectiveness", (*transparentObjects[i]).shininess);
-        drawModel(*transparentObjects[i], shaderProgram);
+    for (std::shared_ptr<GameObject> &gob : scene->getTransparentObjects()) {
+        shaderProgram->setUniform1f("object_reflectiveness", gob->shininess);
+        drawModel(*gob, shaderProgram);
     }
 }
 
@@ -238,10 +240,9 @@ void Renderer::drawShadowMap(Fbo sbo, chag::float4x4 viewProjectionMatrix, Scene
     sbo.shaderProgram->use();
     sbo.shaderProgram->setUniformMatrix4fv("viewProjectionMatrix", viewProjectionMatrix);
 
-    std::vector<GameObject*> shadowCasters = scene->getShadowCasters();
-    for (unsigned int i = 0; i < shadowCasters.size(); i++) {
-        sbo.shaderProgram->setUniform1f("object_reflectiveness", (*shadowCasters[i]).shininess);
-        (*shadowCasters[i]).renderShadow(sbo.shaderProgram);
+    for (std::shared_ptr<GameObject> &gob : scene->getShadowCasters()) {
+        shaderProgram->setUniform1f("object_reflectiveness", gob->shininess);
+        gob->renderShadow(sbo.shaderProgram);
     }
 
     //CLEANUP

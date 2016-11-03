@@ -14,18 +14,19 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Bubba-3D. If not, see http://www.gnu.org/licenses/.
  */
-#include <Collider.h>
+#include <memory>
+
+#include "Collider.h"
 #include "GameObject.h"
 #include "ExactOctreeCollider.h"
 
-CollisionPairList ExactOctreeCollider::computeExactCollision(CollisionPairList possibleCollision) {
+CollisionPairList ExactOctreeCollider::computeExactCollision(CollisionPairList &possibleCollisions) {
     CollisionPairList exactCollisions;
 
-    for(auto i = possibleCollision.begin(); i != possibleCollision.end(); i++ ) {
-        CollisionPair pair = *i;
+    for(CollisionPair &pair : possibleCollisions) {
 
-        GameObject *object1 = pair.first;
-        GameObject *object2 = pair.second;
+        std::shared_ptr<GameObject> object1 = pair.first;
+        std::shared_ptr<GameObject> object2 = pair.second;
 
         chag::float4x4 object1ModelMatrix = object1->getModelMatrix();
         chag::float4x4 object2ModelMatrix = object2->getModelMatrix();
@@ -33,7 +34,8 @@ CollisionPairList ExactOctreeCollider::computeExactCollision(CollisionPairList p
         Octree* object1Oct = object1->getOctree();
         Octree* object2Oct = object2->getOctree();
 
-        if (octreeOctreeIntersection(object1Oct,&object1ModelMatrix,object2Oct, &object2ModelMatrix)) {
+        // Add to list if there is an octree intersection
+        if (octreeOctreeIntersection(object1Oct, &object1ModelMatrix, object2Oct, &object2ModelMatrix)) {
             exactCollisions.push_back(CollisionPair(object1, object2));
         }
     }

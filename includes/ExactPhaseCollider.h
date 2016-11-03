@@ -14,12 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Bubba-3D. If not, see http://www.gnu.org/licenses/.
  */
-//
-// Created by johan on 2016-04-13.
-//
-
-#ifndef SUPER_BUBBA_AWESOME_SPACE_EXACTPHASE_H
-#define SUPER_BUBBA_AWESOME_SPACE_EXACTPHASE_H
+#pragma once
 
 #include "Utils.h"
 
@@ -34,8 +29,6 @@ public:
      * tests between them.
      *
      */
-    virtual CollisionPairList computeExactCollision(CollisionPairList possibleCollision) = 0;
+    virtual CollisionPairList computeExactCollision(CollisionPairList &possibleCollision) = 0;
 
 };
-
-#endif //SUPER_BUBBA_AWESOME_SPACE_EXACTPHASE_H

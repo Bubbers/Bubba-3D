@@ -14,16 +14,12 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Bubba-3D. If not, see http://www.gnu.org/licenses/.
  */
-//
-// Created by johan on 2015-12-05.
-//
-
-#ifndef BUBBA_3D_BRUTEFORCEBROADPHASE_H
-#define BUBBA_3D_BRUTEFORCEBROADPHASE_H
+#pragma once
 
 #include "BroadPhaseCollider.h"
-#include "GameObject.h"
+#include <memory>
 
+class GameObject;
 
 class BFBroadPhase : public BroadPhaseCollider
 {
@@ -32,8 +28,7 @@ public:
 
     virtual CollisionPairList computeCollisionPairs(Scene* scene) override ;
 private:
-    bool isPossiblyColliding(GameObject* gameObject1, GameObject* gameObject2);
+    bool isPossiblyColliding(std::shared_ptr<GameObject> &gameObject1,
+                             std::shared_ptr<GameObject> &gameObject2);
 
 };
-
-#endif //BUBBA_3D_BRUTEFORCEBROADPHASE_H

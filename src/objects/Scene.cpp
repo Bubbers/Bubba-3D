@@ -16,6 +16,7 @@
  */
 #include "Scene.h"
 #include "GameObject.h"
+#include <memory>
 
 Scene::Scene()
 {
@@ -26,36 +27,36 @@ Scene::~Scene()
 {
 }
 
-void Scene::addShadowCaster(GameObject* object) {
+void Scene::addShadowCaster(std::shared_ptr<GameObject> object) {
     shadowCasters.push_back(object);
     allObjects.push_back(object);
 }
 
-std::vector<GameObject*> Scene::getShadowCasters() {
+std::vector<std::shared_ptr<GameObject>> Scene::getShadowCasters() {
     return shadowCasters;
 }
 
-void Scene::addTransparentObject(GameObject* object){
+void Scene::addTransparentObject(std::shared_ptr<GameObject> object){
     transparentObjects.push_back(object);
     allObjects.push_back(object);
 }
 
-std::vector<GameObject*> Scene::getTransparentObjects() {
+std::vector<std::shared_ptr<GameObject>> Scene::getTransparentObjects() {
     return transparentObjects;
 }
 
-std::vector<GameObject*> Scene::getGameObjects() {
+std::vector<std::shared_ptr<GameObject>> Scene::getGameObjects() {
     return allObjects;
 }
 
 
-void Scene::update(float dt, std::vector<GameObject*> *toDelete) {
-    removeDirty(&shadowCasters, toDelete);
-    removeDirty(&transparentObjects, toDelete);
-    removeDirty(&allObjects, toDelete);
+void Scene::update(float dt, std::vector<std::shared_ptr<GameObject>> &toDelete) {
+    removeDirty(shadowCasters, toDelete);
+    removeDirty(transparentObjects, toDelete);
+    removeDirty(allObjects, toDelete);
 
-	auto sCasters = shadowCasters;
-	auto tObjects = transparentObjects;
+    auto sCasters = shadowCasters;
+    auto tObjects = transparentObjects;
 
     for(auto &object : sCasters ) {
         object->update(dt);
@@ -66,16 +67,15 @@ void Scene::update(float dt, std::vector<GameObject*> *toDelete) {
     }
 }
 
-void Scene::removeDirty(std::vector<GameObject*> *v, std::vector<GameObject*> *toDelete) {
-    for(auto i = v->begin(); i < v->end(); )
+void Scene::removeDirty(std::vector<std::shared_ptr<GameObject>> &v, std::vector<std::shared_ptr<GameObject>> &toDelete) {
+    for(auto i = v.begin(); i < v.end(); )
     {
-        if((*i)->isDirty())
+        if( (*i)->isDirty() )
         {
-            toDelete->push_back(*i);
-            i = v->erase(i);
-		}
-		else {
-			i++;
-		}
+            toDelete.push_back(*i);
+            i = v.erase(i);
+        } else {
+            i++;
+        }
     }
 }

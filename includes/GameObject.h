@@ -65,10 +65,14 @@ class ShaderProgram;
  * has been marked as dirty. Then you can at a later point, when calculations arent being done,
  * safely remove the object.
  */
-class GameObject : public IDrawable {
+class GameObject : public std::enable_shared_from_this<GameObject>, public IDrawable {
 public:
+
+    /**
+     * Creates a minimal instance of a GameObject.
+     * This GameObject will not collide with anything, nor will there be any mesh to render.
+     */
     GameObject();
-    GameObject(GameObject* parent);
 
     /**
      * Initiates the GameObject with the same mesh for rendering and collision
@@ -76,6 +80,7 @@ public:
      * @param mesh The mesh to render and perform collisions with
      */
     explicit GameObject(std::shared_ptr<Mesh> mesh);
+
     /**
      * Initiates the GameObject with different meshes for rendering and collisions
      *
@@ -83,9 +88,6 @@ public:
      * @param colliderMesh The mesh to use for collision
      */
     GameObject(std::shared_ptr<Mesh> mesh, std::shared_ptr<Mesh> colliderMesh);
-
-    GameObject(std::shared_ptr<Mesh> mesh, GameObject* parent);
-    GameObject(std::shared_ptr<Mesh> mesh, std::shared_ptr<Mesh> colliderMesh, GameObject* parent);
 
     virtual ~GameObject();
 
@@ -98,30 +100,43 @@ public:
      */
     virtual void renderShadow(std::shared_ptr<ShaderProgram> &shaderProgram);
 
+    /**
+     * Add a IRenderComponent to the GameObject.
+     */
     void addRenderComponent(IRenderComponent* renderer);
+
+    /**
+     * Add a component to the GameObject.
+     */
     void addComponent(IComponent* newComponent);
+
     /**
      * Calls update for all components in the GameObject
      *
      * @param dt The time since last called
      */
     void update(float dt);
+
     /**
      * Calls a specific component event on all components in the GameObject
      *
      * @param type The event to call on the components
      * @param data // TODO(Bubbad) Do all events need to involve another gameobject?
      */
-    void callEvent(EventType type, GameObject* data);
+    void callEvent(EventType type, std::shared_ptr<GameObject> &data);
 
-
+    /**
+     * Get the model matrix of the GameObject.
+     */
     chag::float4x4 getModelMatrix();
+
     /**
      * Replaces the old model matrix completely
      *
      * @param modelMatrix The new model matrix
      */
     void move(chag::float4x4 model_matrix);
+
     /**
      * Multiplies the old model matrix with the specified
      *
@@ -129,26 +144,108 @@ public:
      */
     void update(chag::float4x4 update_matrix);
 
+    /**
+     * Get the scale of the GameObject relative to its parent.
+     * If there is no parent, this is the same as getAbsoluteScale().
+     */
     chag::float3 getRelativeScale();
+
+    /**
+     * Get scale of the GameObject relative to default scale.
+     */
     chag::float3 getAbsoluteScale();
+
+    /**
+     * Set the absoulte scale of the GameObject.
+     */
     void setScale(chag::float3 s);
 
+    /**
+     * Get the rotation of the GameObject relative to its parent.
+     * If there is no parent, this is the same as getAbsoluteRotation().
+     */
     chag::Quaternion getRelativeRotation();
+
+    /**
+     * Get the rotation of the GameObject relative to default rotation.
+     */
     chag::Quaternion getAbsoluteRotation();
+
+    /**
+     * Set the absolute rotation of the GameObject.
+     */
     void setRotation(chag::Quaternion r);
+
+    /**
+     * Rotate the GameObject.
+     */
     void updateRotation(chag::Quaternion r);
 
+    /**
+     * Get the location of the GameObject relative to its parent.
+     * If there is no parent, this is the same as getAbsoluteLocation().
+     */
     chag::float3 getRelativeLocation();
+
+    /**
+     * Get the location of the GameObject relative to origo.
+     */
     chag::float3 getAbsoluteLocation();
+
+    /**
+     * Sets the absolute location of the GameObject.
+     */
     void setLocation(chag::float3 l);
 
-    void addChild(GameObject* child);
+    /**
+     * Tries to make a parent child relationship between this GameObject and a
+     * given child GameObject. Requires that the child being added dose not
+     * already have a parent.
+     *
+     * @param child The GameObject to add as child.
+     * @throws std::invalid_argument If the given child already has a parent.
+     */
+    void addChild(std::shared_ptr<GameObject> child);
 
+    /**
+     * Get the type of the GameObject.
+     *
+     * \see GameObject::addCollidesWith(TypeIdentifier identifier)
+     */
     TypeIdentifier getIdentifier();
+
+    /**
+     * Set what type the GameObject has. This is used to filter collisions.
+     *
+     * \see GameObject::addCollidesWith(TypeIdentifier identifier)
+     */
     void setIdentifier(TypeIdentifier identifier);
+
+    /**
+     * Make the GameObject collide with other GameObjects of a given type.
+     *
+     * @param colliderID The type that the GameObject should collide with.
+     */
     void addCollidesWith(TypeIdentifier colliderID);
+
+    /**
+     * Make the GameObject collide with other GameObjects that match any of the given types.
+     *
+     * @param colliderIDs A list of types that the GameObject should collide with.
+     */
     void addCollidesWith(std::initializer_list<TypeIdentifier> colliderIDs);
+
+    /**
+     * Clear the list of type that the GameObject collides with.
+     * This will result in the GameObject not colliding with any other GameObject.
+     */
     void clearCollidesWithList();
+
+    /**
+     * Check if the GameObject collides with a given type.
+     *
+     * @param id The type id to check if the GameObject collides with.
+     */
     bool collidesWith(TypeIdentifier id);
 
     /**
@@ -157,6 +254,7 @@ public:
      * @return The octree containing the GameObject
      */
     Octree* getOctree();
+
     /**
      * NOTE: The triangles have not been transformed.
      *
@@ -164,19 +262,46 @@ public:
      */
     std::vector<Triangle*> getTriangles();
 
+    /**
+     * Get a AABB fitting the GameObjects Mesh.
+     * The AABB is transformed by the GameObjects model matrix.
+     */
     AABB getTransformedAABB();
+
+    /**
+     * Get the minimal boundng sphere that contains the Mesh of the GameObject.
+     * The returned sphere is transformed by the model matrix of the GameObject.
+     */
     Sphere getTransformedSphere();
 
+    /**
+     * Check if this GameObject is dynamic, meaning that it is possible to move
+     * the GameObject.
+     */
     bool isDynamicObject();
+
+    /**
+     * Set if the GameObject is dynamic or not.
+     * \see GameObject::isDynamicObject()
+     */
     void setDynamic(bool isDynamic);
 
+    /**
+     * @returns An integer representing an unique id for the GameObject.
+     */
     int getId();
 
     /**
      * Marks the GameObject as dirty, indicating that
-     * it should be removed at some point.
+     * the GameObject will be removed soon.
+     *
+     * CAUTION: THIS ACTION IS IRREVERSIBLE
      */
     void makeDirty();
+
+    /**
+     * Check if the GameObject is dirty or not.
+     */
     bool isDirty();
 
 
@@ -213,8 +338,8 @@ private:
     bool changed = false;
 
     /* Hierarchy */
-    GameObject* parent = nullptr;
-    std::vector<GameObject*> children;
+    std::shared_ptr<GameObject> parent;
+    std::vector<std::shared_ptr<GameObject>> children;
 
     /* Collision */
     std::shared_ptr<Mesh> collisionMesh;

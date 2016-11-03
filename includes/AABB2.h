@@ -14,8 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Bubba-3D. If not, see http://www.gnu.org/licenses/.
  */
-#ifndef __AABB_H__
-#define __AABB_H__
+#pragma once
 
 #include <glutil/glutil.h>
 #include <float.h>
@@ -37,5 +36,3 @@ struct AABB {
 		return (maxV - minV) / 2;
 	}
 };
-
-#endif

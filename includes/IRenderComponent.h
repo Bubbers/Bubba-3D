@@ -19,6 +19,7 @@
 #include "IComponent.h"
 #include <memory>
 
+class ShaderProgram;
 
 class IRenderComponent : public IComponent {
 public:
