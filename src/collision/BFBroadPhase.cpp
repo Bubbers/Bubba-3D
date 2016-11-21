@@ -50,21 +50,30 @@ CollisionPairList BFBroadPhase::computeCollisionPairs(Scene *scene) {
 
 
 bool BFBroadPhase::isPossiblyColliding(GameObject* gameObject1, GameObject* gameObject2) {
-    bool noDynamic = !gameObject1->isDynamicObject() && !gameObject2->isDynamicObject();
-    bool neverCollides = !gameObject1->collidesWith(gameObject2->getIdentifier())
-                         && !gameObject2->collidesWith(gameObject1->getIdentifier());
-    if(noDynamic || neverCollides || gameObject1->isDirty() || gameObject2->isDirty() || gameObject1 == gameObject2) {
+    // No need to check if none of the objects are dynamic
+    if (!gameObject1->isDynamicObject() && !gameObject2->isDynamicObject()) {
         return false;
     }
-    bool sphereInt = sphereIntersection(gameObject1->getTransformedSphere(),gameObject2->getTransformedSphere());
-    if(sphereInt) {
 
-        AABB aabb1 = gameObject1->getTransformedAABB();
-        AABB aabb2 = gameObject2->getTransformedAABB();
-
-        bool aabb = AabbAabbintersection(&aabb1, &aabb2);
-        return aabb;
+    // Check if the objects are able to collide
+    if (!gameObject1->collidesWith(gameObject2->getIdentifier())
+         && !gameObject2->collidesWith(gameObject1->getIdentifier())) {
+        return false;
     }
 
-    return false;
+    // If either object is dirty or they are the same object abort
+    if (gameObject1->isDirty() || gameObject2->isDirty() || gameObject1 == gameObject2) {
+        return false;
+    }
+
+    // Abort if sphere intersection does not match
+    if (!sphereIntersection(gameObject1->getTransformedSphere(), gameObject2->getTransformedSphere())) {
+        return false;
+    }
+
+    // Do AABB test and return the result
+    AABB aabb1 = gameObject1->getTransformedAABB();
+    AABB aabb2 = gameObject2->getTransformedAABB();
+
+    return AabbAabbintersection(&aabb1, &aabb2);
 }
