@@ -54,8 +54,8 @@ void Scene::update(float dt, std::vector<GameObject*> *toDelete) {
     removeDirty(&transparentObjects, toDelete);
     removeDirty(&allObjects, toDelete);
 
-	auto sCasters = shadowCasters;
-	auto tObjects = transparentObjects;
+    auto sCasters = shadowCasters;
+    auto tObjects = transparentObjects;
 
     for(auto &object : sCasters ) {
         object->update(dt);
@@ -73,9 +73,9 @@ void Scene::removeDirty(std::vector<GameObject*> *v, std::vector<GameObject*> *t
         {
             toDelete->push_back(*i);
             i = v->erase(i);
-		}
-		else {
-			i++;
-		}
+        }
+        else {
+            i++;
+        }
     }
 }
