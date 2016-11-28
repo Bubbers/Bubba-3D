@@ -27,9 +27,9 @@ public:
     virtual void update(float dt) = 0;
     void bind(GameObject *owner) { this->owner = owner; };
 
-    virtual void beforeCollision(GameObject* collider) {};
-    virtual void duringCollision(GameObject* collider) {};
-    virtual void afterCollision(GameObject* collider) {};
+    virtual void beforeCollision(std::shared_ptr<GameObject> collider) {};
+    virtual void duringCollision(std::shared_ptr<GameObject> collider) {};
+    virtual void afterCollision(std::shared_ptr<GameObject> collider) {};
     virtual void onDeath() {};
 protected:
     GameObject *owner;

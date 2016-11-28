@@ -114,7 +114,7 @@ public:
      * @param type The event to call on the components
      * @param data // TODO(Bubbad) Do all events need to involve another gameobject?
      */
-    void callEvent(EventType type, GameObject* data);
+    void callEvent(EventType type, std::shared_ptr<GameObject> data);
 
 
     chag::float4x4 getModelMatrix();

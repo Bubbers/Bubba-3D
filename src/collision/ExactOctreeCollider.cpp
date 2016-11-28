@@ -24,8 +24,8 @@ CollisionPairList ExactOctreeCollider::computeExactCollision(CollisionPairList p
     for(auto i = possibleCollision.begin(); i != possibleCollision.end(); i++ ) {
         CollisionPair pair = *i;
 
-        GameObject *object1 = pair.first;
-        GameObject *object2 = pair.second;
+        std::shared_ptr<GameObject> object1 = pair.first;
+        std::shared_ptr<GameObject> object2 = pair.second;
 
         chag::float4x4 object1ModelMatrix = object1->getModelMatrix();
         chag::float4x4 object2ModelMatrix = object2->getModelMatrix();

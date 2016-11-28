@@ -31,16 +31,18 @@ BFBroadPhase::BFBroadPhase() {
 }
 
 CollisionPairList BFBroadPhase::computeCollisionPairs(Scene *scene) {
-    std::vector<GameObject*> sceneObjects = scene->getGameObjects();
+    std::vector<std::shared_ptr<GameObject>> sceneObjects = scene->getGameObjects();
     CollisionPairList collisionPairs;
 
     for (auto i = sceneObjects.begin(); i != sceneObjects.end(); i++) {
         for (auto j = i + 1; j != sceneObjects.end(); j++) {
-            GameObject* gameObject1 = *i;
-            GameObject* gameObject2 = *j;
+            std::shared_ptr<GameObject> gameObject1 = *i;
+            std::shared_ptr<GameObject> gameObject2 = *j;
 
             if(isPossiblyColliding(gameObject1,gameObject2)) {
-                collisionPairs.push_back(std::pair<GameObject *, GameObject *>(gameObject1, gameObject2));
+                collisionPairs.push_back(
+                    std::pair<std::shared_ptr<GameObject>,std::shared_ptr<GameObject>>
+                        (gameObject1, gameObject2));
             }
 
         }
@@ -49,7 +51,9 @@ CollisionPairList BFBroadPhase::computeCollisionPairs(Scene *scene) {
 }
 
 
-bool BFBroadPhase::isPossiblyColliding(GameObject* gameObject1, GameObject* gameObject2) {
+bool BFBroadPhase::isPossiblyColliding(std::shared_ptr<GameObject> gameObject1,
+                                       std::shared_ptr<GameObject> gameObject2)
+{
     // No need to check if none of the objects are dynamic
     if (!gameObject1->isDynamicObject() && !gameObject2->isDynamicObject()) {
         return false;

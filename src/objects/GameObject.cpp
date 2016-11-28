@@ -209,7 +209,7 @@ void GameObject::update(float dt) {
     }
 }
 
-void GameObject::callEvent(EventType type, GameObject* data) {
+void GameObject::callEvent(EventType type, std::shared_ptr<GameObject> data) {
     switch (type) {
     case EventType::BeforeCollision:
         for (IComponent *component : components) {

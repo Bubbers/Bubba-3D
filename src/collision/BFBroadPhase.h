@@ -32,7 +32,7 @@ public:
 
     virtual CollisionPairList computeCollisionPairs(Scene* scene) override ;
 private:
-    bool isPossiblyColliding(GameObject* gameObject1, GameObject* gameObject2);
+    bool isPossiblyColliding(std::shared_ptr<GameObject> gameObject1, std::shared_ptr<GameObject> gameObject2);
 
 };
 

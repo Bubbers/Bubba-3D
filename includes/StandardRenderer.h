@@ -35,7 +35,7 @@ class Chunk;
 class StandardRenderer : public IRenderComponent {
 public:
     StandardRenderer();
-    StandardRenderer(std::shared_ptr<Mesh> mesh, GameObject* gob, std::shared_ptr<ShaderProgram> shader);
+    StandardRenderer(std::shared_ptr<Mesh> mesh, std::shared_ptr<ShaderProgram> shader);
 
     void update(float dt);
 
@@ -44,7 +44,6 @@ public:
     void renderEmissive(std::shared_ptr<ShaderProgram> &shaderProgram);
 private:
     std::shared_ptr<Mesh> mesh;
-    GameObject *gameObject;
     sf::Clock clock;
 
     void setBones(std::shared_ptr<ShaderProgram> &shaderProgram) const;
