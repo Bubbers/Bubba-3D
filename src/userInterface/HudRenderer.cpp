@@ -106,7 +106,7 @@ void HudRenderer::setWorldCamera(Camera *worldCamera) {
     this->worldCamera = worldCamera;
 }
 
-void HudRenderer::addRelativeLayout(GameObject *relativeTo, Layout *layout) {
-    this->relativeLayouts.push_back(pair<GameObject*, Layout*>(relativeTo, layout));
+void HudRenderer::addRelativeLayout(std::shared_ptr<GameObject> relativeTo, Layout *layout) {
+    this->relativeLayouts.push_back(pair<std::shared_ptr<GameObject>, Layout*>(relativeTo, layout));
     updateLayout();
 }

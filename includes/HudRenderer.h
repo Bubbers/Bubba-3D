@@ -79,13 +79,13 @@ public:
 
     void setWorldCamera(Camera* worldCamera);
 
-    void addRelativeLayout(GameObject* relativeTo, Layout* layout);
+    void addRelativeLayout(std::shared_ptr<GameObject> relativeTo, Layout* layout);
 
 protected:
     chag::float4x4 createOrthographicProjection();
     std::map<std::string, IHudDrawable*> squares;
     Layout* rootLayout;
     Camera* worldCamera;
-    std::vector<std::pair<GameObject*,Layout*>> relativeLayouts;
+    std::vector<std::pair<std::shared_ptr<GameObject>,Layout*>> relativeLayouts;
 
 };

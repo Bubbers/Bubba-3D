@@ -20,7 +20,7 @@
 #include "Camera.h"
 #include <memory>
 
-RelativeIHudDrawable::RelativeIHudDrawable(Camera* worldCamera, GameObject *relativeTo, IHudDrawable *toDraw) :
+RelativeIHudDrawable::RelativeIHudDrawable(Camera* worldCamera, std::shared_ptr<GameObject> relativeTo, IHudDrawable *toDraw) :
         relativeTo(relativeTo), toDraw(toDraw), worldCamera(worldCamera) {}
 
 void RelativeIHudDrawable::render(std::shared_ptr<ShaderProgram> shaderProgram, chag::float4x4 *projectionMatrix) {

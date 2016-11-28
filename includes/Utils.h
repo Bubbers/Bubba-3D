@@ -61,5 +61,5 @@ chag::float4x4 convertAiMatrixToFloat4x4(aiMatrix4x4 fromMatrix) ;
  */
 chag::float3x3 convertAiMatrixToFloat3x3(aiMatrix3x3 fromMatrix) ;
 
-typedef std::pair<GameObject*, GameObject*> CollisionPair;
+typedef std::pair<std::shared_ptr<GameObject>, std::shared_ptr<GameObject>> CollisionPair;
 typedef std::vector<CollisionPair> CollisionPairList;

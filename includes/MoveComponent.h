@@ -25,8 +25,7 @@
 class MoveComponent : public IComponent {
 public:
     MoveComponent();
-    MoveComponent(GameObject* meshObject);
-    MoveComponent(GameObject* meshObject, chag::Quaternion rotationSpeed,
+    MoveComponent(chag::Quaternion rotationSpeed,
                   chag::float3 velocity, chag::float3 acceleration, chag::float3 scaleSpeed);
 
     virtual void update(float dt);
@@ -40,10 +39,6 @@ public:
     void setAcceleration(chag::float3 a);
     void setRotationSpeed(chag::Quaternion rs);
     void setScaleSpeed(chag::float3 ss);
-
-protected:
-
-    GameObject* meshObject;
 
 private:
     chag::float3 velocity = chag::make_vector(0.0f, 0.0f, 0.0f);

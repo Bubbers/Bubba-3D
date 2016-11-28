@@ -39,19 +39,20 @@ public:
     std::vector<PointLight> pointLights;
     std::vector<SpotLight> spotLights;
 
-    void addShadowCaster(GameObject* object);
-    void addTransparentObject(GameObject* object);
+    void addShadowCaster(std::shared_ptr<GameObject> object);
+    void addTransparentObject(std::shared_ptr<GameObject> object);
 
-    std::vector<GameObject*> getGameObjects();
-    std::vector<GameObject*> getShadowCasters();
-    std::vector<GameObject*> getTransparentObjects();
+    std::vector<std::shared_ptr<GameObject>> getGameObjects();
+    std::vector<std::shared_ptr<GameObject>> getShadowCasters();
+    std::vector<std::shared_ptr<GameObject>> getTransparentObjects();
 
-    virtual void update(float dt, std::vector<GameObject*> *toDelete);
+    virtual void update(float dt, std::vector<std::shared_ptr<GameObject>> *toDelete);
 
 private:
-    std::vector<GameObject*> shadowCasters;
-    std::vector<GameObject*> transparentObjects;
-    std::vector<GameObject*> allObjects;
+    std::vector<std::shared_ptr<GameObject>> shadowCasters;
+    std::vector<std::shared_ptr<GameObject>> transparentObjects;
+    std::vector<std::shared_ptr<GameObject>> allObjects;
 
-    void removeDirty(std::vector<GameObject*> *v, std::vector<GameObject*> *toDelete);
+    void removeDirty(std::vector<std::shared_ptr<GameObject>> *v,
+                     std::vector<std::shared_ptr<GameObject>> *toDelete);
 };

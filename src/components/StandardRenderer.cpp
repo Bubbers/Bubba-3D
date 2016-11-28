@@ -30,8 +30,8 @@ StandardRenderer::StandardRenderer(){
 
 }
 
-StandardRenderer::StandardRenderer(std::shared_ptr<Mesh> mesh, GameObject* gameObject, std::shared_ptr<ShaderProgram> shaderProgram)
-                                 : mesh(mesh), gameObject(gameObject)
+StandardRenderer::StandardRenderer(std::shared_ptr<Mesh> mesh, std::shared_ptr<ShaderProgram> shaderProgram)
+                                 : mesh(mesh)
 {
     this->shaderProgram = shaderProgram;
 }
@@ -45,7 +45,7 @@ void StandardRenderer::render() {
     shaderProgram->use();
     CHECK_GL_ERROR();
 
-    chag::float4x4 modelMatrix = gameObject->getModelMatrix();
+    chag::float4x4 modelMatrix = owner->getModelMatrix();
 
     chag::float4x4 normalMatrix = chag::inverse(chag::transpose(modelMatrix));
     shaderProgram->setUniformMatrix4fv("modelMatrix", modelMatrix);
@@ -108,7 +108,7 @@ void StandardRenderer::setBones(std::shared_ptr<ShaderProgram> &shaderProgram) c
 
 void StandardRenderer::renderShadow(std::shared_ptr<ShaderProgram> &shaderProgram) {
 
-    chag::float4x4 modelMatrix = gameObject->getModelMatrix();
+    chag::float4x4 modelMatrix = owner->getModelMatrix();
     shaderProgram->setUniformMatrix4fv("modelMatrix", modelMatrix);
 
     for (size_t i = 0; i < mesh->getChunks()->size(); i++) {
@@ -130,7 +130,7 @@ void StandardRenderer::renderEmissive(std::shared_ptr<ShaderProgram> &shaderProg
     shaderProgram->use();
     CHECK_GL_ERROR();
 
-    chag::float4x4 modelMatrix = gameObject->getModelMatrix();
+    chag::float4x4 modelMatrix = owner->getModelMatrix();
 
     shaderProgram->setUniformMatrix4fv("modelMatrix", modelMatrix);
 
