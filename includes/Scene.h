@@ -26,6 +26,10 @@ class CubeMapTexture;
 class Camera;
 class GameObject;
 
+/**
+ * @brief Scene handles all objects and cameras in a game scene.
+ *
+ */
 class Scene
 {
 public:
@@ -39,7 +43,24 @@ public:
     std::vector<PointLight> pointLights;
     std::vector<SpotLight> spotLights;
 
+    /**
+     * @brief registers a GameObject as a shadow caster
+     *
+     * Shadow casters are non transparent objects in the scene that cast shadows.
+     * This method adds a GameObject to the list of shadow casters in this scene.
+     *
+     * @param object The object that will be added.
+     */
     void addShadowCaster(std::shared_ptr<GameObject> object);
+
+    /**
+     * @brief registers a GameObject as a transparent object
+     *
+     * This method adds a GameObject to the list of transparent objects in this scene.
+     * Transparent objects does not cast shadows in the scene.
+     *
+     * @param object The object that will be added.
+     */
     void addTransparentObject(std::shared_ptr<GameObject> object);
 
     std::vector<std::shared_ptr<GameObject>> getGameObjects();
