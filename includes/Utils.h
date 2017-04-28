@@ -22,6 +22,7 @@
 #include "linmath/float4x4.h"
 #include "assimp/material.h"
 #include <memory>
+#include <vector>
 
 class ShaderProgram;
 class GameObject;
