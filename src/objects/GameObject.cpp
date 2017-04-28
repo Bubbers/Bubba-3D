@@ -181,7 +181,7 @@ chag::float4x4 GameObject::getFullMatrix() {
     chag::float4x4 parentMat;
 
     chag::float4x4 translation = chag::make_translation(this->getRelativeLocation());
-    chag::float4x4 rotation    = chag::makematrix(this->getRelativeRotation());
+    chag::float4x4 rotation    = hasRotation ? chag::makematrix(this->getRelativeRotation()) : chag::make_identity<chag::float4x4>();
     chag::float4x4 scale       = chag::make_scale<chag::float4x4>(this->getRelativeScale());
 
     parentMat = translation * rotation * scale;
