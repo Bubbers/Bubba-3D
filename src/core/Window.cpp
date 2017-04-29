@@ -31,7 +31,7 @@ Window::Window(int width, int height, std::string title) {
 	Globals::set(Globals::WINDOW_HEIGHT,height);
 	Globals::set(Globals::WINDOW_WIDTH,width);
 	
-	sf::ContextSettings settings = sf::ContextSettings(32, 8, 0, 3, 3);
+	sf::ContextSettings settings = sf::ContextSettings(24, 8, 0, 3, 3);
 
 	settings.majorVersion = 4;
 	settings.minorVersion = 2;
