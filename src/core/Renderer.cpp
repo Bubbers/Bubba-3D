@@ -106,7 +106,7 @@ void Renderer::drawScene(Camera *camera, Scene *scene, float currentTime)
     // Render the scene from the cameras viewpoint, to the default framebuffer
     //*************************************************************************
     glBindFramebuffer(GL_FRAMEBUFFER, postProcessFbo.id);
-    glClearColor(0.2f, 0.2f, 0.8f, 1.0f);
+    glClearColor(backgroundColor.x, backgroundColor.y, backgroundColor.z, 1.0f);
     glClearDepth(1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     int w = Globals::get(Globals::Key::WINDOW_WIDTH);
@@ -531,3 +531,6 @@ void Renderer::drawFullScreenQuad()
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
+void Renderer::setBackgroundColor(chag::float3 rgb) {
+    backgroundColor = rgb;
+}

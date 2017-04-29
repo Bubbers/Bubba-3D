@@ -48,6 +48,8 @@ public:
 
     void initRenderer(int width, int height);
 
+    void setBackgroundColor(chag::float3 rgb);
+
     Effects effects;
 private:
     float currentTime;
@@ -79,5 +81,7 @@ private:
     std::shared_ptr<ShaderProgram> cutoffShader;
     std::shared_ptr<ShaderProgram> emissiveShader;
     Fbo postProcessFbo, horizontalBlurFbo, verticalBlurFbo, cutOffFbo;
+
+    chag::float3 backgroundColor = chag::make_vector(0.2f, 0.2f, 0.8f);
 
 };
