@@ -33,8 +33,8 @@ Window::Window(int width, int height, std::string title) {
 	
 	sf::ContextSettings settings = sf::ContextSettings(24, 8, 0, 3, 3);
 
-	settings.majorVersion = 4;
-	settings.minorVersion = 2;
+	settings.majorVersion = 3;
+	settings.minorVersion = 3;
 	settings.attributeFlags = sf::ContextSettings::Debug | sf::ContextSettings::Core;
 	window = new sf::Window(sf::VideoMode(width, height), sf::String(title),
                           sf::Style::Default, settings);
