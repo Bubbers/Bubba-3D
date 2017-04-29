@@ -36,7 +36,8 @@ Window::Window(int width, int height, std::string title) {
 	settings.majorVersion = 4;
 	settings.minorVersion = 2;
 	settings.attributeFlags = sf::ContextSettings::Debug | sf::ContextSettings::Core;
-	window = new sf::Window(sf::VideoMode(width, height), title, sf::Style::Default, settings);
+	window = new sf::Window(sf::VideoMode(width, height), sf::String(title),
+                          sf::Style::Default, settings);
 	glEnable(GL_FRAMEBUFFER_SRGB);
 	initGL();
 }
