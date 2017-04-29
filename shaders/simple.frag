@@ -82,7 +82,7 @@ uniform bool hasCubeMap;
 uniform samplerCube cubeMap;
 
 // object specific uniforms, change once per object but are the same for all materials in object.
-float object_alpha;
+float object_alpha = 0;
 uniform float object_reflectiveness;
 
 // matrial properties, changed when material changes.
