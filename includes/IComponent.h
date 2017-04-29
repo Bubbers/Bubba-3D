@@ -30,9 +30,10 @@ public:
     virtual void beforeCollision(std::shared_ptr<GameObject> collider) {};
     virtual void duringCollision(std::shared_ptr<GameObject> collider) {};
     virtual void afterCollision(std::shared_ptr<GameObject> collider) {};
-    virtual void onDeath() {};
+    virtual void onDeath(){ };
 protected:
     GameObject *owner;
 };
 
 #endif //BUBBA_3D_COMPONENT_H
+

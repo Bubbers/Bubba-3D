@@ -67,13 +67,12 @@ public:
     std::vector<std::shared_ptr<GameObject>> getShadowCasters();
     std::vector<std::shared_ptr<GameObject>> getTransparentObjects();
 
-    virtual void update(float dt, std::vector<std::shared_ptr<GameObject>> *toDelete);
+    virtual void update(float dt);
 
 private:
     std::vector<std::shared_ptr<GameObject>> shadowCasters;
     std::vector<std::shared_ptr<GameObject>> transparentObjects;
     std::vector<std::shared_ptr<GameObject>> allObjects;
 
-    void removeDirty(std::vector<std::shared_ptr<GameObject>> *v,
-                     std::vector<std::shared_ptr<GameObject>> *toDelete);
+    void removeDirty(std::vector<std::shared_ptr<GameObject>> *v);
 };

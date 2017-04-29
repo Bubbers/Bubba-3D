@@ -49,10 +49,10 @@ std::vector<std::shared_ptr<GameObject>> Scene::getGameObjects() {
 }
 
 
-void Scene::update(float dt, std::vector<std::shared_ptr<GameObject>> *toDelete) {
-    removeDirty(&shadowCasters, toDelete);
-    removeDirty(&transparentObjects, toDelete);
-    removeDirty(&allObjects, toDelete);
+void Scene::update(float dt) {
+    removeDirty(&shadowCasters);
+    removeDirty(&transparentObjects);
+    removeDirty(&allObjects);
 
     auto sCasters = shadowCasters;
     auto tObjects = transparentObjects;
@@ -66,15 +66,13 @@ void Scene::update(float dt, std::vector<std::shared_ptr<GameObject>> *toDelete)
     }
 }
 
-void Scene::removeDirty(std::vector<std::shared_ptr<GameObject>> *v,
-                        std::vector<std::shared_ptr<GameObject>> *toDelete)
+void Scene::removeDirty(std::vector<std::shared_ptr<GameObject>> *objectsInScene)
 {
-    for(auto i = v->begin(); i < v->end(); )
+    for(auto i = objectsInScene->begin(); i < objectsInScene->end(); )
     {
         if((*i)->isDirty())
         {
-            toDelete->push_back(*i);
-            i = v->erase(i);
+            i = objectsInScene->erase(i);
         }
         else {
             i++;
