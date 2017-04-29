@@ -84,8 +84,9 @@ public:
 protected:
     chag::float4x4 createOrthographicProjection();
     std::map<std::string, IHudDrawable*> squares;
-    Layout* rootLayout;
+    Layout* rootLayout = nullptr;
     Camera* worldCamera;
     std::vector<std::pair<std::shared_ptr<GameObject>,Layout*>> relativeLayouts;
+
 
 };

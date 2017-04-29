@@ -56,7 +56,9 @@ void HudRenderer::updateLayout() {
         for(auto square : tempSquares)
             squares.insert(squares.end(),pair<string,IHudDrawable*>(square.first,new RelativeIHudDrawable(worldCamera,relLayout.first,square.second)));
     }
-    rootLayout->getGLSquares(0,0,(float)w,(float)h, &squares);
+    if(rootLayout != nullptr) {
+        rootLayout->getGLSquares(0, 0, (float) w, (float) h, &squares);
+    }
 
 }
 
@@ -93,13 +95,13 @@ HudRenderer::~HudRenderer(){
 void HudRenderer::renderShadow(std::shared_ptr<ShaderProgram> &shaderProgram) {}
 
 void HudRenderer::update(float dt){
+    if(rootLayout != nullptr) {
     int x = Globals::get(Globals::MOUSE_WINDOW_X);
     int y = Globals::get(Globals::MOUSE_WINDOW_Y);
-    if(sf::Mouse::isButtonPressed(sf::Mouse::Left))
-        rootLayout->invokeListenersInternal(x,y,Layout::ON_CLICK_LISTENER,true);
-    else
-        rootLayout->invokeListenersInternal(x,y,Layout::ON_CLICK_LISTENER,false);
-    rootLayout->invokeListeners(x,y,Layout::ON_HOVER_LISTENER);
+    bool clickActive = sf::Mouse::isButtonPressed(sf::Mouse::Left);
+        rootLayout->invokeListenersInternal(x, y, Layout::ON_CLICK_LISTENER, clickActive);
+        rootLayout->invokeListeners(x, y, Layout::ON_HOVER_LISTENER);
+    }
 }
 
 void HudRenderer::setWorldCamera(Camera *worldCamera) {
@@ -110,3 +112,4 @@ void HudRenderer::addRelativeLayout(std::shared_ptr<GameObject> relativeTo, Layo
     this->relativeLayouts.push_back(pair<std::shared_ptr<GameObject>, Layout*>(relativeTo, layout));
     updateLayout();
 }
+
