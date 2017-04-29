@@ -34,7 +34,7 @@ void Particle::reset(ParticleConf &conf, chag::float4x4 modelMatrix) {
 
 void Particle::update(float deltaTime, float distanceToCam, ParticleConf &conf) {
     velocity    = conf.accelerate(velocity);
-    position   += velocity * deltaTime / 1000;
+    position   += velocity * deltaTime / 10;
     life       -= deltaTime + (distanceToCam * 2);
 }
 

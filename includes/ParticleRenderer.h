@@ -21,7 +21,7 @@
 #include "linmath/float3.h"
 
 #define LINEAR_SCALE_FACTOR 50.0f
-#define LOD_FACTOR 25.0f
+#define LOD_FACTOR 100.0f
 class Texture;
 class Camera;
 class ShaderProgram;
