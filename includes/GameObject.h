@@ -181,6 +181,7 @@ public:
     void makeDirty();
     bool isDirty();
 
+    void initializeModelMatrix();
 
 private:
     void initGameObject(std::shared_ptr<Mesh> &mesh, std::shared_ptr<Mesh> &colliderMesh);

@@ -330,6 +330,7 @@ void GameObject::setScale(chag::float3 s) {
 void GameObject::setLocation(chag::float3 l) {
     location = l;
     changed = true;
+
 }
 
 void GameObject::setRotation(chag::Quaternion r) {
@@ -339,5 +340,9 @@ void GameObject::setRotation(chag::Quaternion r) {
 
 void GameObject::addChild(GameObject* child) {
     children.push_back(child);
+}
+
+void GameObject::initializeModelMatrix() {
+    move(getFullMatrix());
 }
 
