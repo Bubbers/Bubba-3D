@@ -39,9 +39,9 @@ public:
     CubeMapTexture *cubeMap = nullptr;
 
     Camera *shadowMapCamera = nullptr; //Will follow directional light
-    DirectionalLight directionalLight;
-    std::vector<PointLight> pointLights;
-    std::vector<SpotLight> spotLights;
+    std::shared_ptr<DirectionalLight> directionalLight;
+    std::vector<std::shared_ptr<PointLight>> pointLights;
+    std::vector<std::shared_ptr<SpotLight>> spotLights;
 
     /**
      * @brief registers a GameObject as a shadow caster

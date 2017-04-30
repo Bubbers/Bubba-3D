@@ -165,39 +165,39 @@ void Renderer::drawScene(Camera *camera, Scene *scene, float currentTime)
 
 void Renderer::setLights(std::shared_ptr<ShaderProgram> &shaderProgram, Scene *scene) {
     //set dirlights
-    shaderProgram->setUniform3f("directionalLight.colors.ambientColor", scene->directionalLight.ambientColor);
-    shaderProgram->setUniform3f("directionalLight.colors.diffuseColor", scene->directionalLight.diffuseColor);
-    shaderProgram->setUniform3f("directionalLight.colors.specularColor", scene->directionalLight.specularColor);
-    shaderProgram->setUniform3f("directionalLight.direction", scene->directionalLight.direction);
+    shaderProgram->setUniform3f("directionalLight.colors.ambientColor", scene->directionalLight->ambientColor);
+    shaderProgram->setUniform3f("directionalLight.colors.diffuseColor", scene->directionalLight->diffuseColor);
+    shaderProgram->setUniform3f("directionalLight.colors.specularColor", scene->directionalLight->specularColor);
+    shaderProgram->setUniform3f("directionalLight.direction", scene->directionalLight->direction);
 
     //set pointLights
 
     shaderProgram->setUniform1i("nrPointLights", (int)scene->pointLights.size());
     for (int i = 0; i < (int)scene->pointLights.size(); i++) {
         std::string name = std::string("pointLights[") + patch::to_string(i).c_str() + "]";
-        shaderProgram->setUniform3f((name + ".position").c_str(), scene->pointLights[i].position);
-        shaderProgram->setUniform3f((name + ".colors.ambientColor").c_str(), scene->pointLights[i].ambientColor);
-        shaderProgram->setUniform3f((name + ".colors.diffuseColor").c_str(), scene->pointLights[i].diffuseColor);
-        shaderProgram->setUniform3f((name + ".colors.specularColor").c_str(), scene->pointLights[i].specularColor);
-        shaderProgram->setUniform1f((name + ".attenuation.constant").c_str(), scene->pointLights[i].attenuation.constant);
-        shaderProgram->setUniform1f((name + ".attenuation.linear").c_str(), scene->pointLights[i].attenuation.linear);
-        shaderProgram->setUniform1f((name + ".attenuation.exp").c_str(), scene->pointLights[i].attenuation.exp);
+        shaderProgram->setUniform3f((name + ".position").c_str(), scene->pointLights[i]->position);
+        shaderProgram->setUniform3f((name + ".colors.ambientColor").c_str(), scene->pointLights[i]->ambientColor);
+        shaderProgram->setUniform3f((name + ".colors.diffuseColor").c_str(), scene->pointLights[i]->diffuseColor);
+        shaderProgram->setUniform3f((name + ".colors.specularColor").c_str(), scene->pointLights[i]->specularColor);
+        shaderProgram->setUniform1f((name + ".attenuation.constant").c_str(), scene->pointLights[i]->attenuation.constant);
+        shaderProgram->setUniform1f((name + ".attenuation.linear").c_str(), scene->pointLights[i]->attenuation.linear);
+        shaderProgram->setUniform1f((name + ".attenuation.exp").c_str(), scene->pointLights[i]->attenuation.exp);
     }
 
     //set spotLights
     shaderProgram->setUniform1i("nrSpotLights", (int)scene->spotLights.size());
     for (int i = 0; i < (int)scene->spotLights.size(); i++) {
         std::string name = std::string("spotLights[") + patch::to_string(i).c_str() + "]";
-        shaderProgram->setUniform3f((name + ".position").c_str(), scene->spotLights[i].position);
-        shaderProgram->setUniform3f((name + ".colors.ambientColor").c_str(), scene->spotLights[i].ambientColor);
-        shaderProgram->setUniform3f((name + ".colors.diffuseColor").c_str(), scene->spotLights[i].diffuseColor);
-        shaderProgram->setUniform3f((name + ".colors.specularColor").c_str(), scene->spotLights[i].specularColor);
-        shaderProgram->setUniform1f((name + ".attenuation.constant").c_str(), scene->spotLights[i].attenuation.constant);
-        shaderProgram->setUniform1f((name + ".attenuation.linear").c_str(), scene->spotLights[i].attenuation.linear);
-        shaderProgram->setUniform1f((name + ".attenuation.exp").c_str(), scene->spotLights[i].attenuation.exp);
-        shaderProgram->setUniform3f((name + ".direction").c_str(), scene->spotLights[i].direction);
-        shaderProgram->setUniform1f((name + ".cutoff").c_str(), scene->spotLights[i].cutOff);
-        shaderProgram->setUniform1f((name + ".cutoffOuter").c_str(), scene->spotLights[i].outerCutOff);
+        shaderProgram->setUniform3f((name + ".position").c_str(), scene->spotLights[i]->position);
+        shaderProgram->setUniform3f((name + ".colors.ambientColor").c_str(), scene->spotLights[i]->ambientColor);
+        shaderProgram->setUniform3f((name + ".colors.diffuseColor").c_str(), scene->spotLights[i]->diffuseColor);
+        shaderProgram->setUniform3f((name + ".colors.specularColor").c_str(), scene->spotLights[i]->specularColor);
+        shaderProgram->setUniform1f((name + ".attenuation.constant").c_str(), scene->spotLights[i]->attenuation.constant);
+        shaderProgram->setUniform1f((name + ".attenuation.linear").c_str(), scene->spotLights[i]->attenuation.linear);
+        shaderProgram->setUniform1f((name + ".attenuation.exp").c_str(), scene->spotLights[i]->attenuation.exp);
+        shaderProgram->setUniform3f((name + ".direction").c_str(), scene->spotLights[i]->direction);
+        shaderProgram->setUniform1f((name + ".cutoff").c_str(), scene->spotLights[i]->cutOff);
+        shaderProgram->setUniform1f((name + ".cutoffOuter").c_str(), scene->spotLights[i]->outerCutOff);
     }
 }
 
