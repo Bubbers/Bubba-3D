@@ -52,7 +52,7 @@ GameObject::GameObject() {
     id = getUniqueId();
 }
 
-GameObject::GameObject(GameObject* parent) {
+GameObject::GameObject(std::shared_ptr<GameObject> parent) {
     this->parent = parent;
     m_modelMatrix = chag::make_identity<chag::float4x4>();
     id = getUniqueId();
@@ -68,13 +68,13 @@ GameObject::GameObject(std::shared_ptr<Mesh> mesh, std::shared_ptr<Mesh> collide
     initGameObject(mesh, colliderMesh);
 }
 
-GameObject::GameObject(std::shared_ptr<Mesh> mesh, GameObject* parent) {
+GameObject::GameObject(std::shared_ptr<Mesh> mesh, std::shared_ptr<GameObject> parent) {
     this->parent = parent;
     m_modelMatrix = chag::make_identity<chag::float4x4>();
     initGameObject(mesh, mesh);
 }
 
-GameObject::GameObject(std::shared_ptr<Mesh> mesh, std::shared_ptr<Mesh> colliderMesh, GameObject* parent) {
+GameObject::GameObject(std::shared_ptr<Mesh> mesh, std::shared_ptr<Mesh> colliderMesh, std::shared_ptr<GameObject> parent) {
     this->parent = parent;
     m_modelMatrix = chag::make_identity<chag::float4x4>();
     initGameObject(mesh, colliderMesh);
@@ -111,8 +111,9 @@ Octree* GameObject::createOctree(std::shared_ptr<Mesh> &mesh) {
 }
 
 Sphere GameObject::getTransformedSphere() {
-    float scaling = std::max(scale.x, std::max(scale.y, scale.z));
-    return Sphere(sphere.getPosition()+location, scaling*sphere.getRadius());
+    chag::float3 absScale = getAbsoluteScale();
+    float scaling = std::max(absScale.x, std::max(absScale.y, absScale.z));
+    return Sphere(sphere.getPosition()+getAbsoluteLocation(), scaling*sphere.getRadius());
 }
 
 void GameObject::makeDirty() {
@@ -139,7 +140,7 @@ void GameObject::render() {
         renderComponent->render();
     }
     if (children.size() != 0) {
-        for (GameObject *child : children) {
+        for (auto child : children) {
             child->render();
         }
     }
@@ -161,7 +162,7 @@ void GameObject::renderEmissive(std::shared_ptr<ShaderProgram> &shaderProgram){
 
 void GameObject::renderShadow(std::shared_ptr<ShaderProgram> &shaderProgram) {
     renderComponent->renderShadow(shaderProgram);
-    for (GameObject *child : children) {
+    for (auto child : children) {
         child->renderShadow(shaderProgram);
     }
 }
@@ -186,7 +187,7 @@ chag::float4x4 GameObject::getFullMatrix() {
 
     parentMat = translation * rotation * scale;
 
-    if(parent != nullptr) {
+    if(parent) {
         parentMat = parent->getFullMatrix() * parentMat;
     }
 
@@ -203,7 +204,7 @@ void GameObject::update(float dt) {
 
         move(getFullMatrix());
     }
-    for (GameObject *child : children) {
+    for (auto child : children) {
         child->changed = true;
         child->update(dt);
     }
@@ -227,7 +228,7 @@ void GameObject::callEvent(EventType type, std::shared_ptr<GameObject> data) {
         }
         break;
     }
-    for (GameObject *child : children) {
+    for (auto child : children) {
         child->callEvent(type, data);
     }
 }
@@ -285,7 +286,7 @@ int GameObject::getId() {
 }
 
 chag::float3 GameObject::getAbsoluteScale() {
-    if (parent != nullptr) {
+    if (parent) {
         return scale * parent->getAbsoluteScale();
     }
     return scale;
@@ -296,7 +297,7 @@ chag::float3 GameObject::getRelativeScale() {
 }
 
 chag::Quaternion GameObject::getAbsoluteRotation() {
-    if (parent != nullptr) {
+    if (parent) {
         return rotation * parent->getAbsoluteRotation();
     }
     return rotation;
@@ -338,7 +339,7 @@ void GameObject::setRotation(chag::Quaternion r) {
     hasRotation = changed = true;
 }
 
-void GameObject::addChild(GameObject* child) {
+void GameObject::addChild(std::shared_ptr<GameObject> child) {
     children.push_back(child);
 }
 
@@ -346,3 +347,6 @@ void GameObject::initializeModelMatrix() {
     move(getFullMatrix());
 }
 
+std::vector<std::shared_ptr<GameObject>> *GameObject::getChildren() {
+    return &children;
+}

@@ -35,19 +35,43 @@ CollisionPairList BFBroadPhase::computeCollisionPairs(Scene *scene) {
     CollisionPairList collisionPairs;
 
     for (auto i = sceneObjects.begin(); i != sceneObjects.end(); i++) {
-        for (auto j = i + 1; j != sceneObjects.end(); j++) {
-            std::shared_ptr<GameObject> gameObject1 = *i;
-            std::shared_ptr<GameObject> gameObject2 = *j;
 
-            if(isPossiblyColliding(gameObject1,gameObject2)) {
-                collisionPairs.push_back(
-                    std::pair<std::shared_ptr<GameObject>,std::shared_ptr<GameObject>>
-                        (gameObject1, gameObject2));
-            }
+        std::shared_ptr<GameObject> gameObject1 = *i;
+        findPossiblyCollidesWith(sceneObjects, collisionPairs, i, gameObject1);
 
+        std::vector<std::shared_ptr<GameObject>> *children = gameObject1->getChildren();
+        for(auto childIt = children->begin(); childIt < children->end(); childIt++){
+            findPossiblyCollidesWith(sceneObjects, collisionPairs, i, *childIt);
         }
+
     }
     return collisionPairs;
+}
+
+void BFBroadPhase::findPossiblyCollidesWith(std::vector<std::shared_ptr<GameObject>> &sceneObjects,
+                                            CollisionPairList &collisionPairs,
+                                            const std::vector<std::shared_ptr<GameObject>>::iterator &i,
+                                            const std::shared_ptr<GameObject> gameObject1) {
+
+    for (auto j = i + 1; j != sceneObjects.end(); j++) {
+
+        std::shared_ptr<GameObject> gameObject2 = *j;
+        addIfPossiblyColliding(collisionPairs, gameObject1, gameObject2);
+
+        std::vector<std::shared_ptr<GameObject>> *children = gameObject2->getChildren();
+        for(auto childIt = children->begin(); childIt < children->end(); childIt++){
+            addIfPossiblyColliding(collisionPairs, gameObject1, *childIt);
+        }
+
+    }
+}
+
+void BFBroadPhase::addIfPossiblyColliding(CollisionPairList &collisionPairs,
+                                          const std::shared_ptr<GameObject> gameObject1,
+                                          const std::shared_ptr<GameObject> gameObject2) {
+    if(isPossiblyColliding(gameObject1, gameObject2)) {
+        collisionPairs.push_back(std::pair<std::shared_ptr<GameObject>,std::shared_ptr<GameObject>>(gameObject1, gameObject2));
+    }
 }
 
 

@@ -34,6 +34,13 @@ public:
 private:
     bool isPossiblyColliding(std::shared_ptr<GameObject> gameObject1, std::shared_ptr<GameObject> gameObject2);
 
+    void addIfPossiblyColliding(CollisionPairList &collisionPairs, const std::shared_ptr<GameObject> gameObject1,
+                                const std::shared_ptr<GameObject> gameObject2);
+
+    void findPossiblyCollidesWith(std::vector<std::shared_ptr<GameObject>> &sceneObjects,
+                                  CollisionPairList &collisionPairs,
+                                  const std::vector<std::shared_ptr<GameObject>>::iterator &i,
+                                  const std::shared_ptr<GameObject> gameObject1);
 };
 
 #endif //BUBBA_3D_BRUTEFORCEBROADPHASE_H

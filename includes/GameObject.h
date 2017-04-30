@@ -68,7 +68,7 @@ class ShaderProgram;
 class GameObject : public IDrawable {
 public:
     GameObject();
-    GameObject(GameObject* parent);
+    GameObject(std::shared_ptr<GameObject> parent);
 
     /**
      * Initiates the GameObject with the same mesh for rendering and collision
@@ -84,8 +84,8 @@ public:
      */
     GameObject(std::shared_ptr<Mesh> mesh, std::shared_ptr<Mesh> colliderMesh);
 
-    GameObject(std::shared_ptr<Mesh> mesh, GameObject* parent);
-    GameObject(std::shared_ptr<Mesh> mesh, std::shared_ptr<Mesh> colliderMesh, GameObject* parent);
+    GameObject(std::shared_ptr<Mesh> mesh, std::shared_ptr<GameObject> parent);
+    GameObject(std::shared_ptr<Mesh> mesh, std::shared_ptr<Mesh> colliderMesh, std::shared_ptr<GameObject> parent);
 
     virtual ~GameObject();
 
@@ -144,7 +144,7 @@ public:
     chag::float3 getAbsoluteLocation();
     void setLocation(chag::float3 l);
 
-    void addChild(GameObject* child);
+    void addChild(std::shared_ptr<GameObject> child);
 
     TypeIdentifier getIdentifier();
     void setIdentifier(TypeIdentifier identifier);
@@ -183,6 +183,9 @@ public:
 
     void initializeModelMatrix();
 
+
+    std::vector<std::shared_ptr<GameObject>> *getChildren();
+
 private:
     void initGameObject(std::shared_ptr<Mesh> &mesh, std::shared_ptr<Mesh> &colliderMesh);
 
@@ -216,8 +219,8 @@ private:
     bool changed = false;
 
     /* Hierarchy */
-    GameObject* parent = nullptr;
-    std::vector<GameObject*> children;
+    std::shared_ptr<GameObject> parent = nullptr;
+    std::vector<std::shared_ptr<GameObject>> children;
 
     /* Collision */
     std::shared_ptr<Mesh> collisionMesh;
