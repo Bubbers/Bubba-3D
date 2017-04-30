@@ -98,7 +98,10 @@ void Mesh::assertAllVertexWeightsSumToOne(Chunk &chunk) {
             sum += boneInfluenceOnVertex.weights[boneIndex];
         }
 
-        assert(fequals(sum, 1.0f));
+        if(!fequals(sum, 1.0f)) {
+            Logger::logWarning("Mesh has vertices where the bone weight sum doesn't equal one, this may cause animations to fail");
+            break;
+        }
     }
 }
 
