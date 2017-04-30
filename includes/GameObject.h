@@ -65,7 +65,7 @@ class ShaderProgram;
  * has been marked as dirty. Then you can at a later point, when calculations arent being done,
  * safely remove the object.
  */
-class GameObject : public IDrawable {
+class GameObject : public IDrawable, public std::enable_shared_from_this<GameObject> {
 public:
     GameObject();
     GameObject(std::shared_ptr<GameObject> parent);

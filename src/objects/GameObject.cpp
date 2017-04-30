@@ -340,6 +340,7 @@ void GameObject::setRotation(chag::Quaternion r) {
 }
 
 void GameObject::addChild(std::shared_ptr<GameObject> child) {
+    child->parent = shared_from_this();
     children.push_back(child);
 }
 
