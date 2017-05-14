@@ -35,7 +35,7 @@
  * \endcode
  */
 struct BoneInfluenceOnVertex {
-    uint ids[MAX_NUM_BONES];
+    unsigned int ids[MAX_NUM_BONES];
     float weights[MAX_NUM_BONES];
 
     BoneInfluenceOnVertex();

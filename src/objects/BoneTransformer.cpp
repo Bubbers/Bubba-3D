@@ -46,7 +46,7 @@ void BoneTransformer::readNodeHierarchyAndUpdateBoneTransformations(float curren
 }
 
 void BoneTransformer::updateBoneTransformation(const std::string &nodeName, const chag::float4x4 &globalTransformation) {
-    uint boneIndex = boneNameToIndexMapping[nodeName];
+    unsigned int boneIndex = boneNameToIndexMapping[nodeName];
 
     boneInfos[boneIndex]->finalTransformation = globalInverseTransform * globalTransformation * boneInfos[boneIndex]->boneOffset;
 }
