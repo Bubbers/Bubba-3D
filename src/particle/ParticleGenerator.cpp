@@ -22,6 +22,7 @@
 #include "Camera.h"
 #include "Particle.h"
 #include "ParticleConf.h"
+#include "GameObject.h"
 
 
 ParticleGenerator::ParticleGenerator(int maxParticles,

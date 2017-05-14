@@ -41,6 +41,7 @@
 #include "IComponent.h"
 #include "IRenderComponent.h"
 #include "Octree.h"
+#include "ShaderProgram.h"
 
 #define NORMAL_TEXTURE_LOCATION 3
 #define DIFFUSE_TEXTURE_LOCATION 0

@@ -19,6 +19,7 @@
 #include <memory>
 #include <vector>
 #include "linmath/float3.h"
+#include "glutil/glutil.h"
 
 #define LINEAR_SCALE_FACTOR 50.0f
 #define LOD_FACTOR 100.0f

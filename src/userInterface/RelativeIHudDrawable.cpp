@@ -18,6 +18,7 @@
 #include <Globals.h>
 #include "RelativeIHudDrawable.h"
 #include "Camera.h"
+#include "GameObject.h"
 #include <memory>
 
 RelativeIHudDrawable::RelativeIHudDrawable(Camera* worldCamera, std::shared_ptr<GameObject> relativeTo, IHudDrawable *toDraw) :

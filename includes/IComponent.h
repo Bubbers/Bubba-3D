@@ -17,7 +17,10 @@
 
 #ifndef BUBBA_3D_COMPONENT_H
 #define BUBBA_3D_COMPONENT_H
-#include "GameObject.h"
+
+#include <memory>
+
+class GameObject;
 
 class IComponent {
 public:
