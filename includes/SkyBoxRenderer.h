@@ -29,7 +29,7 @@ class GameObject;
 class SkyBoxRenderer : public IRenderComponent
 {
 public:
-    SkyBoxRenderer(Camera* camera, Mesh* skyMesh, GameObject* gameObject);
+    SkyBoxRenderer(Camera* camera, Mesh* skyMesh, std::shared_ptr<GameObject> gameObject);
     ~SkyBoxRenderer();
 
     bool init(const std::string& posXFilename, const std::string& negXFilename,
@@ -45,5 +45,5 @@ private:
     Camera* m_camera;
     CubeMapTexture* m_pCubemap;
     Mesh *m_skyMesh;
-    GameObject* gameObject;
+    std::shared_ptr<GameObject> gameObject;
 };
