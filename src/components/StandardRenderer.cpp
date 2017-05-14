@@ -42,10 +42,15 @@ void StandardRenderer::update(float dt){
 }
 
 void StandardRenderer::render() {
+    if (owner.expired()) {
+        return;
+    }
+
     shaderProgram->use();
     CHECK_GL_ERROR();
 
-    chag::float4x4 modelMatrix = owner->getModelMatrix();
+    std::shared_ptr<GameObject> owner_ptr = owner.lock();
+    chag::float4x4 modelMatrix = owner_ptr->getModelMatrix();
 
     chag::float4x4 normalMatrix = chag::inverse(chag::transpose(modelMatrix));
     shaderProgram->setUniformMatrix4fv("modelMatrix", modelMatrix);
@@ -108,7 +113,12 @@ void StandardRenderer::setBones(std::shared_ptr<ShaderProgram> &shaderProgram) c
 
 void StandardRenderer::renderShadow(std::shared_ptr<ShaderProgram> &shaderProgram) {
 
-    chag::float4x4 modelMatrix = owner->getModelMatrix();
+    if (owner.expired()) {
+        return;
+    }
+
+    std::shared_ptr<GameObject> owner_ptr = owner.lock();
+    chag::float4x4 modelMatrix = owner_ptr->getModelMatrix();
     shaderProgram->setUniformMatrix4fv("modelMatrix", modelMatrix);
 
     for (size_t i = 0; i < mesh->getChunks()->size(); i++) {
@@ -127,10 +137,15 @@ void StandardRenderer::renderShadow(std::shared_ptr<ShaderProgram> &shaderProgra
 }
 
 void StandardRenderer::renderEmissive(std::shared_ptr<ShaderProgram> &shaderProgram) {
+    if (owner.expired()) {
+        return;
+    }
+
     shaderProgram->use();
     CHECK_GL_ERROR();
 
-    chag::float4x4 modelMatrix = owner->getModelMatrix();
+    std::shared_ptr<GameObject> owner_ptr = owner.lock();
+    chag::float4x4 modelMatrix = owner_ptr->getModelMatrix();
 
     shaderProgram->setUniformMatrix4fv("modelMatrix", modelMatrix);
 

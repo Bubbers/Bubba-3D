@@ -170,12 +170,12 @@ void GameObject::renderShadow(std::shared_ptr<ShaderProgram> &shaderProgram) {
 void GameObject::addRenderComponent(IRenderComponent* renderer) {
     this->renderComponent = renderer;
     components.push_back(renderer);
-    renderer->bind(this);
+    renderer->bind(shared_from_this());
 }
 
 void GameObject::addComponent(IComponent* newComponent) {
     components.push_back(newComponent);
-    newComponent->bind(this);
+    newComponent->bind(shared_from_this());
 }
 
 chag::float4x4 GameObject::getFullMatrix() {

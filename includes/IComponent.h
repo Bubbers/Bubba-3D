@@ -14,9 +14,6 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Bubba-3D. If not, see http://www.gnu.org/licenses/.
  */
-//
-// Created by johan on 2015-11-29.
-//
 
 #ifndef BUBBA_3D_COMPONENT_H
 #define BUBBA_3D_COMPONENT_H
@@ -25,14 +22,14 @@
 class IComponent {
 public:
     virtual void update(float dt) = 0;
-    void bind(GameObject *owner) { this->owner = owner; };
+    void bind(std::weak_ptr<GameObject> owner) { this->owner = owner; };
 
     virtual void beforeCollision(std::shared_ptr<GameObject> collider) {};
     virtual void duringCollision(std::shared_ptr<GameObject> collider) {};
     virtual void afterCollision(std::shared_ptr<GameObject> collider) {};
     virtual void onDeath(){ };
 protected:
-    GameObject *owner;
+    std::weak_ptr<GameObject> owner;
 };
 
 #endif //BUBBA_3D_COMPONENT_H

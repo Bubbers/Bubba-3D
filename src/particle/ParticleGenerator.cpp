@@ -41,25 +41,38 @@ ParticleGenerator::~ParticleGenerator()
 }
 
 void ParticleGenerator::render() {
-    renderer->render(particles, owner->getAbsoluteLocation(), conf);
+    if (owner.expired()) {
+        // nothing to render
+        return;
+    }
+
+    std::shared_ptr<GameObject> owner_ptr = owner.lock();
+    chag::float3 pos = owner_ptr->getAbsoluteLocation();
+    renderer->render(particles, pos, conf);
 }
 
 void ParticleGenerator::update(float dt) {
-    if (particles.empty() && owner != nullptr) {
+    if (owner.expired()) {
+        // nothing to update
+        return;
+    }
+
+    std::shared_ptr<GameObject> owner_ptr = owner.lock();
+    if (particles.empty()) {
         for (int i = 0; i < maxParticles; i++) {
-            std::unique_ptr<Particle> part(new Particle(*conf, owner->getModelMatrix()));
+            std::unique_ptr<Particle> part(new Particle(*conf, owner_ptr->getModelMatrix()));
             particles.push_back(std::move(part));
         }
     }
 
-    float distance = length(camera->getPosition() - owner->getAbsoluteLocation());
+    float distance = length(camera->getPosition() - owner_ptr->getAbsoluteLocation());
 
     for (std::unique_ptr<Particle> &particle : particles) {
         if (particle->isAlive()){
             particle->update(dt, distance, *conf);
         }
         else if(conf->loop(dt)){
-            particle->reset(*conf, owner->getModelMatrix());
+            particle->reset(*conf, owner_ptr->getModelMatrix());
         }
     }
 }

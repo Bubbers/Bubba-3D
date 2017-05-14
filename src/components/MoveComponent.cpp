@@ -34,12 +34,18 @@ MoveComponent::MoveComponent(chag::Quaternion rotationSpeed,
 
 void MoveComponent::update(float dt){
 
+    if (owner.expired()) {
+        return;
+    }
+
+    std::shared_ptr<GameObject> owner_ptr = owner.lock();
+
     velocity += acceleration*dt;
-    owner->setLocation(owner->getRelativeLocation() + velocity*dt);
+    owner_ptr->setLocation(owner_ptr->getRelativeLocation() + velocity*dt);
 
     chag::Quaternion q = slerp(chag::Quaternion(), rotationSpeed, dt);
-    owner->updateRotation(q);
-    owner->setScale(owner->getRelativeScale()+scaleSpeed*dt);
+    owner_ptr->updateRotation(q);
+    owner_ptr->setScale(owner_ptr->getRelativeScale()+scaleSpeed*dt);
 
 
 }
