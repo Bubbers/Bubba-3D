@@ -152,7 +152,7 @@ void Mesh::initBonesFromAiMesh(const aiMesh *paiMesh, Chunk &chunk) {
 
         for (unsigned int j = 0; j < paiMesh->mBones[i]->mNumWeights; j++) {
             auto aiWeight = paiMesh->mBones[i]->mWeights[j];
-            uint vertexId = aiWeight.mVertexId;
+            unsigned int vertexId = aiWeight.mVertexId;
             float weight = aiWeight.mWeight;
 
             chunk.bones[vertexId].addBoneData(boneIndex, weight);

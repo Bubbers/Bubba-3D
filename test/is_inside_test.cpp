@@ -23,6 +23,7 @@
 #include <userInterface/InsideSquareChecker.h>
 #include <userInterface/InsideRoundedSquareChecker.h>
 #include "catch.hpp"
+#include <glutil/glutil.h>
 
 TEST_CASE("IsInsideSquare","[isInsideSquare]"){
     InsideSquareChecker* squareChecker = new InsideSquareChecker(10,10,20,20);

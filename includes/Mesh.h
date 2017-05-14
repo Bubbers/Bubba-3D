@@ -27,6 +27,7 @@
 #include <map>
 #include <assimp/Importer.hpp>
 #include <memory>
+#include <cstring>
 
 
 class BoneTransformer;
