@@ -43,12 +43,14 @@ JoystickTranslator *JoystickTranslator::getInstance() {
 
 void JoystickTranslator::init(string filePath) {
 
+    initiated = true;
     struct stat filestatus;
     stat(filePath.c_str(), &filestatus);
     const unsigned long long size = filestatus.st_size;
 
     std::FILE *file = fopen(filePath.c_str(), "r");
-    char readBuffer[100000];
+
+    char readBuffer[size];
     FileReadStream rs(file, readBuffer, size);
 
     jsonConfig = new Document();
@@ -166,6 +168,9 @@ void JoystickTranslator::check(bool ch, string message) {
 }
 
 IJoystickTranslation *JoystickTranslator::getTranslation(unsigned int joystickID) {
+    if(!initiated) {
+        throw std::logic_error("You have to call JoystickTranslator.init() to use joysticks.");
+    }
     if (joystickID >= sf::Joystick::Count)
         throw std::invalid_argument("The parameter joystick was " + std::to_string(joystickID) +
                                     " but must be less than " + std::to_string(sf::Joystick::Count));

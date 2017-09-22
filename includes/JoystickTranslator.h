@@ -44,6 +44,7 @@ private:
     void check(bool, std::string);
     int getJoystick(unsigned int devId, unsigned int vendId, unsigned int startAt);
     void readMappings(rapidjson::Value* mappings, unsigned int joystickID, bool defaultMapping);
+    bool initiated = false;
 
     JoystickTranslation::valueRetriever decideOnButtonRetriever(rapidjson::Value* mapData);
     JoystickTranslation::valueRetriever decideOnAxisRetriever(rapidjson::Value* mapData, std::string axisName);
