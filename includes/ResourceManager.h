@@ -19,6 +19,7 @@
 #include <map>
 #include <sstream>
 #include <memory>
+#include "FileWatcher.h"
 
 class Texture;
 class Mesh;
@@ -68,11 +69,15 @@ public:
      */
     static std::shared_ptr<Mesh>    loadAndFetchMesh   (const std::string &fileName);
 
+    static void update();
+
 
 private:
     static std::map<std::string, std::shared_ptr<ShaderProgram>> shaders;
     static std::map<std::string, std::shared_ptr<Texture>> textures;
     static std::map<std::string, std::shared_ptr<Mesh>> meshes;
+
+    static FileWatcher fileWatcher;
 
     /**
      * @brief Loads a ShaderProgram into the ResourceManager
