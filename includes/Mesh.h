@@ -180,13 +180,13 @@ private:
 
     std::vector<Triangle *> triangles;
     std::vector<Material> materials;
-    std::vector<Chunk> m_chunks;
+    std::vector<Chunk> chunks;
 
     std::shared_ptr<BoneTransformer> boneTransformer;
     Assimp::Importer importer;
 
     Sphere sphere;
-    AABB m_aabb;
+    AABB aabb;
 
     unsigned int numAnimations;
 

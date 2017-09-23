@@ -86,7 +86,7 @@ void Mesh::initChunkFromAiMesh(const aiMesh *paiMesh, Chunk &chunk) {
     chunk.materialIndex = paiMesh->mMaterialIndex;
 
     setupChunkForRendering(chunk);
-    m_chunks.push_back(chunk);
+    chunks.push_back(chunk);
 }
 
 
@@ -125,7 +125,7 @@ void Mesh::initVerticesFromAiMesh(const aiMesh *paiMesh, Chunk &chunk) {
             chunk.m_tangents.push_back(make_vector(pTangents.x, pTangents.y, pTangents.z));
         }
 
-        updateMinAndMax(pPos.x, pPos.y, pPos.z, &m_aabb.minV, &m_aabb.maxV);
+        updateMinAndMax(pPos.x, pPos.y, pPos.z, &aabb.minV, &aabb.maxV);
     }
 }
 
@@ -249,7 +249,7 @@ Sphere Mesh::getSphere() {
 }
 
 void Mesh::setupSphere(std::vector<float3> *positions) {
-    sphere.setPosition(m_aabb.getCenterPosition());
+    sphere.setPosition(aabb.getCenterPosition());
     sphere.setRadius(0.0f);
     for (float3 posIt : *positions) {
         float rad = length(sphere.getPosition() - posIt);
@@ -306,14 +306,14 @@ void Mesh::setupChunkForRendering(Chunk &chunk) {
 }
 
 AABB* Mesh::getAABB() {
-    return &m_aabb;
+    return &aabb;
 }
 
 void Mesh::createTriangles() {
-    for (unsigned int i = 0; i < m_chunks.size(); i++) {
+    for (unsigned int i = 0; i < chunks.size(); i++) {
 
-        for (unsigned int j = 0; j + 2 < m_chunks[i].m_indices.size(); j += 3) {
-            triangles.push_back(createTriangleFromPositions(m_chunks[i].m_positions, m_chunks[i].m_indices, j));
+        for (unsigned int j = 0; j + 2 < chunks[i].m_indices.size(); j += 3) {
+            triangles.push_back(createTriangleFromPositions(chunks[i].m_positions, chunks[i].m_indices, j));
         }
     }
 }
@@ -336,7 +336,7 @@ std::vector<Triangle*> Mesh::getTriangles() {
 }
 
 std::vector<Chunk>* Mesh::getChunks() {
-    return &m_chunks;
+    return &chunks;
 }
 
 std::vector<Material>* Mesh::getMaterials() {
