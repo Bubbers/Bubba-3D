@@ -23,12 +23,16 @@
 #include "objects/Chunk.h"
 #include "Texture.h"
 #include "Mesh.h"
+#include <sstream>
 
 std::map<std::string, std::shared_ptr<ShaderProgram>> ResourceManager::shaders;
 std::map<std::string, std::shared_ptr<Texture>> ResourceManager::textures;
 std::map<std::string, std::shared_ptr<Mesh>> ResourceManager::meshes;
 
 #ifdef __linux__
+std::map<std::string, std::shared_ptr<sf::Music>> ResourceManager::musics;
+std::map<std::string, std::shared_ptr<sf::SoundBuffer>> ResourceManager::soundBuffers;
+
 FileWatcher ResourceManager::fileWatcher = FileWatcher();
 #endif
 
@@ -140,8 +144,62 @@ std::shared_ptr<Type> ResourceManager::getItemFromMap(
     }
 }
 
-void ResourceManager::update() {
 #ifdef __linux__
-    ResourceManager::fileWatcher.update();
-#endif
+std::shared_ptr<sf::Sound> ResourceManager::loadAndFetchSound(const std::string &fileName){
+    try {
+        return getSoundBuffer(fileName);
+    } catch (std::invalid_argument exception) {
+        loadSoundBuffer(fileName);
+        return getSoundBuffer(fileName);
+    }
 }
+
+void ResourceManager::loadSoundBuffer(const std::string &fileName) {
+    std::shared_ptr<sf::SoundBuffer> soundBuffer = std::make_shared<sf::SoundBuffer>();
+    soundBuffer->loadFromFile(fileName);
+
+    ResourceManager::fileWatcher.addWatch(fileName, [fileName, soundBuffer](){
+        const std::string fileNameConst = fileName;
+        soundBuffer->loadFromFile(fileNameConst);
+    });
+
+    soundBuffers.insert(std::pair<std::string, std::shared_ptr<sf::SoundBuffer>>(fileName, soundBuffer));
+}
+
+std::shared_ptr<sf::Sound> ResourceManager::getSoundBuffer(std::string fileName){
+    std::shared_ptr<sf::SoundBuffer> soundBuffer = getItemFromMap(soundBuffers, fileName);
+    std::shared_ptr<sf::Sound> sound = std::make_shared<sf::Sound>();
+    sound->setBuffer(*soundBuffer);
+    return sound;
+}
+
+
+std::shared_ptr<sf::Music> ResourceManager::loadAndFetchMusic(const std::string &fileName) {
+    try {
+        return getMusic(fileName);
+    } catch (std::invalid_argument exception) {
+        loadMusic(fileName);
+        return getMusic(fileName);
+    }
+}
+
+void ResourceManager::loadMusic(const std::string &fileName) {
+    std::shared_ptr<sf::Music> music = std::make_shared<sf::Music>();
+    music->openFromFile(fileName);
+
+    ResourceManager::fileWatcher.addWatch(fileName, [fileName, music](){
+        music->openFromFile(fileName);
+    });
+
+    musics.insert(std::pair<std::string, std::shared_ptr<sf::Music>>(fileName, music));
+}
+
+std::shared_ptr<sf::Music> ResourceManager::getMusic(std::string fileName) {
+    return getItemFromMap(musics, fileName);
+}
+
+void ResourceManager::update() {
+    ResourceManager::fileWatcher.update();
+}
+
+#endif

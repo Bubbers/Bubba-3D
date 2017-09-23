@@ -13,7 +13,6 @@ add_subdirectory(logging)
 add_subdirectory(objects)
 add_subdirectory(particle)
 add_subdirectory(shader)
-add_subdirectory(sound)
 add_subdirectory(linmath)
 add_subdirectory(glutil)
 add_subdirectory(userInterface)
@@ -24,8 +23,7 @@ set(HEADER_FILES
 		  ${PROJECT_SOURCE_DIR}/includes/ParticleGenerator.h
 		  ${PROJECT_SOURCE_DIR}/includes/AABB2.h 
 		  ${PROJECT_SOURCE_DIR}/includes/IShader.h
-		  ${PROJECT_SOURCE_DIR}/includes/PerspectiveCamera.h 
-		  ${PROJECT_SOURCE_DIR}/includes/AudioManager.h 
+		  ${PROJECT_SOURCE_DIR}/includes/PerspectiveCamera.h
 		  ${PROJECT_SOURCE_DIR}/includes/Input.h 
 		  ${PROJECT_SOURCE_DIR}/includes/Renderer.h
 		  ${PROJECT_SOURCE_DIR}/includes/JoystickAxis.h 
