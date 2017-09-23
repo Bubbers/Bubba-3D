@@ -61,7 +61,6 @@ void Renderer::resize(unsigned int width, unsigned int height) {
     postProcessFbo = createPostProcessFbo(width, height);
     verticalBlurFbo = createPostProcessFbo(width, height);
     horizontalBlurFbo = createPostProcessFbo(width, height);
-    cutOffFbo = createPostProcessFbo(width, height);
 }
 
 void Renderer::drawModel(IDrawable &model, std::shared_ptr<ShaderProgram> &shaderProgram)
@@ -77,8 +76,6 @@ void Renderer::drawScene(Camera *camera, Scene *scene, float currentTime)
     chag::float4x4 viewMatrix           = camera->getViewMatrix();
     chag::float4x4 projectionMatrix     = camera->getProjectionMatrix();
     chag::float4x4 viewProjectionMatrix = projectionMatrix * viewMatrix;
-
-
 
     // enable back face culling.
     glEnable(GL_CULL_FACE);
@@ -150,12 +147,13 @@ void Renderer::drawScene(Camera *camera, Scene *scene, float currentTime)
 
     drawShadowCasters(shaderProgram, scene);
 
-    drawBloom(emissiveShader, scene, w, h, viewProjectionMatrix);
+
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     drawTransparent(shaderProgram, scene);
     glDisable(GL_BLEND);
 
+    drawBloom(emissiveShader, scene, w, h, viewProjectionMatrix);
     renderPostProcess();
 
     //Cleanup
@@ -207,8 +205,7 @@ void Renderer::setLights(std::shared_ptr<ShaderProgram> &shaderProgram, Scene *s
 * In this function, add all scene elements that should cast shadow, that way
 * there is only one draw call to each of these, as this function is called twice.
 */
-void Renderer::drawShadowCasters(std::shared_ptr<ShaderProgram> &shaderProgram, Scene *scene)
-{
+void Renderer::drawShadowCasters(std::shared_ptr<ShaderProgram> &shaderProgram, Scene *scene) {
     std::vector<std::shared_ptr<GameObject>> shadowCasters = scene->getShadowCasters();
     for (unsigned int i = 0; i < scene->getShadowCasters().size(); i++) {
         shaderProgram->setUniform1f("object_reflectiveness", (*shadowCasters[i]).shininess);
@@ -216,11 +213,13 @@ void Renderer::drawShadowCasters(std::shared_ptr<ShaderProgram> &shaderProgram, 
     }
 }
 
-void Renderer::drawTransparent(std::shared_ptr<ShaderProgram> &shaderProgram, Scene *scene)
-{
+void Renderer::drawTransparent(std::shared_ptr<ShaderProgram> &shaderProgram, Scene *scene) {
     shaderProgram->use();
     std::vector<std::shared_ptr<GameObject>> transparentObjects = scene->getTransparentObjects();
+
     for (unsigned int i = 0; i < transparentObjects.size(); i++) {
+        glEnable(GL_BLEND);
+        glDepthFunc(GL_LESS);
         shaderProgram->setUniform1f("object_reflectiveness", (*transparentObjects[i]).shininess);
         drawModel(*transparentObjects[i], shaderProgram);
     }
@@ -235,7 +234,7 @@ void Renderer::drawBloom(std::shared_ptr<ShaderProgram> &shaderProgram, Scene *s
     glBindFramebuffer(GL_FRAMEBUFFER, verticalBlurFbo.id);
     glActiveTexture(GL_TEXTURE0);
     glViewport(0,0,w,h);
-    glClearColor(1.0, 1.0, 1.0, 0.0);
+    glClearColor(0.0, 0.0, 0.0, 0.0);
     glClearDepth(1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -267,6 +266,7 @@ void Renderer::drawBloom(std::shared_ptr<ShaderProgram> &shaderProgram, Scene *s
 
     //VERTICAL
     glBindFramebuffer(GL_FRAMEBUFFER, postProcessFbo.id);
+    glDepthFunc(GL_LESS);
 
     verticalBlurShader->use();
 
@@ -275,7 +275,6 @@ void Renderer::drawBloom(std::shared_ptr<ShaderProgram> &shaderProgram, Scene *s
     drawFullScreenQuad();
 
     //cleanup
-    glBindFramebuffer(GL_FRAMEBUFFER, postProcessFbo.id);
     glUseProgram(currentProgram);
     glDisable(GL_BLEND);
 
@@ -438,66 +437,19 @@ void Renderer::renderPostProcess() {
     int w = Globals::get(Globals::WINDOW_WIDTH);
     int h = Globals::get(Globals::WINDOW_HEIGHT);
 
-    blurImage();
-
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(0, 0, w, h);
-    glClearColor(0.6f, 0.0f, 0.0f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     postFxShader->use();
     postFxShader->setUniform1i("frameBufferTexture", 0);
-    postFxShader->setUniform1i("blurredFrameBufferTexture", 1);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_RECTANGLE_ARB, postProcessFbo.texture);
-
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_RECTANGLE_ARB, verticalBlurFbo.texture);
 
     postFxShader->setUniform1f("time", currentTime);
 
-    drawFullScreenQuad();
-}
-
-void Renderer::blurImage() {
-    if (!effects.blur.active) { return; }
-    //CUTOFF
-
-    int width = Globals::get(Globals::WINDOW_WIDTH);
-    int height = Globals::get(Globals::WINDOW_HEIGHT);
-    cutoffShader->use();
-    glBindFramebuffer(GL_FRAMEBUFFER, cutOffFbo.id);
-    glViewport(0, 0, width, height);
-    glClearColor(1.0, 1.0, 0.0, 1.0);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    cutoffShader->setUniform1f("cutAt", effects.blur.cutOff);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_RECTANGLE_ARB, postProcessFbo.texture);
-
-    drawFullScreenQuad();
-
-    //HORIZONTAL
-    glBindFramebuffer(GL_FRAMEBUFFER, horizontalBlurFbo.id);
-    glClearColor(0.0, 0.0, 0.0, 1.0);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    horizontalBlurShader->use();
-
-    horizontalBlurShader->setUniform1i("frameBufferTexture", 0);
-    glBindTexture(GL_TEXTURE_RECTANGLE_ARB, cutOffFbo.texture);
-    drawFullScreenQuad();
-
-    //VERTICAL
-    glBindFramebuffer(GL_FRAMEBUFFER, verticalBlurFbo.id);
-    glClearColor(0.0, 0.0, 0.0, 1.0);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    verticalBlurShader->use();
-
-    verticalBlurShader->setUniform1i("frameBufferTexture", 0);
-    glBindTexture(GL_TEXTURE_RECTANGLE_ARB, horizontalBlurFbo.texture);
     drawFullScreenQuad();
 }
 

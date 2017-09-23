@@ -72,7 +72,6 @@ private:
     void drawModel(IDrawable &model, std::shared_ptr<ShaderProgram> &shaderProgram);
     void drawFullScreenQuad();
     void renderPostProcess();
-    void blurImage();
 
     // Postprocess
     std::shared_ptr<ShaderProgram> postFxShader;
@@ -80,7 +79,7 @@ private:
     std::shared_ptr<ShaderProgram> verticalBlurShader;
     std::shared_ptr<ShaderProgram> cutoffShader;
     std::shared_ptr<ShaderProgram> emissiveShader;
-    Fbo postProcessFbo, horizontalBlurFbo, verticalBlurFbo, cutOffFbo;
+    Fbo postProcessFbo, horizontalBlurFbo, verticalBlurFbo;
 
     chag::float3 backgroundColor = chag::make_vector(0.2f, 0.2f, 0.8f);
 

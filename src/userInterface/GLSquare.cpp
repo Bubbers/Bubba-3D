@@ -30,6 +30,11 @@ void GLSquare::render(std::shared_ptr<ShaderProgram> shaderProgram, chag::float4
     GLint currentDepthFunc;
     glGetIntegerv(GL_DEPTH_FUNC, &currentDepthFunc);
 
+    GLint blendSrc;
+    GLint blendDst;
+    glGetIntegerv(GL_BLEND_SRC_ALPHA, &blendSrc);
+    glGetIntegerv(GL_BLEND_DST_ALPHA, &blendDst);
+
     glDepthFunc(GL_ALWAYS);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -41,9 +46,8 @@ void GLSquare::render(std::shared_ptr<ShaderProgram> shaderProgram, chag::float4
     CHECK_GL_ERROR();
 
     glDepthFunc(currentDepthFunc);
-    glDisable(GL_BLEND);
+    glBlendFunc(blendSrc, blendDst);
 
-    glEnable(GL_CULL_FACE);
     shaderProgram->restorePreviousShaderProgram();
 }
 
