@@ -20,10 +20,11 @@
 #define MAX_LOG_SIZE 1024
 
 ShaderProgram::ShaderProgram() {
-    this->shaderID = glCreateProgram();
+
 }
 
 void ShaderProgram::loadShader(std::shared_ptr<VertexShader> vertexShader, std::shared_ptr<FragmentShader> fragmentShader) {
+    this->shaderID = glCreateProgram();
     this->vertexShader = vertexShader;
     this->fragmentShader = fragmentShader;
     createProgram(vertexShader->getGLId(), fragmentShader->getGLId());

@@ -18,17 +18,17 @@
 // Created by johan on 2016-01-16.
 //
 
-
+#include <memory>
 #include "AudioManager.h"
 #include <sstream>
 #include <Logger.h>
 
 
-std::map<std::string, sf::Music*> AudioManager::musics;
-std::map<std::string, sf::SoundBuffer> AudioManager::soundBuffers;
+std::map<std::string, std::shared_ptr<sf::Music>> AudioManager::musics;
+std::map<std::string, std::shared_ptr<sf::SoundBuffer>> AudioManager::soundBuffers;
 
 
-sf::Sound* AudioManager::loadAndFetchSound(const std::string &fileName){
+std::shared_ptr<sf::Sound> AudioManager::loadAndFetchSound(const std::string &fileName){
     try {
         return getSoundBuffer(fileName);
     } catch (std::invalid_argument exception) {
@@ -38,21 +38,22 @@ sf::Sound* AudioManager::loadAndFetchSound(const std::string &fileName){
 }
 
 void AudioManager::loadSoundBuffer(const std::string &fileName) {
-    sf::SoundBuffer soundBuffer;
-    soundBuffer.loadFromFile(fileName);
+    std::shared_ptr<sf::SoundBuffer> soundBuffer = std::make_shared<sf::SoundBuffer>();
+    soundBuffer->loadFromFile(fileName);
 
-    soundBuffers.insert(std::pair<std::string, sf::SoundBuffer>(fileName, soundBuffer));
+
+    soundBuffers.insert(std::pair<std::string, std::shared_ptr<sf::SoundBuffer>>(fileName, soundBuffer));
 }
 
-sf::Sound* AudioManager::getSoundBuffer(std::string fileName){
-    sf::SoundBuffer *soundBuffer = getItemFromMap(&soundBuffers, fileName);
-    sf::Sound *sound = new sf::Sound();
+std::shared_ptr<sf::Sound> AudioManager::getSoundBuffer(std::string fileName){
+    std::shared_ptr<sf::SoundBuffer> soundBuffer = getItemFromMap(&soundBuffers, fileName);
+    std::shared_ptr<sf::Sound> sound = std::make_shared<sf::Sound>();
     sound->setBuffer(*soundBuffer);
     return sound;
 }
 
 
-sf::Music* AudioManager::loadAndFetchMusic(const std::string &fileName) {
+std::shared_ptr<sf::Music> AudioManager::loadAndFetchMusic(const std::string &fileName) {
     try {
         return getMusic(fileName);
     } catch (std::invalid_argument exception) {
@@ -62,21 +63,22 @@ sf::Music* AudioManager::loadAndFetchMusic(const std::string &fileName) {
 }
 
 void AudioManager::loadMusic(const std::string &fileName) {
-    sf::Music *music = new sf::Music();
+    std::shared_ptr<sf::Music> music = std::make_shared<sf::Music>();
     music->openFromFile(fileName);
 
-    musics.insert(std::pair<std::string, sf::Music*>(fileName, music));
+
+    musics.insert(std::pair<std::string, std::shared_ptr<sf::Music>>(fileName, music));
 }
 
-sf::Music* AudioManager::getMusic(std::string fileName) {
-    return *getItemFromMap(&musics, fileName);
+std::shared_ptr<sf::Music> AudioManager::getMusic(std::string fileName) {
+    return getItemFromMap(&musics, fileName);
 }
 
 template<typename Type>
-Type* AudioManager::getItemFromMap(std::map<std::string, Type> *map, std::string id) {
+Type AudioManager::getItemFromMap(std::map<std::string, Type> *map, std::string id) {
     typename std::map<std::string, Type>::iterator it = map->find(id);
     if( it != map->end()) {
-        return &it->second;
+        return it->second;
     } else {
         std::stringstream errorMessage;
         errorMessage << id << " hasn't been loaded into AudioManager before fetched";
