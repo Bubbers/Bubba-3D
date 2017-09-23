@@ -20,7 +20,9 @@
 #include <sstream>
 #include <memory>
 
+
 #ifdef __linux__
+#include <SFML/Audio.hpp>
 #include "../src/Misc/FileWatcher.h"
 #endif
 
@@ -72,6 +74,11 @@ public:
      */
     static std::shared_ptr<Mesh>    loadAndFetchMesh   (const std::string &fileName);
 
+#ifdef __linux__
+    static std::shared_ptr<sf::Sound>loadAndFetchSound(const std::string &fileName);
+    static std::shared_ptr<sf::Music> loadAndFetchMusic(const std::string &fileName);
+#endif
+
     static void update();
 
 
@@ -81,7 +88,16 @@ private:
     static std::map<std::string, std::shared_ptr<Mesh>> meshes;
 
 #ifdef __linux__
+    static std::map<std::string, std::shared_ptr<sf::Music>> musics;
+    static std::map<std::string, std::shared_ptr<sf::SoundBuffer>> soundBuffers;
+
     static FileWatcher fileWatcher;
+
+    static void loadSoundBuffer(const std::string &fileName);
+    static std::shared_ptr<sf::Sound> getSoundBuffer(std::string fileName);
+
+    static void loadMusic(const std::string &fileName);
+    static std::shared_ptr<sf::Music> getMusic(std::string fileName);
 #endif
     /**
      * @brief Loads a ShaderProgram into the ResourceManager
