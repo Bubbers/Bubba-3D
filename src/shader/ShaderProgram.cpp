@@ -16,15 +16,14 @@
  */
 #include "ShaderProgram.h"
 #include "Logger.h"
-#include "VertexShader.h"
 
 #define MAX_LOG_SIZE 1024
 
 ShaderProgram::ShaderProgram() {
-
+    this->shaderID = glCreateProgram();
 }
 
-void ShaderProgram::loadShader(IShader *vertexShader, IShader *fragmentShader) {
+void ShaderProgram::loadShader(std::shared_ptr<VertexShader> vertexShader, std::shared_ptr<FragmentShader> fragmentShader) {
     this->vertexShader = vertexShader;
     this->fragmentShader = fragmentShader;
     createProgram(vertexShader->getGLId(), fragmentShader->getGLId());
@@ -32,10 +31,8 @@ void ShaderProgram::loadShader(IShader *vertexShader, IShader *fragmentShader) {
 }
 
 void ShaderProgram::createProgram(GLuint vertexShader, GLuint fragmentShader) {
-    this->shaderID = glCreateProgram();
     glAttachShader(this->shaderID, vertexShader);
     glAttachShader(this->shaderID, fragmentShader);
-
 }
 
 void ShaderProgram::linkProgram() {

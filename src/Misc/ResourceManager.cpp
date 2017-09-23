@@ -68,7 +68,7 @@ void ResourceManager::loadShader(const std::string &vertexShader,
                                  const std::string &name)
 {
     std::shared_ptr<ShaderProgram> shaderProgram = std::make_shared<ShaderProgram>();
-    shaderProgram->loadShader(new VertexShader(vertexShader), new FragmentShader(fragmentShader));
+    shaderProgram->loadShader(std::make_shared<VertexShader>(vertexShader), std::make_shared<FragmentShader>(fragmentShader));
     shaders.insert(std::pair<std::string, std::shared_ptr<ShaderProgram>>
                             (name, std::move(shaderProgram)));
 }
