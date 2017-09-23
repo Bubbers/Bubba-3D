@@ -21,7 +21,7 @@
 #include <memory>
 
 #ifdef __linux__
-#include "FileWatcher.h"
+#include "../src/Misc/FileWatcher.h"
 #endif
 
 class Texture;

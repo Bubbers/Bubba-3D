@@ -18,7 +18,7 @@ typedef int WatchID;
  *
  * \code
  * FileWatcher fileWatcher();
- * fileWatcher.addWatch(local/filename.txt, [](){printf("Callback called");});
+ * fileWatcher.addWatch("local/filename.txt", [](){printf("Callback called");});
  * fileWatcher.update();
  * \endcode
  */
@@ -31,7 +31,7 @@ public:
     *
     * This is only used for debugging purposes to quickly reload resources.
     *
-    * @param fileName The name of the mesh file.
+    * @param fileName The name of the file.
     */
     void addWatch(std::string fileName, std::function<void()> callback);
 
