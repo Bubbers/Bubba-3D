@@ -69,6 +69,18 @@ void ResourceManager::loadShader(const std::string &vertexShader,
 {
     std::shared_ptr<ShaderProgram> shaderProgram = std::make_shared<ShaderProgram>();
     shaderProgram->loadShader(std::make_shared<VertexShader>(vertexShader), std::make_shared<FragmentShader>(fragmentShader));
+
+#ifdef __linux__
+    ResourceManager::fileWatcher.addWatch(vertexShader, [vertexShader, fragmentShader, shaderProgram](){
+        Logger::logInfo("Reloading shader");
+        shaderProgram->loadShader(std::make_shared<VertexShader>(vertexShader), std::make_shared<FragmentShader>(fragmentShader));
+    });
+    ResourceManager::fileWatcher.addWatch(fragmentShader, [vertexShader, fragmentShader, shaderProgram](){
+        Logger::logInfo("Reloading shader");
+        shaderProgram->loadShader(std::make_shared<VertexShader>(vertexShader), std::make_shared<FragmentShader>(fragmentShader));
+    });
+#endif
+
     shaders.insert(std::pair<std::string, std::shared_ptr<ShaderProgram>>
                             (name, std::move(shaderProgram)));
 }

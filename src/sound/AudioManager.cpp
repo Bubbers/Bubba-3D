@@ -27,6 +27,9 @@
 std::map<std::string, std::shared_ptr<sf::Music>> AudioManager::musics;
 std::map<std::string, std::shared_ptr<sf::SoundBuffer>> AudioManager::soundBuffers;
 
+#ifdef __linux__
+FileWatcher AudioManager::fileWatcher = FileWatcher();
+#endif
 
 std::shared_ptr<sf::Sound> AudioManager::loadAndFetchSound(const std::string &fileName){
     try {
@@ -41,6 +44,12 @@ void AudioManager::loadSoundBuffer(const std::string &fileName) {
     std::shared_ptr<sf::SoundBuffer> soundBuffer = std::make_shared<sf::SoundBuffer>();
     soundBuffer->loadFromFile(fileName);
 
+#ifdef __linux__
+    AudioManager::fileWatcher.addWatch(fileName, [fileName, soundBuffer](){
+        const std::string fileNameConst = fileName;
+        soundBuffer->loadFromFile(fileNameConst);
+    });
+#endif
 
     soundBuffers.insert(std::pair<std::string, std::shared_ptr<sf::SoundBuffer>>(fileName, soundBuffer));
 }
@@ -66,6 +75,11 @@ void AudioManager::loadMusic(const std::string &fileName) {
     std::shared_ptr<sf::Music> music = std::make_shared<sf::Music>();
     music->openFromFile(fileName);
 
+#ifdef __linux__
+    AudioManager::fileWatcher.addWatch(fileName, [fileName, music](){
+        music->openFromFile(fileName);
+    });
+#endif
 
     musics.insert(std::pair<std::string, std::shared_ptr<sf::Music>>(fileName, music));
 }
@@ -84,6 +98,12 @@ Type AudioManager::getItemFromMap(std::map<std::string, Type> *map, std::string 
         errorMessage << id << " hasn't been loaded into AudioManager before fetched";
         throw std::invalid_argument(errorMessage.str());
     }
+}
+
+void AudioManager::update() {
+#ifdef __linux__
+    AudioManager::fileWatcher.update();
+#endif
 }
 
 

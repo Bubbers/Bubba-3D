@@ -24,6 +24,7 @@
 #include <map>
 #include <sstream>
 #include <SFML/Audio.hpp>
+#include "../src/Misc/FileWatcher.h"
 
 class AudioManager {
 public:
@@ -33,11 +34,15 @@ public:
     static std::shared_ptr<sf::Sound>loadAndFetchSound(const std::string &fileName);
     static std::shared_ptr<sf::Music> loadAndFetchMusic(const std::string &fileName);
 
+    static void update();
 
 private:
     static std::map<std::string, std::shared_ptr<sf::Music>> musics;
     static std::map<std::string, std::shared_ptr<sf::SoundBuffer>> soundBuffers;
 
+#ifdef __linux__
+    static FileWatcher fileWatcher;
+#endif
 
     static void loadSoundBuffer(const std::string &fileName);
     static std::shared_ptr<sf::Sound> getSoundBuffer(std::string fileName);
