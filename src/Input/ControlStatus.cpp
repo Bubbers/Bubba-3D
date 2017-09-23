@@ -68,8 +68,12 @@ ControlStatus::Activator ControlStatus::getMaxActivator(){
 }
 
 float ControlStatus::getValue(Activator activator) {
-    std::map<Activator ,float>::iterator elem = buttons.find(activator);
-    return elem == buttons.end() ? 0.0f : elem->second;
+    float maxValue = 0.0f;
+    for (auto it = buttons.begin(); it != buttons.end(); it++)
+        if (it->first & activator && std::abs(it->second) > std::abs(maxValue)) {
+            maxValue = it->second;
+        }
+    return maxValue;
 }
 
 bool ControlStatus::isActive(){

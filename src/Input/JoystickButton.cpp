@@ -48,7 +48,7 @@ ControlStatus JoystickButton::getStatus() {
         if(sf::Joystick::isConnected(i)) {
             value = jt->getTranslation(i)->getButtonValue(joystickPos) ? 1 : 0;
             if(dual)
-                value -= jt->getTranslation(i)->getButtonValue(joystickPos) ? 1 : 0;
+                value -= jt->getTranslation(i)->getButtonValue(joystickNeg) ? 1 : 0;
             cs.addButton(ControlStatus::activatorFromJoystickNumber(i), value*100);
         }
     return cs;

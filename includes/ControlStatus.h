@@ -59,7 +59,9 @@
 class ControlStatus {
 public:
     enum Activator  {NONE = 1024,KEYBOARD = 256, MOUSE = 512, JOYSTICK_0 = 1, JOYSTICK_1 = 2, JOYSTICK_2 = 4,
-                    JOYSTICK_3 = 8, JOYSTICK_4 = 16, JOYSTICK_5 = 32, JOYSTICK_6 = 64, JOYSTICK_7 = 128, JOYSTICK = 255};
+                    JOYSTICK_3 = 8, JOYSTICK_4 = 16, JOYSTICK_5 = 32, JOYSTICK_6 = 64, JOYSTICK_7 = 128,
+                    JOYSTICK = JOYSTICK_0 | JOYSTICK_1 | JOYSTICK_2 | JOYSTICK_3 | JOYSTICK_4 | JOYSTICK_5 | JOYSTICK_6
+                    | JOYSTICK_7, ALL = KEYBOARD | MOUSE | JOYSTICK};
 
 
     static Activator activatorFromJoystickNumber(int n);
