@@ -44,6 +44,7 @@ Mesh::Mesh() {
 
 void Mesh::loadMesh(const std::string &fileName) {
     Logger::logInfo("Loading mesh " + fileName);
+    resetMesh();
 
     const aiScene* aiScene = importer.ReadFile(
             fileName.c_str(), aiProcess_GenSmoothNormals | aiProcess_Triangulate | aiProcess_CalcTangentSpace);
@@ -349,4 +350,12 @@ bool Mesh::hasAnimations() {
 
 std::vector<float4x4> Mesh::getBoneTransforms(float totalElapsedTimeInSeconds) {
     return boneTransformer->calculateBoneTransforms(totalElapsedTimeInSeconds);
+}
+
+void Mesh::resetMesh() {
+    numAnimations = 0;
+    triangles.clear();
+    materials.clear();
+    chunks.clear();
+    boneTransformer.reset();
 }

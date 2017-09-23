@@ -178,6 +178,8 @@ private:
                                           std::vector<unsigned int> indices,
                                           unsigned int startIndex);
 
+    void resetMesh();
+
     std::vector<Triangle *> triangles;
     std::vector<Material> materials;
     std::vector<Chunk> chunks;
@@ -189,5 +191,6 @@ private:
     AABB aabb;
 
     unsigned int numAnimations;
+
 
 };

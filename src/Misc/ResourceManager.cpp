@@ -89,6 +89,14 @@ void ResourceManager::loadTexture(const std::string &fileName) {
 void ResourceManager::loadMesh(const std::string &fileName) {
     std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>();
     mesh->loadMesh(fileName);
+
+#ifdef __linux__
+    ResourceManager::fileWatcher.addWatch(fileName, [fileName, mesh](){
+        mesh->loadMesh(fileName);
+    });
+#endif
+
+
     meshes.insert(std::pair<std::string, std::shared_ptr<Mesh>>(fileName, std::move(mesh)));
 }
 
