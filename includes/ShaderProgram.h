@@ -18,10 +18,13 @@
 
 #include <map>
 #include <string>
+#include <memory>
 #include <linmath/float2.h>
 #include "glutil/glutil.h"
 #include "linmath/float3.h"
 #include "IShader.h"
+#include "../src/shader/VertexShader.h"
+#include "../src/shader/FragmentShader.h"
 
 /**
  * \brief Class for maintaining OpenGL shader programs.
@@ -43,7 +46,7 @@ public:
     /**
      * Compiles, links and creates a program of the specified shaders.
      */
-    void loadShader(IShader *vertexShader, IShader *fragmentShader);
+    void loadShader(std::shared_ptr<VertexShader> vertexShader, std::shared_ptr<FragmentShader> fragmentShader);
 
     /**
      * Activates the shader on the graphics card
@@ -83,8 +86,8 @@ private:
 
     GLint getUniformLocation(std::string name);
 
-    IShader* vertexShader;
-    IShader* fragmentShader;
+    std::shared_ptr<IShader> vertexShader;
+    std::shared_ptr<IShader> fragmentShader;
 
     GLuint shaderID;
     std::map<std::string, GLint> uniformLocations;
