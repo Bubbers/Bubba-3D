@@ -13,10 +13,10 @@ FileWatcher::FileWatcher() {
 }
 
 void FileWatcher::addWatch(std::string fileName, std::function<void()> callback) {
-    Logger::logInfo("Adding file watch subscription to: " + filename);
-    int watchDescriptor = inotify_add_watch(fileDescriptor, filename.c_str(), IN_CLOSE_WRITE);
+    Logger::logInfo("Adding file watch subscription to: " + fileName);
+    int watchDescriptor = inotify_add_watch(fileDescriptor, fileName.c_str(), IN_CLOSE_WRITE);
     if (watchDescriptor < 0) {
-        Logger::logError("Failed to subscribe file watch to file: " + filename);
+        Logger::logError("Failed to subscribe file watch to file: " + fileName);
         return;
     }
 

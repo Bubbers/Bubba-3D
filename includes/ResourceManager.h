@@ -19,7 +19,10 @@
 #include <map>
 #include <sstream>
 #include <memory>
+
+#ifdef __linux__
 #include "FileWatcher.h"
+#endif
 
 class Texture;
 class Mesh;
@@ -77,8 +80,9 @@ private:
     static std::map<std::string, std::shared_ptr<Texture>> textures;
     static std::map<std::string, std::shared_ptr<Mesh>> meshes;
 
+#ifdef __linux__
     static FileWatcher fileWatcher;
-
+#endif
     /**
      * @brief Loads a ShaderProgram into the ResourceManager
      */

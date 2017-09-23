@@ -27,7 +27,10 @@
 std::map<std::string, std::shared_ptr<ShaderProgram>> ResourceManager::shaders;
 std::map<std::string, std::shared_ptr<Texture>> ResourceManager::textures;
 std::map<std::string, std::shared_ptr<Mesh>> ResourceManager::meshes;
+
+#ifdef __linux__
 FileWatcher ResourceManager::fileWatcher = FileWatcher();
+#endif
 
 std::shared_ptr<ShaderProgram> ResourceManager::loadAndFetchShaderProgram(
     const std::string &shaderName,
@@ -73,9 +76,13 @@ void ResourceManager::loadShader(const std::string &vertexShader,
 void ResourceManager::loadTexture(const std::string &fileName) {
     std::shared_ptr<Texture> texture = std::make_shared<Texture>();
     texture->loadTexture(fileName);
+
+#ifdef __linux__
     ResourceManager::fileWatcher.addWatch(fileName, [fileName, texture](){
         texture->loadTexture(fileName);
     });
+#endif
+
     textures.insert(std::pair<std::string, std::shared_ptr<Texture>>(fileName, std::move(texture)));
 }
 
@@ -114,5 +121,7 @@ std::shared_ptr<Type> ResourceManager::getItemFromMap(
 }
 
 void ResourceManager::update() {
+#ifdef __linux__
     ResourceManager::fileWatcher.update();
+#endif
 }
