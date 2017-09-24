@@ -165,10 +165,12 @@ void Renderer::drawScene(Camera *camera, Scene *scene, float currentTime)
 
 void Renderer::setLights(std::shared_ptr<ShaderProgram> &shaderProgram, Scene *scene) {
     //set dirlights
-    shaderProgram->setUniform3f("directionalLight.colors.ambientColor", scene->directionalLight->ambientColor);
-    shaderProgram->setUniform3f("directionalLight.colors.diffuseColor", scene->directionalLight->diffuseColor);
-    shaderProgram->setUniform3f("directionalLight.colors.specularColor", scene->directionalLight->specularColor);
-    shaderProgram->setUniform3f("directionalLight.direction", scene->directionalLight->direction);
+    if(scene->directionalLight) {
+        shaderProgram->setUniform3f("directionalLight.colors.ambientColor", scene->directionalLight->ambientColor);
+        shaderProgram->setUniform3f("directionalLight.colors.diffuseColor", scene->directionalLight->diffuseColor);
+        shaderProgram->setUniform3f("directionalLight.colors.specularColor", scene->directionalLight->specularColor);
+        shaderProgram->setUniform3f("directionalLight.direction", scene->directionalLight->direction);
+    }
 
     //set pointLights
 
