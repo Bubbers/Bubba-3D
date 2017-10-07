@@ -166,8 +166,8 @@ void Renderer::drawScene(Camera *camera, Scene *scene, float currentTime)
 
 void Renderer::setWind(std::shared_ptr<ShaderProgram> shaderProgram) {
     if(currentTime - lastWindChangeTime > 1.0f) {
-        lastWindChangeTime = currentTime;
-        lastWindSpeed = currentWindSpeed;
+        lastWindChangeTime += 1;
+        lastWindSpeed = newWindSpeed;
         float x = getRand(0, 1);
         float y = getRand(0, 1);
         float z = getRand(0, 1);
@@ -178,7 +178,7 @@ void Renderer::setWind(std::shared_ptr<ShaderProgram> shaderProgram) {
 
     }
 
-    currentWindSpeed = linearSmoothStep(currentWindSpeed, newWindSpeed, currentTime - lastWindChangeTime);
+    currentWindSpeed = linearSmoothStep(lastWindSpeed, newWindSpeed, currentTime - lastWindChangeTime);
     effects.wind.force = currentWindSpeed;
     shaderProgram->setUniform3f("windForce", effects.wind.force);
 }
