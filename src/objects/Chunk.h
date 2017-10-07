@@ -38,6 +38,7 @@ public:
     std::vector<unsigned int> m_indices;
     std::vector<chag::float3> m_tangents;
     std::vector<chag::float3> m_bittangents;
+    std::vector<chag::float3> m_vertexColors;
     std::vector<BoneInfluenceOnVertex> bones;
 
     // Data on GPU
@@ -47,6 +48,7 @@ public:
     GLuint m_ind_bo;
     GLuint m_tangents_bo;
     GLuint m_bittangents_bo;
+    GLuint m_vertexColors_bo;
     GLuint bonesBufferObject;
     // Vertex Array Object
     GLuint m_vaob;

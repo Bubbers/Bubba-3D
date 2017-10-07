@@ -119,6 +119,13 @@ void Mesh::initVerticesFromAiMesh(const aiMesh *paiMesh, Chunk &chunk) {
         chunk.m_normals.push_back(make_vector(pNormal.x, pNormal.y, pNormal.z));
         chunk.m_uvs.push_back(make_vector(pTexCoord.x, pTexCoord.y));
 
+        if(paiMesh->HasVertexColors(0)) {
+            aiColor4D vertexColor = paiMesh->mColors[0][i];
+            chunk.m_vertexColors.push_back(chag::make_vector(vertexColor.r, vertexColor.g, vertexColor.b));
+        } else {
+            chunk.m_vertexColors.push_back(chag::make_vector(0.0f, 0.0f, 0.0f));
+        }
+
         if (paiMesh->HasTangentsAndBitangents()) {
             const aiVector3D pBitTangents = paiMesh->mBitangents[i];
             const aiVector3D pTangents = paiMesh->mTangents[i];
@@ -304,6 +311,8 @@ void Mesh::setupChunkForRendering(Chunk &chunk) {
         glVertexAttribPointer(BONE_WEIGHT_LOCATION_GPU, boneWeightsPerObject, GL_FLOAT, GL_FALSE, sizeof(BoneInfluenceOnVertex), (const GLvoid*)16);
         glEnableVertexAttribArray(BONE_WEIGHT_LOCATION_GPU);
     }
+
+    setupGlBuffer(chunk.m_vertexColors, &chunk.m_vertexColors_bo, 8, 3 , &chunk.m_vertexColors[0].x, GL_ARRAY_BUFFER_ARB, GL_FLOAT);
 }
 
 AABB* Mesh::getAABB() {
