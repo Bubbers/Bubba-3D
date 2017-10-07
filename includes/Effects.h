@@ -62,8 +62,17 @@ struct Bloom {
     }
 };
 
+struct Wind {
+      chag::float3 force;
+
+    Wind() {
+        force = chag::make_vector(0.0f, 0.0f, 0.0f);
+    }
+};
+
 struct Effects {
     Fog fog;
     Blur blur;
     Bloom bloom;
+    Wind wind;
 };
