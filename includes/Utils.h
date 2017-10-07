@@ -64,3 +64,5 @@ chag::float3x3 convertAiMatrixToFloat3x3(aiMatrix3x3 fromMatrix) ;
 
 typedef std::pair<std::shared_ptr<GameObject>, std::shared_ptr<GameObject>> CollisionPair;
 typedef std::vector<CollisionPair> CollisionPairList;
+
+chag::float3 linearSmoothStep(chag::float3 v1, chag::float3 v2, float time);

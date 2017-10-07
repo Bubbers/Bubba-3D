@@ -53,6 +53,10 @@ public:
     Effects effects;
 private:
     float currentTime;
+    float lastWindChangeTime = 0;
+    chag::float3 lastWindSpeed = chag::make_vector(0.0f, 0.0f, 0.0f);
+    chag::float3 currentWindSpeed = chag::make_vector(0.0f, 0.0f, 0.0f);
+    chag::float3 newWindSpeed = chag::make_vector(0.0f, 0.0f, 0.0f);
 
     Fbo createPostProcessFbo(int width, int height);
     void drawShadowMap(Fbo sbo, chag::float4x4 viewProjectionMatrix, Scene *scene);
@@ -60,27 +64,28 @@ private:
     void drawTransparent(std::shared_ptr<ShaderProgram> &shaderProgram, Scene *scene);
     void setFog(std::shared_ptr<ShaderProgram> &shaderProgram);
     void setLights(std::shared_ptr<ShaderProgram> &shaderProgram, Scene *scene);
+    void setWind(std::shared_ptr<ShaderProgram> shaderProgram);
+
     void drawBloom(std::shared_ptr<ShaderProgram> &shaderProgram, Scene *scene, int i, int i1, chag::float4x4 &viewProjectionMatrix);
 
     std::shared_ptr<ShaderProgram> shaderProgram;
-
     Fbo sbo;
+
+
     Camera *cubeMapCameras[6];
-
-
     // Drawing
     void drawModel(IDrawable &model, std::shared_ptr<ShaderProgram> &shaderProgram);
     void drawFullScreenQuad();
-    void renderPostProcess();
 
+    void renderPostProcess();
     // Postprocess
     std::shared_ptr<ShaderProgram> postFxShader;
     std::shared_ptr<ShaderProgram> horizontalBlurShader;
     std::shared_ptr<ShaderProgram> verticalBlurShader;
     std::shared_ptr<ShaderProgram> cutoffShader;
     std::shared_ptr<ShaderProgram> emissiveShader;
+
     Fbo postProcessFbo, horizontalBlurFbo, verticalBlurFbo;
 
     chag::float3 backgroundColor = chag::make_vector(0.2f, 0.2f, 0.8f);
-
 };

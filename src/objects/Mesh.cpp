@@ -19,19 +19,11 @@
 #include "Logger.h"
 #include "Triangle.h"
 
-#include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
-#include <assimp/scene.h>
-#include <vector>
 #include "Chunk.h"
-#include <string>
-#include "Utils.h"
-#include "GL/glew.h"
-#include "BoneMatrices.h"
 #include "Utils.h"
 #include "linmath/float3x3.h"
 #include "BoneTransformer.h"
-#include "Texture.h"
 
 using namespace chag;
 
@@ -82,7 +74,6 @@ void Mesh::initChunkFromAiMesh(const aiMesh *paiMesh, Chunk &chunk) {
     initIndicesFromAiMesh(paiMesh, chunk);
 
     initBonesFromAiMesh(paiMesh, chunk);
-
 
     chunk.materialIndex = paiMesh->mMaterialIndex;
 
@@ -284,6 +275,7 @@ void Mesh::setupChunkForRendering(Chunk &chunk) {
     glBindVertexArray(chunk.m_vaob);
 
     setupGlBuffer(chunk.m_positions, &chunk.m_positions_bo, 0, 3 , &chunk.m_positions[0].x, GL_ARRAY_BUFFER_ARB, GL_FLOAT);
+
     setupGlBuffer(chunk.m_normals, &chunk.m_normals_bo, 1, 3, &chunk.m_normals[0].x, GL_ARRAY_BUFFER_ARB, GL_FLOAT);
 
     if (chunk.m_uvs.size() > 0) {

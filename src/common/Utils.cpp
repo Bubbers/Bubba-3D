@@ -97,3 +97,7 @@ void updateMinAndMax(const float x, const float y, const float z, chag::float3* 
 chag::float3 createRandomVector(const float minValue, const float maxValue){
     return chag::make_vector(getRand(minValue,maxValue), getRand(minValue,maxValue), getRand(minValue,maxValue));
 }
+
+chag::float3 linearSmoothStep(chag::float3 v1, chag::float3 v2, float time) {
+    return v1 + time * (v2 - v1);
+}

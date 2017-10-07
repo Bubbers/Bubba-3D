@@ -121,6 +121,9 @@ void Renderer::drawScene(Camera *camera, Scene *scene, float currentTime)
     shaderProgram->setUniformMatrix4fv("inverseViewNormalMatrix", transpose(viewMatrix));
     shaderProgram->setUniform3f("viewPosition", camera->getPosition());
     shaderProgram->setUniformMatrix4fv("viewMatrix", viewMatrix);
+    shaderProgram->setUniform1f("time", currentTime);
+
+    setWind(shaderProgram);
 
     setLights(shaderProgram, scene);
 
@@ -159,6 +162,25 @@ void Renderer::drawScene(Camera *camera, Scene *scene, float currentTime)
     //Cleanup
     glUseProgram(0);
 
+}
+
+void Renderer::setWind(std::shared_ptr<ShaderProgram> shaderProgram) {
+    if(currentTime - lastWindChangeTime > 1.0f) {
+        lastWindChangeTime = currentTime;
+        lastWindSpeed = currentWindSpeed;
+        float x = getRand(0, 1);
+        float y = getRand(0, 1);
+        float z = getRand(0, 1);
+
+        newWindSpeed.x = x * 2.0f - 1.0f;
+        newWindSpeed.y = y * 2.0f - 1.0f;
+        newWindSpeed.z = -z * 2.0f;
+
+    }
+
+    currentWindSpeed = linearSmoothStep(currentWindSpeed, newWindSpeed, currentTime - lastWindChangeTime);
+    effects.wind.force = currentWindSpeed;
+    shaderProgram->setUniform3f("windForce", effects.wind.force);
 }
 
 void Renderer::setLights(std::shared_ptr<ShaderProgram> &shaderProgram, Scene *scene) {
