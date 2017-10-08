@@ -36,7 +36,7 @@ public:
     FragmentShader(std::string shaderName);
 
     virtual void compile();
-    virtual void checkErrors();
+    virtual void checkErrors(GLuint &shader);
     virtual GLuint getGLId();
 
 private:

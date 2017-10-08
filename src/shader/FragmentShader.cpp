@@ -25,16 +25,15 @@
 FragmentShader::FragmentShader(std::string shaderName) {
     shaderString = textFileRead(shaderName.c_str(), true);
     compile();
-    checkErrors();
 }
 
 void FragmentShader::compile() {
     fragmentShader = compileShader(GL_FRAGMENT_SHADER, shaderString.c_str());
-    checkErrors();
+    checkErrors(fragmentShader);
 }
 
-void FragmentShader::checkErrors() {
-    checkCompileErrors(&fragmentShader, FRAGMENT_SHADER_NAME_STRING);
+void FragmentShader::checkErrors(GLuint &shader) {
+    checkCompileErrors(&shader, FRAGMENT_SHADER_NAME_STRING);
 }
 
 GLuint FragmentShader::getGLId() {

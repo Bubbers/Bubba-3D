@@ -189,7 +189,7 @@ namespace
 #			if defined(_WIN32)
 			__debugbreak();
 #			else // !win32
-			assert(false);
+//			assert(false);
 #			endif // ~ platform
 		}
 	}
