@@ -27,16 +27,15 @@
 VertexShader::VertexShader(std::string shaderName) {
     shaderString = textFileRead(shaderName.c_str(), true);
     compile();
-    checkErrors();
 }
 
 void VertexShader::compile() {
     vertexShader = compileShader(GL_VERTEX_SHADER, shaderString.c_str());
-    checkErrors();
+    checkErrors(vertexShader);
 }
 
-void VertexShader::checkErrors() {
-    checkCompileErrors(&vertexShader, VERTEX_SHADER_NAME_STRING);
+void VertexShader::checkErrors(GLuint &shader) {
+    checkCompileErrors(&shader, VERTEX_SHADER_NAME_STRING);
 }
 
 GLuint VertexShader::getGLId() {
