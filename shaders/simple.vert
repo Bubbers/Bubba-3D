@@ -73,8 +73,8 @@ void main()
     }
 
     vec3 objectPositionInWorldSpace = vec3(modelMatrix[3][0], modelMatrix[3][1], modelMatrix[3][2]);
-    //positionInWorldSpace = applyMainBending(positionInWorldSpace - objectPositionInWorldSpace, windForce);
-    //positionInWorldSpace += objectPositionInWorldSpace;
+    positionInWorldSpace = applyMainBending(positionInWorldSpace - objectPositionInWorldSpace, windForce);
+    positionInWorldSpace += objectPositionInWorldSpace;
 
     positionInWorldSpace = applyDetailBending(positionInWorldSpace, objectPositionInWorldSpace, time);
 
@@ -104,7 +104,7 @@ vec3 applyMainBending(vec3 positionInWorldSpace, vec3 windForce) {
     vertexHeight = vertexHeight * vertexHeight - vertexHeight;
 
     vec3 newPos = positionInWorldSpace;
-    newPos.xy += windForce.xy * vertexHeight;
+    newPos.xz += windForce.xz * vertexHeight;
 
     float oldLength = length(positionInWorldSpace);
 
@@ -112,7 +112,7 @@ vec3 applyMainBending(vec3 positionInWorldSpace, vec3 windForce) {
 }
 
 vec3 applyDetailBending(vec3 positionInWorldSpace, vec3 objectPositionInWorldSpace, float time) {
-    float branchAmplitude = 10.0;
+    float branchAmplitude = 5.0;
     float branchStiffness = vertexColor.b;
 
     // Each object has its own phase to allow us to give different animations to different identical objects
