@@ -148,6 +148,10 @@ void main()
     vec3 cubeMapSample = vec3(0.0);
     cubeMapSample = calculateCubeMapSample(directionToEye, normal);
 
+    if(object_alpha < 0.1) {
+        discard;
+    }
+
 	fragmentColor = vec4(foggedColor + emissive + cubeMapSample, object_alpha);
 }
 
