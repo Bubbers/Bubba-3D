@@ -174,7 +174,7 @@ void Renderer::setWind(std::shared_ptr<ShaderProgram> shaderProgram) {
 
         newWindSpeed.x = x * 2.0f - 1.0f;
         newWindSpeed.y = y * 2.0f - 1.0f;
-        //newWindSpeed.z = -z * 2.0f;
+        newWindSpeed.z = z * 2.0f - 1.0f;
 
     }
 
