@@ -120,7 +120,7 @@ vec3 applyDetailBending(vec3 positionInWorldSpace, vec3 objectPositionInWorldSpa
 
     float vertexPhase = dot(positionInWorldSpace, vec3(objectPhase));
 
-    vec2 wavesIn = time + vec2(vertexPhase, 0.0);
+    vec2 wavesIn = time + vec2(vertexPhase, objectPhase);
     vec4 waves = (fract(wavesIn.xxyy * vec4(SIDE_TO_SIDE_FREQ1, SIDE_TO_SIDE_FREQ2, UP_AND_DOWN_FREQ1, UP_AND_DOWN_FREQ2) * 2.0 - 1.0)) * 2 * 1;
     waves = smoothTriangleWave(waves);
     vec2 waveSum = vec2(waves.x + waves.y, waves.z + waves.w);
