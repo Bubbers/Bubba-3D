@@ -110,12 +110,22 @@ void Mesh::initVerticesFromAiMesh(const aiMesh *paiMesh, Chunk &chunk) {
         chunk.m_normals.push_back(make_vector(pNormal.x, pNormal.y, pNormal.z));
         chunk.m_uvs.push_back(make_vector(pTexCoord.x, pTexCoord.y));
 
-        if(paiMesh->HasVertexColors(0)) {
-            aiColor4D vertexColor = paiMesh->mColors[0][i];
-            chunk.m_vertexColors.push_back(chag::make_vector(vertexColor.r, vertexColor.g, vertexColor.b));
-        } else {
-            chunk.m_vertexColors.push_back(chag::make_vector(0.0f, 0.0f, 0.0f));
-        }
+        unsigned int j = 0;
+        do {
+            if (paiMesh->HasVertexColors(j)) {
+                aiColor4D vertexColor = paiMesh->mColors[j][i];
+
+                if(chunk.m_vertexColors.size() >= i) {
+                    chunk.m_vertexColors.push_back(chag::make_vector(0.0f, 0.0f, 0.0f));
+                }
+
+                chunk.m_vertexColors[i] += chag::make_vector(vertexColor.r, vertexColor.g, vertexColor.b);
+
+            } else {
+                chunk.m_vertexColors.push_back(chag::make_vector(0.0f, 0.0f, 0.0f));
+            }
+            j++;
+        } while (paiMesh->HasVertexColors(j));
 
         if (paiMesh->HasTangentsAndBitangents()) {
             const aiVector3D pBitTangents = paiMesh->mBitangents[i];
