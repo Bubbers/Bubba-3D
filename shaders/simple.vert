@@ -72,6 +72,8 @@ void main()
         normalVectorInWorldSpace = (boneTransform * vec4(normalIn, 0.0)).xyz;
     }
 
+    positionInWorldSpace = (modelMatrix * vec4(positionInWorldSpace, 1.0)).xyz;
+
     vec3 objectPositionInWorldSpace = vec3(modelMatrix[3][0], modelMatrix[3][1], modelMatrix[3][2]);
     positionInWorldSpace = applyMainBending(positionInWorldSpace - objectPositionInWorldSpace, windForce);
     positionInWorldSpace += objectPositionInWorldSpace;
@@ -117,10 +119,11 @@ vec3 applyDetailBending(vec3 positionInWorldSpace, vec3 objectPositionInWorldSpa
 
     // Each object has its own phase to allow us to give different animations to different identical objects
     float objectPhase = dot(objectPositionInWorldSpace, vec3(1));
+    float branchPhase = vertexColor.g + objectPhase;
 
-    float vertexPhase = dot(positionInWorldSpace, vec3(objectPhase));
+    float vertexPhase = dot(positionInWorldSpace, vec3(branchPhase));
 
-    vec2 wavesIn = time + vec2(vertexPhase, objectPhase);
+    vec2 wavesIn = time + vec2(vertexPhase, branchPhase);
     vec4 waves = (fract(wavesIn.xxyy * vec4(SIDE_TO_SIDE_FREQ1, SIDE_TO_SIDE_FREQ2, UP_AND_DOWN_FREQ1, UP_AND_DOWN_FREQ2) * 2.0 - 1.0)) * 2 * 1;
     waves = smoothTriangleWave(waves);
     vec2 waveSum = vec2(waves.x + waves.y, waves.z + waves.w);
