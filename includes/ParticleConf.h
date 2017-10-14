@@ -47,7 +47,7 @@ public:
      * Is called each particle update.
      * @param velocity The current velocity of the Particle.
      */
-    virtual chag::float3 accelerate(chag::float3 velocity) = 0;
+    virtual chag::float3 accelerate(chag::float3 velocity, float dt) = 0;
 
     /**
      * Calculates the Lifetime for the Particle.

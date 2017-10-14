@@ -17,24 +17,21 @@
 #include "particle/Particle.h"
 #include "ParticleConf.h"
 
-Particle::Particle(ParticleConf &conf, chag::float4x4 modelMatrix) {
-    reset(conf, modelMatrix);
+Particle::Particle(ParticleConf &conf) {
+    reset(conf);
 };
 
-void Particle::reset(ParticleConf &conf, chag::float4x4 modelMatrix) {
-    position = conf.initialPosition();
-    chag::float4 vec = chag::make_vector(position.x, position.y, position.z, 1.0f);
-    chag::float4 mat = modelMatrix * vec;
-    position.x = mat.x;
-    position.y = mat.y;
-    position.z = mat.z;
+void Particle::reset(ParticleConf &conf) {
+    relativeLocation = conf.initialPosition();
     velocity = conf.initialVelocity();
     life     = conf.calcLifetime();
 }
 
-void Particle::update(float deltaTime, float distanceToCam, ParticleConf &conf) {
-    velocity    = conf.accelerate(velocity);
-    position   += velocity * deltaTime / 10;
+void Particle::update(float deltaTime, float distanceToCam, ParticleConf &conf, chag::float4x4 modelMatrix) {
+    velocity    = conf.accelerate(velocity, deltaTime);
+    relativeLocation   += velocity * deltaTime / 10;
+    chag::float4 calcPosition = modelMatrix * chag::make_vector(relativeLocation.x, relativeLocation.y, relativeLocation.z, 1.0f);
+    position = chag::make_vector(calcPosition.x, calcPosition.y, calcPosition.z);
     life       -= deltaTime + (distanceToCam * 2);
 }
 

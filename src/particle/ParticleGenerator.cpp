@@ -61,7 +61,7 @@ void ParticleGenerator::update(float dt) {
     std::shared_ptr<GameObject> owner_ptr = owner.lock();
     if (particles.empty()) {
         for (int i = 0; i < maxParticles; i++) {
-            std::unique_ptr<Particle> part(new Particle(*conf, owner_ptr->getModelMatrix()));
+            std::unique_ptr<Particle> part(new Particle(*conf));
             particles.push_back(std::move(part));
         }
     }
@@ -70,10 +70,10 @@ void ParticleGenerator::update(float dt) {
 
     for (std::unique_ptr<Particle> &particle : particles) {
         if (particle->isAlive()){
-            particle->update(dt, distance, *conf);
+            particle->update(dt, distance, *conf, owner_ptr->getModelMatrix());
         }
         else if(conf->loop(dt)){
-            particle->reset(*conf, owner_ptr->getModelMatrix());
+            particle->reset(*conf);
         }
     }
 }
