@@ -123,7 +123,7 @@ void Renderer::drawScene(Camera *camera, Scene *scene, float currentTime)
     shaderProgram->setUniformMatrix4fv("viewMatrix", viewMatrix);
     shaderProgram->setUniform1f("time", currentTime);
 
-    setWind(shaderProgram);
+    setWind(shaderProgram, scene->getWind());
 
     setLights(shaderProgram, scene);
 
@@ -164,23 +164,8 @@ void Renderer::drawScene(Camera *camera, Scene *scene, float currentTime)
 
 }
 
-void Renderer::setWind(std::shared_ptr<ShaderProgram> shaderProgram) {
-    if(currentTime - lastWindChangeTime > 1.0f) {
-        lastWindChangeTime += 1;
-        lastWindSpeed = newWindSpeed;
-        float x = getRand(0, 1);
-        float y = getRand(0, 1);
-        float z = getRand(0, 1);
-
-        newWindSpeed.x = x * 2.0f - 1.0f;
-        newWindSpeed.y = y * 2.0f - 1.0f;
-        newWindSpeed.z = z * 2.0f - 1.0f;
-
-    }
-
-    currentWindSpeed = linearSmoothStep(lastWindSpeed, newWindSpeed, currentTime - lastWindChangeTime);
-    effects.wind.force = currentWindSpeed;
-    shaderProgram->setUniform3f("windForce", effects.wind.force);
+void Renderer::setWind(std::shared_ptr<ShaderProgram> shaderProgram, const std::shared_ptr<Wind> wind) {
+    shaderProgram->setUniform3f("windForce", wind->getForce());
 }
 
 void Renderer::setLights(std::shared_ptr<ShaderProgram> &shaderProgram, Scene *scene) {
@@ -232,6 +217,10 @@ void Renderer::drawShadowCasters(std::shared_ptr<ShaderProgram> &shaderProgram, 
 
     for(auto shadowCaster : shadowCasters) {
         shaderProgram->setUniform1f("object_reflectiveness", shadowCaster->shininess);
+        shaderProgram->setUniform1i("isAffectedByWind", shadowCaster->getIsAffectedByWind());
+        shaderProgram->setUniform1f("branchAmplitude", shadowCaster->getBranchAmplitude());
+        shaderProgram->setUniform1f("leafAmplitude", shadowCaster->getLeafAmplitude());
+        shaderProgram->setUniform1f("mainBendiness", shadowCaster->getMainBendiness());
         drawModel(shadowCaster, shaderProgram);
     }
 }
@@ -245,6 +234,10 @@ void Renderer::drawTransparent(std::shared_ptr<ShaderProgram> &shaderProgram, Sc
         glDepthFunc(GL_LESS);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         shaderProgram->setUniform1f("object_reflectiveness", transparentObject->shininess);
+        shaderProgram->setUniform1i("isAffectedByWind", transparentObject->getIsAffectedByWind());
+        shaderProgram->setUniform1f("branchAmplitude", transparentObject->getBranchAmplitude());
+        shaderProgram->setUniform1f("leafAmplitude", transparentObject->getLeafAmplitude());
+        shaderProgram->setUniform1f("mainBendiness", transparentObject->getMainBendiness());
         drawModel(transparentObject, shaderProgram);
     }
 }

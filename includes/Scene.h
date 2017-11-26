@@ -21,6 +21,7 @@
 #include "Utils.h"
 #include "Lights.h"
 #include "IDrawable.h"
+#include "Wind.h"
 
 class CubeMapTexture;
 class Camera;
@@ -67,12 +68,17 @@ public:
     std::vector<std::shared_ptr<GameObject>> getShadowCasters();
     std::vector<std::shared_ptr<GameObject>> getTransparentObjects();
 
+    const std::shared_ptr<Wind> getWind() const;
+    void setWind(const std::shared_ptr<Wind> wind);
+
     virtual void update(float dt);
 
 private:
     std::vector<std::shared_ptr<GameObject>> shadowCasters;
     std::vector<std::shared_ptr<GameObject>> transparentObjects;
     std::vector<std::shared_ptr<GameObject>> allObjects;
+
+    std::shared_ptr<Wind> wind;
 
     void removeDirty(std::vector<std::shared_ptr<GameObject>> *v);
 };

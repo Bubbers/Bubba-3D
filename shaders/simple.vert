@@ -28,9 +28,14 @@ uniform int has_animations;
 const int MAX_NUM_BONES = 100;
 uniform mat4 bones[MAX_NUM_BONES];
 
+uniform int isAffectedByWind;
+uniform float mainBendiness;
+uniform float branchAmplitude;
+uniform float leafAmplitude;
+uniform vec3 windForce;
+
 uniform float time;
 
-uniform vec3 windForce;
 
 layout(std140) uniform Matrices {
     mat4 viewMatrix;
@@ -38,8 +43,8 @@ layout(std140) uniform Matrices {
     mat4 viewProjectionMatrix;
 };
 
-vec3 applyMainBending(vec3 positionInWorldSpace, vec3 windForce);
-vec3 applyDetailBending(vec3 positionInWorldSpace, vec3 objectPositionInWorldSpace, float time);
+vec3 applyMainBending(vec3 positionInWorldSpace, vec3 windForce, float mainBendiness);
+vec3 applyDetailBending(vec3 positionInWorldSpace, vec3 objectPositionInWorldSpace, float branchAmplitude, float leafAmplitude, float time);
 
 #define SIDE_TO_SIDE_FREQ1 1.975
 #define SIDE_TO_SIDE_FREQ2 0.793
@@ -74,11 +79,14 @@ void main()
 
     positionInWorldSpace = (modelMatrix * vec4(positionInWorldSpace, 1.0)).xyz;
 
-    vec3 objectPositionInWorldSpace = vec3(modelMatrix[3][0], modelMatrix[3][1], modelMatrix[3][2]);
-    positionInWorldSpace = applyMainBending(positionInWorldSpace - objectPositionInWorldSpace, windForce);
-    positionInWorldSpace += objectPositionInWorldSpace;
+    // Guide followed for wind implementation: https://mtnphil.wordpress.com/2011/10/18/wind-animations-for-vegetation/
+    if(isAffectedByWind == 1) {
+        vec3 objectPositionInWorldSpace = vec3(modelMatrix[3][0], modelMatrix[3][1], modelMatrix[3][2]);
 
-    positionInWorldSpace = applyDetailBending(positionInWorldSpace, objectPositionInWorldSpace, time);
+        positionInWorldSpace = applyMainBending(positionInWorldSpace - objectPositionInWorldSpace, windForce, mainBendiness);
+        positionInWorldSpace += objectPositionInWorldSpace;
+        positionInWorldSpace = applyDetailBending(positionInWorldSpace, objectPositionInWorldSpace, branchAmplitude, leafAmplitude, time);
+    }
 
 	mat4 modelViewMatrix = viewMatrix * modelMatrix;
 	mat4 modelViewProjectionMatrix = projectionMatrix * modelViewMatrix;
@@ -88,7 +96,7 @@ void main()
 	vec3 N = normalize(normalMatrix * vec4(normalIn, 0.0)).xyz;
 	TBN = mat3(T, B, N);
 
-	color = vec4(colorIn, 1);
+	color = vec4(vertexColor.b, vertexColor.g, vertexColor.b, 1);
 	texCoord = texCoordIn;
 
 	viewSpacePosition = modelViewMatrix * vec4(positionInWorldSpace, 1.0);
@@ -96,11 +104,11 @@ void main()
 	worldSpacePosition = modelMatrix * vec4(positionInWorldSpace, 1);
 
 	shadowTexCoord = lightMatrix *vec4(viewSpacePosition.xyz, 1.0);
-	gl_Position = modelViewProjectionMatrix * vec4(positionInWorldSpace,1.0);
+	gl_Position = projectionMatrix * viewMatrix * vec4(positionInWorldSpace,1.0);
 }
 
-vec3 applyMainBending(vec3 positionInWorldSpace, vec3 windForce) {
-    float vertexHeight = positionInWorldSpace.y * 0.01; // TODO Extract 0.01 var to uniform and set for each gameobject
+vec3 applyMainBending(vec3 positionInWorldSpace, vec3 windForce, float mainBendiness) {
+    float vertexHeight = positionInWorldSpace.y * mainBendiness;
     vertexHeight += 1.0;
     vertexHeight *= vertexHeight;
     vertexHeight = vertexHeight * vertexHeight - vertexHeight;
@@ -113,8 +121,7 @@ vec3 applyMainBending(vec3 positionInWorldSpace, vec3 windForce) {
     return normalize(newPos) * oldLength;
 }
 
-vec3 applyDetailBending(vec3 positionInWorldSpace, vec3 objectPositionInWorldSpace, float time) {
-    float branchAmplitude = 5.0;
+vec3 applyDetailBending(vec3 positionInWorldSpace, vec3 objectPositionInWorldSpace, float branchAmplitude, float leafAmplitude, float time) {
     float branchStiffness = vertexColor.b;
 
     // Each object has its own phase to allow us to give different animations to different identical objects
@@ -128,7 +135,8 @@ vec3 applyDetailBending(vec3 positionInWorldSpace, vec3 objectPositionInWorldSpa
     waves = smoothTriangleWave(waves);
     vec2 waveSum = vec2(waves.x + waves.y, waves.z + waves.w);
 
-    //positionInWorldSpace.xzy += waveSum.xxy * vec3(0.0, 0.0, vertexColor.b * 10.0);
+    float windStrength = length(windForce);
+    positionInWorldSpace.xyz += waveSum.x * vec3(vertexColor.b * windStrength * leafAmplitude * normalIn.xyz);
     positionInWorldSpace.y += waveSum.y * branchStiffness * branchAmplitude;
 
     return positionInWorldSpace;

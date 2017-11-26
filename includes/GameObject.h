@@ -19,6 +19,7 @@
 #include "IDrawable.h"
 #include "AABB2.h"
 #include "linmath/float4x4.h"
+#include "WindAffection.h"
 #include <vector>
 #include <linmath/Quaternion.h>
 #include <Sphere.h>
@@ -65,7 +66,7 @@ class ShaderProgram;
  * has been marked as dirty. Then you can at a later point, when calculations arent being done,
  * safely remove the object.
  */
-class GameObject : public IDrawable, public std::enable_shared_from_this<GameObject> {
+class GameObject : public IDrawable, public std::enable_shared_from_this<GameObject>, public WindAffection {
 public:
     GameObject();
     GameObject(std::shared_ptr<GameObject> parent);
