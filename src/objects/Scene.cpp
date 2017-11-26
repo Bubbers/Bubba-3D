@@ -17,8 +17,8 @@
 #include "Scene.h"
 #include "GameObject.h"
 
-Scene::Scene()
-{
+Scene::Scene() {
+    this->wind = std::make_shared<Wind>();
 }
 
 
@@ -78,4 +78,12 @@ void Scene::removeDirty(std::vector<std::shared_ptr<GameObject>> *objectsInScene
             i++;
         }
     }
+}
+
+const std::shared_ptr<Wind> Scene::getWind() const {
+    return wind;
+}
+
+void Scene::setWind(const std::shared_ptr<Wind> wind) {
+    this->wind = wind;
 }

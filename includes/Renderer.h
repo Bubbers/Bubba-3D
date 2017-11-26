@@ -32,6 +32,7 @@ class Camera;
 class Scene;
 class ShaderProgram;
 class IDrawable;
+class Wind;
 
 class Renderer {
 public:
@@ -53,10 +54,6 @@ public:
     Effects effects;
 private:
     float currentTime;
-    float lastWindChangeTime = 0;
-    chag::float3 lastWindSpeed = chag::make_vector(0.0f, 0.0f, 0.0f);
-    chag::float3 currentWindSpeed = chag::make_vector(0.0f, 0.0f, 0.0f);
-    chag::float3 newWindSpeed = chag::make_vector(0.0f, 0.0f, 0.0f);
 
     Fbo createPostProcessFbo(int width, int height);
     void drawShadowMap(Fbo sbo, chag::float4x4 viewProjectionMatrix, Scene *scene);
@@ -64,7 +61,7 @@ private:
     void drawTransparent(std::shared_ptr<ShaderProgram> &shaderProgram, Scene *scene);
     void setFog(std::shared_ptr<ShaderProgram> &shaderProgram);
     void setLights(std::shared_ptr<ShaderProgram> &shaderProgram, Scene *scene);
-    void setWind(std::shared_ptr<ShaderProgram> shaderProgram);
+    void setWind(std::shared_ptr<ShaderProgram> shaderProgram, const std::shared_ptr<Wind> ptr);
 
     void drawBloom(std::shared_ptr<ShaderProgram> &shaderProgram, Scene *scene, int i, int i1, chag::float4x4 &viewProjectionMatrix);
 

@@ -115,7 +115,7 @@ void Mesh::initVerticesFromAiMesh(const aiMesh *paiMesh, Chunk &chunk) {
             if (paiMesh->HasVertexColors(j)) {
                 aiColor4D vertexColor = paiMesh->mColors[j][i];
 
-                if(chunk.m_vertexColors.size() >= i) {
+                if(chunk.m_vertexColors.size() <= i) {
                     chunk.m_vertexColors.push_back(chag::make_vector(0.0f, 0.0f, 0.0f));
                 }
 
