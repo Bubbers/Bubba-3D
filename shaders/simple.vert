@@ -96,7 +96,7 @@ void main()
 	vec3 N = normalize(normalMatrix * vec4(normalIn, 0.0)).xyz;
 	TBN = mat3(T, B, N);
 
-	color = vec4(vertexColor.b, vertexColor.g, vertexColor.b, 1);
+	color = vec4(vertexColor.r, vertexColor.g, vertexColor.b, 1);
 	texCoord = texCoordIn;
 
 	viewSpacePosition = modelViewMatrix * vec4(positionInWorldSpace, 1.0);
