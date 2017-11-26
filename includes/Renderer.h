@@ -74,7 +74,7 @@ private:
 
     Camera *cubeMapCameras[6];
     // Drawing
-    void drawModel(IDrawable &model, std::shared_ptr<ShaderProgram> &shaderProgram);
+    void drawModel(const std::shared_ptr<IDrawable> &model, std::shared_ptr<ShaderProgram> &shaderProgram);
     void drawFullScreenQuad();
 
     void renderPostProcess();

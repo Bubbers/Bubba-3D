@@ -63,10 +63,10 @@ void Renderer::resize(unsigned int width, unsigned int height) {
     horizontalBlurFbo = createPostProcessFbo(width, height);
 }
 
-void Renderer::drawModel(IDrawable &model, std::shared_ptr<ShaderProgram> &shaderProgram)
+void Renderer::drawModel(const std::shared_ptr<IDrawable> &model, std::shared_ptr<ShaderProgram> &shaderProgram)
 {
     shaderProgram->use();
-    model.render();
+    model->render();
 }
 
 void Renderer::drawScene(Camera *camera, Scene *scene, float currentTime)
@@ -229,9 +229,10 @@ void Renderer::setLights(std::shared_ptr<ShaderProgram> &shaderProgram, Scene *s
 */
 void Renderer::drawShadowCasters(std::shared_ptr<ShaderProgram> &shaderProgram, Scene *scene) {
     std::vector<std::shared_ptr<GameObject>> shadowCasters = scene->getShadowCasters();
-    for (unsigned int i = 0; i < scene->getShadowCasters().size(); i++) {
-        shaderProgram->setUniform1f("object_reflectiveness", (*shadowCasters[i]).shininess);
-        drawModel(*shadowCasters[i], shaderProgram);
+
+    for(auto shadowCaster : shadowCasters) {
+        shaderProgram->setUniform1f("object_reflectiveness", shadowCaster->shininess);
+        drawModel(shadowCaster, shaderProgram);
     }
 }
 
@@ -239,11 +240,12 @@ void Renderer::drawTransparent(std::shared_ptr<ShaderProgram> &shaderProgram, Sc
     shaderProgram->use();
     std::vector<std::shared_ptr<GameObject>> transparentObjects = scene->getTransparentObjects();
 
-    for (unsigned int i = 0; i < transparentObjects.size(); i++) {
+    for (auto transparentObject : transparentObjects) {
         glEnable(GL_BLEND);
         glDepthFunc(GL_LESS);
-        shaderProgram->setUniform1f("object_reflectiveness", (*transparentObjects[i]).shininess);
-        drawModel(*transparentObjects[i], shaderProgram);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        shaderProgram->setUniform1f("object_reflectiveness", transparentObject->shininess);
+        drawModel(transparentObject, shaderProgram);
     }
 }
 
