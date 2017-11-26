@@ -44,7 +44,7 @@ layout(std140) uniform Matrices {
 };
 
 vec3 applyMainBending(vec3 positionInWorldSpace, vec3 windForce, float mainBendiness);
-vec3 applyDetailBending(vec3 positionInWorldSpace, vec3 objectPositionInWorldSpace, float branchAmplitude, float leafAmplitude, float time);
+vec3 applyDetailBending(vec3 positionInWorldSpace, vec3 windForce, vec3 objectPositionInWorldSpace, float branchAmplitude, float leafAmplitude, float time);
 
 #define SIDE_TO_SIDE_FREQ1 1.975
 #define SIDE_TO_SIDE_FREQ2 0.793
@@ -85,7 +85,7 @@ void main()
 
         positionInWorldSpace = applyMainBending(positionInWorldSpace - objectPositionInWorldSpace, windForce, mainBendiness);
         positionInWorldSpace += objectPositionInWorldSpace;
-        positionInWorldSpace = applyDetailBending(positionInWorldSpace, objectPositionInWorldSpace, branchAmplitude, leafAmplitude, time);
+        positionInWorldSpace = applyDetailBending(positionInWorldSpace, windForce, objectPositionInWorldSpace, branchAmplitude, leafAmplitude, time);
     }
 
 	mat4 modelViewMatrix = viewMatrix * modelMatrix;
@@ -121,7 +121,7 @@ vec3 applyMainBending(vec3 positionInWorldSpace, vec3 windForce, float mainBendi
     return normalize(newPos) * oldLength;
 }
 
-vec3 applyDetailBending(vec3 positionInWorldSpace, vec3 objectPositionInWorldSpace, float branchAmplitude, float leafAmplitude, float time) {
+vec3 applyDetailBending(vec3 positionInWorldSpace, vec3 windForce, vec3 objectPositionInWorldSpace, float branchAmplitude, float leafAmplitude, float time) {
     float branchStiffness = vertexColor.b;
 
     // Each object has its own phase to allow us to give different animations to different identical objects
@@ -137,7 +137,7 @@ vec3 applyDetailBending(vec3 positionInWorldSpace, vec3 objectPositionInWorldSpa
 
     float windStrength = length(windForce);
     positionInWorldSpace.xyz += waveSum.x * vec3(vertexColor.b * windStrength * leafAmplitude * normalIn.xyz);
-    positionInWorldSpace.y += waveSum.y * branchStiffness * branchAmplitude;
+    positionInWorldSpace.y += waveSum.y * branchStiffness * branchAmplitude * windStrength;
 
     return positionInWorldSpace;
 }
