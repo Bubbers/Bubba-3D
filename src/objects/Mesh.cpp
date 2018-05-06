@@ -123,8 +123,7 @@ void Mesh::initVerticesFromAiMesh(const aiMesh *paiMesh, Chunk &chunk) {
     }
 }
 
-chag::float3 Mesh::getVertexColors(const aiMesh *paiMesh, Chunk &chunk, unsigned int i) const {
-    chag::float3 vertexColor = chag::make_vector(0.0f, 0.0f, 0.0f);
+void Mesh::getVertexColors(const aiMesh *paiMesh, Chunk &chunk, unsigned int i) const {
     unsigned int j = 0;
     do {
             if (paiMesh->HasVertexColors(j)) {
