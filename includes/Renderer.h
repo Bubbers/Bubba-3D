@@ -85,4 +85,6 @@ private:
     Fbo postProcessFbo, horizontalBlurFbo, verticalBlurFbo;
 
     chag::float3 backgroundColor = chag::make_vector(0.2f, 0.2f, 0.8f);
+
+    void setWindUniforms(std::shared_ptr<ShaderProgram> &shaderProgram, const std::shared_ptr<GameObject> &shadowCaster) const;
 };

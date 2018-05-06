@@ -129,6 +129,9 @@ private:
     chag::float3 getColorFromMaterial(const char* colorTypeString, unsigned int type,
                                       unsigned int index, const aiMaterial &material);
 
+
+    chag::float3 getVertexColors(const aiMesh *paiMesh, Chunk &chunk, unsigned int i) const;
+
     /**
      * Uses the file name of the mesh to calculate the absolute path to the specified texture
      *
@@ -191,6 +194,7 @@ private:
     AABB aabb;
 
     unsigned int numAnimations;
+
 
 
 };

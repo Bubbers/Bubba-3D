@@ -110,8 +110,23 @@ void Mesh::initVerticesFromAiMesh(const aiMesh *paiMesh, Chunk &chunk) {
         chunk.m_normals.push_back(make_vector(pNormal.x, pNormal.y, pNormal.z));
         chunk.m_uvs.push_back(make_vector(pTexCoord.x, pTexCoord.y));
 
-        unsigned int j = 0;
-        do {
+        getVertexColors(paiMesh, chunk, i);
+
+        if (paiMesh->HasTangentsAndBitangents()) {
+            const aiVector3D pBitTangents = paiMesh->mBitangents[i];
+            const aiVector3D pTangents = paiMesh->mTangents[i];
+            chunk.m_bittangents.push_back(make_vector(pBitTangents.x, pBitTangents.y, pBitTangents.z));
+            chunk.m_tangents.push_back(make_vector(pTangents.x, pTangents.y, pTangents.z));
+        }
+
+        updateMinAndMax(pPos.x, pPos.y, pPos.z, &aabb.minV, &aabb.maxV);
+    }
+}
+
+chag::float3 Mesh::getVertexColors(const aiMesh *paiMesh, Chunk &chunk, unsigned int i) const {
+    chag::float3 vertexColor = chag::make_vector(0.0f, 0.0f, 0.0f);
+    unsigned int j = 0;
+    do {
             if (paiMesh->HasVertexColors(j)) {
                 aiColor4D vertexColor = paiMesh->mColors[j][i];
 
@@ -126,16 +141,6 @@ void Mesh::initVerticesFromAiMesh(const aiMesh *paiMesh, Chunk &chunk) {
             }
             j++;
         } while (paiMesh->HasVertexColors(j));
-
-        if (paiMesh->HasTangentsAndBitangents()) {
-            const aiVector3D pBitTangents = paiMesh->mBitangents[i];
-            const aiVector3D pTangents = paiMesh->mTangents[i];
-            chunk.m_bittangents.push_back(make_vector(pBitTangents.x, pBitTangents.y, pBitTangents.z));
-            chunk.m_tangents.push_back(make_vector(pTangents.x, pTangents.y, pTangents.z));
-        }
-
-        updateMinAndMax(pPos.x, pPos.y, pPos.z, &aabb.minV, &aabb.maxV);
-    }
 }
 
 void Mesh::initIndicesFromAiMesh(const aiMesh *paiMesh, Chunk &chunk) {

@@ -217,10 +217,7 @@ void Renderer::drawShadowCasters(std::shared_ptr<ShaderProgram> &shaderProgram, 
 
     for(auto shadowCaster : shadowCasters) {
         shaderProgram->setUniform1f("object_reflectiveness", shadowCaster->shininess);
-        shaderProgram->setUniform1i("isAffectedByWind", shadowCaster->getIsAffectedByWind());
-        shaderProgram->setUniform1f("branchAmplitude", shadowCaster->getBranchAmplitude());
-        shaderProgram->setUniform1f("leafAmplitude", shadowCaster->getLeafAmplitude());
-        shaderProgram->setUniform1f("mainBendiness", shadowCaster->getMainBendiness());
+        setWindUniforms(shaderProgram, shadowCaster);
         drawModel(shadowCaster, shaderProgram);
     }
 }
@@ -234,12 +231,17 @@ void Renderer::drawTransparent(std::shared_ptr<ShaderProgram> &shaderProgram, Sc
         glDepthFunc(GL_LESS);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         shaderProgram->setUniform1f("object_reflectiveness", transparentObject->shininess);
-        shaderProgram->setUniform1i("isAffectedByWind", transparentObject->getIsAffectedByWind());
-        shaderProgram->setUniform1f("branchAmplitude", transparentObject->getBranchAmplitude());
-        shaderProgram->setUniform1f("leafAmplitude", transparentObject->getLeafAmplitude());
-        shaderProgram->setUniform1f("mainBendiness", transparentObject->getMainBendiness());
+        setWindUniforms(shaderProgram, transparentObject);
         drawModel(transparentObject, shaderProgram);
     }
+}
+
+void Renderer::setWindUniforms(std::shared_ptr<ShaderProgram> &shaderProgram,
+                               const std::shared_ptr<GameObject> &shadowCaster) const {
+    shaderProgram->setUniform1i("isAffectedByWind", shadowCaster->getIsAffectedByWind());
+    shaderProgram->setUniform1f("branchAmplitude", shadowCaster->getBranchAmplitude());
+    shaderProgram->setUniform1f("leafAmplitude", shadowCaster->getLeafAmplitude());
+    shaderProgram->setUniform1f("mainBendiness", shadowCaster->getMainBendiness());
 }
 
 void Renderer::drawBloom(std::shared_ptr<ShaderProgram> &shaderProgram, Scene *scene, int w, int h, chag::float4x4 &viewProjectionMatrix) {
