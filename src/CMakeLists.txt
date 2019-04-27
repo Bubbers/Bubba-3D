@@ -190,5 +190,5 @@ target_link_libraries(${LIBRARY_NAME} ${FREETYPE_LIBRARIES})
 
 add_custom_command(TARGET Bubba3D POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E copy_directory
-		${CMAKE_SOURCE_DIR}/Bubba-3D/shaders
+		${CMAKE_SOURCE_DIR}/bubba-3d/shaders
 		$<TARGET_FILE_DIR:Bubba3D>/shaders)
