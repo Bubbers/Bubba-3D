@@ -27,6 +27,7 @@
 #include <map>
 #include <assimp/Importer.hpp>
 #include <memory>
+#include <IMesh.h>
 
 
 class BoneTransformer;
@@ -43,7 +44,7 @@ struct BoneInfluenceOnVertex;
  * mesh.loadMesh("url/to/meshfile");
  * \endcode
  */
-class Mesh {
+class Mesh: public IMesh {
 public:
     Mesh();
 
@@ -56,26 +57,26 @@ public:
      *
      * @return A list of all the triangles of the mesh.
      */
-    std::vector<Triangle *> getTriangles();
+    std::vector<Triangle *> getTriangles() override;
 
     /**
      * NOTE: The AABB has not been transformed.
      *
      * @return The AABB of the mesh.
      */
-    AABB* getAABB();
+    AABB* getAABB() override;
 
     /**
      * NOTE: The sphere has not been transformed.
      *
      * @return The sphere surrounding the object.
      */
-    Sphere getSphere();
+    Sphere getSphere() override;
 
-    std::vector<Chunk>* getChunks();
-    std::vector<Material>* getMaterials();
+    std::vector<Chunk>* getChunks() override;
+    std::vector<Material>* getMaterials() override;
 
-    bool hasAnimations();
+    bool hasAnimations() override;
 
     /**
     * Calculates the transform to be applied to each bone at the current time.
@@ -84,9 +85,9 @@ public:
     * @return A vector containing the transforms of each bone. The index in the vector corresponds to the bones index. The index of a bone can be found in boneNameToIndexMapping.
     *
     */
-    std::vector<chag::float4x4> getBoneTransforms(float totalElapsedTimeInSeconds);
+    std::vector<chag::float4x4> getBoneTransforms(float totalElapsedTimeInSeconds) override;
 
-private:
+protected:
     /**
      * Loads all the chunks, materials, triangles and collision details of the mesh
      * in the loaded aiScene.

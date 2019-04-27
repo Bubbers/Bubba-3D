@@ -25,13 +25,13 @@ public:
     Texture() {};
     Texture(GLuint textureID): textureID(textureID) {};
     void bind(GLenum textureUnit);
-    void loadTexture(std::string fileName);
+    virtual void loadTexture() = 0;
     GLuint getID();
 
     int getHeight();
     int getWidth();
 
-private:
+protected:
 
     GLuint textureID;
     int width,height;

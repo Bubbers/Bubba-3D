@@ -27,7 +27,7 @@
 #endif
 
 class Texture;
-class Mesh;
+class IMesh;
 class ShaderProgram;
 
 /**
@@ -72,7 +72,7 @@ public:
      *
      * @param fileName The name of the mesh file.
      */
-    static std::shared_ptr<Mesh>    loadAndFetchMesh   (const std::string &fileName);
+    static std::shared_ptr<IMesh>    loadAndFetchMesh   (const std::string &fileName);
 
 #ifdef __linux__
     static std::shared_ptr<sf::Sound>loadAndFetchSound(const std::string &fileName);
@@ -85,7 +85,7 @@ public:
 private:
     static std::map<std::string, std::shared_ptr<ShaderProgram>> shaders;
     static std::map<std::string, std::shared_ptr<Texture>> textures;
-    static std::map<std::string, std::shared_ptr<Mesh>> meshes;
+    static std::map<std::string, std::shared_ptr<IMesh>> meshes;
 
 #ifdef __linux__
     static std::map<std::string, std::shared_ptr<sf::Music>> musics;
@@ -115,7 +115,7 @@ private:
     static std::shared_ptr<Texture> getTexture(const std::string &fileName);
 
     static void loadMesh(const std::string &fileName);
-    static std::shared_ptr<Mesh> getMesh(const std::string &fileName);
+    static std::shared_ptr<IMesh> getMesh(const std::string &fileName);
 
     template<typename Type>
     static std::shared_ptr<Type> getItemFromMap(std::map<std::string, std::shared_ptr<Type>> &map,

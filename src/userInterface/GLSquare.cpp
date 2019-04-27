@@ -78,8 +78,11 @@ void GLSquare::bindTextureAndDraw(std::shared_ptr<ShaderProgram> shaderProgram, 
 
     shaderProgram->setUniform4f("borderColor",graphic->getBorderColor());
 
+    CHECK_GL_ERROR()
+
     if(graphic->isTextureElseColor()) {
         graphic->getTexture()->bind(GL_TEXTURE0);
+        CHECK_GL_ERROR()
         shaderProgram->setUniform1i("isTexture",true);
         shaderProgram->setUniform1i("isColor",false);
     }else{
@@ -88,6 +91,7 @@ void GLSquare::bindTextureAndDraw(std::shared_ptr<ShaderProgram> shaderProgram, 
         shaderProgram->setUniform4f("color",graphic->getColor());
     }
 
+    CHECK_GL_ERROR()
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }
 

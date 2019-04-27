@@ -24,10 +24,11 @@
 #include "Texture.h"
 #include "Mesh.h"
 #include <sstream>
+#include <ImageTexture.h>
 
 std::map<std::string, std::shared_ptr<ShaderProgram>> ResourceManager::shaders;
 std::map<std::string, std::shared_ptr<Texture>> ResourceManager::textures;
-std::map<std::string, std::shared_ptr<Mesh>> ResourceManager::meshes;
+std::map<std::string, std::shared_ptr<IMesh>> ResourceManager::meshes;
 
 #ifdef __linux__
 std::map<std::string, std::shared_ptr<sf::Music>> ResourceManager::musics;
@@ -58,7 +59,7 @@ std::shared_ptr<Texture> ResourceManager::loadAndFetchTexture(const std::string 
     }
 }
 
-std::shared_ptr<Mesh> ResourceManager::loadAndFetchMesh(const std::string &fileName) {
+std::shared_ptr<IMesh> ResourceManager::loadAndFetchMesh(const std::string &fileName) {
     try {
         return getMesh(fileName);
     } catch (std::invalid_argument exception) {
@@ -90,12 +91,12 @@ void ResourceManager::loadShader(const std::string &vertexShader,
 }
 
 void ResourceManager::loadTexture(const std::string &fileName) {
-    std::shared_ptr<Texture> texture = std::make_shared<Texture>();
-    texture->loadTexture(fileName);
+    std::shared_ptr<ImageTexture> texture = std::make_shared<ImageTexture>(fileName);
+    texture->loadTexture();
 
 #ifdef __linux__
     ResourceManager::fileWatcher.addWatch(fileName, [fileName, texture](){
-        texture->loadTexture(fileName);
+        texture->loadTexture();
     });
 #endif
 
@@ -125,7 +126,7 @@ std::shared_ptr<Texture> ResourceManager::getTexture(const std::string &fileName
 }
 
 
-std::shared_ptr<Mesh> ResourceManager::getMesh(const std::string &fileName) {
+std::shared_ptr<IMesh> ResourceManager::getMesh(const std::string &fileName) {
     return getItemFromMap(meshes, fileName);
 }
 

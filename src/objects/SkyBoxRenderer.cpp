@@ -27,7 +27,7 @@
 #define SKYBOX_SHADER_NAME "skybox_shader"
 
 SkyBoxRenderer::SkyBoxRenderer(Camera *camera,
-                               Mesh* skyMesh,
+                               IMesh* skyMesh,
                                std::shared_ptr<GameObject> gameObject)
         : m_camera(camera),
           m_skyMesh(skyMesh),

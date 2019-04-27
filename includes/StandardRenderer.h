@@ -20,7 +20,7 @@
 #include "SFML/Window.hpp"
 #include <memory>
 
-class Mesh;
+class IMesh;
 class ShaderProgram;
 class GameObject;
 class Chunk;
@@ -35,7 +35,7 @@ class Chunk;
 class StandardRenderer : public IRenderComponent {
 public:
     StandardRenderer();
-    StandardRenderer(std::shared_ptr<Mesh> mesh, std::shared_ptr<ShaderProgram> shader);
+    StandardRenderer(std::shared_ptr<IMesh> mesh, std::shared_ptr<ShaderProgram> shader);
 
     void update(float dt);
 
@@ -43,7 +43,7 @@ public:
     void renderShadow(std::shared_ptr<ShaderProgram> &shaderProgram);
     void renderEmissive(std::shared_ptr<ShaderProgram> &shaderProgram);
 private:
-    std::shared_ptr<Mesh> mesh;
+    std::shared_ptr<IMesh> mesh;
     sf::Clock clock;
 
     void setBones(std::shared_ptr<ShaderProgram> &shaderProgram) const;

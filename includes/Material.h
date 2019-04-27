@@ -29,4 +29,24 @@ struct Material {
     std::shared_ptr<Texture> diffuseTexture = NULL;
     std::shared_ptr<Texture> bumpMapTexture = NULL;
     std::shared_ptr<Texture> emissiveTexture = NULL;
+
+    Material() {}
+
+    Material(const chag::float3 &diffuseColor, const chag::float3 &ambientColor, const chag::float3 &specularColor,
+             const chag::float3 &emissiveColor, float specularExponent, const std::shared_ptr<Texture> &diffuseTexture)
+            : diffuseColor(diffuseColor), ambientColor(ambientColor), specularColor(specularColor),
+              emissiveColor(emissiveColor), specularExponent(specularExponent), diffuseTexture(diffuseTexture) {}
+
+    Material(const chag::float3 &diffuseColor, const chag::float3 &ambientColor, const chag::float3 &specularColor,
+             const chag::float3 &emissiveColor, float specularExponent, const std::shared_ptr<Texture> &diffuseTexture,
+             const std::shared_ptr<Texture> &bumpMapTexture)
+             : diffuseColor(diffuseColor), ambientColor(ambientColor), specularColor(specularColor), emissiveColor(emissiveColor),
+             specularExponent(specularExponent), diffuseTexture(diffuseTexture), bumpMapTexture(bumpMapTexture) {}
+
+    Material(const chag::float3 &diffuseColor, const chag::float3 &ambientColor, const chag::float3 &specularColor,
+             const chag::float3 &emissiveColor, float specularExponent, const std::shared_ptr<Texture> &diffuseTexture,
+             const std::shared_ptr<Texture> &bumpMapTexture, const std::shared_ptr<Texture> &emissiveTexture)
+            : diffuseColor(diffuseColor), ambientColor(ambientColor), specularColor(specularColor),
+              emissiveColor(emissiveColor), specularExponent(specularExponent), diffuseTexture(diffuseTexture),
+              bumpMapTexture(bumpMapTexture), emissiveTexture(emissiveTexture) {}
 };

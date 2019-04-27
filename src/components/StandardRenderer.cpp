@@ -30,7 +30,7 @@ StandardRenderer::StandardRenderer(){
 
 }
 
-StandardRenderer::StandardRenderer(std::shared_ptr<Mesh> mesh, std::shared_ptr<ShaderProgram> shaderProgram)
+StandardRenderer::StandardRenderer(std::shared_ptr<IMesh> mesh, std::shared_ptr<ShaderProgram> shaderProgram)
                                  : mesh(mesh)
 {
     this->shaderProgram = shaderProgram;

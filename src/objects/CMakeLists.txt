@@ -9,5 +9,6 @@ set(BUBBA3D_FILES_SOURCE objects/Chunk.cpp
                          objects/BoneTransformer.cpp
                          objects/WindAffection.cpp
                          objects/Wind.cpp
+                         objects/ImageTexture.cpp
                          ${BUBBA3D_FILES_SOURCE}
                          PARENT_SCOPE)
